@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#090b0e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Автоучёт">
+<link rel="manifest" href="/avto/manifest.webmanifest">
+<link rel="icon" href="/avto/icon-192.png">
+<link rel="apple-touch-icon" href="/avto/apple-touch-icon.png">
+<title>Автоучёт</title>
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px);background:#090b0e}body{margin:0;padding:0;background:#090b0e}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+#login{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:radial-gradient(120% 80% at 50% 0%,#1a1f26,#090b0e 70%);font-family:'Golos Text',system-ui,sans-serif;color:#eef2f6}
+#login form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
+#login h1{font:400 30px 'Russo One','Golos Text',sans-serif;margin:0 0 4px;text-align:center;letter-spacing:.5px}
+#login p{margin:0 0 10px;text-align:center;color:#8c96a4;font-size:14px}
+#login label{font-size:13px;color:#8c96a4;display:flex;flex-direction:column;gap:6px}
+#login input{font:500 17px 'Golos Text',sans-serif;padding:14px;border-radius:12px;border:1px solid #28303a;background:#13171c;color:#eef2f6;outline:none}
+#login input:focus{border-color:#ffb02e}
+#login button{margin-top:6px;font:700 17px 'Golos Text',sans-serif;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,#ffcf7a,#ff9a1f);color:#0b0d10;cursor:pointer}
+#login button:disabled{opacity:.6}
+#lerr{min-height:18px;color:#ff6262;font-size:14px;text-align:center}
+#login svg{width:64px;height:64px;display:block;margin:0 auto 8px}
+</style>
+</head><body>
+<div id="login" hidden><form id="lform" autocomplete="on">
+<svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf7a"/><stop offset="1" stop-color="#ff9a1f"/></linearGradient></defs><circle cx="24" cy="24" r="21" fill="none" stroke="url(#lg2)" stroke-width="3"/><path d="M10 30a14 14 0 0 1 28 0" fill="none" stroke="#2a313a" stroke-width="4" stroke-linecap="round"/><path d="M10 30a14 14 0 0 1 21-12" fill="none" stroke="url(#lg2)" stroke-width="4" stroke-linecap="round"/><path d="M24 30l9-11" stroke="#eef2f6" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="30" r="3.5" fill="#eef2f6"/></svg>
+<h1>Автоучёт</h1><p>Гараж семьи. Войдите один раз - телефон запомнит.</p>
+<label>Логин<input id="lu" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="например, papa" required></label>
+<label>Пароль<input id="lp" name="password" type="password" autocomplete="current-password" required></label>
+<div id="lerr"></div><button id="lb" type="submit">Войти</button></form></div>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Russo+One&display=swap">
+<style>
+/* Layout: ночной гараж и приборная панель. Телефон — одна колонка и нижняя панель вкладок; широкий экран — сетка карточек. Тема одна, тёмная, осознанно. */
+:root{
+  --bg:#090b0e; --bg2:#0e1115; --s1:#13171c; --s2:#1a1f26; --s3:#232a33; --line:#28303a; --tx:#eef2f6; --mu:#8c96a4; --faint:#5b6470;
+  --amber:#ffb02e; --amber-2:#ffcf7a; --cyan:#5ad8ff; --gain:#3fdc8d; --loss:#ff6262; --ink:#0b0d10;
+  --f-disp:'Russo One','Golos Text',system-ui,sans-serif; --f-body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif; --f-num:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --e:cubic-bezier(.2,.8,.2,1); --sp:cubic-bezier(.34,1.45,.64,1); --r:20px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{margin:0;background:radial-gradient(900px 420px at 50% -160px,rgba(255,176,46,.10),transparent 70%),var(--bg);color:var(--tx);font:15px/1.45 var(--f-body);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:8px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.app{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:0 128px}
+h1,h2,h3{margin:0}
+.disp{font-family:var(--f-disp);font-weight:400;letter-spacing:.01em}
+
+/* шапка */
+.hd{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:12px;background:linear-gradient(var(--bg) 70%,transparent)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{width:34px;height:34px;flex:none}
+.brand b{font:400 20px var(--f-disp);letter-spacing:.02em}
+.brand small{display:block;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-r{display:flex;align-items:center;gap:8px}
+.rate{border:1px solid var(--line);background:var(--s1);border-radius:12px;padding:7px 10px;font:600 12.5px var(--f-num);color:var(--mu)}
+.cur{display:flex;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:3px}
+.cur button{border:0;background:none;width:34px;height:28px;border-radius:9px;font:700 14px var(--f-num);color:var(--mu);transition:background .25s,color .25s}
+.cur button[aria-pressed="true"]{background:var(--amber);color:var(--ink)}
+
+/* нижняя панель */
+.tabbar{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:6px;padding:6px;background:rgba(19,23,28,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:26px;box-shadow:0 16px 40px rgba(0,0,0,.55)}
+.tb{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:84px;padding:8px 0 6px;border-radius:20px;color:var(--mu);font-size:12px;font-weight:600;transition:color .25s,background .25s}
+.tb svg{width:22px;height:22px}
+.tb.on{color:var(--tx);background:var(--s2)}
+.tb-add{border:0;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--amber-2),var(--amber) 55%,#d98a0c);color:var(--ink);font:400 30px/1 var(--f-disp);display:grid;place-items:center;box-shadow:0 8px 26px rgba(255,176,46,.35);margin-top:-26px;border:5px solid var(--bg);transition:transform .2s var(--sp)}
+.tb-add:active{transform:scale(.92)}
+.tabbar.ro .tb-add{display:none}
+
+/* общие */
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin:4px 0 14px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;border:1px solid var(--line);background:var(--s1);border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:600;color:var(--mu);transition:all .2s}
+.chips button[aria-pressed="true"]{background:var(--tx);color:var(--ink);border-color:var(--tx)}
+.chips .num{opacity:.65;margin-left:2px}
+.search{width:100%;border:1px solid var(--line);background:var(--s1);border-radius:14px;padding:12px 14px 12px 40px;font:inherit;color:var(--tx);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%238c96a4' stroke-width='2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:13px 50%}
+.search::placeholder{color:var(--faint)}
+.sec{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.sec-h h2{font-size:17px;font-weight:700}
+.sec-h b{font:700 15px var(--f-num)}
+.sec-h small{color:var(--mu);font-size:13px}
+.hint{color:var(--mu);font-size:13px;margin:6px 0 0}
+.gain{color:var(--gain)}.loss{color:var(--loss)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;background:rgba(255,255,255,.06);color:var(--mu)}
+.pill::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+.st-bought{color:#a99bff}.st-repair{color:var(--amber)}.st-sale{color:var(--cyan)}.st-reserved{color:#ff8fd0}.st-sold{color:var(--gain)}.st-own{color:#c7ced8}
+.plate{display:inline-flex;align-items:stretch;border-radius:5px;overflow:hidden;background:#f4f6f8;color:#111;font:700 12px/1 var(--f-num);letter-spacing:.04em;box-shadow:inset 0 0 0 1.5px #111;vertical-align:middle}
+.plate i{font-style:normal;background:#1f5fbf;color:#fff;font-size:8.5px;padding:4px 3px;display:grid;place-items:center}
+.plate span{padding:4px 6px}
+.empty{text-align:center;padding:26px 16px 30px;color:var(--mu);background:var(--s1);border:1px dashed var(--line);border-radius:var(--r)}
+.empty b{display:block;color:var(--tx);font-size:17px;margin:8px 0 6px}
+.empty svg{width:220px;max-width:70%;opacity:.55}
+
+/* сцена с машиной */
+.stage{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,rgba(255,255,255,.07),transparent 55%),linear-gradient(180deg,#151a20 0%,#0d1014 62%,#0a0c0f 100%)}
+.stage::after{content:'';position:absolute;left:6%;right:6%;bottom:16%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)}
+.stage svg.car{display:block;width:100%;height:auto;position:relative;z-index:1}
+.whl{transform-box:fill-box;transform-origin:center}
+.hl-glow{opacity:0}
+.stage.tap{cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* гараж */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.cc{display:flex;flex-direction:column;text-align:left;background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:8px;transition:transform .25s var(--e),border-color .25s,box-shadow .25s;width:100%}
+.cc:hover{transform:translateY(-3px);border-color:#38424e;box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.cc:active{transform:scale(.985)}
+.cc .stage{padding:14px 18px 2px}
+.cc .pill{position:absolute;top:10px;left:10px;z-index:2;background:rgba(9,11,14,.7);backdrop-filter:blur(6px)}
+.cc .days{position:absolute;top:10px;right:10px;z-index:2;font:600 11.5px var(--f-num);color:var(--mu);background:rgba(9,11,14,.7);padding:4px 8px;border-radius:999px}
+.cc-b{padding:12px 8px 6px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:end}
+.cc-t b{display:block;font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-t small{color:var(--mu);font-size:13px}
+.cc-m{text-align:right}
+.cc-m b{display:block;font:700 18px var(--f-num)}
+.cc-m small{color:var(--mu);font-size:12px}
+.cc-f{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:12.5px;color:var(--mu)}
+.cc-f .todo-n{color:var(--amber);font-weight:600}
+
+/* карточка машины */
+.back{border:0;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:8px 12px 8px 10px;color:var(--mu);font-weight:600;display:inline-flex;align-items:center;gap:4px;margin:2px 0 12px}
+.hero{background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:10px;margin-bottom:12px}
+.hero .stage{padding:22px 16px 4px}
+.hero-b{padding:14px 8px 6px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.hero-b h1{font:400 26px/1.1 var(--f-disp);letter-spacing:.01em}
+.hero-b .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;color:var(--mu);font-size:13.5px;margin-top:8px}
+.edit{flex:none;border:1px solid var(--line);background:var(--s2);border-radius:12px;padding:8px 12px;font-weight:600;font-size:14px}
+.own{display:flex;align-items:center;gap:10px;margin:4px 8px 6px;font-size:13.5px;color:var(--mu)}
+.sw{position:relative;width:42px;height:24px;border-radius:12px;border:0;background:var(--s3);flex:none;transition:background .25s}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s var(--sp)}
+.sw[aria-pressed="true"]{background:var(--amber)}.sw[aria-pressed="true"]::after{transform:translateX(18px)}
+/* дорога статусов */
+.road{position:relative;margin:6px 4px 4px;padding-top:38px}
+.rd-track{position:absolute;left:10%;right:10%;top:52px;height:4px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--s3) 0 10px,transparent 10px 16px)}
+.rd-track i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--amber),var(--gain));transition:width 1s var(--e)}
+.rd-car{position:absolute;top:2px;width:62px;transform:translateX(-50%);transition:left 1s var(--e);z-index:2}
+.rd-car svg{width:100%;height:auto;display:block}
+.rd-stops{display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.rd-stops button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;font-size:11.5px;font-weight:600;color:var(--faint)}
+.rd-stops button i{width:14px;height:14px;border-radius:50%;background:var(--s1);border:2px solid var(--s3);margin-top:1px;transition:all .3s}
+.rd-stops button.on i{border-color:var(--amber);background:var(--amber)}
+.rd-stops button.cur{color:var(--tx)}
+.rd-stops button.cur i{box-shadow:0 0 0 5px rgba(255,176,46,.18)}
+.rd-stops button:not(:disabled):hover i{border-color:var(--amber-2)}
+/* плитки денег */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.tile{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px 14px;min-width:0}
+.tile small{display:block;color:var(--mu);font-size:12px;font-weight:600}
+.tile b{display:block;font:700 18px var(--f-num);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile em{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font:500 11px/1.35 var(--f-num);color:var(--faint);font-style:normal;margin-top:3px;overflow:hidden}
+.result{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-radius:var(--r);padding:16px 18px;margin-bottom:12px;border:1px solid}
+.result.g{background:linear-gradient(135deg,rgba(63,220,141,.14),rgba(63,220,141,.04));border-color:rgba(63,220,141,.3)}
+.result.l{background:linear-gradient(135deg,rgba(255,98,98,.14),rgba(255,98,98,.04));border-color:rgba(255,98,98,.3)}
+.result.n{background:var(--s1);border-color:var(--line)}
+.result small{display:block;font-size:12.5px;font-weight:600;color:var(--mu)}
+.result .big{font-size:30px;font-weight:700;margin-top:4px}
+.result .trade{font-size:12.5px;color:var(--mu);margin-top:6px;max-width:44ch}
+.btn{border:0;border-radius:14px;padding:14px 18px;font-weight:700;background:var(--amber);color:var(--ink);transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.97)}
+.btn.w{width:100%}
+.btn2{border:1px solid var(--line);border-radius:14px;padding:13px 16px;font-weight:600;background:var(--s2);width:100%}
+.danger{color:var(--loss);border-color:rgba(255,98,98,.35)}
+.danger.sure{background:var(--loss);color:#fff}
+/* одометр */
+.odo{display:inline-flex;align-items:flex-start;height:1em;line-height:1;overflow:hidden;font-family:var(--f-num);font-variant-numeric:tabular-nums;vertical-align:-.12em}
+.odw{display:inline-block;height:1em;overflow:hidden}
+.odc{display:flex;flex-direction:column}
+.odc span{display:block;height:1em}
+.ods{display:inline-block}.ods.sp{width:.28em}
+/* спидометр */
+.gauge{position:relative;text-align:center;min-width:0}
+.gauge svg{width:100%;max-width:240px;height:auto;display:block;margin:0 auto}
+.g-tr{fill:none;stroke:var(--s3);stroke-width:10;stroke-linecap:round}
+.g-v{fill:none;stroke-width:10;stroke-linecap:round}
+.g-t{stroke:var(--faint);stroke-width:1.5}
+.g-n line{stroke:var(--tx);stroke-width:3;stroke-linecap:round}
+.g-n circle{fill:var(--tx)}
+.g-l{margin-top:-2px}
+.g-l b{display:block;font:700 22px var(--f-num)}
+.g-l small{color:var(--mu);font-size:12px;font-weight:600}
+/* рентген трат */
+.xstage{position:relative;border-radius:16px;overflow:hidden;padding:14px 10px 4px;background:linear-gradient(rgba(90,216,255,.05) 1px,transparent 1px) 0 0/18px 18px,linear-gradient(90deg,rgba(90,216,255,.05) 1px,transparent 1px) 0 0/18px 18px,radial-gradient(120% 100% at 50% 0%,#12202b,#0a0f14 70%);border:1px solid rgba(90,216,255,.12)}
+.xmini{padding:8px 10px 4px;border-radius:14px}.xmini .xwrap{max-width:440px}
+.xtag{position:absolute;left:12px;bottom:8px;font:700 9.5px var(--f-num);letter-spacing:.16em;color:var(--cyan);opacity:.7}
+.xwrap{position:relative;max-width:720px;margin:0 auto}
+.xray{display:block;width:100%;height:auto}
+.xc{position:absolute;bottom:81.6%;transform:translateX(-50%);text-align:center;padding:3px 8px;border-radius:9px;background:rgba(9,12,16,.86);border:1px solid color-mix(in srgb,var(--c) 50%,transparent);white-space:nowrap;line-height:1.2;pointer-events:none}
+.xc small{display:block;font-size:10.5px;color:var(--mu);font-weight:600}
+.xc b{font:700 12.5px var(--f-num);color:var(--c)}
+.xp{transition:opacity .35s}
+.xp[onclick]{cursor:pointer}
+.xp.dim{opacity:.16}
+.xp.hot{animation:xpulse 1.6s ease-in-out infinite}
+@keyframes xpulse{50%{opacity:.55}}
+.zl-list{display:flex;flex-direction:column;gap:2px;margin-top:10px}
+.zl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:5px 12px;align-items:center;border:0;background:none;padding:8px;border-radius:14px;text-align:left;transition:background .2s;width:100%}
+.zl:hover,.zl.on{background:var(--s2)}
+.zl .zi{grid-row:span 2;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 30%,transparent)}
+.zl .zi svg{width:19px;height:19px}
+.zl span{font-weight:600;font-size:14px}
+.zl b{font:700 13.5px var(--f-num);white-space:nowrap}
+.zl b small{color:var(--faint);font-size:11.5px}
+.zl em{grid-column:2/-1;height:5px;border-radius:3px;background:var(--s3);overflow:hidden;display:block}
+.zl em u{display:block;height:100%;border-radius:3px;transform-origin:left;background:var(--c);box-shadow:0 0 10px var(--c)}
+.zl-items{margin:0 6px 8px 26px;padding:4px 0 2px;border-left:2px solid var(--line);animation:fade .3s ease}
+.zl-items div{display:flex;justify-content:space-between;gap:12px;padding:5px 0 5px 12px;font-size:13.5px}
+.zl-items div span{color:var(--mu);min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.zl-items div b{font:600 13px var(--f-num);white-space:nowrap}
+.lnk{border:0;background:none;color:var(--cyan);font-weight:600;font-size:13px;padding:6px 0 4px 12px}
+.zfilter{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--s2);border-radius:999px;padding:6px 8px 6px 12px;font-size:13px;font-weight:600;margin-bottom:8px}
+.zfilter i{font-style:normal;color:var(--mu)}
+/* сервисная книжка */
+.tl-m{font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin:16px 0 4px 54px}
+.tl-m:first-child{margin-top:2px}
+.tl{position:relative}
+.tl::before{content:'';position:absolute;left:21px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--line),var(--line) 85%,transparent)}
+.tl-i{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:2px 10px;align-items:center;width:100%;border:0;background:none;text-align:left;padding:8px 6px 8px 0;border-radius:14px;transition:background .2s}
+.tl-i:hover{background:rgba(255,255,255,.03)}
+.tl-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,var(--s1));color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);position:relative;z-index:1}
+.tl-ic svg{width:22px;height:22px}
+.tl-b{min-width:0}
+.tl-b b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:600;font-size:14.5px;line-height:1.3}
+.tl-b small{color:var(--mu);font-size:12.5px}
+.tl-a{text-align:right;font:700 14.5px var(--f-num);white-space:nowrap}
+.tl-a small{display:block;font:500 11px var(--f-num);color:var(--faint)}
+.usd{font:700 10px var(--f-num);color:var(--gain);border:1px solid currentColor;border-radius:5px;padding:0 3px;margin-left:5px;vertical-align:2px}
+.add{border:1px dashed var(--line);background:none;border-radius:14px;padding:11px;width:100%;color:var(--mu);font-weight:600;margin-top:8px;transition:border-color .2s,color .2s}
+.add:hover{border-color:var(--amber);color:var(--amber)}
+.todo{display:flex;gap:12px;align-items:flex-start;padding:10px 2px;border-top:1px solid var(--line)}
+.todo:first-of-type{border-top:0}
+.todo input{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--s3);margin:1px 0 0;flex:none;cursor:pointer;transition:all .2s}
+.todo input:checked{background:var(--gain);border-color:var(--gain)}
+.todo button{border:0;background:none;padding:0;text-align:left;flex:1;min-width:0;font-weight:600}
+.td-z{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c)}
+.td-z svg{width:15px;height:15px}
+.todo small{display:block;color:var(--mu);font-weight:500;font-size:12.5px}
+.shares{display:flex;flex-direction:column;gap:6px}
+.sh-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;font-size:14px}
+.sh-r em{grid-column:1/-1;height:6px;border-radius:3px;background:var(--s3);overflow:hidden;display:block}
+.sh-r em u{display:block;height:100%;background:var(--amber);border-radius:3px;transform-origin:left}
+
+/* отчёт */
+.cluster{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.panel{background:radial-gradient(120% 140% at 50% 0%,#1b2129,#12161b 60%);border:1px solid var(--line);border-radius:22px;padding:16px;min-width:0;position:relative;overflow:hidden}
+.panel small{color:var(--mu);font-size:12.5px;font-weight:600}
+.panel .big{display:block;font-size:34px;font-weight:700;margin:10px 0 6px}
+.panel .sub{color:var(--mu);font-size:13px}
+.panel .sub b{color:var(--tx);font-family:var(--f-num)}
+.odo-frame{display:inline-block;padding:8px 12px;border-radius:12px;background:#07090b;box-shadow:inset 0 0 0 1px #222a33,inset 0 8px 18px rgba(0,0,0,.6)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.ins{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.ins div{display:flex;gap:10px;align-items:flex-start;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font-size:14px}
+.ins div::before{content:'';flex:none;width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--amber);box-shadow:0 0 10px var(--amber)}
+.lot{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.lotc{flex:none;width:200px;border:1px solid var(--line);background:var(--s2);border-radius:16px;padding:8px;text-align:left}
+.lotc .stage{padding:10px 10px 0;border-radius:12px}
+.lotc b{display:block;font-size:14px;margin:8px 4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lotc small{display:block;color:var(--mu);font-size:12px;margin:2px 4px 0}.lotc small.num{margin-bottom:4px;font-weight:700}
+.mch{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px;height:200px;margin-top:6px}
+.mc{display:flex;flex-direction:column;min-width:0}
+.mc-u{flex:var(--up) 1 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;border-bottom:1px solid var(--line);min-height:0}
+.mc-d{flex:var(--dn) 1 0;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;min-height:0}
+.mc i{display:block;width:72%;max-width:36px;min-height:3px;border-radius:6px 6px 2px 2px}
+.mc i.up{background:linear-gradient(#5df0a6,#1f9e60);transform-origin:bottom;box-shadow:0 0 14px rgba(63,220,141,.25)}
+.mc i.dn{background:linear-gradient(#c83a3a,#ff7a7a);border-radius:2px 2px 6px 6px;transform-origin:top;box-shadow:0 0 14px rgba(255,98,98,.25)}
+.mc span{font:700 10px var(--f-num);white-space:nowrap;margin:3px 0;color:var(--gain);letter-spacing:-.03em}
+.mc-d span{color:var(--loss)}
+.mc small{text-align:center;font-size:10.5px;color:var(--faint);margin-top:6px;white-space:nowrap}
+.mc.now small{color:var(--tx);font-weight:700}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:2px 12px;align-items:center;border:0;background:none;text-align:left;padding:8px 4px;border-top:1px solid var(--line);width:100%}
+.row:first-child{border-top:0}
+.row .th{width:64px}
+.row .th svg{width:100%;height:auto;display:block}
+.row b{font-weight:600;font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row small{color:var(--mu);font-size:12.5px}
+.row .r{text-align:right;font:700 14px var(--f-num);white-space:nowrap}
+.row .r small{display:block;font-family:var(--f-num)}
+.bars .br{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;margin:9px 0}
+.bars span{font-weight:600;font-size:14px}.bars b{font:700 13.5px var(--f-num)}
+.bars em{grid-column:1/-1;height:7px;border-radius:4px;background:var(--s3);overflow:hidden;display:block}
+.bars em u{display:block;height:100%;border-radius:4px;transform-origin:left}
+
+/* листы и формы */
+.sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,4,6,.6);backdrop-filter:blur(3px);animation:fade .25s ease}
+.sheet>div{width:100%;max-width:640px;max-height:92vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;padding:10px 16px calc(24px + env(safe-area-inset-bottom,0px));animation:up .38s var(--e)}
+.sheet>div::before{content:'';display:block;width:42px;height:5px;border-radius:3px;background:var(--s3);margin:0 auto 12px}
+@keyframes up{from{transform:translateY(40%);opacity:.4}}
+@keyframes fade{from{opacity:0}}
+.sh-h{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px}
+.sh-h h2{font:400 20px var(--f-disp)}
+.x{border:0;background:var(--s2);width:36px;height:36px;border-radius:50%;font-size:17px;color:var(--mu);flex:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f>span{font-size:12.5px;color:var(--mu);font-weight:600}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--line);background:var(--s1);border-radius:12px;padding:12px;font:inherit;color:var(--tx);transition:border-color .2s}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--amber);outline:0}
+.f input.num{font-family:var(--f-num)}
+.money-in{display:flex;gap:6px}.money-in input{flex:1;min-width:0}.money-in select{flex:none;width:68px;padding-inline:8px}
+.full{grid-column:1/-1}
+.lab{font-size:11.5px;color:var(--faint);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.bodies{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.bodies button{border:1px solid var(--line);background:var(--s1);border-radius:12px;padding:6px 4px 4px;font-size:11.5px;font-weight:600;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px}
+.bodies button svg{width:100%;height:auto}
+.bodies button[aria-pressed="true"]{border-color:var(--amber);color:var(--tx);background:rgba(255,176,46,.08)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.swatches button{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);box-shadow:inset 0 -6px 10px rgba(0,0,0,.35),inset 0 4px 8px rgba(255,255,255,.25);transition:transform .2s var(--sp)}
+.swatches button[aria-pressed="true"]{border-color:var(--amber);transform:scale(1.12)}
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.catgrid button{border:1px solid var(--line);background:var(--s1);border-radius:12px;padding:8px 6px;font-size:12px;font-weight:600;color:var(--mu);display:flex;align-items:center;gap:6px;text-align:left}
+.catgrid button svg{width:18px;height:18px;flex:none}
+.catgrid button[aria-pressed="true"]{border-color:var(--amber);color:var(--tx);background:rgba(255,176,46,.08)}
+.seg{display:flex;gap:4px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:3px;margin-top:8px}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:11px;font-weight:600;color:var(--mu);font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--s3);color:var(--tx)}
+.err{color:var(--loss);font-size:13.5px;min-height:1px;margin-top:8px}
+.acts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--tx);color:var(--ink);padding:11px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:40;opacity:0;transition:all .25s var(--e);pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.by{color:var(--faint);font-size:11.5px}
+
+/* сводка гаража */
+.gsum{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;background:radial-gradient(120% 140% at 0% 0%,rgba(255,176,46,.10),transparent 55%),var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.gsum small{display:block;color:var(--mu);font-size:12px;font-weight:600}
+.gsum>div>b{display:block;font:700 21px var(--f-num);margin-top:3px;white-space:nowrap}
+.gsum em{display:block;font-style:normal;font-size:11.5px;color:var(--faint)}
+.sbar{grid-column:1/-1;display:flex;gap:3px;height:8px;border-radius:4px;overflow:hidden}
+.sbar i{display:block;height:100%;background:currentColor;border-radius:2px}
+.slg{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;font-weight:600}
+.slg span::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:6px;box-shadow:0 0 8px currentColor}
+.slg b{display:inline;color:var(--tx);font:700 12px var(--f-num)}
+.e-road{overflow:hidden;margin:0 auto;max-width:300px}
+.e-road svg{width:100%!important;max-width:none!important;opacity:.7!important;animation:eroad 4.2s var(--e) infinite}
+@keyframes eroad{0%{transform:translateX(-110%)}35%,65%{transform:none}100%{transform:translateX(110%)}}
+/* продажа: салют */
+.cele{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(3,4,6,.6);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);animation:fade .3s ease both;overflow:hidden;cursor:pointer}
+.cele.out{animation:fadeOut .4s ease both}
+@keyframes fadeOut{to{opacity:0}}
+.cele-in{position:relative;z-index:2;width:min(340px,86vw);background:radial-gradient(120% 100% at 50% 0%,#1d2530,#11151a 70%);border:1px solid var(--line);border-radius:26px;padding:24px 18px 18px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:celeIn .6s var(--sp) both}
+@keyframes celeIn{from{opacity:0;transform:scale(.7) translateY(40px)}}
+.cele-in svg.car{display:block;width:100%;height:auto;margin:10px 0 0}
+.stamp{position:absolute;top:14px;right:12px;z-index:3;font:400 20px var(--f-disp);letter-spacing:.06em;padding:3px 10px;border:3px solid currentColor;border-radius:8px;transform:rotate(-12deg);color:var(--gain);text-shadow:0 0 16px currentColor;animation:stamp .55s cubic-bezier(.2,1.5,.4,1) .45s both}
+.cele.l .stamp{color:var(--loss)}
+@keyframes stamp{from{opacity:0;transform:rotate(-34deg) scale(2.8)}}
+.cele-t{font-weight:700;font-size:17px;margin-top:2px}
+.cele-p{font:700 32px var(--f-num);margin:8px 0 4px}
+.cele small{color:var(--mu);font-size:13px}
+.coin{position:absolute;left:50%;top:48%;z-index:1;width:28px;height:28px;margin:-14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff0bf,#ffb02e 55%,#c27a0a);color:#6a4300;font:700 15px/28px var(--f-num);text-align:center;font-style:normal;box-shadow:0 3px 8px rgba(0,0,0,.45),inset 0 -2px 3px rgba(0,0,0,.25);animation:coin 2s cubic-bezier(.25,.6,.4,1) both;animation-delay:var(--d)}
+@keyframes coin{0%{opacity:0;transform:translate(0,0) scale(.3)}10%{opacity:1}42%{transform:translate(calc(var(--x)*.6),var(--up)) scale(1) rotate(calc(var(--r)*.45))}85%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.85) rotate(var(--r))}}
+/* раскладка на широком экране */
+.cv-l,.cv-r{min-width:0}
+.rgrid{margin-bottom:12px}
+@media (min-width:900px){.zmap.wide{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:4px 18px;align-items:start}.zmap.wide .sec-h{grid-column:1/-1}.zmap.wide .zl-list{margin-top:0}
+ .cv{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:14px;align-items:start}.cv-l .tiles{grid-template-columns:repeat(2,1fr)}
+ .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.rgrid>.sec{margin-bottom:0}}
+
+/* анимации: блоки проявляются, когда доезжают до экрана */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+@keyframes drive{0%{transform:translateX(-118%)}72%{transform:translateX(2.5%)}86%{transform:translateX(-.8%)}100%{transform:none}}
+@keyframes drive2{from{transform:translateX(-26%);opacity:0}55%{opacity:1}}
+@keyframes spin{from{transform:rotate(-1080deg)}}
+@keyframes bob{0%,100%{transform:none}40%{transform:translateY(-1.5px) rotate(-.4deg)}70%{transform:translateY(.6px)}}
+@keyframes flash{0%,100%{opacity:0}25%{opacity:.95}45%{opacity:.2}65%{opacity:.85}}
+@keyframes growX{from{transform:scaleX(0)}}
+@keyframes growY{from{transform:scaleY(0)}}
+@keyframes pop{from{opacity:0;transform:scale(.6)}}
+@keyframes popc{from{opacity:0;transform:translateX(-50%) translateY(6px) scale(.7)}}
+@keyframes puff{0%{opacity:.6;transform:translate(0,0) scale(.5)}100%{opacity:0;transform:translate(-30px,-9px) scale(2.8)}}
+@keyframes revb{0%,100%{transform:none}12%{transform:translate(-1.2px,-.8px) rotate(-.7deg)}26%{transform:translate(.9px,.3px) rotate(.35deg)}40%{transform:translate(-.7px,-.5px) rotate(-.45deg)}55%{transform:translate(.5px,.2px) rotate(.2deg)}75%{transform:translateY(-.4px)}}
+.puff{opacity:0;transform-box:fill-box;transform-origin:center}
+.bodyg{transform-box:view-box;transform-origin:200px 150px}
+.anim .rv{opacity:0}
+.anim .rv.in{opacity:1;animation:rise .6s var(--e) both;animation-delay:calc(var(--i,0)*60ms)}
+.anim .hero .drive{animation:drive 1.25s var(--e) both}
+.anim .hero .drive .whl{animation:spin 1.25s var(--e) both}
+.anim .hero .drive .bodyg{animation:bob .6s ease-in-out 1.15s both}
+.anim .hero .drive .hl-glow{animation:flash 1.2s ease 1.2s both}
+.anim .cc.in .drive{animation:drive2 .9s var(--e) both;animation-delay:calc(var(--i,0)*60ms + .08s)}
+.anim .cc.in .car .whl{animation:spin 1.3s var(--e) both;animation-delay:calc(var(--i,0)*60ms + .08s)}
+.anim .rv.in .grow u{animation:growX .9s var(--e) both;animation-delay:calc(var(--i,0)*70ms + .25s)}
+.anim .rv.in .mb{animation:growY .8s var(--e) both;animation-delay:calc(var(--i,0)*45ms + .2s)}
+.anim .xstage:not(.done) .xc,.anim .xstage:not(.done) .xl{opacity:0}
+.anim .xstage.done .xc{animation:popc .5s var(--sp) both;animation-delay:calc(var(--i,0)*140ms)}
+.anim .xstage.done .xl{animation:fade .6s ease both}
+#main .car.rev .whl{animation:spin 1.3s var(--e) both}
+#main .car.rev .bodyg{animation:revb .9s ease-in-out both}
+#main .car.rev .hl-glow{animation:flash 1.1s ease both}
+#main .car.rev .puff{animation:puff 1.1s ease-out both;animation-delay:calc(var(--k)*.14s)}
+.tb-add.rec{background:radial-gradient(circle at 35% 30%,#c9f6ff,var(--cyan) 55%,#1c9fd0);box-shadow:0 8px 26px rgba(90,216,255,.35)}
+@media (max-width:760px){.cluster{grid-template-columns:1fr 1fr}.cluster .panel:first-child{grid-column:1/-1}.kpis{grid-template-columns:repeat(2,1fr)}.tiles{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.catgrid{grid-template-columns:repeat(2,1fr)}.bodies{grid-template-columns:repeat(4,1fr)}.result .big{font-size:26px}.panel .big{font-size:30px}.gsum>div>b{font-size:18px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app" id="app">
+  <header class="hd">
+    <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffcf7a"/><stop offset="1" stop-color="#ff9a1f"/></linearGradient></defs><circle cx="24" cy="24" r="21" fill="none" stroke="url(#lg)" stroke-width="3"/><path d="M10 30a14 14 0 0 1 28 0" fill="none" stroke="#2a313a" stroke-width="4" stroke-linecap="round"/><path d="M10 30a14 14 0 0 1 21-12" fill="none" stroke="url(#lg)" stroke-width="4" stroke-linecap="round"/><path d="M24 30l9-11" stroke="#eef2f6" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="30" r="3.5" fill="#eef2f6"/></svg>
+      <div><b>Автоучёт</b><small id="who">гараж семьи</small></div></div>
+    <div class="hd-r"><button class="rate" id="rateBtn" onclick="rateForm()">$ —</button><div class="cur" role="group" aria-label="Валюта"><button id="c-KZT" aria-pressed="true" onclick="setCur('KZT')">₸</button><button id="c-USD" aria-pressed="false" onclick="setCur('USD')">$</button></div></div>
+  </header>
+  <main id="main"><div class="empty" style="margin-top:20px"><b>Открываю гараж…</b>Секунду.</div></main>
+</div>
+<nav class="tabbar" id="tabbar"><button class="tb on" id="t-cars" onclick="go('cars')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 4l9 6.5V20H3z"/><path d="M7 20v-6h10v6M7 17h10"/></svg><span>Гараж</span></button><button class="tb-add" id="addBtn" onclick="addAction()" aria-label="Добавить машину" title="Новая машина">+</button><button class="tb" id="t-rep" onclick="go('rep')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 16a8 8 0 0 1 16 0"/><path d="M12 16l4-5"/><path d="M4 20h16"/></svg><span>Отчёт</span></button></nav>
+<div id="sheet"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(()=>{
+// Мини-клиент Supabase без внешних библиотек: вход, чтение/запись, опрос раз в 10 секунд.
+const API='https://nctmbakzbzzkygndaklr.supabase.co',KEY='sb_publishable_xnG4ep1p9DtCe3x1HxMwdg_Gvq_YfUN',SK='avto-auth';
+const ALIAS={'папа':'papa','дядя':'dyadya','эмирхан':'emirkhan','эмир':'emirkhan'};
+let sess=null;try{sess=JSON.parse(localStorage.getItem(SK))}catch{}
+const save=s=>{sess=s;try{s?localStorage.setItem(SK,JSON.stringify(s)):localStorage.removeItem(SK)}catch{}};
+async function authReq(grant,body){const r=await fetch(API+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(j.error_description||j.msg||j.message||('HTTP '+r.status));e.status=r.status;throw e}
+  save({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||(Date.now()/1000+(j.expires_in||3600)),user:{id:j.user.id}});return sess}
+let refreshing=null;
+async function token(){if(!sess)throw new Error('no session');if(sess.expires_at-60>Date.now()/1000)return sess.access_token;
+  refreshing=refreshing||authReq('refresh_token',{refresh_token:sess.refresh_token}).finally(()=>refreshing=null);
+  try{await refreshing}catch(e){if(e.status>=400&&e.status<500){save(null);location.reload()}throw e}return sess.access_token}
+async function rest(path,opt={}){const t=await token();const r=await fetch(API+'/rest/v1/'+path,{...opt,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(opt.headers||{})}});
+  if(!r.ok){const j=await r.json().catch(()=>({}));const e=new Error(j.message||('HTTP '+r.status));e.code=j.code;throw e}const tx=await r.text();return tx?JSON.parse(tx):null}
+const enc=encodeURIComponent;
+const subs=[];let names={},me=null,resolveReady;const ready=new Promise(r=>resolveReady=r);
+async function refresh(){for(const s of subs){try{await s.run()}catch(e){}}}
+function startSync(){setInterval(()=>{if(!document.hidden)refresh()},10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});addEventListener('online',refresh)}
+const wrote=p=>p.then(()=>{setTimeout(refresh,30)});
+const db={doc(path){const[c,id]=path.split('/'),q='coll=eq.'+enc(c)+'&id=eq.'+enc(id);return{
+  set:d=>wrote(rest('avto_docs?on_conflict=coll,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({coll:c,id,data:d})})),
+  update:p=>wrote(rest('rpc/avto_update',{method:'POST',body:JSON.stringify({p_coll:c,p_id:id,p_patch:p})})),
+  delete:()=>wrote(rest('avto_docs?'+q,{method:'DELETE'})),
+  onSnapshot(cb,err){let last;const s={run:async()=>{const r=(await rest('avto_docs?select=id,data&'+q))[0];const k=JSON.stringify(r||null);if(k===last)return;last=k;cb({id,exists:!!r,data:()=>r?r.data:undefined})}};subs.push(s);s.run().catch(e=>err&&err(e));return()=>subs.splice(subs.indexOf(s),1)}}},
+ collection(c){return{onSnapshot(cb,err){let last;const s={run:async()=>{const rows=await rest('avto_docs?select=id,data&order=id&coll=eq.'+enc(c));const k=JSON.stringify(rows);if(k===last)return;last=k;cb({docs:rows.map(r=>({id:r.id,data:()=>r.data}))})}};subs.push(s);s.run().catch(e=>err&&err(e));return()=>subs.splice(subs.indexOf(s),1)}}}};
+const user={id:async()=>me,can:async()=>true,me:async()=>({name:names[me]||''}),profiles:async ids=>Object.fromEntries(ids.map(i=>[i,{name:names[i]||''}]))};
+window.claude={use:async k=>{await ready;return k==='db'?db:k==='user'?user:null}};
+async function enter(){me=sess.user.id;
+  try{(await rest('avto_members?select=user_id,name')).forEach(m=>names[m.user_id]=m.name)}catch(e){if(!sess)return;showLogin('Нет связи с сервером. Проверьте интернет.');setTimeout(enter,5000);return}
+  if(!names[me]){save(null);showLogin('Этому логину доступ не выдан.');return}
+  document.getElementById('login').hidden=true;startSync();resolveReady();
+  const w=document.getElementById('who');if(w){w.style.cursor='pointer';w.title='Выйти';w.addEventListener('click',()=>{if(confirm('Выйти из аккаунта «'+names[me]+'»?')){save(null);location.reload()}})}}
+function showLogin(msg){document.getElementById('login').hidden=false;document.getElementById('lerr').textContent=msg||''}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('lform').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('lb');
+    let u=document.getElementById('lu').value.trim().toLowerCase();u=ALIAS[u]||u;const email=u.includes('@')?u:u+'@avto.degirmen-navoi.kz';
+    b.disabled=true;b.textContent='Вхожу…';
+    try{await authReq('password',{email,password:document.getElementById('lp').value});enter()}
+    catch(err){document.getElementById('lerr').textContent=err.status?'Неверный логин или пароль.':'Нет интернета, попробуйте ещё раз.'}
+    finally{b.disabled=false;b.textContent='Войти'}});
+  if(sess)enter();else showLogin();
+});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/avto/sw.js',{scope:'/avto/'}).catch(()=>{});
+})();
+</script>
+<script>
+// ---------- справочники ----------
+const CATS=[['parts','Запчасти'],['service','Ремонт, СТО'],['body','Кузов, покраска'],['detail','Химчистка, полировка'],['tires','Шины, диски'],['docs','Оформление'],['customs','Растаможка'],['delivery','Доставка, эвакуатор'],['ads','Реклама'],['parking','Паркинг'],['fuel','Бензин, мойка'],['tax','Налог, страховка'],['other','Прочее']];
+const STS=[['bought','Куплена'],['repair','Ремонт'],['sale','Продаётся'],['reserved','Бронь'],['sold','Продана'],['own','Себе']];
+const ZONES=[['engine','Двигатель','#ff8a4c'],['trans','Коробка и привод','#ffc04d'],['chassis','Ходовая и тормоза','#5ad8ff'],['wheels','Колёса и шины','#b4bfcd'],['body','Кузов и покраска','#ff6b9a'],['interior','Салон','#b892ff'],['electrics','Электрика и свет','#ffe36b'],['climate','Климат','#5eead4'],['other','Прочее по машине','#8a94a2'],['admin','Бумаги и расходы','#6b7480']];
+const COLORS=[['белый','#e8ebee'],['серебристый','#b9c0c9'],['серый','#6f7782'],['графит','#3c434c'],['чёрный','#1d2025'],['красный','#c8312b'],['бордовый','#7b1f2c'],['синий','#2856a8'],['голубой','#5ea6dc'],['зелёный','#2e7350'],['бежевый','#cdb894'],['коричневый','#6b4a33'],['золотистый','#c9a24e'],['оранжевый','#e0702a'],['жёлтый','#e3b52b'],['фиолетовый','#5c3f8c']];
+const G=160;
+const f1=n=>Math.round(n*10)/10;
+const BODIES={
+ sedan:{n:'Седан',r:26.5,rw:94,fw:314,sill:145,
+  top:[[14,141],[10,124],[11,104],[16,87],[56,81],[86,61],[118,50],[165,47],[211,50],[250,68],[285,85],[340,91],[378,99],[389,111],[391,126],[386,144]],
+  win:[[[84,84],[121,56],[175,53],[175,84]],[[182,84],[182,53],[210,54],[270,85]]],
+  hl:[377,103,12,4.4,-12],tl:[11,89,7,13],crease:[[22,99],[384,104]],
+  seams:[[[89,86],[101,104]],[[179,86],[179,143]],[[273,88],[281,141]]],handles:[[96,93],[187,93]],
+  seats:[[108,1],[190,1]],steer:[256,92]},
+ crossover:{n:'Кроссовер',r:30,rw:91,fw:314,sill:141,clad:1,rails:[44,196,17],
+  top:[[16,138],[11,118],[12,96],[16,62],[24,34],[36,24],[120,20],[204,23],[246,48],[287,73],[345,80],[380,88],[390,102],[391,122],[385,141]],
+  win:[[[40,66],[46,31],[78,28],[78,67]],[[85,67],[85,28],[160,27],[160,68]],[[166,68],[166,27],[202,28],[270,70]]],
+  hl:[378,92,12,5,-14],tl:[12,64,7,26],crease:[[20,82],[384,88]],
+  seams:[[[81,69],[96,97]],[[163,70],[163,139]],[[273,73],[278,137]]],handles:[[90,77],[171,77]],
+  seats:[[100,1.05],[180,1.05]],steer:[256,80]},
+ suv:{n:'Внедорожник',r:30.5,rw:102,fw:321,sill:138,clad:1,rails:[34,236,11],
+  top:[[18,136],[10,120],[9,96],[11,58],[14,24],[24,15],[130,13],[240,15],[272,40],[300,70],[350,74],[384,80],[391,96],[392,118],[386,138]],
+  win:[[[26,64],[28,22],[84,21],[84,64]],[[91,64],[91,21],[170,20],[170,64]],[[177,64],[177,20],[238,21],[283,64]]],
+  hl:[381,86,11,5.5,-6],tl:[10,60,7,24],crease:[[16,76],[388,80]],
+  seams:[[[87,66],[100,96]],[[173,66],[173,136]],[[286,67],[285,134]]],handles:[[96,73],[181,73]],
+  seats:[[112,1.1],[194,1.1]],steer:[270,74]},
+ liftback:{n:'Лифтбек',r:29,rw:88,fw:318,sill:145,
+  top:[[16,141],[10,121],[11,101],[14,87],[30,78],[70,56],[110,44],[165,41],[214,44],[252,64],[290,87],[345,94],[381,103],[391,116],[391,128],[385,145]],
+  win:[[[84,85],[110,51],[170,47],[170,86]],[[176,86],[176,47],[211,48],[276,87]]],
+  hl:[378,106,13,4,-12],tl:[11,90,8,9],crease:[[20,98],[384,104]],
+  seams:[[[90,88],[100,101]],[[173,88],[173,143]],[[279,89],[284,142]]],handles:[[97,95],[182,95]],
+  seats:[[110,1],[192,1]],steer:[262,96]},
+ hatch:{n:'Хэтчбек',r:26,rw:92,fw:302,sill:144,
+  top:[[34,141],[29,122],[29,104],[31,80],[36,62],[42,47],[53,40],[130,38],[205,41],[245,63],[278,84],[330,90],[364,97],[372,108],[373,124],[368,143]],
+  win:[[[78,81],[90,47],[148,45],[148,82]],[[154,83],[154,46],[203,46],[265,84]]],
+  hl:[363,101,11,4.6,-10],tl:[30,82,7,16],crease:[[34,96],[368,100]],
+  seams:[[[82,84],[100,105]],[[151,84],[151,142]],[[268,86],[271,140]]],handles:[[90,90],[160,90]],
+  seats:[[104,1],[176,1]],steer:[250,90]},
+ coupe:{n:'Купе',r:28,rw:83,fw:313,sill:146,
+  top:[[16,141],[10,121],[10,101],[14,83],[40,77],[80,62],[125,48],[160,45],[197,48],[240,66],[278,81],[335,89],[378,98],[390,112],[391,126],[385,145]],
+  win:[[[94,80],[127,53],[150,51],[150,81]],[[156,81],[156,51],[195,52],[262,82]]],
+  hl:[378,104,13,4.2,-12],tl:[11,90,9,9],crease:[[18,96],[384,102]],
+  seams:[[[153,83],[150,144]],[[265,84],[279,144]]],handles:[[162,90]],
+  seats:[[122,.85],[176,1]],steer:[248,88]},
+ pickup:{n:'Пикап',r:27,rw:106,fw:326,sill:140,clad:1,bed:[10,118,74],
+  top:[[14,138],[10,120],[10,74,1],[118,74,1],[121,42],[128,32],[232,31],[262,54],[290,78],[345,82],[384,88],[391,104],[392,124],[386,140]],
+  win:[[[140,69],[140,38],[186,37],[186,69]],[[192,70],[192,37],[230,37],[270,70]]],
+  hl:[381,94,11,5,-6],tl:[11,78,7,22],crease:[[14,84],[388,88]],
+  seams:[[[17,77],[17,127]],[[120,77],[120,138]],[[189,71],[189,139]],[[273,73],[282,139]]],handles:[[132,78],[196,78]],
+  seats:[[150,1.05],[206,1.05]],steer:[272,80]},
+ van:{n:'Минивэн',r:27,rw:86,fw:317,sill:140,rail:[22,101,75],
+  top:[[14,138],[9,118],[9,96],[10,58],[14,24],[26,15],[140,13],[236,16],[282,44],[321,72],[360,78],[386,86],[392,102],[392,124],[386,140]],
+  win:[[[20,72],[22,24],[98,22],[98,72]],[[104,72],[104,22],[180,21],[180,72]],[[187,73],[187,22],[234,22],[260,40],[260,73]],[[266,73],[266,45],[304,72]]],
+  hl:[382,92,11,5,-10],tl:[10,40,7,40],crease:[[14,86],[390,90]],
+  seams:[[[101,74],[101,104]],[[184,74],[184,139]],[[263,75],[285,139]]],handles:[[110,80],[192,80]],
+  seats:[[52,1.05],[130,1.05],[210,1.05]],steer:[292,80]}};
+
+const ICO={parts:'<circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+ service:'<path d="M14.7 6.3a4 4 0 0 0-5.2 5.2L3.8 17.2a1.6 1.6 0 0 0 2.3 2.3l5.7-5.7a4 4 0 0 0 5.2-5.2l-2.5 2.5-2.1-.4-.4-2.1z"/>',
+ body:'<path d="M4 20.5V11l5.5-6.5H20v16z"/><path d="M4 11.5h16M14.5 14.5h3"/>',
+ detail:'<path d="M12 3l1.7 5.1L19 10l-5.3 1.9L12 17l-1.7-5.1L5 10l5.3-1.9zM19 15.5l.8 2.1 2.2.8-2.2.8-.8 2.3-.8-2.3-2.2-.8 2.2-.8z"/>',
+ tires:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3.5v5M12 15.5v5M3.5 12h5M15.5 12h5"/>',
+ docs:'<path d="M7 3h7l4 4v14H7zM14 3v4h4M9.5 12h6M9.5 15.5h6"/>',
+ customs:'<path d="M9 3h6v6l3 4H6l3-4zM5 17h14M6 21h12"/>',
+ delivery:'<path d="M2 16V8h9v8M11 10h5l3 3v3M2 16h17"/><circle cx="6" cy="18" r="1.8"/><circle cx="16" cy="18" r="1.8"/>',
+ ads:'<path d="M3 10v4h3l7 4V6L6 10zM16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/>',
+ parking:'<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M10 17V8h3a2.5 2.5 0 0 1 0 5h-3"/>',
+ fuel:'<path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h14M7 7h6v4H7zM15 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-3-3"/>',
+ tax:'<path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+ other:'<path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3.2"/>',
+ engine:'<path d="M4 10h2V8h4V6h5v2h3l2 2v6h-2v2h-4l-2-2H8l-2 2H4z"/>',
+ trans:'<circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v8M12 8v8M18 8v4H6"/>',
+ chassis:'<path d="M8 3h8M8 21h8M12 3v2.5M12 18.5V21"/><path d="M8.5 5.5l7 2-7 2 7 2-7 2 7 2-7 2"/>',
+ wheels:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.6"/><path d="M12 7.4V3M12 21v-4.4M7.4 12H3M21 12h-4.4"/>',
+ interior:'<path d="M7 20l1.5-6.5L7 5a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2l1 9h4a2 2 0 0 1 2 2v4"/>',
+ electrics:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M7 7V4.5h3V7M14 7V4.5h3V7M6.5 13.5h4M15.5 11.5v4M13.5 13.5h4"/>',
+ climate:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/>',
+ admin:'<path d="M7 3h7l4 4v14H7zM14 3v4h4"/>'};
+const icon=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k]||ICO.other}</svg>`;
+const ZK=[['chassis',/ходов|шаров|рыча|стабил|втулк|тяг|наконеч|амортиз|пружин|подшип|ступ|сайлент|с\/б|геометр|развал|рулев|рейк|гур|тормоз|колодк|суппорт|торсион|пыльник/],
+ ['trans',/кпп|акпп|коробк|раздат|кардан|гранат|привод|сцеплен|вариатор|редуктор/],
+ ['climate',/кондиц|печк|климат|отопит|фреон/],
+ ['engine',/двиг|двс|мотор|масло|масла|маслен|фильтр|свеч|помп|ремен|дросс|дросел|термостат|радиат|коллектор|подушк|гбо|газов|stag|водород|катушк|форсун|инжект|турб|сапун|антифриз/],
+ ['electrics',/фар|ламп|ксенон|датчик|аккум|акб|ключ|пульт|камер|парктрон|электр|провод|ошибк|диагност|кнопк|sos|сигнал|магнитол|подсвет|дхо|габарит|фонар|компьют/],
+ ['wheels',/шин|резин(?:а|у|ы|ой|е)(?![а-яё])|диск|колпач|колес|колёс/],
+ ['interior',/салон|химч|хим ч|кож|полик|руль|руля|бардач|бордач|обшив|сиден|шумоиз|педал|потол|панорам/],
+ ['body',/кузов|покрас|краск|вмятин|бампер|порог|молдинг|капот|крыл|двер|полиров|пл[её]нк|лобов|стекл|зеркал|реш[её]тк|обвес|хром|дефлектор|костоправ|маляр|подкрыл|герметик|рейлинг|ручк|подномер|подиум|клипс|дворник|багажн/]];
+const ZKG=ZK.map(([z,re])=>[z,new RegExp(re.source,'g')]);
+function zoneOf(i){if(i.zone)return i.zone;const s=((i.name||'')+' '+(i.note||'')).toLowerCase();let best=null,bn=0;for(const[z,re]of ZKG){const n=(s.match(re)||[]).length;if(n>bn){bn=n;best=z}}if(best)return best;
+  return{body:'body',detail:'interior',tires:'wheels',docs:'admin',customs:'admin',delivery:'admin',ads:'admin',parking:'admin',fuel:'admin',tax:'admin'}[i.cat]||'other'}
+const zone=k=>ZONES.find(z=>z[0]==k)||ZONES[8];
+const ZS={engine:'Двигатель',trans:'Коробка',chassis:'Ходовая',wheels:'Колёса',body:'Кузов',interior:'Салон',electrics:'Электрика',climate:'Климат',other:'Прочее',admin:'Бумаги'};
+function bodyOf(c){if(c.body&&BODIES[c.body])return c.body;const s=((c.make||'')+' '+(c.model||'')).toLowerCase();
+  if(/hilux|tundra|tacoma|f-?150|\bram\b|navara|l200|amarok|пикап/.test(s))return'pickup';
+  if(/alphard|sienna|carnival|staria|starex|старекс|vellfire|odyssey|минивэн|\bh-?1\b/.test(s))return'van';
+  if(/land ?cruiser|\blc ?\d|лк|prado|прадо|pajero|паджеро|\bgl\d*|\bgls|\bgle|\bgx\b|\blx\b|palisade|палисад|tahoe|escalade|cayenne|каен|кайен|\bx5|\bx6|\bx7|touareg|patrol|fortuner|4runner|sequoia|range rover|g-?class|гелик|xc90|explorer|telluride|santa ?fe|\btank\b/.test(s))return'suv';
+  if(/zeekr|\b001\b|лифтбек|liftback|\bj7\b|stinger|panamera|\ba7\b/.test(s))return'liftback';
+  if(/srx|rav ?4|tucson|sportage|cr-?v|x-?trail|qashqai|tiguan|forester|outlander|cx-?5|kodiaq|haval|jolion|кроссовер|\bq5\b|\bx3\b|\bnx\b|\brx\b|creta|seltos|tiggo|monjaro|coolray/.test(s))return'crossover';
+  if(/coupe|купе|mustang|camaro|supra|gt86|\bbrz\b|370z|\bz4\b/.test(s))return'coupe';
+  if(/golf|polo|\brio\b|getz|\bfit\b|yaris|i30|focus|matiz|spark|хэтч|hatch/.test(s))return'hatch';
+  return'sedan'}
+function hexOf(c){if(c.hex)return c.hex;const n=(c.color||'').toLowerCase().replace(/ё/g,'е');if(!n)return'#a7afba';
+  const f=COLORS.find(([k])=>n.includes(k.replace(/ё/g,'е').slice(0,5)));return f?f[1]:'#a7afba'}
+function shade(hex,a){const h=hex.replace('#',''),n=parseInt(h.length==3?h.split('').map(x=>x+x).join(''):h,16),r=n>>16,g=n>>8&255,b=n&255,t=a<0?0:255,p=Math.abs(a);
+  const m=v=>Math.round(v+(t-v)*p).toString(16).padStart(2,'0');return '#'+m(r)+m(g)+m(b)}
+
+// ---------- силуэт машины ----------
+let svgN=0;
+function smooth(p,t=.16){let d=`M${p[0][0]} ${p[0][1]}`;
+  for(let i=0;i<p.length-1;i++){const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2,k1=p1[2]?0:t,k2=p2[2]?0:t;
+    d+=` C${f1(p1[0]+(p2[0]-p0[0])*k1)} ${f1(p1[1]+(p2[1]-p0[1])*k1)} ${f1(p2[0]-(p3[0]-p1[0])*k2)} ${f1(p2[1]-(p3[1]-p1[1])*k2)} ${p2[0]} ${p2[1]}`}
+  return d}
+function topAt(B,x){let y=null;const p=B.top;for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(a[0]!=b[0]&&(x-a[0])*(x-b[0])<=0){const v=a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0]);if(y==null||v<y)y=v}}return y??B.sill}
+const archA=B=>B.r+3.5;
+function archHC(B){const a=archA(B),dy=B.sill-(G-B.r);return Math.sqrt(Math.max(a*a-dy*dy,4))}
+function bodyPath(B){const a=archA(B),hc=archHC(B),s=B.sill;
+  return smooth(B.top)+` L${f1(B.fw+hc)} ${s} A${a} ${a} 0 1 0 ${f1(B.fw-hc)} ${s} L${f1(B.rw+hc)} ${s} A${a} ${a} 0 1 0 ${f1(B.rw-hc)} ${s} Z`}
+const archPath=(B,x)=>{const a=archA(B),hc=archHC(B);return `M${f1(x+hc)} ${B.sill}A${a} ${a} 0 1 0 ${f1(x-hc)} ${B.sill}`};
+const poly=w=>'M'+w.map(p=>p.join(' ')).join('L')+'Z';
+function lum(hex){const n=parseInt(hex.slice(1),16);return((n>>16)*.299+(n>>8&255)*.587+(n&255)*.114)/255}
+
+function wheelSVG(x,B,id,o){const r=B.r,y=G-r,sp=[0,72,144,216,288];
+  const spokes=sp.map(g=>{const q=(g-90)*Math.PI/180,c=Math.cos(q),s=Math.sin(q),px=-s,py=c,R0=r*.17,R=r*.62,w1=1.5,w2=r*.12;
+    return `M${f1(c*R0+px*w1)} ${f1(s*R0+py*w1)}L${f1(c*R+px*w2)} ${f1(s*R+py*w2)}L${f1(c*R-px*w2)} ${f1(s*R-py*w2)}L${f1(c*R0-px*w1)} ${f1(s*R0-py*w1)}Z`}).join('');
+  const ang=d=>d*Math.PI/180,P=(R,d)=>`${f1(R*Math.cos(ang(d)))} ${f1(R*Math.sin(ang(d)))}`,r1=r*.34,r2=r*.56;
+  const cal=`M${P(r2,-160)}A${f1(r2)} ${f1(r2)} 0 0 1 ${P(r2,-118)}L${P(r1,-118)}A${f1(r1)} ${f1(r1)} 0 0 0 ${P(r1,-160)}Z`;
+  return `<g transform="translate(${x} ${y})"><circle r="${r}" fill="#0b0d10"/><circle r="${f1(r-1.8)}" fill="none" stroke="#1f242b" stroke-width="1.4"/>
+   <circle r="${f1(r*.68)}" fill="#161a1f"/>${o.mini?'':`<circle r="${f1(r*.47)}" fill="none" stroke="#4d5560" stroke-width="${f1(r*.15)}"/><path d="${cal}" fill="${o.cal||'#b8322a'}"/>`}
+   <g class="whl"><path d="${spokes}" fill="url(#${id}r)"/><circle r="${f1(r*.66)}" fill="none" stroke="url(#${id}r)" stroke-width="${f1(r*.08)}"/><circle r="${f1(r*.15)}" fill="#2a3038" stroke="#9aa4b1" stroke-width=".8"/></g></g>`}
+const lens=(x,y,w,h)=>`M${f1(x-w)} ${f1(y+h*.25)}Q${f1(x-w*.25)} ${f1(y-h*1.3)} ${f1(x+w)} ${f1(y-h*.6)}Q${f1(x+w*1.12)} ${f1(y+h*.45)} ${f1(x+w*.5)} ${f1(y+h*.95)}Q${f1(x-w*.35)} ${f1(y+h*1.05)} ${f1(x-w)} ${f1(y+h*.25)}Z`;
+const ext=B=>{const xs=B.top.map(p=>p[0]);return[Math.min(...xs),Math.max(...xs)]};
+
+// группа «кузов + колёса» — общая для обычной картинки и рентгена
+function carGroup(c,B,id,o){const hex=hexOf(c),L=lum(hex),dark=L<.22,bp=bodyPath(B),wy=G-B.r,a=archA(B),hc=archHC(B),[rear,front]=ext(B);
+  const lw=B.win[B.win.length-1],mp=lw[lw.length-1],mini=!!o.mini;
+  const belt=Math.max(...B.win.flat().map(p=>p[1]));
+  const lip=x=>`<path d="${archPath(B,x)}" fill="none" stroke="${B.clad?'#14171b':shade(hex,-.45)}" stroke-width="${B.clad?5:2}" stroke-linecap="round"/>`;
+  const tf=B.top[B.top.length-1],t0=B.top[0];
+  const clad=B.clad?`<path d="M${f1(B.rw+hc-2)} ${B.sill}L${f1(B.rw+hc+2)} ${B.sill-9}L${f1(B.fw-hc-2)} ${B.sill-9}L${f1(B.fw-hc+2)} ${B.sill}Z" fill="#16191d"/><path d="M${f1(B.fw+hc)} ${B.sill}L${f1(B.fw+hc+3)} ${B.sill-7}L${tf[0]-6} ${B.sill-9}L${tf[0]} ${tf[1]}Z" fill="#16191d"/><path d="M${f1(B.rw-hc)} ${B.sill}L${f1(B.rw-hc-3)} ${B.sill-8}L${t0[0]+4} ${B.sill-10}L${t0[0]} ${t0[1]}Z" fill="#16191d"/>`:'';
+  const rails=B.rails?`<path d="M${B.rails[0]} ${B.rails[2]+3}L${B.rails[0]+4} ${B.rails[2]-1}H${B.rails[1]-4}L${B.rails[1]} ${B.rails[2]+3}" fill="none" stroke="#23282f" stroke-width="3.2" stroke-linejoin="round"/>${mini?'':`<path d="M${B.rails[0]+5} ${B.rails[2]-1.6}H${B.rails[1]-5}" stroke="rgba(255,255,255,.18)" stroke-width="1"/>`}`:'';
+  const bed=B.bed?`<path d="M${B.bed[0]+1} ${B.bed[2]+1.5}H${B.bed[1]-1}" stroke="#15181c" stroke-width="3" stroke-linecap="round"/>`:'';
+  const vrail=B.rail?`<path d="M${B.rail[0]} ${B.rail[2]}H${B.rail[1]}" stroke="rgba(0,0,0,.45)" stroke-width="2"/>`:'';
+  const seams=B.seams.map(s=>`<path d="M${s.map(p=>p.join(' ')).join('L')}" fill="none" stroke="rgba(0,0,0,${dark?.55:.3})" stroke-width="${mini?1.3:1.1}"/>`).join('');
+  const handles=mini?'':B.handles.map(([x,y])=>`<rect x="${x}" y="${y}" width="12" height="3" rx="1.5" fill="${shade(hex,dark?.35:-.3)}"/><rect x="${x}" y="${y}" width="12" height="1.2" rx=".6" fill="rgba(255,255,255,.35)"/>`).join('');
+  const glass=B.win.map(w=>`<path d="${poly(w)}" fill="#07090c" stroke="#07090c" stroke-width="6" stroke-linejoin="round"/>`).join('')+B.win.map(w=>`<path d="${poly(w)}" fill="url(#${id}g)" stroke="url(#${id}g)" stroke-width="1.6" stroke-linejoin="round"/>`).join('');
+  const streak=mini?'':`<g clip-path="url(#${id}w)" opacity=".5"><path d="M${f1(mp[0]-70)} ${belt}L${f1(mp[0]-40)} ${belt-70}H${f1(mp[0]-22)}L${f1(mp[0]-52)} ${belt}Z" fill="rgba(255,255,255,.22)"/><path d="M${f1(mp[0]-150)} ${belt}L${f1(mp[0]-120)} ${belt-70}H${f1(mp[0]-113)}L${f1(mp[0]-143)} ${belt}Z" fill="rgba(255,255,255,.14)"/></g>`;
+  const [hx,hy,hw,hh,hrot]=B.hl,[tx,ty,tw,th]=B.tl;
+  const sh=mini?'':`<g clip-path="url(#${id}k)"><rect x="0" y="${B.crease[0][1]-9}" width="400" height="16" fill="url(#${id}hl)"/><rect x="0" y="${B.sill-20}" width="400" height="22" fill="url(#${id}lo)"/></g>`;
+  return `<g class="bodyg">
+   <circle cx="${B.fw}" cy="${wy}" r="${a-1}" fill="#050608"/><circle cx="${B.rw}" cy="${wy}" r="${a-1}" fill="#050608"/>
+   <path d="${bp}" fill="url(#${id}b)" stroke="${dark?'rgba(255,255,255,.2)':'rgba(0,0,0,.4)'}" stroke-width="1"/>${sh}${clad}${lip(B.fw)}${lip(B.rw)}
+   <path d="M${B.crease[0][0]} ${B.crease[0][1]}Q200 ${Math.min(B.crease[0][1],B.crease[1][1])-4} ${B.crease[1][0]} ${B.crease[1][1]}" fill="none" stroke="rgba(255,255,255,${dark?.22:.38})" stroke-width="1.3"/>
+   ${seams}${glass}${streak}${rails}${bed}${vrail}${handles}
+   <path d="M${mp[0]-9} ${mp[1]-3}q-2 -9 6 -10h7q4 0 3 5l-2 5z" fill="${shade(hex,dark?.12:-.28)}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>
+   <g transform="rotate(${hrot} ${hx} ${hy})"><path d="${lens(hx,hy,hw+1.6,hh+1.4)}" fill="#0b0e12"/><path class="hl" d="${lens(hx,hy,hw,hh)}" fill="url(#${id}h)"/><path d="M${f1(hx-hw*.55)} ${f1(hy-hh*.55)}Q${f1(hx+hw*.2)} ${f1(hy-hh*1.05)} ${f1(hx+hw*.85)} ${f1(hy-hh*.5)}" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round"/></g>
+   <rect x="${tx}" y="${ty}" width="${tw}" height="${th}" rx="2.4" fill="#6d0c13"/><rect x="${tx+1}" y="${ty+1.2}" width="${tw-2.4}" height="${th-2.4}" rx="1.6" fill="#ff3b45" opacity=".92"/>
+   <rect x="${t0[0]+5}" y="${B.sill-5}" width="10" height="4" rx="2" fill="#2b3036"/>
+   </g>${wheelSVG(B.rw,B,id,o)}${wheelSVG(B.fw,B,id,o)}`}
+
+function carDefs(c,B,id,o){const hex=hexOf(c),L=lum(hex),dark=L<.22;
+  return `<linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(hex,dark?.3:.32)}"/><stop offset=".42" stop-color="${hex}"/><stop offset=".78" stop-color="${shade(hex,-.28)}"/><stop offset="1" stop-color="${shade(hex,-.55)}"/></linearGradient>
+   <linearGradient id="${id}g" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#a9c0d6"/><stop offset=".5" stop-color="#2b3a4a"/><stop offset="1" stop-color="#10161d"/></linearGradient>
+   <radialGradient id="${id}r" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#f1f4f7"/><stop offset=".55" stop-color="#a3adba"/><stop offset="1" stop-color="#59626e"/></radialGradient>
+   <linearGradient id="${id}h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e4f1ff"/><stop offset="1" stop-color="#9cc3e6"/></linearGradient>
+   ${o.mini?'':`<linearGradient id="${id}hl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity="${dark?.1:.2}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+   <linearGradient id="${id}lo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></linearGradient>
+   <clipPath id="${id}k"><path d="${bodyPath(B)}"/></clipPath><clipPath id="${id}w">${B.win.map(w=>`<path d="${poly(w)}"/>`).join('')}</clipPath>
+   <filter id="${id}s" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="4"/></filter>`}`}
+
+function carSVG(c,o={}){const bk=bodyOf(c),B=BODIES[bk],id='v'+(++svgN),big=!!o.big,mini=!!o.mini,[rear,front]=ext(B);
+  const H=big?G+40:G+12,vb=big?`-16 0 432 ${H}`:`0 0 400 ${H}`,[hx,hy]=B.hl;
+  const refl=big?`<g mask="url(#${id}m)" opacity=".22"><g transform="translate(0 ${2*G}) scale(1 -1)"><use href="#${id}c"/></g></g>`:'';
+  return `<svg class="car" viewBox="${vb}" role="img" aria-label="${esc(title(c))}"><defs>${carDefs(c,B,id,o)}
+   ${big?`<linearGradient id="${id}mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><mask id="${id}m" maskUnits="userSpaceOnUse" x="-16" y="${G}" width="432" height="40"><rect x="-16" y="${G}" width="432" height="40" fill="url(#${id}mg)"/></mask>
+   <radialGradient id="${id}pl"><stop offset="0" stop-color="#ffe9bd" stop-opacity=".42"/><stop offset="1" stop-color="#ffe9bd" stop-opacity="0"/></radialGradient>`:''}</defs>
+   <g class="${o.drive?'drive':''}">
+   <ellipse cx="${(rear+front)/2}" cy="${G}" rx="${(front-rear)/2-4}" ry="${mini?4:7}" fill="#000" opacity=".65" ${mini?'':`filter="url(#${id}s)"`}/>
+   ${mini?'':`<ellipse cx="${B.rw}" cy="${G}" rx="${f1(B.r*.9)}" ry="2.4" fill="#000" opacity=".8"/><ellipse cx="${B.fw}" cy="${G}" rx="${f1(B.r*.9)}" ry="2.4" fill="#000" opacity=".8"/>`}
+   ${refl}
+   ${big?`<ellipse class="pool" cx="${front+10}" cy="${G-1}" rx="40" ry="5" fill="url(#${id}pl)" opacity=".7"/><ellipse class="hl-glow" cx="${hx+2}" cy="${hy}" rx="20" ry="10" fill="#fff1cf" opacity="0"/>`:''}
+   <g id="${id}c">${carGroup(c,B,id,o)}</g>
+   ${big?`<g class="puffs">${[0,1,2].map(k=>`<circle class="puff" style="--k:${k}" cx="${rear+6}" cy="${B.sill-3}" r="4" fill="#9aa3ad"/>`).join('')}</g>`:''}
+   </g></svg>`}
+
+// ---------- рентген: где на машине потрачены деньги ----------
+function xrayHTML(c,sums,o={}){const B=BODIES[bodyOf(c)],id='x'+(++svgN),wy=G-B.r,r=B.r,fw=B.fw,rw=B.rw,[rear,front]=ext(B),a=archA(B);
+  const lw=B.win[B.win.length-1],mp=lw[lw.length-1],belt=Math.max(...lw.map(p=>p[1]));
+  const mx=Math.max(...Object.values(sums),1),T=k=>(sums[k]||0)/mx;
+  const hood=topAt(B,fw+10),ex0=fw-32,ex1=Math.min(front-24,fw+30),ey0=Math.max(hood+7,belt-4),ey1=f1(wy-r*.3),gx1=ex0,gx0=ex0-30;
+  const floor=B.sill-10,[sx,sy]=B.steer,cowl=mp[0]+6,[tx,ty,tw,th]=B.tl,[hx,hy]=B.hl;
+  const st=k=>{const has=(sums[k]||0)>0,t=T(k),fo=has?.16+t*.46:.05,so=has?.55+t*.45:.42;
+    return{f:`fill="currentColor" fill-opacity="${f1(fo*100)/100}" stroke="currentColor" stroke-opacity="${f1(so*100)/100}" stroke-width="1.1"`,s:`fill="none" stroke="currentColor" stroke-opacity="${f1(so*100)/100}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"`}};
+  const spring=(x)=>{const y0=wy-r*.3,y1=wy-r-13,n=7,h=(y0-y1)/n;let d=`M${x-2} ${f1(y0)}`;for(let i=0;i<n;i++)d+=`L${f1(x-2+(i%2?-6:6)-(i+.5)*.5)} ${f1(y0-h*(i+.5))}`;return d+`L${f1(x-6)} ${f1(y1)}`};
+  const ang=d=>d*Math.PI/180,P=(x,R,d)=>`${f1(x+R*Math.cos(ang(d)))} ${f1(wy+R*Math.sin(ang(d)))}`;
+  const cal=x=>`M${P(x,r*.58,-160)}A${f1(r*.58)} ${f1(r*.58)} 0 0 1 ${P(x,r*.58,-115)}L${P(x,r*.32,-115)}A${f1(r*.32)} ${f1(r*.32)} 0 0 0 ${P(x,r*.32,-160)}Z`;
+  const seat=(x,sc,A)=>`<g transform="translate(${x} ${floor}) scale(${sc})"><path ${A.f} d="M-3 -9H5Q29 -11 29 -5V1Q29 3 25 3H-3Z"/><path ${A.f} d="M-3 -7L-11 -39Q-12 -43 -8 -43H-5Q-1 -43 0 -39L6 -9Z"/><rect ${A.f} x="-13" y="-51" width="10" height="7" rx="3"/></g>`;
+  const anchors={};const parts={
+   body:A=>{anchors.body=[f1((rear+front)/2-30),f1(topAt(B,(rear+front)/2-30)+1)];return `<path ${A.s} stroke-width="2.2" d="${bodyPath(B)}"/>${B.seams.map(s=>`<path ${A.s} stroke-width="1" d="M${s.map(p=>p.join(' ')).join('L')}"/>`).join('')}`},
+   wheels:A=>{anchors.wheels=[rw,f1(wy-r+2)];return [rw,fw].map(x=>`<circle ${A.s} stroke-width="4" cx="${x}" cy="${wy}" r="${f1(r-2)}"/><circle ${A.s} stroke-width="1.1" cx="${x}" cy="${wy}" r="${f1(r*.66)}"/>`).join('')},
+   chassis:A=>{anchors.chassis=[fw-5,f1(wy-r*.75-6)];return [rw,fw].map(x=>`<path ${A.s} d="${spring(x)}"/><path ${A.s} stroke-width="2.4" d="M${x-1} ${wy-3}L${x-5} ${f1(wy-r-10)}"/><circle ${A.s} stroke-width="2.2" cx="${x}" cy="${wy}" r="${f1(r*.47)}"/><path ${A.f} d="${cal(x)}"/><path ${A.s} d="M${x} ${wy+2}L${x+(x==fw?-32:30)} ${wy+8}"/>`).join('')},
+   trans:A=>{anchors.trans=[f1((gx0+gx1)/2),wy-8];return `<path ${A.f} d="M${gx1} ${ey0+14}L${gx1} ${wy+5}L${gx0+6} ${wy+5}L${gx0} ${wy-1}L${gx0} ${wy-12}L${gx0+12} ${wy-20}Z"/><path ${A.s} d="M${gx0+4} ${wy-12}h${gx1-gx0-8}M${gx0+4} ${wy-5}h${gx1-gx0-8}"/><path ${A.s} stroke-width="2.2" d="M${gx0} ${wy}L${rw+8} ${wy}"/><circle ${A.s} cx="${f1((gx0+rw)/2)}" cy="${wy}" r="2.6"/><circle ${A.f} cx="${rw}" cy="${wy}" r="7"/><path ${A.s} d="M${gx1} ${wy+2}L${fw-4} ${wy}"/>`},
+   engine:A=>{anchors.engine=[f1((ex0+ex1)/2),f1((ey0+ey1)/2)];const w=ex1-ex0;return `<rect ${A.f} x="${ex0}" y="${ey0+9}" width="${w}" height="${ey1-ey0-9}" rx="4"/><rect ${A.f} x="${ex0+5}" y="${ey0}" width="${w-16}" height="10" rx="3"/><path ${A.s} d="M${ex0+10} ${ey0+5}h${w-26}M${ex0+6} ${ey0+18}h${w-12}M${ex0+6} ${ey0+24}h${w-12}"/><circle ${A.s} cx="${ex1-5}" cy="${ey1-9}" r="6"/><circle ${A.s} cx="${ex1-5}" cy="${ey0+17}" r="4"/><path ${A.s} stroke-width="1" d="M${ex1+1} ${ey1-9}V${ey0+17}"/><rect ${A.f} x="${ex0+8}" y="${ey1}" width="${w-22}" height="5" rx="2"/>`},
+   climate:A=>{const x=front-17;anchors.climate=[x+4,f1((hood+wy)/2+4)];return `<rect ${A.f} x="${x}" y="${f1(hood+8)}" width="8" height="${f1(wy-hood-6)}" rx="2"/><path ${A.s} stroke-width="1" d="${[...Array(5)].map((_,i)=>`M${x+1} ${f1(hood+13+i*(wy-hood-14)/5)}h6`).join('')}"/><circle ${A.s} cx="${front-30}" cy="${wy-4}" r="5"/><path ${A.s} stroke-width="1.1" stroke-dasharray="3 3" d="M${front-30} ${wy-9}Q${cowl+10} ${belt+16} ${cowl-6} ${belt+6}"/><path ${A.s} stroke-width="1.3" d="M${sx+14} ${sy-10}q4 -3 8 0M${sx+12} ${sy-15}q6 -4 12 0"/>`},
+   electrics:A=>{const bx=Math.min(ex1+3,front-34),by=f1(topAt(B,bx+8)+9);anchors.electrics=[bx+8,+by+6];return `<rect ${A.f} x="${bx}" y="${by}" width="16" height="12" rx="2"/><path ${A.s} stroke-width="1.3" d="M${bx+4} ${by-2}v2M${bx+12} ${by-2}v2"/><path ${A.s} stroke-width="1.1" stroke-dasharray="4 3" d="M${bx} ${+by+8}Q${cowl+20} ${belt+12} ${cowl-8} ${belt+8}L${tx+tw+14} ${belt+8}Q${tx+tw+4} ${belt+10} ${tx+tw} ${ty+th/2}"/><path ${A.f} d="${lens(hx,hy,B.hl[2],B.hl[3])}" transform="rotate(${B.hl[4]} ${hx} ${hy})"/><rect ${A.f} x="${tx}" y="${ty}" width="${tw}" height="${th}" rx="2"/>`},
+   interior:A=>{const fs=B.seats[B.seats.length-1];anchors.interior=[f1(fs[0]-6),floor-30];return B.seats.map(([x,sc])=>seat(x,sc,A)).join('')+`<g transform="rotate(-64 ${sx} ${sy})"><ellipse ${A.s} stroke-width="2" cx="${sx}" cy="${sy}" rx="9.5" ry="2.8"/></g><path ${A.s} d="M${sx+2} ${sy+4}L${sx+16} ${sy+12}"/><path ${A.s} d="M${sx+8} ${sy-8}Q${cowl-14} ${belt-4} ${cowl+2} ${belt+2}"/>`}};
+  const order=['body','interior','trans','engine','climate','electrics','wheels','chassis'];
+  const svgParts=order.map(k=>{const A=st(k),has=(sums[k]||0)>0,cls='xp'+(o.sel?(o.sel==k?' hot':' dim'):'');
+    return `<g class="${cls}" style="color:${has?zone(k)[2]:'#4f5b69'}" ${has&&T(k)>.3?`filter="url(#${id}gl)"`:''} ${o.click?`onclick="pickZone('${k}')"`:''} aria-label="${zone(k)[1]}">${parts[k](A)}</g>`}).join('');
+  // выноски: топ-3 зоны или выбранная
+  const Z=Object.entries(sums).filter(x=>x[1]>0).sort((p,q)=>q[1]-p[1]);let pick=o.sel?Z.filter(x=>x[0]==o.sel):Z.slice(0,3);
+  pick=pick.map(([k,v])=>({k,v,an:anchors[k]})).sort((p,q)=>(p.an?+p.an[0]:-1)-(q.an?+q.an[0]:-1));
+  const slots=pick.length==1?[200]:pick.length==2?[112,288]:[68,200,332];
+  const tot=Object.values(sums).reduce((s,v)=>s+v,0);
+  const leaders=pick.map((p,i)=>p.an?`<path d="M${p.an[0]} ${p.an[1]}L${slots[i]} -14" stroke="${zone(p.k)[2]}" stroke-width="1" stroke-dasharray="2 2" opacity=".8"/><circle cx="${p.an[0]}" cy="${p.an[1]}" r="3.4" fill="${zone(p.k)[2]}" stroke="#0a0d11" stroke-width="1.5"/>`:'').join('');
+  const labels=pick.map((p,i)=>`<div class="xc" style="left:${f1(slots[i]/4)}%;--c:${zone(p.k)[2]};--i:${i}"><small>${ZS[p.k]||zone(p.k)[1]}${o.sel?' · '+Math.round(p.v/tot*100)+'%':''}</small><b>${cm(p.v)}</b></div>`).join('');
+  const base=`<path d="${bodyPath(B)}" fill="rgba(90,216,255,.035)" stroke="rgba(150,222,255,.5)" stroke-width="1.2"/>${B.win.map(w=>`<path d="${poly(w)}" fill="rgba(150,222,255,.05)" stroke="rgba(150,222,255,.3)" stroke-width="1"/>`).join('')}<line x1="${rear-6}" x2="${front+6}" y1="${G}" y2="${G}" stroke="rgba(150,222,255,.25)" stroke-dasharray="3 4"/>`;
+  const skin=o.scan?`<g class="xs-skin" clip-path="url(#${id}sc)"><g>${carGroup(c,B,id+'s',{})}</g></g><g class="xs-l" transform="translate(-20 0)"><rect x="-9" y="${f1(topAt(B,200)-10)}" width="18" height="${f1(G+6-topAt(B,200)+10)}" rx="9" fill="url(#${id}sg)"/><rect x="-1" y="${f1(topAt(B,200)-14)}" width="2" height="${f1(G+10-topAt(B,200)+14)}" rx="1" fill="#a6f0ff"/></g>`:'';
+  if(o.nolabels)return `<div class="xwrap"><svg class="xray" viewBox="0 ${f1(Math.min(...B.top.map(p=>p[1]))-8)} 400 ${f1(G+10-Math.min(...B.top.map(p=>p[1]))+8)}" role="img" aria-label="Узел на машине"><defs><filter id="${id}gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>${base}${svgParts}</svg></div>`;
+  return `<div class="xwrap"><svg class="xray" viewBox="0 -56 400 ${G+68}" role="img" aria-label="Рентген расходов по узлам"><defs>
+   <filter id="${id}gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+   ${o.scan?`${carDefs(c,B,id+'s',{})}<clipPath id="${id}sc"><rect class="xs-r" x="-20" y="-60" width="440" height="240"/></clipPath><linearGradient id="${id}sg" x1="0" x2="1"><stop offset="0" stop-color="#5ad8ff" stop-opacity="0"/><stop offset=".5" stop-color="#29c6ff" stop-opacity=".6"/><stop offset="1" stop-color="#29c6ff" stop-opacity="0"/></linearGradient>`:''}</defs>
+   ${base}${svgParts}${skin}<g class="xl">${leaders}</g></svg>${labels}</div>`}
+
+// ---------- состояние и деньги ----------
+const S={view:'cars',cars:[],ready:false,f:'all',q:'',per:'all',open:null,zone:null,ro:false,cur:'KZT',usd:480,me:null,names:{},anim:true};
+let db=null,user=null,toastT,io=null,io2=null;
+const RM=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch{return false}})();
+try{if(localStorage.getItem('av_cur')=='USD')S.cur='USD'}catch{}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fm=n=>Math.round(+n||0).toLocaleString('ru-RU').replace(/[\s\u202f]/g,'\u00a0');
+const pn=v=>{const x=String(v??'').replace(/\s/g,'').replace(/[^\d,.-]/g,'').replace(',','.');const n=parseFloat(x);return isFinite(n)?n:0};
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const fd=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}):'';
+const days=(a,b)=>a?Math.max(0,Math.round((new Date((b||today())+'T00:00:00')-new Date(a+'T00:00:00'))/864e5)):0;
+const cat=k=>CATS.find(c=>c[0]==k);
+const stn=k=>(STS.find(s=>s[0]==k)||STS[0])[1];
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9-]/g,'');
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400)}
+const kzt=(amt,cur,rate)=>cur=='USD'?(+amt||0)*(+rate||S.usd):(+amt||0);
+const mv=m=>m?kzt(m.amt,m.cur,m.rate):0;
+const show=k=>S.cur=='USD'?'$'+fm(k/S.usd):fm(k)+'\u00a0₸';
+const sg=k=>(k>0?'+':k<0?'−':'')+show(Math.abs(k));
+const pct=x=>{const v=(+x||0)*100,a=Math.abs(v);return(v<0?'−':'')+(a>0&&a<1?a.toFixed(2):a.toFixed(1)).replace('.',',')+'%'};
+function cm(k){const s=k<0?'−':'',a=Math.abs(k),n=(x,d)=>String(+x.toFixed(d)).replace('.',',');
+  if(S.cur=='USD'){const u=a/S.usd;return s+'$'+(u>=1e6?n(u/1e6,2)+'\u00a0млн':u>=1e4?n(u/1e3,1)+'k':fm(u))}
+  return s+(a>=1e7?n(a/1e6,1)+'\u00a0млн\u00a0₸':a>=1e6?n(a/1e6,2)+'\u00a0млн\u00a0₸':a>=1e4?Math.round(a/1e3)+'\u00a0тыс\u00a0₸':fm(a)+'\u00a0₸')}
+const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return m==1&&h!=11?a:m>=2&&m<=4&&(h<10||h>=20)?b:c};
+const itemSum=i=>kzt((+i.parts||0)+(+i.labor||0),i.cur,i.rate);
+function calc(c){const done=(c.items||[]).filter(i=>i.done!==false),exp=done.reduce((a,i)=>a+itemSum(i),0),buy=mv(c.buy),inv=buy+exp,sold=c.status=='sold'&&mv(c.sell)>0,sell=mv(c.sell),profit=sold?sell-inv:null;
+  return{done,exp,buy,inv,sold,sell,profit,roi:sold&&inv?profit/inv:null,days:days(c.buy?.date,sold?c.sell?.date:null),todo:(c.items||[]).filter(i=>i.done===false)}}
+const title=c=>[c.make,c.model].filter(Boolean).join(' ')||'Без названия';
+const byName=id=>id?(id==S.me?'вы':(S.names[id]||'')):'';
+const plate=p=>p?`<span class="plate"><i>KZ</i><span>${esc(p)}</span></span>`:'';
+function odo(str){return `<span class="odo" aria-label="${esc(str)}">${[...str].map(ch=>/\d/.test(ch)?`<span class="odw"><span class="odc" data-d="${ch}" style="transform:translateY(-${10+ +ch}em)">${'01234567890123456789'.split('').map(x=>`<span>${x}</span>`).join('')}</span></span>`:/\s/.test(ch)?'<span class="ods sp"></span>':`<span class="ods">${esc(ch)}</span>`).join('')}</span>`}
+function gauge(v,max,valText,label,col){const p=Math.max(0,Math.min(1,v/max)),R=86,cx=110,cy=106,L=Math.PI*R,rot=-90+p*180;
+  const ticks=[...Array(11)].map((_,i)=>{const q=Math.PI*(1-i/10),r1=R-16,r2=R-(i%5?10:4);return `<line class="g-t" x1="${(cx+r1*Math.cos(q)).toFixed(1)}" y1="${(cy-r1*Math.sin(q)).toFixed(1)}" x2="${(cx+r2*Math.cos(q)).toFixed(1)}" y2="${(cy-r2*Math.sin(q)).toFixed(1)}"/>`}).join('');
+  return `<div class="gauge"><svg viewBox="0 0 220 122" aria-hidden="true"><path class="g-tr" d="M${cx-R} ${cy}A${R} ${R} 0 0 1 ${cx+R} ${cy}"/><path class="g-v" d="M${cx-R} ${cy}A${R} ${R} 0 0 1 ${cx+R} ${cy}" style="stroke:${col};stroke-dasharray:${L.toFixed(1)};stroke-dashoffset:${(L*(1-p)).toFixed(1)}" data-len="${L.toFixed(1)}" data-off="${(L*(1-p)).toFixed(1)}"/>${ticks}
+   <g class="g-n" style="transform-box:view-box;transform-origin:${cx}px ${cy}px;transform:rotate(${rot}deg)" data-rot="${rot}"><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-R+20}"/><circle cx="${cx}" cy="${cy}" r="6"/></g></svg><div class="g-l"><b>${valText}</b><small>${label}</small></div></div>`}
+async function loadNames(){if(!user)return;const ids=[...new Set(S.cars.flatMap(c=>[c.by,...(c.items||[]).map(i=>i.by)]).filter(Boolean))].filter(x=>x!=S.me);if(!ids.length)return;
+  try{const ps=await user.profiles(ids);let ch=0;for(const id of ids){const n=ps?.[id]?.name||'';if(n&&S.names[id]!=n){S.names[id]=n;ch=1}}if(ch&&S.open)soon()}catch{}}
+function soon(){const w=(S.busy||0)-performance.now();clearTimeout(S.soonT);if(w>0){S.soonT=setTimeout(soon,w+80);return}S.anim=false;render()}
+
+// ---------- навигация и отрисовка ----------
+function go(v){S.view=v;S.open=null;S.zone=null;$('t-cars').classList.toggle('on',v=='cars');$('t-rep').classList.toggle('on',v=='rep');S.anim=true;render();window.scrollTo({top:0})}
+function setCur(c){S.cur=c;try{localStorage.setItem('av_cur',c)}catch{};S.anim=true;render()}
+function openCar(id){S.open=id;S.zone=null;S.anim=true;render();window.scrollTo({top:0})}
+function pickZone(z){S.zone=S.zone==z?null:z;S.anim=false;render()}
+function addAction(){if(S.ro)return;if(S.open&&S.cars.some(c=>c.id==S.open))itemForm(S.open);else carForm()}
+function render(){if(io){io.disconnect();io=null}if(io2){io2.disconnect();io2=null}if(RM)S.anim=false;
+  $('rateBtn').textContent='$ '+fm(S.usd);['KZT','USD'].forEach(k=>$('c-'+k).setAttribute('aria-pressed',k==S.cur));$('tabbar').classList.toggle('ro',S.ro);
+  if(!S.ready)return;const m=$('main');let h;
+  if(S.open){const c=S.cars.find(x=>x.id==S.open);if(c)h=carView(c);else{S.open=null}}
+  if(!h)h=S.view=='cars'?listView():repView();
+  const ab=$('addBtn');ab.classList.toggle('rec',!!S.open);ab.setAttribute('aria-label',S.open?'Добавить запись в книжку':'Добавить машину');ab.title=S.open?'Новая запись в книжку':'Новая машина';
+  m.className=S.anim?'anim':'';m.innerHTML=h;if(S.anim)runAnim();S.anim=false}
+
+// анимации: всё, что ниже экрана, оживает, когда до него доскроллили
+const AN='.odc,.g-v,.g-n,.rd-car,.rd-track i,[data-cu]';
+function cuFmt(el,v){const f=el.dataset.f;return f=='sg'?sg(v):f=='int'?fm(v):f=='pct'?pct(v):show(v)}
+function prepA(el){el.style.transition='none';
+  if(el.classList.contains('odc'))el.style.transform='translateY(0)';
+  else if(el.classList.contains('g-v'))el.style.strokeDashoffset=el.dataset.len;
+  else if(el.classList.contains('g-n'))el.style.transform='rotate(-90deg)';
+  else if(el.classList.contains('rd-car'))el.style.left='10%';
+  else if(el.matches('.rd-track i'))el.style.width='0%';
+  else if(el.dataset.cu!=null)el.textContent=cuFmt(el,0)}
+function playA(el,i){
+  if(el.classList.contains('odc')){el.style.transition=`transform 1.6s cubic-bezier(.2,.8,.2,1) ${i*60}ms`;el.style.transform=`translateY(-${10+ +el.dataset.d}em)`}
+  else if(el.classList.contains('g-v')){el.style.transition='stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1) .25s';el.style.strokeDashoffset=el.dataset.off}
+  else if(el.classList.contains('g-n')){el.style.transition='transform 1.7s cubic-bezier(.34,1.3,.64,1) .25s';el.style.transform=`rotate(${el.dataset.rot}deg)`}
+  else if(el.classList.contains('rd-car')){el.style.transition='left 1.4s cubic-bezier(.2,.8,.2,1) .45s';el.style.left=el.dataset.left}
+  else if(el.matches('.rd-track i')){el.style.transition='width 1.4s cubic-bezier(.2,.8,.2,1) .45s';el.style.width=el.dataset.w}
+  else if(el.dataset.cu!=null){const to=+el.dataset.cu,t0=performance.now()+120,dur=1100;const step=t=>{const k=Math.max(0,Math.min(1,(t-t0)/dur)),e=1-Math.pow(1-k,3);el.textContent=cuFmt(el,to*e);if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+}
+function playScan(r){const svg=r.closest('svg'),l=svg.querySelector('.xs-l'),sk=svg.querySelector('.xs-skin'),t0=performance.now()+450,dur=1500;
+  const step=t=>{const k=Math.max(0,Math.min(1,(t-t0)/dur)),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,x=-20+e*440;r.setAttribute('x',f1(x));l.setAttribute('transform',`translate(${f1(x)} 0)`);
+    if(k>.86)svg.closest('.xstage')?.classList.add('done');if(k<1)requestAnimationFrame(step);else{l.style.display='none';if(sk)sk.style.display='none'}};requestAnimationFrame(step)}
+function runAnim(){S.busy=performance.now()+2600;const m=$('main'),all=[...m.querySelectorAll(AN)];all.forEach(prepA);m.offsetHeight;
+  const start=list=>requestAnimationFrame(()=>{let k=0;list.forEach(el=>playA(el,el.classList.contains('odc')?k++:0))});
+  start(all.filter(el=>!el.closest('.rv')));
+  const rv=[...m.querySelectorAll('.rv')],reveal=el=>{el.classList.add('in');start([...el.querySelectorAll(AN)])};
+  if(!('IntersectionObserver' in window)){rv.forEach(reveal);m.querySelectorAll('.xs-r').forEach(playScan);return}
+  io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io.unobserve(e.target);reveal(e.target)}}),{rootMargin:'0px 0px -6% 0px'});
+  rv.forEach(el=>io.observe(el));
+  const xs=[...m.querySelectorAll('.xstage')].filter(x=>x.querySelector('.xs-r'));if(!xs.length)return;
+  io2=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){io2.unobserve(e.target);playScan(e.target.querySelector('.xs-r'))}}),{threshold:.5});xs.forEach(x=>io2.observe(x))}
+function rev(st){const s=st.querySelector('svg.car');if(!s||RM)return;s.classList.remove('rev');void s.getBoundingClientRect();s.classList.add('rev');clearTimeout(s._t);s._t=setTimeout(()=>s.classList.remove('rev'),1500);try{navigator.vibrate?.(15)}catch{}}
+function celebrate(c,p,inv,d){if(RM){toast((p>=0?'Прибыль ':'Убыток ')+sg(p));return}
+  const el=document.createElement('div');el.className='cele '+(p>=0?'g':'l');el.setAttribute('role','status');
+  const coins=p>0?[...Array(24)].map((_,i)=>{const x=(Math.random()*2-1)*Math.min(innerWidth*.48,260),up=-(110+Math.random()*170),y=innerHeight*.45+Math.random()*120;
+    return `<i class="coin" style="--x:${x.toFixed(0)}px;--up:${up.toFixed(0)}px;--y:${y.toFixed(0)}px;--r:${(Math.random()*900-450).toFixed(0)}deg;--d:${(.25+i*.035).toFixed(2)}s">₸</i>`}).join(''):'';
+  el.innerHTML=`<div class="cele-in"><div class="stamp">ПРОДАНО</div>${carSVG(c,{mini:1})}<div class="cele-t">${esc(title(c))}</div><div class="cele-p ${p>=0?'gain':'loss'}">${odo(sg(p))}</div><small>${inv?pct(p/inv)+' на вложенные · ':''}${d} дн. от покупки</small></div>${coins}`;
+  let done=false;const close=()=>{if(done)return;done=true;el.classList.add('out');setTimeout(()=>el.remove(),420)};el.onclick=close;document.body.appendChild(el);
+  const odc=[...el.querySelectorAll('.odc')];odc.forEach(e=>{e.style.transition='none';e.style.transform='translateY(0)'});el.offsetHeight;
+  requestAnimationFrame(()=>odc.forEach((e,i)=>{e.style.transition=`transform 1.7s cubic-bezier(.2,.8,.2,1) ${500+i*70}ms`;e.style.transform=`translateY(-${10+ +e.dataset.d}em)`}));
+  try{navigator.vibrate?.(p>=0?[20,50,20]:60)}catch{}setTimeout(close,4200)}
+
+// ---------- гараж ----------
+function gsum(){const st=S.cars.filter(c=>!['sold','own'].includes(c.status)),yr=today().slice(0,4),sy=S.cars.filter(c=>calc(c).sold&&String(c.sell?.date||'').startsWith(yr));
+  if(!st.length&&!sy.length)return '';const inv=st.reduce((a,c)=>a+calc(c).inv,0),pr=sy.reduce((a,c)=>a+calc(c).profit,0);
+  const seg=['bought','repair','sale','reserved'].map(k=>[k,st.filter(c=>c.status==k).length]).filter(x=>x[1]);
+  return `<div class="gsum rv" style="--i:0"><div><small>В гараже · ${st.length} ${plural(st.length,'машина','машины','машин')}</small><b class="num" ${inv?`data-cu="${inv}"`:''}>${show(inv)}</b><em>вложено в наличие</em></div>
+   <div><small>${yr} · продано ${sy.length}</small><b class="num ${sy.length?(pr>=0?'gain':'loss'):''}" ${sy.length?`data-cu="${pr}" data-f="sg"`:''}>${sy.length?sg(pr):'—'}</b><em>прибыль с продаж</em></div>
+   ${seg.length?`<div class="sbar">${seg.map(([k,n])=>`<i class="st-${k}" style="flex:${n}"></i>`).join('')}</div><div class="slg">${seg.map(([k,n])=>`<span class="st-${k}">${stn(k)} <b>${n}</b></span>`).join('')}</div>`:''}</div>`}
+function listView(){const inStock=c=>!['sold','own'].includes(c.status);
+  const L=S.cars.filter(c=>(S.f=='all'||(S.f=='stock'?inStock(c):c.status==S.f))&&(!S.q||(title(c)+' '+(c.plate||'')+' '+(c.vin||'')+' '+(c.year||'')).toLowerCase().includes(S.q.toLowerCase())))
+   .sort((a,b)=>(a.status=='sold')-(b.status=='sold')||String(b.buy?.date||'').localeCompare(String(a.buy?.date||'')));
+  const cnt=k=>k=='all'?S.cars.length:k=='stock'?S.cars.filter(inStock).length:S.cars.filter(c=>c.status==k).length;
+  const chips=[['all','Все'],['stock','В наличии'],...STS].filter(([k])=>k=='all'||k=='stock'||cnt(k)).map(([k,n])=>`<button aria-pressed="${S.f==k}" onclick="S.f='${k}';S.anim=true;render()">${n}<span class="num">${cnt(k)}</span></button>`).join('');
+  if(!S.cars.length)return `<div class="empty rv" style="margin-top:8px"><div class="e-road">${carSVG({body:'crossover',hex:'#3a434e'},{mini:1})}</div><b>Гараж пуст</b>Нажмите жёлтую кнопку «+» внизу и добавьте первую машину. Обязательно только название.</div>`;
+  return gsum()+`<input class="search" id="q" placeholder="Марка, номер, VIN, год" value="${esc(S.q)}" oninput="S.q=this.value;const p=this.selectionStart;render();const q=$('q');q.focus();q.setSelectionRange(p,p)"><div class="chips">${chips}</div>`+
+   (L.length?`<div class="grid">${L.map((c,i)=>{const r=calc(c),badge=r.sold?r.days+' дн. до продажи':c.status=='own'?(c.buy?.date?'с '+c.buy.date.slice(0,4)+' г.':''):c.buy?.date?r.days+' дн.':'';return `<button class="cc rv" style="--i:${Math.min(i,10)}" onclick="openCar('${c.id}')">
+     <div class="stage"><span class="pill st-${c.status}">${stn(c.status)}</span>${badge?`<span class="days">${badge}</span>`:''}${carSVG(c,{mini:1,drive:1})}</div>
+     <div class="cc-b"><div class="cc-t"><b>${esc(title(c))}</b><small>${[c.year,c.km?fm(c.km)+' км':''].filter(Boolean).join(' · ')||'&nbsp;'}</small></div>
+      <div class="cc-m"><b class="${r.sold?(r.profit>=0?'gain':'loss'):''}">${r.sold?sg(r.profit):show(r.inv)}</b><small>${r.sold?pct(r.roi)+' на вложенные':'вложено всего'}</small></div>
+      <div class="cc-f">${plate(c.plate)}<span>покупка ${cm(r.buy)}</span><span>· работы ${cm(r.exp)}</span>${r.todo.length?`<span class="todo-n">· в планах ${r.todo.length}</span>`:''}</div></div></button>`}).join('')}</div>`
+   :`<div class="empty"><b>Ничего не нашлось</b>Попробуйте другой фильтр или запрос.</div>`)}
+
+// ---------- карточка машины ----------
+function road(c){const ST5=STS.slice(0,5),idx=Math.max(0,ST5.findIndex(s=>s[0]==c.status)),p=idx/4,left=(10+p*80)+'%';
+  return `<div class="road"><div class="rd-track"><i data-w="${p*100}%" style="width:${p*100}%"></i></div><span class="rd-car" data-left="${left}" style="left:${left}">${carSVG(c,{mini:1})}</span>
+   <div class="rd-stops">${ST5.map(([k,n],i)=>`<button class="${i<=idx?'on':''} ${c.status==k?'cur':''}" ${S.ro?'disabled':''} onclick="setStatus('${c.id}','${k}')"><i></i><span>${n}</span></button>`).join('')}</div></div>`}
+function zonesBlock(items,car,interactive){const sums={};let tot=0;items.forEach(i=>{const z=zoneOf(i),v=itemSum(i);sums[z]=(sums[z]||0)+v;tot+=v});if(!tot)return '';
+  const L=Object.entries(sums).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),mx=L[0][1],sel=interactive?S.zone:null;
+  const zi=sel?items.filter(i=>zoneOf(i)==sel).sort((a,b)=>itemSum(b)-itemSum(a)):[];
+  return `<div class="sec zmap rv ${interactive?'':'wide'}" style="--i:3"><div class="sec-h"><h2>Куда ушли деньги</h2><small>${interactive?L.length+' '+plural(L.length,'узел','узла','узлов'):'по всем машинам'}</small></div>
+   <div class="xstage">${xrayHTML(car,sums,{sel,click:interactive,scan:S.anim&&!RM})}<span class="xtag">РЕНТГЕН</span></div>
+   ${interactive?`<p class="hint" style="margin:8px 2px 0">Нажмите на узел или строку — подсветим его на машине и покажем записи.</p>`:''}
+   <div class="zl-list grow">${L.map(([k,v],i)=>{const z=zone(k);return `<button class="zl ${sel==k?'on':''}" style="--i:${i};--c:${z[2]}" ${interactive?`onclick="pickZone('${k}')" aria-pressed="${sel==k}"`:'tabindex="-1"'}><span class="zi">${icon(k)}</span><span>${z[1]}</span><b>${show(v)} <small>${Math.round(v/tot*100)}%</small></b><em><u style="width:${(v/mx*100).toFixed(1)}%"></u></em></button>`+
+    (sel==k?`<div class="zl-items">${zi.slice(0,5).map(i=>`<div><span>${esc(i.name)}</span><b>${show(itemSum(i))}</b></div>`).join('')}<button class="lnk" onclick="$('tl').scrollIntoView({behavior:'smooth',block:'start'})">${zi.length>5?'Ещё '+(zi.length-5)+' — в сервисной книжке ↓':'Открыть в сервисной книжке ↓'}</button></div>`:'')}).join('')}</div></div>`}
+function carView(c){const r=calc(c);let done=r.done.slice().sort((a,b)=>String(b.d||'').localeCompare(String(a.d||'')));
+  const partsT=done.reduce((a,i)=>a+kzt(i.parts,i.cur,i.rate),0),laborT=done.reduce((a,i)=>a+kzt(i.labor,i.cur,i.rate),0),todoS=r.todo.reduce((a,i)=>a+itemSum(i),0);
+  const sh=(c.shares||[]).filter(s=>s.name&&+s.pct>0);if(S.zone)done=done.filter(i=>zoneOf(i)==S.zone);
+  const groups=[];done.forEach(i=>{const k=i.d?i.d.slice(0,7):'—';let g=groups.find(x=>x.k==k);if(!g){g={k,items:[]};groups.push(g)}g.items.push(i)});
+  const mlab=k=>k=='—'?'Без даты':new Date(k+'-01T00:00:00').toLocaleDateString('ru-RU',{month:'long',year:'numeric'}).replace(' г.','');
+  const t=c.sell?.trade,own=c.status=='own';
+  const left=`<section class="hero"><div class="stage tap" onclick="rev(this)" title="Нажмите — газанёт">${carSVG(c,{drive:1,big:1})}</div>
+   <div class="hero-b"><div style="min-width:0"><h1>${esc(title(c))}</h1><div class="meta">${plate(c.plate)}${[c.year&&c.year+' г.',c.color,c.km&&fm(c.km)+' км',BODIES[bodyOf(c)].n].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join('<span style="opacity:.4">·</span>')}</div>
+    ${c.vin||c.buyFrom?`<div class="meta">${c.vin?`<span class="num">VIN ${esc(c.vin)}</span>`:''}${c.buyFrom?`<span>купили у: ${esc(c.buyFrom)}</span>`:''}</div>`:''}</div>${S.ro?'':`<button class="edit" onclick="carForm('${c.id}')">Изменить</button>`}</div>
+   ${own?'':road(c)}
+   <div class="own"><button class="sw" aria-pressed="${own}" aria-label="Машина для себя" ${S.ro?'disabled':''} onclick="toggleOwn('${c.id}')"></button><span>${own?'Машина для себя — в отчёт о продажах не попадает':'Машина для себя, не на продажу'}</span></div></section>
+  <div class="tiles"><div class="tile rv" style="--i:1"><small>Покупка</small><b data-cu="${r.buy}">${show(r.buy)}</b><em>${c.buy?.cur=='USD'?`$${fm(c.buy.amt)} по ${fm(c.buy.rate)} ₸`:(fd(c.buy?.date)||'&nbsp;')}</em></div>
+   <div class="tile rv" style="--i:2"><small>Работы · ${r.done.length}</small><b data-cu="${r.exp}">${show(r.exp)}</b><em>${partsT&&laborT?`з/ч ${cm(partsT)} · работа ${cm(laborT)}`:laborT?'только работа':partsT?'только запчасти':'&nbsp;'}</em></div>
+   <div class="tile rv" style="--i:3"><small>Всего вложено</small><b data-cu="${r.inv}">${show(r.inv)}</b><em>${r.days} дн. ${r.sold?'до продажи':own?'в семье':'у вас'}</em></div>
+   <div class="tile rv" style="--i:4"><small>${r.sold?'Продана':'В планах работ'}</small><b>${r.sold?show(r.sell):r.todo.length}</b><em>${r.sold?(fd(c.sell?.date)||'&nbsp;'):r.todo.length?(todoS?'примерно '+cm(todoS):'суммы пока не указаны'):'ничего не запланировано'}</em></div></div>
+  ${r.sold?`<div class="result ${r.profit>=0?'g':'l'} rv" style="--i:5"><div><small>${r.profit>=0?'Заработали на машине':'Потеряли на машине'}</small><div class="big ${r.profit>=0?'gain':'loss'}">${odo(sg(r.profit))}</div>${t?`<div class="trade">Обмен на ${esc(t.title)} (оценка ${show(t.value)})${t.extra>0?', доплата нам '+show(t.extra):t.extra<0?', мы доплатили '+show(-t.extra):''}</div>`:''}</div>
+     <div style="width:200px;max-width:100%">${gauge(Math.max(r.roi,0),.4,pct(r.roi),'на вложенные',r.profit>=0?'var(--gain)':'var(--loss)')}</div></div>
+     ${sh.length?`<div class="sec rv" style="--i:6"><div class="sec-h"><h2>Прибыль по долям</h2></div><div class="shares grow">${sh.map((s,i)=>`<div class="sh-r" style="--i:${i}"><span>${esc(s.name)} · ${+s.pct}%</span><b class="num ${r.profit>=0?'gain':'loss'}">${sg(r.profit*s.pct/100)}</b><em><u style="width:${s.pct}%"></u></em></div>`).join('')}</div></div>`:''}`
+   :own?'':`<div class="result n rv" style="--i:5"><div><small>Чтобы выйти в ноль, продать не дешевле</small><div class="big">${odo(show(r.inv))}</div></div>${S.ro?'':`<button class="btn" onclick="sellForm('${c.id}')">Продать / обменять</button>`}</div>`}
+  ${r.todo.length||!S.ro?`<div class="sec rv" style="--i:4"><div class="sec-h"><h2>Нужно сделать</h2><small>${r.todo.length?r.todo.length+' в планах':''}</small></div>
+   ${r.todo.map(i=>{const zk=zoneOf(i),z=zone(zk);return `<div class="todo"><input type="checkbox" aria-label="Сделано" ${S.ro?'disabled':''} onchange="this.checked=false;itemForm('${c.id}','${i.id}',true)"><button ${S.ro?'disabled':''} onclick="itemForm('${c.id}','${i.id}')">${esc(i.name)}${i.parts||i.labor?`<small>примерно ${show(itemSum(i))}</small>`:''}</button><span class="td-z" style="--c:${z[2]}" title="${z[1]}">${icon(['admin','other'].includes(zk)?(i.cat||'other'):zk)}</span></div>`}).join('')||`<p class="hint" style="margin:0">Сюда — то, что ещё предстоит сделать. Отметьте галочкой, когда сделаете: попросим указать сумму.</p>`}
+   ${S.ro?'':`<button class="add" onclick="itemForm('${c.id}',null,false,true)">+ В план</button>`}</div>`:''}`;
+  const right=`${zonesBlock(r.done,c,true)}
+  <div class="sec rv" style="--i:5" id="tl"><div class="sec-h"><h2>Сервисная книжка</h2><b>${show(r.exp)}</b></div>
+   ${S.zone?`<button class="zfilter" onclick="pickZone('${S.zone}')"><span style="color:${zone(S.zone)[2]}">●</span>${zone(S.zone)[1]}<i>✕</i></button>`:''}
+   ${groups.length?groups.map(g=>`<div class="tl-m">${mlab(g.k)}</div><div class="tl">${g.items.map(i=>{const zk=zoneOf(i),z=zone(zk),k=cat(i.cat),ik=['admin','other'].includes(zk)?(i.cat||'other'):zk,both=+i.parts&&+i.labor;
+     return `<button class="tl-i" ${S.ro?'disabled':''} onclick="itemForm('${c.id}','${i.id}')"><span class="tl-ic" style="--c:${z[2]}">${icon(ik)}</span><span class="tl-b"><b>${esc(i.name)}${i.cur=='USD'?'<span class="usd">$</span>':''}</b><small>${[i.d&&fd(i.d),i.km&&fm(i.km)+' км',k&&k[1],both?'з/ч '+show(kzt(i.parts,i.cur,i.rate))+' + работа '+show(kzt(i.labor,i.cur,i.rate)):'',i.note,byName(i.by)].filter(Boolean).map(esc).join(' · ')}</small></span><span class="tl-a">${show(itemSum(i))}</span></button>`}).join('')}</div>`).join('')
+   :`<p class="hint" style="margin:0">${S.zone?'Здесь записей нет.':'Пока пусто. Каждая работа или покупка — отдельной строкой, с датой и пробегом, если знаете.'}</p>`}
+   ${S.ro?'':`<button class="add" onclick="itemForm('${c.id}')">+ Запись в книжку</button>`}</div>
+  ${c.notes?`<div class="sec rv" style="--i:6"><div class="sec-h"><h2>Заметки</h2></div><p style="margin:0;white-space:pre-wrap;color:var(--mu)">${esc(c.notes)}</p></div>`:''}
+  ${r.sold&&!S.ro?`<button class="btn2" onclick="sellForm('${c.id}')">Изменить продажу</button>`:''}
+  ${c.by?`<p class="by" style="text-align:center;margin-top:14px">Машину добавил: ${esc(byName(c.by)||'—')}</p>`:''}`;
+  return `<button class="back" onclick="go('cars')">‹ Гараж</button><div class="cv"><div class="cv-l">${left}</div><div class="cv-r">${right}</div></div>`}
+
+// ---------- отчёт ----------
+function inPer(d){if(S.per=='all')return true;if(!d)return false;const t=today();if(S.per=='y')return d.slice(0,4)==t.slice(0,4);if(S.per=='m')return d.slice(0,7)==t.slice(0,7);
+  if(S.per=='q'){const q=x=>x.slice(0,4)+Math.floor((+x.slice(5,7)-1)/3);return q(d)==q(t)}return true}
+function topBody(){const m={};S.cars.forEach(c=>{const b=bodyOf(c);m[b]=(m[b]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])[0]?.[0]||'sedan'}
+function repView(){const per=[['m','Месяц'],['q','Квартал'],['y','Год'],['all','Всё время']].map(([k,n])=>`<button aria-pressed="${S.per==k}" onclick="S.per='${k}';S.anim=true;render()">${n}</button>`).join('');
+  if(!S.cars.length)return `<div class="chips">${per}</div><div class="empty rv"><div class="e-road">${carSVG({body:'sedan',hex:'#3a434e'},{mini:1})}</div><b>Отчёт появится после первых сделок</b>Добавьте машины и отметьте продажу.</div>`;
+  const R=S.cars.map(c=>({c,...calc(c)})).filter(x=>x.sold&&inPer(x.c.sell?.date)),stock=S.cars.filter(c=>!['sold','own'].includes(c.status));
+  const prof=R.reduce((a,x)=>a+x.profit,0),inv=stock.reduce((a,c)=>a+calc(c).inv,0),avgD=R.length?R.reduce((a,x)=>a+x.days,0)/R.length:0,invSold=R.reduce((a,x)=>a+x.inv,0),roi=invSold?prof/invSold:0;
+  const best=R.slice().sort((a,b)=>b.profit-a.profit),worst=best.slice().reverse().find(x=>x.profit<0);
+  const allItems=S.cars.flatMap(c=>(c.items||[]).filter(i=>i.done!==false&&(S.per=='all'||inPer(i.d))));const work=allItems.reduce((a,i)=>a+itemSum(i),0);
+  const mk={};R.forEach(x=>{const k=x.c.make||'—';mk[k]=mk[k]||{n:0,p:0,d:0};mk[k].n++;mk[k].p+=x.profit;mk[k].d+=x.days});const mkL=Object.entries(mk).sort((a,b)=>b[1].p-a[1].p),mkMax=Math.max(...mkL.map(x=>Math.abs(x[1].p)),1);
+  const pt={};R.forEach(x=>(x.c.shares||[]).filter(s=>s.name&&+s.pct>0).forEach(s=>{pt[s.name]=(pt[s.name]||0)+x.profit*s.pct/100}));const ptL=Object.entries(pt).sort((a,b)=>b[1]-a[1]),ptMax=Math.max(...ptL.map(x=>Math.abs(x[1])),1);
+  const ins=[];if(best[0]&&best[0].profit>0)ins.push(`Лучшая сделка — <b>${esc(title(best[0].c))}</b>: ${sg(best[0].profit)} за ${best[0].days} дн.`);
+  if(worst)ins.push(`В минусе — <b>${esc(title(worst.c))}</b>: ${sg(worst.profit)}.`);
+  const long=stock.map(c=>({c,d:calc(c).days})).filter(x=>x.d>45).sort((a,b)=>b.d-a.d)[0];if(long)ins.push(`Дольше всех стоит <b>${esc(title(long.c))}</b> — ${long.d} дн., вложено ${show(calc(long.c).inv)}.`);
+  const todoN=S.cars.reduce((a,c)=>a+calc(c).todo.length,0);if(todoN)ins.push(`В планах работ — <b>${todoN}</b> по всем машинам.`);
+  return `<div class="chips">${per}</div>
+  <div class="cluster"><div class="panel rv" style="--i:0"><small>Прибыль с проданных машин</small><span class="big ${prof>=0?'gain':'loss'}"><span class="odo-frame">${odo(sg(prof))}</span></span><div class="sub">продано <b>${R.length}</b> · в среднем <b>${R.length?sg(prof/R.length):'—'}</b></div></div>
+   <div class="panel rv" style="--i:1">${gauge(Math.max(roi,0),.4,R.length?pct(roi):'—','отдача на вложенные','var(--amber)')}</div>
+   <div class="panel rv" style="--i:2">${gauge(avgD,120,R.length?Math.round(avgD)+' дн.':'—','средний срок продажи','var(--cyan)')}</div></div>
+  <div class="kpis"><div class="tile rv" style="--i:3"><small>Вложено в наличие · ${stock.length}</small><b data-cu="${inv}">${show(inv)}</b></div><div class="tile rv" style="--i:4"><small>Работы за период</small><b data-cu="${work}">${show(work)}</b></div>
+   <div class="tile rv" style="--i:5"><small>Машин всего</small><b>${S.cars.length}</b></div><div class="tile rv" style="--i:6"><small>Записей в книжках</small><b>${allItems.length}</b></div></div>
+  ${ins.length?`<div class="ins">${ins.map((x,i)=>`<div class="rv" style="--i:${i+2}"><span>${x}</span></div>`).join('')}</div>`:''}
+  ${stock.length?`<div class="sec rv" style="--i:3"><div class="sec-h"><h2>Сейчас в гараже</h2><small>${stock.length} шт. · ${cm(inv)}</small></div><div class="lot">${stock.map(c=>{const r=calc(c);return `<button class="lotc" onclick="go('cars');openCar('${c.id}')"><div class="stage">${carSVG(c,{mini:1})}</div><b>${esc(title(c))}</b><small><span class="st-${c.status}">●</span> ${stn(c.status)} · ${r.days} дн.</small><small class="num" style="color:var(--tx)">${cm(r.inv)}</small></button>`}).join('')}</div></div>`:''}
+  ${monthChart()}
+  <div class="rgrid">
+  ${R.length?`<div class="sec rv" style="--i:2"><div class="sec-h"><h2>Сделки</h2><small>от лучшей к худшей</small></div><div class="rows">${best.map(x=>`<button class="row" onclick="go('cars');openCar('${x.c.id}')"><span class="th">${carSVG(x.c,{mini:1})}</span><span style="min-width:0"><b>${esc(title(x.c))} ${x.c.year?`<span style="color:var(--mu);font-weight:500">${esc(x.c.year)}</span>`:''}</b><small>${cm(x.inv).replace(/\u00a0₸$/,'')} → ${cm(x.sell)} · ${x.days}\u00a0дн.</small></span><span class="r ${x.profit>=0?'gain':'loss'}">${sg(x.profit)}<small>${pct(x.roi)}</small></span></button>`).join('')}</div></div>`:''}
+  ${mkL.length?`<div class="sec rv" style="--i:3"><div class="sec-h"><h2>По маркам</h2></div><div class="bars grow">${mkL.map(([k,v],i)=>`<div class="br" style="--i:${i}"><span>${esc(k)} <small style="color:var(--mu);font-weight:500">· ${v.n} шт · ${Math.round(v.d/v.n)} дн.</small></span><b class="${v.p>=0?'gain':'loss'}">${sg(v.p)}</b><em><u style="width:${(Math.abs(v.p)/mkMax*100).toFixed(1)}%;background:${v.p>=0?'var(--gain)':'var(--loss)'}"></u></em></div>`).join('')}</div></div>`:''}
+  ${ptL.length?`<div class="sec rv" style="--i:4"><div class="sec-h"><h2>Прибыль по долям</h2></div><div class="bars grow">${ptL.map(([n,v],i)=>`<div class="br" style="--i:${i}"><span>${esc(n)}</span><b class="${v>=0?'gain':'loss'}">${sg(v)}</b><em><u style="width:${(Math.abs(v)/ptMax*100).toFixed(1)}%;background:var(--amber)"></u></em></div>`).join('')}</div></div>`:''}
+  </div>
+  ${zonesBlock(allItems,{body:topBody(),hex:'#5d6672',make:'Все машины'},false)}`}
+function monthChart(){const t=today(),ms=[];for(let i=11;i>=0;i--){const d=new Date(+t.slice(0,4),+t.slice(5,7)-1-i,1);ms.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'))}
+  const v=ms.map(m=>S.cars.filter(c=>calc(c).sold&&(c.sell?.date||'').slice(0,7)==m).reduce((a,c)=>a+calc(c).profit,0));
+  if(!v.some(x=>x))return '';const up=Math.max(...v,0),dn=Math.max(...v.map(x=>-x),0),tot=(up+dn)||1;
+  const lbl=m=>new Date(m+'-01T00:00:00').toLocaleDateString('ru-RU',{month:'short'}).replace('.','').slice(0,3);
+  const sh=x=>{const a=Math.abs(x),s=x<0?'−':'+',n=y=>String(+y.toFixed(1)).replace('.',',');if(S.cur=='USD'){const u=a/S.usd;return s+'$'+(u>=1e3?n(u/1e3)+'k':Math.round(u))}return s+(a>=1e6?n(a/1e6)+'м':a>=1e3?Math.round(a/1e3)+'к':Math.round(a))};
+  return `<div class="sec rv" style="--i:2"><div class="sec-h"><h2>Прибыль по месяцам</h2><small>по дате продажи</small></div>
+   <div class="mch" role="img" aria-label="Прибыль по месяцам за год" style="--up:${(up/tot).toFixed(3)};--dn:${(dn/tot).toFixed(3)}">${v.map((x,i)=>`<div class="mc ${i==11?'now':''}" title="${lbl(ms[i])}: ${x?sg(x):'нет продаж'}"><div class="mc-u">${x>0?`<span>${sh(x)}</span><i class="mb up" style="--i:${i};height:${(x/up*82).toFixed(1)}%"></i>`:''}</div><div class="mc-d">${x<0?`<i class="mb dn" style="--i:${i};height:${(-x/dn*72).toFixed(1)}%"></i><span>${sh(x)}</span>`:''}</div><small>${lbl(ms[i])}</small></div>`).join('')}</div></div>`}
+
+// ---------- формы ----------
+function sheet(h){$('sheet').innerHTML=`<div class="sheet" onclick="if(event.target==this)closeSheet()"><div role="dialog" aria-modal="true">${h}</div></div>`;document.body.style.overflow='hidden'}
+function closeSheet(){$('sheet').innerHTML='';document.body.style.overflow=''}
+const fld=(id,lab,val,o={})=>`<label class="f ${o.full?'full':''}"><span>${lab}</span>${o.area?`<textarea id="${id}" rows="3" placeholder="${o.ph||''}">${esc(val)}</textarea>`:`<input id="${id}" ${o.type?`type="${o.type}"`:''} ${o.num?'class="num" inputmode="decimal"':''} placeholder="${o.ph||''}" value="${esc(o.num&&val?fm(val):val)}" ${o.num?'oninput="fmtIn(this)"':''}>`}</label>`;
+const mfld=(id,lab,m,o={})=>`<label class="f ${o.full?'full':''}"><span>${lab}</span><span class="money-in"><input id="${id}" class="num" inputmode="decimal" placeholder="${o.ph||''}" value="${m&&m.amt?fm(m.amt):''}" oninput="fmtIn(this)"><select id="${id}-c" aria-label="Валюта" onchange="$('${id}-rw').hidden=this.value!='USD'"><option value="KZT" ${m?.cur!='USD'?'selected':''}>₸</option><option value="USD" ${m?.cur=='USD'?'selected':''}>$</option></select></span></label>
+  <label class="f" id="${id}-rw" ${m?.cur=='USD'?'':'hidden'}><span>Курс $ на тот день</span><input id="${id}-r" class="num" inputmode="decimal" value="${fm(m?.rate||S.usd)}" oninput="fmtIn(this)"></label>`;
+const mval=id=>{const amt=pn(val(id));if(!amt)return null;const cur=$(id+'-c').value;return cur=='USD'?{amt,cur,rate:pn(val(id+'-r'))||S.usd}:{amt,cur:'KZT'}};
+function fmtIn(el){const raw=el.value,dec=raw.match(/[.,]\d*$/)?.[0]||'',d=raw.replace(/[.,]\d*$/,'').replace(/[^\d]/g,'');el.value=(d?fm(+d):'')+dec.replace('.',',')}
+const val=id=>$(id)?.value.trim()??'';
+function rateForm(){if(S.ro)return;sheet(`<div class="sh-h"><h2>Курс доллара</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div>
+  <div class="grid2">${fld('rt','1 $ = … ₸',S.usd,{num:1,full:1})}</div><p class="hint">По этому курсу всё показывается в $, и он подставляется в новые записи в долларах. Старые записи хранят свой курс.</p><div class="acts"><button class="btn w" onclick="saveRate()">Сохранить курс</button></div>`)}
+async function saveRate(){const r=pn(val('rt'));if(!(r>50&&r<5000)){toast('Похоже на опечатку в курсе');return}if(!await write(()=>db.doc('settings/main').set({usd:r})))return;S.usd=r;closeSheet();S.anim=true;render();toast('Курс сохранён')}
+function carForm(id){if(S.ro)return;const c=id?S.cars.find(x=>x.id==id):{status:'bought',buy:{date:today(),cur:'KZT'}};const sh=c.shares||[];S.fb=c.body||'';S.fh=c.hex||'';
+  sheet(`<div class="sh-h"><h2>${id?'Изменить машину':'Новая машина'}</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div>
+  <p class="hint" style="margin:0 0 12px">Обязательно только название. Остальное — когда будет.</p>
+  <div class="stage" id="prev" style="padding:10px 30px 0;margin-bottom:12px">${carSVG(c,{mini:1})}</div>
+  <div class="grid2">${fld('make','Марка',c.make||'',{ph:'Toyota'})}${fld('model','Модель',c.model||'',{ph:'Camry 70'})}${fld('year','Год',c.year||'',{ph:'2019'})}${fld('km','Пробег при покупке, км',c.km||'',{num:1,ph:'85 000'})}
+  ${mfld('bp','Цена покупки',c.buy,{ph:'9 500 000'})}${fld('bd','Дата покупки',c.buy?.date||'',{type:'date'})}${fld('plate','Госномер',c.plate||'',{ph:'123 ABC 02'})}${fld('color','Цвет',c.color||'',{ph:'белый'})}</div>
+  <div class="lab">Цвет на картинке</div><div class="swatches" id="sws">${COLORS.map(([n,h])=>`<button style="background:${h}" aria-label="${n}" aria-pressed="${hexOf(c)==h}" onclick="pickColor('${n}','${h}',this)"></button>`).join('')}</div>
+  <div class="lab">Кузов</div><div class="bodies" id="bds">${Object.entries(BODIES).map(([k,b])=>`<button aria-pressed="${bodyOf(c)==k}" onclick="pickBody('${k}',this)">${carSVG({body:k,hex:'#8c96a4'},{mini:1})}${b.n}</button>`).join('')}</div>
+  <div class="grid2" style="margin-top:12px">${fld('vin','VIN',c.vin||'',{full:1})}${fld('buyFrom','У кого купили',c.buyFrom||'',{full:1})}${fld('notes','Заметки',c.notes||'',{full:1,area:1,ph:'Состояние, договорённости, для кого машина'})}</div>
+  <div class="lab">Доли в машине — если есть</div><div class="grid2">${[0,1,2].map(i=>`${fld('shn'+i,'Кто',sh[i]?.name||'',{ph:i==0?'Раим':''})}${fld('shp'+i,'Доля, %',sh[i]?.pct||'',{ph:'50'})}`).join('')}</div>
+  <p class="hint">Например, прибыль пополам — две строки по 50%. Отчёт посчитает прибыль каждого.</p>
+  <div class="err" id="ferr"></div><div class="acts"><button class="btn w" onclick="saveCar(${id?`'${id}'`:''})">${id?'Сохранить':'Поставить в гараж'}</button>${id?`<button class="btn2 danger" onclick="delCar('${id}',this)">Удалить машину</button>`:''}</div>`);
+  ['make','model','color'].forEach(k=>$(k).addEventListener('input',prevCar))}
+function prevCar(){const c={make:val('make'),model:val('model'),color:val('color'),hex:S.fh,body:S.fb};$('prev').innerHTML=carSVG(c,{mini:1});const bk=bodyOf(c),ks=Object.keys(BODIES);document.querySelectorAll('#bds button').forEach((x,i)=>x.setAttribute('aria-pressed',ks[i]==bk))}
+function pickColor(n,h,b){S.fh=h;$('color').value=n;document.querySelectorAll('#sws button').forEach(x=>x.setAttribute('aria-pressed',x==b));prevCar()}
+function pickBody(k,b){S.fb=k;document.querySelectorAll('#bds button').forEach(x=>x.setAttribute('aria-pressed',x==b));prevCar()}
+async function saveCar(id){const make=val('make'),model=val('model');if(!make&&!model){$('ferr').textContent='Напишите хотя бы марку или модель.';return}
+  const old=id?S.cars.find(x=>x.id==id):null,bm=mval('bp');const colorName=val('color');
+  const d={...(old||{}),make,model,year:val('year').replace(/[^\d]/g,'').slice(0,4),km:pn(val('km'))||null,buy:bm?{...bm,date:val('bd')}:{date:val('bd')},plate:val('plate').toUpperCase(),color:colorName,vin:val('vin').toUpperCase(),buyFrom:val('buyFrom'),notes:val('notes'),
+   shares:[0,1,2].map(i=>({name:val('shn'+i),pct:pn(val('shp'+i))})).filter(s=>s.name&&s.pct>0)};
+  if(S.fb)d.body=S.fb;if(S.fh&&COLORS.some(x=>x[1]==S.fh&&colorName.toLowerCase().includes(x[0].slice(0,4))))d.hex=S.fh;else delete d.hex;
+  if(d.shares.reduce((a,s)=>a+s.pct,0)>100){$('ferr').textContent='Сумма долей больше 100%.';return}
+  delete d.id;if(!old){d.status='bought';d.items=[];d.created=new Date().toISOString();d.by=S.me||null}
+  const nid=id||uid();if(!await write(()=>db.doc('cars/'+nid).set(d)))return;closeSheet();toast(id?'Сохранено':'Машина в гараже');S.open=nid;S.anim=true;render();window.scrollTo({top:0})}
+async function delCar(id,b){if(!b.classList.contains('sure')){b.classList.add('sure');b.textContent='Точно удалить со всеми записями?';return}if(!await write(()=>db.doc('cars/'+id).delete()))return;closeSheet();S.open=null;toast('Машина удалена');S.anim=true;render()}
+async function setStatus(id,st){if(S.ro)return;const c=S.cars.find(x=>x.id==id);if(st=='sold'&&!(mv(c.sell)>0)){sellForm(id);return}if(c.status==st)return;S.anim=true;await write(()=>db.doc('cars/'+id).update({status:st}))}
+async function toggleOwn(id){if(S.ro)return;const c=S.cars.find(x=>x.id==id);S.anim=true;await write(()=>db.doc('cars/'+id).update({status:c.status=='own'?'bought':'own'}))}
+function itemForm(cid,iid,markDone,plan){if(S.ro)return;const c=S.cars.find(x=>x.id==cid),i=iid?(c.items||[]).find(x=>x.id==iid):{d:today(),cur:'KZT',done:!plan};
+  const isPlan=i.done===false&&!markDone;S.icat=i.cat||'';S.izone=i.zone||'';
+  sheet(`<div class="sh-h"><h2>${markDone?'Сделано!':isPlan?(iid?'В планах':'В план'):(iid?'Запись':'Новая запись')}</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div>
+  <p class="hint" style="margin:0 0 12px">${esc(title(c))}${markDone?' · укажите, сколько вышло':''}</p>
+  <div class="grid2">${fld('iname','Что сделано или куплено',i.name||'',{full:1,ph:isPlan?'обслужить панорамную крышу':'замена масла ДВС + фильтр'})}
+  <div class="full xstage xmini" id="izx" aria-hidden="true"></div><p class="full hint" id="izh" style="margin:-4px 2px 2px"></p>
+  ${isPlan?'':`${fld('idt','Дата',markDone?today():(i.d||''),{type:'date'})}${fld('ikm','Пробег, км',i.km||'',{num:1,ph:'175 500'})}`}
+  <label class="f"><span>${isPlan?'Примерно запчасти':'Запчасти'}</span><input id="ip" class="num" inputmode="decimal" value="${i.parts?fm(i.parts):''}" oninput="fmtIn(this)" placeholder="0"></label>
+  <label class="f"><span>${isPlan?'Примерно работа':'Работа'}</span><input id="il" class="num" inputmode="decimal" value="${i.labor?fm(i.labor):''}" oninput="fmtIn(this)" placeholder="0"></label>
+  <label class="f"><span>Валюта</span><select id="ic" onchange="$('irw').hidden=this.value!='USD'"><option value="KZT" ${i.cur!='USD'?'selected':''}>Тенге ₸</option><option value="USD" ${i.cur=='USD'?'selected':''}>Доллары $</option></select></label>
+  <label class="f" id="irw" ${i.cur=='USD'?'':'hidden'}><span>Курс $</span><input id="ir" class="num" inputmode="decimal" value="${fm(i.rate||S.usd)}" oninput="fmtIn(this)"></label>
+  ${fld('inote','Кто делал, где',i.note||'',{full:1,ph:'Дима, СТО на Райымбека'})}</div>
+  <div class="lab">Статья — необязательно</div>
+  <div class="catgrid" id="cg">${CATS.map(k=>`<button aria-pressed="${S.icat==k[0]}" onclick="S.icat=S.icat=='${k[0]}'?'':'${k[0]}';document.querySelectorAll('#cg button').forEach(b=>b.setAttribute('aria-pressed',b==this&&S.icat=='${k[0]}'));izUpd()">${icon(k[0])}<span>${k[1]}</span></button>`).join('')}</div>
+  <div class="lab">Где на машине — определяем сами, можно поправить</div>
+  <div class="catgrid" id="zg">${ZONES.map(z=>`<button aria-pressed="${S.izone==z[0]}" onclick="S.izone=S.izone=='${z[0]}'?'':'${z[0]}';document.querySelectorAll('#zg button').forEach(b=>b.setAttribute('aria-pressed',b==this&&S.izone=='${z[0]}'));izUpd()"><span style="color:${z[2]}">${icon(z[0])}</span><span>${z[1]}</span></button>`).join('')}</div>
+  <div class="err" id="ferr"></div><div class="acts"><button class="btn w" onclick="saveItem('${cid}',${iid?`'${iid}'`:'null'},${isPlan})">${isPlan?'Сохранить в план':'Записать'}</button>
+  ${isPlan&&iid?`<button class="btn2" onclick="itemForm('${cid}','${iid}',true)">Сделано ✓</button>`:''}${iid?`<button class="btn2 danger" onclick="delItem('${cid}','${iid}',this)">Удалить</button>`:''}</div>`);
+  S.icar=cid;['iname','inote'].forEach(k=>$(k).addEventListener('input',izUpd));izUpd();if(markDone)setTimeout(()=>$('ip')?.focus(),80)}
+function izUpd(){const c=S.cars.find(x=>x.id==S.icar),el=$('izx');if(!c||!el)return;const z=S.izone||zoneOf({name:val('iname'),note:val('inote'),cat:S.icat}),zz=zone(z),phys=!['admin','other'].includes(z);
+  el.innerHTML=xrayHTML(c,phys?{[z]:1}:{},{sel:phys?z:null,nolabels:1});
+  $('izh').innerHTML=(val('iname')||S.izone||S.icat)?`${S.izone?'Выбрано вручную':'Определилось само'}: <b style="color:${zz[2]}">${zz[1].toLowerCase()}</b>${phys?'':' — это не узел машины'}${S.izone?'':'. Если не так — поправьте ниже.'}`:'Начните писать — подсветим узел на машине.'}
+async function saveItem(cid,iid,isPlan){const name=val('iname');if(!name){$('ferr').textContent='Напишите, что сделано или куплено.';return}
+  const c=S.cars.find(x=>x.id==cid),items=(c.items||[]).map(x=>({...x})),old=iid?items.find(x=>x.id==iid):null,cur=$('ic').value;
+  const it={...(old||{}),id:iid||uid(),name,parts:pn(val('ip')),labor:pn(val('il')),cur,note:val('inote'),cat:S.icat||'',done:!isPlan};
+  if(S.izone)it.zone=S.izone;else delete it.zone;if(cur=='USD')it.rate=pn(val('ir'))||S.usd;else delete it.rate;
+  if(!isPlan){it.d=val('idt');it.km=pn(val('ikm'))||null;if(!it.parts&&!it.labor){$('ferr').textContent='Укажите сумму — запчасти или работу.';return}}
+  if(!old)it.by=S.me||null;const k=items.findIndex(x=>x.id==it.id);if(k>=0)items[k]=it;else items.push(it);
+  S.anim=false;if(!await write(()=>db.doc('cars/'+cid).update({items})))return;closeSheet();toast(isPlan?'Добавлено в план':'Записано в книжку')}
+async function delItem(cid,iid,b){if(!b.classList.contains('sure')){b.classList.add('sure');b.textContent='Точно удалить?';return}const c=S.cars.find(x=>x.id==cid);if(!await write(()=>db.doc('cars/'+cid).update({items:(c.items||[]).filter(x=>x.id!=iid)})))return;closeSheet();toast('Удалено')}
+function sellForm(id){if(S.ro)return;const c=S.cars.find(x=>x.id==id),r=calc(c),t=c.sell?.trade;S.mode=t?'trade':'money';
+  sheet(`<div class="sh-h"><h2>Продажа</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div>
+  <p class="hint" style="margin:0 0 6px">${esc(title(c))} · вложено <b class="num" style="color:var(--tx)">${show(r.inv)}</b></p>
+  <div class="seg" id="sm"><button aria-pressed="${!t}" onclick="sellMode('money')">За деньги</button><button aria-pressed="${!!t}" onclick="sellMode('trade')">Обмен с доплатой</button></div>
+  <div id="sm-money" ${t?'hidden':''}><div class="grid2" style="margin-top:12px">${mfld('sp','Цена продажи',t?null:c.sell,{ph:fm(r.inv),full:1})}</div></div>
+  <div id="sm-trade" ${t?'':'hidden'}><div class="grid2" style="margin-top:12px">${fld('tt','Какую машину получили',t?.title||'',{full:1,ph:'Toyota Camry 50, 2018'})}${fld('tv','Её оценка, ₸',t?.value||'',{num:1,ph:'10 000 000'})}
+   <label class="f"><span>Доплата</span><select id="tdir"><option value="1" ${!(t?.extra<0)?'selected':''}>доплатили нам</option><option value="-1" ${t?.extra<0?'selected':''}>доплатили мы</option></select></label>${fld('tx','Сумма доплаты, ₸',t?Math.abs(t.extra):'',{num:1,ph:'0',full:1})}</div>
+   <p class="hint">Полученная машина сама встанет в гараж с ценой покупки = оценке.</p></div>
+  <div class="grid2" style="margin-top:12px">${fld('sd','Дата',c.sell?.date||today(),{type:'date'})}${fld('sto','Кому',c.sell?.to||'')}</div>
+  <p id="sres" class="num" style="font-weight:700;font-size:17px;margin:14px 0 0"></p><div class="err" id="ferr"></div>
+  <div class="acts"><button class="btn w" onclick="saveSell('${id}')">Сохранить продажу</button>${c.status=='sold'?`<button class="btn2" onclick="unsell('${id}')">Вернуть в продажу</button>`:''}</div>`);
+  const upd=()=>{const el=$('sres');if(!el)return;const p=sellTotal();if(!p){el.textContent='';return}const pr=p-r.inv;el.className='num '+(pr>=0?'gain':'loss');el.textContent=(pr>=0?'Прибыль ':'Убыток ')+sg(pr)+' · '+(r.inv?pct(pr/r.inv):'0%')};
+  const dl=$('sheet').querySelector('.sheet');dl.addEventListener('input',upd);dl.addEventListener('change',upd);upd()}
+function sellMode(m){S.mode=m;$('sm-money').hidden=m!='money';$('sm-trade').hidden=m!='trade';document.querySelectorAll('#sm button').forEach((b,i)=>b.setAttribute('aria-pressed',(i==0)==(m=='money')));$('sheet').querySelector('.sheet')?.dispatchEvent(new Event('input'))}
+function sellTotal(){if(S.mode=='trade')return pn(val('tv'))+pn(val('tx'))*(+($('tdir')?.value||1));const m=mval('sp');return m?mv(m):0}
+async function saveSell(id){const c=S.cars.find(x=>x.id==id),date=val('sd')||today(),to=val('sto');let sell;
+  if(S.mode=='trade'){const tt=val('tt'),tv=pn(val('tv')),ex=pn(val('tx'))*(+$('tdir').value);if(!tt||!(tv>0)){$('ferr').textContent='Напишите, какую машину получили, и её оценку.';return}
+    const prev=c.sell?.trade,newId=prev?.carId||uid(),yr=(tt.match(/(19|20)\d\d/)||[''])[0],parts=tt.replace(yr,'').replace(/[,]+/g,' ').trim().split(/\s+/);
+    sell={amt:tv+ex,cur:'KZT',date,to,trade:{title:tt,value:tv,extra:ex,carId:newId}};
+    if(prev?.carId&&S.cars.find(x=>x.id==prev.carId)){if(!await write(()=>db.doc('cars/'+newId).update({buy:{amt:tv,cur:'KZT',date}})))return}
+    else if(!await write(()=>db.doc('cars/'+newId).set({make:parts[0]||tt,model:parts.slice(1).join(' '),year:yr,status:'bought',buy:{amt:tv,cur:'KZT',date},buyFrom:'обмен на '+title(c),items:[],notes:`Получена в обмен на ${title(c)} ${ex>0?'с доплатой нам '+fm(ex)+' ₸':ex<0?'с нашей доплатой '+fm(-ex)+' ₸':'без доплаты'}.`,created:new Date().toISOString(),by:S.me||null})))return}
+  else{const m=mval('sp');if(!m){$('ferr').textContent='Введите цену продажи.';return}sell={...m,date,to}}
+  S.anim=true;if(!await write(()=>db.doc('cars/'+id).update({status:'sold',sell})))return;closeSheet();
+  const r0=calc(c);celebrate(c,mv(sell)-r0.inv,r0.inv,days(c.buy?.date,date));if(S.mode=='trade')setTimeout(()=>toast('Машина из обмена уже в гараже'),4400)}
+async function unsell(id){S.anim=true;if(!await write(()=>db.doc('cars/'+id).update({status:'sale',sell:{}})))return;closeSheet();toast('Машина снова продаётся')}
+async function write(fn){if(!db){toast('База недоступна в этом окне');return false}try{await fn();return true}catch(e){const m=e&&e.code=='invalid_argument'?'Нет прав на изменение — попросите владельца дать доступ «Участник».':e&&e.code=='quota_exceeded'?'База заполнена.':'Не сохранилось. Проверьте интернет и повторите.';const f=$('ferr');if(f)f.textContent=m;else toast(m);if(e&&e.code=='invalid_argument'){S.ro=true;render()}return false}}
+
+// ---------- запуск ----------
+(async()=>{render();const c=window.claude;db=c?await c.use('db'):null;
+  if(!db){$('main').innerHTML=`<div class="empty" style="margin-top:12px">${carSVG({body:'sedan',hex:'#2a313a'},{mini:1})}<b>Гараж не открылся</b>Проверьте интернет и обновите страницу.</div>`;$('tabbar').classList.add('ro');return}
+  try{user=await c.use('user');if(user){S.me=await user.id();const w=await user.can('data.write');if(w===false)S.ro=true;const me=await user.me();if(me?.name)$('who').textContent=me.name+(S.ro?' · только просмотр':'')}}catch{}
+  db.doc('settings/main').onSnapshot(s=>{const u=+s.data()?.usd;if(u>0&&u!=S.usd){S.usd=u;if(S.ready)soon();else render()}},()=>{});
+  db.collection('cars').onSnapshot(s=>{S.cars=s.docs.map(d=>({id:d.id,...d.data()}));if(!S.ready){S.ready=true;S.anim=true}render();loadNames()},e=>{$('main').innerHTML=`<div class="empty"><b>Не удалось загрузить</b>${esc(e.message||'')}</div>`});
+})();
+document.addEventListener('keydown',e=>{if(e.key=='Escape')closeSheet()});
+</script>
+
+</body></html>

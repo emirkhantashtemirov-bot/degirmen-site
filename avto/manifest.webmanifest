@@ -1,0 +1,2 @@
+{"name":"Автоучёт","short_name":"Автоучёт","lang":"ru","start_url":"/avto/","scope":"/avto/","display":"standalone","orientation":"portrait","background_color":"#090b0e","theme_color":"#090b0e",
+"icons":[{"src":"/avto/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"/avto/icon-512.png","sizes":"512x512","type":"image/png"},{"src":"/avto/icon-maskable.png","sizes":"512x512","type":"image/png","purpose":"maskable"}]}
