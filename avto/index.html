@@ -23,6 +23,9 @@
 #login button{margin-top:6px;font:700 17px 'Golos Text',sans-serif;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,#ffcf7a,#ff9a1f);color:#0b0d10;cursor:pointer}
 #login button:disabled{opacity:.6}
 #lerr{min-height:18px;color:#ff6262;font-size:14px;text-align:center}
+.xl-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}.xl-row .btn2{font-size:14px;padding:12px 10px}.xl-g{margin:18px 0 6px}
+.xl-sum{display:flex;flex-direction:column;gap:3px;margin:14px 0 8px;padding:12px 14px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}.xl-sum b{font-size:15px}.xl-sum span{color:var(--mu);font-size:13px}
+.xl-list{border:1px solid var(--line);border-radius:14px;overflow:hidden}.xl-r{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.xl-r:first-child{border-top:0}.xl-r span{min-width:0;font-size:14px}.xl-r small{display:block;color:var(--mu);font-size:12px;margin-top:2px}.xl-r b{white-space:nowrap;font-size:14px}
 #login svg{width:64px;height:64px;display:block;margin:0 auto 8px}
 </style>
 </head><body>
@@ -435,7 +438,7 @@ const enc=encodeURIComponent;
 const subs=[];let names={},me=null,resolveReady;const ready=new Promise(r=>resolveReady=r);
 async function refresh(){for(const s of subs){try{await s.run()}catch(e){}}}
 function startSync(){setInterval(()=>{if(!document.hidden)refresh()},10000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});addEventListener('online',refresh)}
-const wrote=p=>p.then(()=>{setTimeout(refresh,30)});
+const wrote=p=>p.then(()=>refresh());
 const db={doc(path){const[c,id]=path.split('/'),q='coll=eq.'+enc(c)+'&id=eq.'+enc(id);return{
   set:d=>wrote(rest('avto_docs?on_conflict=coll,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({coll:c,id,data:d})})),
   update:p=>wrote(rest('rpc/avto_update',{method:'POST',body:JSON.stringify({p_coll:c,p_id:id,p_patch:p})})),
@@ -991,6 +994,173 @@ async function write(fn){if(!db){toast('База недоступна в это�
   db.collection('cars').onSnapshot(s=>{S.cars=s.docs.map(d=>({id:d.id,...d.data()}));if(!S.ready){S.ready=true;S.anim=true}render();loadNames()},e=>{$('main').innerHTML=`<div class="empty"><b>Не удалось загрузить</b>${esc(e.message||'')}</div>`});
 })();
 document.addEventListener('keydown',e=>{if(e.key=='Escape')closeSheet()});
+// ---------- Excel: загрузка и выгрузка (.xlsx без внешних библиотек) ----------
+const XL={};
+// --- zip ---
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){let c=0xffffffff;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&255]^(c>>>8);return(c^0xffffffff)>>>0}
+async function inflateRaw(u8){if(typeof DecompressionStream=='undefined')throw new Error('old');const ds=new DecompressionStream('deflate-raw');const r=new Response(new Blob([u8]).stream().pipeThrough(ds));return new Uint8Array(await r.arrayBuffer())}
+async function unzip(buf){const u=new Uint8Array(buf),dv=new DataView(buf);let e=-1;for(let i=u.length-22;i>=Math.max(0,u.length-70000);i--)if(dv.getUint32(i,true)==0x06054b50){e=i;break}
+  if(e<0)throw new Error('notzip');const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={},td=new TextDecoder();
+  for(let k=0;k<n;k++){const m=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lo=dv.getUint32(p+42,true);
+    const name=td.decode(u.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;const ds=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true);const raw=u.subarray(ds,ds+cs);
+    files[name]={m,raw}}
+  return{async text(n){const f=files[n]||files[Object.keys(files).find(k=>k.toLowerCase()==n.toLowerCase())];if(!f)return null;const b=f.m==0?f.raw:await inflateRaw(f.raw);return td.decode(b)},has:n=>!!files[n]}}
+function zip(entries){const enc=new TextEncoder(),parts=[],cd=[];let off=0;
+  for(const[name,str]of entries){const nb=enc.encode(name),d=enc.encode(str),c=crc32(d),h=new DataView(new ArrayBuffer(30));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,nb.length,true);
+    parts.push(new Uint8Array(h.buffer),nb,d);const g=new DataView(new ArrayBuffer(46));g.setUint32(0,0x02014b50,true);g.setUint16(4,20,true);g.setUint16(6,20,true);g.setUint16(8,0x0800,true);
+    g.setUint32(16,c,true);g.setUint32(20,d.length,true);g.setUint32(24,d.length,true);g.setUint16(28,nb.length,true);g.setUint32(42,off,true);cd.push(new Uint8Array(g.buffer),nb);off+=30+nb.length+d.length}
+  const cdl=cd.reduce((a,x)=>a+x.length,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,entries.length,true);e.setUint16(10,entries.length,true);e.setUint32(12,cdl,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...cd,new Uint8Array(e.buffer)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+// --- чтение xlsx/csv в массив строк ---
+const XP=s=>new DOMParser().parseFromString(s,'application/xml');
+const tags=(n,t)=>[...n.getElementsByTagNameNS('*',t)];
+function colIdx(ref){let n=0;for(const ch of ref.replace(/\d+$/,''))n=n*26+ch.charCodeAt(0)-64;return n-1}
+async function readXlsx(buf){const z=await unzip(buf);const wb=XP(await z.text('xl/workbook.xml')),rels=XP(await z.text('xl/_rels/workbook.xml.rels')||'<r/>');
+  const ssx=await z.text('xl/sharedStrings.xml'),ss=ssx?tags(XP(ssx),'si').map(si=>tags(si,'t').map(t=>t.textContent).join('')):[];
+  const rmap={};tags(rels,'Relationship').forEach(r=>rmap[r.getAttribute('Id')]=r.getAttribute('Target'));
+  const out=[];for(const s of tags(wb,'sheet')){const rid=s.getAttribute('r:id')||s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id');
+    let t=rmap[rid]||'';t=t.startsWith('/')?t.slice(1):'xl/'+t.replace(/^\.\//,'');const x=await z.text(t);if(!x)continue;const rows=[];
+    for(const r of tags(XP(x),'row')){const ri=(+r.getAttribute('r')||rows.length+1)-1,row=[];
+      for(const c of tags(r,'c')){const ref=c.getAttribute('r'),ty=c.getAttribute('t'),v=tags(c,'v')[0]?.textContent;let val;
+        if(ty=='s')val=ss[+v]??'';else if(ty=='inlineStr')val=tags(c,'t').map(t=>t.textContent).join('');else if(ty=='str'||ty=='e')val=v??'';else if(ty=='b')val=v=='1'?'да':'';else val=v==null?'':+v;
+        row[ref?colIdx(ref):row.length]=val}
+      rows[ri]=row}
+    out.push({name:s.getAttribute('name')||'Лист',rows:[...rows].map(r=>r||[])})}
+  return out}
+function readCsv(txt){txt=txt.replace(/^﻿/,'');const first=txt.split(/\r?\n/)[0]||'',d=[';','\t',','].sort((a,b)=>first.split(b).length-first.split(a).length)[0];
+  const rows=[];let row=[],f='',q=false;for(let i=0;i<txt.length;i++){const ch=txt[i];
+    if(q){if(ch=='"'){if(txt[i+1]=='"'){f+='"';i++}else q=false}else f+=ch}
+    else if(ch=='"')q=true;else if(ch==d){row.push(f);f=''}else if(ch=='\n'){row.push(f.replace(/\r$/,''));rows.push(row);row=[];f=''}else f+=ch}
+  if(f||row.length){row.push(f);rows.push(row)}return[{name:'CSV',rows}]}
+// --- разбор строк в записи книжки ---
+const low=v=>String(v??'').toLowerCase().trim();
+const isMoneyHdr=h=>/запчаст|з\/ч|детал|сумм|цен|стоим|итог|расход|затрат|₸|тенге|тг|\$|usd|доллар|деньг|оплат|руб/.test(h);
+function hdrRole(h){h=low(h);if(!h)return null;
+  if(/^№|^n$|^#|^п\/п|номер стр/.test(h))return'skip';
+  if(/дат|^число|^день|когда/.test(h))return'date';
+  if(/пробег|^км|км$|километр/.test(h))return'km';
+  if(/кто|мастер|где|^сто(?![a-zа-яё0-9])|примеч|коммент|заметк|продав|магазин/.test(h))return'note';
+  if(/стать|категор|тип|вид расход/.test(h))return'cat';
+  if(/статус|сделан[оа]?\?|выполн/.test(h))return'status';
+  if(/валют/.test(h))return'cur';
+  if(/^итог|^всего|общая сумм/.test(h))return'total';
+  if(/что|наимен|назван|описан|услуг|товар|позиц|перечень|запись/.test(h)&&!/^работа|за работ|стоимость работ/.test(h))return'name';
+  if(/работ/.test(h)&&!/наимен|что/.test(h))return isMoneyHdr(h)||/^работ[аы](?![a-zа-яё0-9])|за работ|^работы?$/.test(h)?'labor':'name';
+  if(isMoneyHdr(h))return'parts';
+  return null}
+const XL_DATE0=Date.UTC(1899,11,30);
+function toDate(v){if(v===''||v==null)return'';if(typeof v=='number'){if(v>20000&&v<80000){const d=new Date(XL_DATE0+Math.round(v)*864e5);return d.toISOString().slice(0,10)}return''}
+  const s=String(v).trim();let m=s.match(/^(\d{4})[-./](\d{1,2})[-./](\d{1,2})/);if(m)return`${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  m=s.match(/^(\d{1,2})[-./](\d{1,2})[-./](\d{2,4})/);if(m){let y=+m[3];if(y<100)y+=2000;return`${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`}
+  m=s.match(/^(\d{1,2})[-./](\d{4})$/);if(m)return`${m[2]}-${m[1].padStart(2,'0')}-01`;return''}
+const toNum=v=>typeof v=='number'?v:pn(String(v??'').replace(/\s| | /g,''));
+const hasText=v=>typeof v=='string'&&/[a-zа-яё]{3}/i.test(v)&&!toDate(v);
+function guessCat(s){s=low(s);return /налог|страхов/.test(s)?'tax':/оформлен|переоформ|цон|спеццон|учёт|учет/.test(s)?'docs':/эвакуат|доставк/.test(s)?'delivery':/растамож|таможн/.test(s)?'customs':/мойк|бенз|заправ|топлив/.test(s)?'fuel':/химчист|полиров|детейл/.test(s)?'detail':/шин|диск|резин|колпач/.test(s)?'tires':/покрас|кузов|вмятин|рихтов|бампер/.test(s)?'body':/реклам|kolesa/.test(s)?'ads':/парковк|паркинг|стоянк/.test(s)?'parking':''}
+function parseSheet(rows){rows=rows.filter(r=>r.some(v=>String(v??'').trim()!==''));if(!rows.length)return{items:[],skipped:0};
+  let hi=-1,roles=[];for(let i=0;i<Math.min(6,rows.length);i++){const rr=rows[i].map(hdrRole);if(rr.filter(Boolean).length>=2&&rr.some(r=>r=='name'||r=='parts'||r=='labor'||r=='total')){hi=i;roles=rr;break}}
+  const data=rows.slice(hi+1),W=Math.max(...rows.map(r=>r.length));
+  if(hi<0)roles=[];
+  const colVals=j=>data.map(r=>r[j]).filter(v=>String(v??'').trim()!=='');
+  // доопределяем колонки по содержимому
+  if(!roles.includes('name')){let best=-1,bs=0;for(let j=0;j<W;j++){if(roles[j]&&roles[j]!='name')continue;const vs=colVals(j),s=vs.filter(hasText).length;if(s>bs){bs=s;best=j}}if(best>=0)roles[best]='name'}
+  if(!roles.includes('date')){for(let j=0;j<W;j++){if(roles[j])continue;const vs=colVals(j);if(vs.length&&vs.filter(v=>toDate(v)).length>=vs.length*.6){roles[j]='date';break}}}
+  if(!roles.includes('parts')&&!roles.includes('labor')&&!roles.includes('total')){let best=-1,bs=0;for(let j=0;j<W;j++){if(roles[j])continue;const vs=colVals(j),nums=vs.filter(v=>toNum(v)>0&&!hasText(v));if(nums.length>=vs.length*.6){const s=nums.reduce((a,v)=>a+toNum(v),0);if(s>bs){bs=s;best=j}}}if(best>=0)roles[best]='parts'}
+  const ci=k=>roles.indexOf(k),hdr=hi>=0?rows[hi]:[];const usdCol=j=>j>=0&&/\$|usd|доллар/.test(low(hdr[j]));
+  const items=[];let skipped=0;
+  for(const r of data){const name=String(r[ci('name')]??'').trim().replace(/\s+/g,' ');
+    if(!name||/^(итого|всего|сумма|total)(?![a-zа-яё0-9])/i.test(name)){skipped++;continue}
+    let parts=0,labor=0,cur='KZT';
+    const tot=!roles.includes('parts')&&!roles.includes('labor');
+    roles.forEach((ro,j)=>{if(ro=='parts'||(tot&&ro=='total'))parts+=toNum(r[j]);if(ro=='labor')labor+=toNum(r[j]);if((ro=='parts'||ro=='labor'||(tot&&ro=='total'))&&(usdCol(j)||/\$/.test(String(r[j]??''))))cur='USD'});
+    if(ci('cur')>=0&&/\$|usd|дол/.test(low(r[ci('cur')])))cur='USD';
+    const d=toDate(r[ci('date')]),km=ci('km')>=0?Math.round(toNum(r[ci('km')]))||null:null,note=ci('note')>=0?String(r[ci('note')]??'').trim():'';
+    const st=ci('status')>=0?low(r[ci('status')]):'';const plan=/план|нужно|надо|нет|не сделан/.test(st)||(!parts&&!labor);
+    let ct='';if(ci('cat')>=0){const cv=low(r[ci('cat')]);const f=CATS.find(([k,n])=>n.toLowerCase().split(/[ ,]+/).some(w=>w.length>3&&cv.includes(w.slice(0,5))));ct=f?f[0]:''}if(!ct)ct=guessCat(name);
+    const it={id:uid(),name,parts:Math.round(parts),labor:Math.round(labor),cur,note,cat:ct,done:!plan,by:S.me||null};
+    if(cur=='USD'){it.parts=Math.round(parts*100)/100;it.labor=Math.round(labor*100)/100;it.rate=S.usd}
+    if(!plan){it.d=d;if(km)it.km=km}
+    items.push(it)}
+  return{items,skipped,hasHdr:hi>=0}}
+const XKEY=i=>[low(i.name).replace(/[^a-zа-яё0-9]/g,''),Math.round(itemSum(i)),i.d||''].join('|');
+// --- окно загрузки ---
+function xlImport(cid){if(S.ro)return;XL.cid=cid||null;XL.sheets=null;
+  sheet(`<div class="sh-h"><h2>Загрузить из Excel</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div>
+  <p class="hint" style="margin:0 0 12px">Подойдёт любая таблица, где есть <b>что сделано</b> и <b>сумма</b>. Дата, пробег, работа отдельно, кто делал - если есть, тоже подхватим. Названия колонок можно писать как угодно.</p>
+  <label class="btn w xl-pick" style="display:block;text-align:center;cursor:pointer">Выбрать файл Excel<input type="file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden onchange="xlFile(this.files[0])"></label>
+  <div id="xlres"></div><div class="err" id="ferr"></div>
+  <button class="add" onclick="xlTemplate()">Скачать готовый шаблон</button>`)}
+async function xlFile(f){if(!f)return;const res=$('xlres');$('ferr').textContent='';res.innerHTML='<p class="hint">Читаю файл…</p>';
+  try{const buf=await f.arrayBuffer(),u=new Uint8Array(buf);
+    if(u[0]==0xd0&&u[1]==0xcf)throw new Error('xls');
+    XL.sheets=(u[0]==0x50&&u[1]==0x4b)?await readXlsx(buf):readCsv(new TextDecoder().decode(u));
+    XL.sheets.forEach(s=>s.p=parseSheet(s.rows));XL.si=XL.sheets.reduce((b,s,i)=>s.p.items.length>XL.sheets[b].p.items.length?i:b,0);XL.fname=f.name;xlPreview()}
+  catch(e){res.innerHTML='';$('ferr').textContent=e.message=='xls'?'Это старый формат .xls. Откройте файл в Excel и сохраните как .xlsx (Файл → Сохранить как → Книга Excel).':e.message=='old'?'Телефон не умеет открывать такие файлы. Обновите iOS/Android или сохраните таблицу как CSV.':'Не получилось прочитать файл. Пришлите его Эмирхану.'}}
+function xlPreview(){const s=XL.sheets[XL.si],items=s.p.items,res=$('xlres');
+  const tgt=XL.cid,c=tgt?S.cars.find(x=>x.id==tgt):null,have=new Set((c?.items||[]).map(XKEY)),fresh=items.filter(i=>!have.has(XKEY(i))),dup=items.length-fresh.length;
+  XL.fresh=fresh;const done=fresh.filter(i=>i.done),plan=fresh.length-done.length,sum=done.reduce((a,i)=>a+itemSum(i),0);
+  const sheetSel=XL.sheets.length>1?`<label class="f full"><span>Лист в файле</span><select onchange="XL.si=+this.value;xlPreview()">${XL.sheets.map((x,i)=>`<option value="${i}" ${i==XL.si?'selected':''}>${esc(x.name)} - ${x.p.items.length} ${plural(x.p.items.length,'строка','строки','строк')}</option>`).join('')}</select></label>`:'';
+  const carSel=`<label class="f full"><span>В какую машину</span><select id="xlcar" onchange="XL.cid=this.value=='new'?null:this.value;$('xlnew').hidden=this.value!='new';xlPreview()">${S.cars.map(x=>`<option value="${x.id}" ${x.id==tgt?'selected':''}>${esc(title(x))}${x.plate?' · '+esc(x.plate):''}</option>`).join('')}<option value="new" ${!tgt?'selected':''}>+ Новая машина</option></select></label>
+   <div class="grid2 full" id="xlnew" ${tgt?'hidden':''}>${fld('xlmk','Марка',XL.mk||'',{ph:'Toyota'})}${fld('xlmd','Модель',XL.md||'',{ph:'Camry'})}</div>`;
+  if(!items.length){res.innerHTML=`<div class="grid2" style="margin-top:14px">${sheetSel}</div><p class="err">В «${esc(XL.fname)}» не нашли строк с работами. Нужна колонка с названием работы и колонка с суммой.</p>`;return}
+  const rowsH=fresh.slice(0,8).map(i=>`<div class="xl-r"><span>${esc(i.name)}<small>${i.done?(i.d?fd(i.d):'без даты'):'в план'}${i.km?' · '+fm(i.km)+' км':''}${i.note?' · '+esc(i.note):''}</small></span><b class="num">${i.parts||i.labor?show(itemSum(i)):'—'}</b></div>`).join('');
+  res.innerHTML=`<div class="grid2" style="margin-top:14px">${sheetSel}${carSel}</div>
+   <div class="xl-sum"><b>${fresh.length?`${done.length} ${plural(done.length,'запись','записи','записей')} на ${show(sum)}`:'Всё уже есть в книжке'}</b>${plan?`<span>+ ${plan} в план (без суммы)</span>`:''}${dup?`<span>${dup} уже записаны раньше - пропустим</span>`:''}${s.p.skipped?`<span>${s.p.skipped} ${plural(s.p.skipped,'строка','строки','строк')} без названия или «итого» - пропустим</span>`:''}</div>
+   ${fresh.length?`<div class="xl-list">${rowsH}${fresh.length>8?`<p class="hint" style="text-align:center">и ещё ${fresh.length-8}…</p>`:''}</div>
+   <div class="acts"><button class="btn w" id="xlgo" onclick="xlSave()">Добавить ${fresh.length} ${plural(fresh.length,'строку','строки','строк')}</button></div>`:''}`;
+  ['xlmk','xlmd'].forEach(k=>$(k)?.addEventListener('input',()=>{XL.mk=val('xlmk');XL.md=val('xlmd')}))}
+async function xlSave(){const items=XL.fresh;if(!items?.length)return;const b=$('xlgo');b.disabled=true;
+  if(XL.cid){const c=S.cars.find(x=>x.id==XL.cid);if(!await write(()=>db.doc('cars/'+c.id).update({items:[...(c.items||[]),...items]}))){b.disabled=false;return}closeSheet();S.open=c.id}
+  else{const make=val('xlmk'),model=val('xlmd');if(!make&&!model){$('ferr').textContent='Напишите марку или модель новой машины.';b.disabled=false;return}
+    const nid=uid(),d={make,model,status:'bought',buy:{date:''},items,shares:[],created:new Date().toISOString(),by:S.me||null};
+    if(!await write(()=>db.doc('cars/'+nid).set(d))){b.disabled=false;return}closeSheet();S.open=nid}
+  S.anim=true;render();window.scrollTo({top:0});toast(`Добавлено из Excel: ${items.length}`)}
+// --- запись xlsx ---
+const xe=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,'');
+const colL=j=>{let s='';j++;while(j){const m=(j-1)%26;s=String.fromCharCode(65+m)+s;j=(j-m-1)/26}return s};
+// ячейка: строка | число | {d:'2024-01-01'} | {n:число,f:'money'} ; стиль 1 - шапка, 2 - дата, 3 - деньги, 4 - жирные деньги, 5 - жирный текст
+function sheetXml(rows,widths){const R=rows.map((r,i)=>`<row r="${i+1}">${r.map((v,j)=>{const ref=colL(j)+(i+1);if(v==null||v==='')return'';
+    if(typeof v=='object'&&v.d){const p=v.d.split('-').map(Number);if(p.length<3||!p[0])return'';return`<c r="${ref}" s="2"><v>${(Date.UTC(p[0],p[1]-1,p[2])-XL_DATE0)/864e5}</v></c>`}
+    if(typeof v=='object'&&'n' in v)return`<c r="${ref}" s="${v.b?4:3}"><v>${+v.n||0}</v></c>`;
+    if(typeof v=='object'&&'t' in v)return`<c r="${ref}" t="inlineStr" s="${v.s||5}"><is><t xml:space="preserve">${xe(v.t)}</t></is></c>`;
+    if(typeof v=='number')return`<c r="${ref}"><v>${v}</v></c>`;
+    return`<c r="${ref}" t="inlineStr"${i==0?' s="1"':''}><is><t xml:space="preserve">${xe(v)}</t></is></c>`}).join('')}</row>`).join('');
+  return`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${widths.map((w,j)=>`<col min="${j+1}" max="${j+1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${R}</sheetData>${rows.length>1?`<autoFilter ref="A1:${colL(widths.length-1)}${rows.length}"/>`:''}</worksheet>`}
+function workbook(sheets){const ws=sheets.map((s,i)=>[`xl/worksheets/sheet${i+1}.xml`,sheetXml(s.rows,s.w)]);
+  const sn=s=>s.replace(/[\[\]:*?/\\]/g,' ').slice(0,31);
+  return zip([['[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${ws.map(w=>`<Override PartName="/${w[0]}" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`],
+   ['_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
+   ['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${xe(sn(s.name))}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets>${sheets.map((s,i)=>s.rows.length>1?`<definedNames><definedName name="_xlnm._FilterDatabase" localSheetId="${i}" hidden="1">'${xe(sn(s.name))}'!$A$1:$${colL(s.w.length-1)}$${s.rows.length}</definedName></definedNames>`:'').join('').replace(/<\/definedNames><definedNames>/g,'')}</workbook>`],
+   ['xl/_rels/workbook.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`],
+   ['xl/styles.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="dd.mm.yyyy"/><numFmt numFmtId="165" formatCode="#,##0"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFE2A8"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="165" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`],
+   ...ws])}
+const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+async function saveFile(blob,name){const file=new File([blob],name,{type:blob.type});
+  if(IOS&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return}catch(e){if(e.name=='AbortError')return}}
+  const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Файл сохранён в «Загрузки»')}
+const fnSafe=s=>s.replace(/[\\/:*?"<>|]+/g,' ').replace(/\s+/g,' ').trim();
+const ITEM_HDR=['Дата','Что сделано','Статья','Запчасти, ₸','Работа, ₸','Итого, ₸','Валюта','Пробег, км','Кто делал, где','Статус','Добавил'];
+const ITEM_W=[12,52,20,13,13,13,8,12,26,11,12];
+const itemRow=(i,c)=>[...(c?[title(c)]:[]),i.d?{d:i.d}:'',i.name||'',cat(i.cat)?.[1]||'',...(i.done===false&&!itemSum(i)?['','','']:[{n:kzt(i.parts,i.cur,i.rate)},{n:kzt(i.labor,i.cur,i.rate)},{n:itemSum(i)}]),i.cur=='USD'?`$ по ${fm(i.rate||S.usd)}`:'₸',i.km?+i.km:'',i.note||'',i.done===false?'в планах':'сделано',i.by?(i.by==S.me?(($('who')?.textContent||'').split(' · ')[0]||'вы'):(S.names[i.by]||'')):''];
+const sortItems=a=>a.slice().sort((x,y)=>(x.done===false)-(y.done===false)||String(x.d||'').localeCompare(String(y.d||'')));
+async function xlExport(cid){const list=cid?S.cars.filter(c=>c.id==cid):S.cars;if(!list.length){toast('Гараж пуст');return}
+  const sheets=[];
+  const sumRows=[['Машина','Год','Номер','VIN','Статус','Дата покупки','Покупка, ₸','Работы, ₸','Вложено всего, ₸','Дата продажи','Продажа, ₸','Прибыль, ₸','Дней']];
+  list.forEach(c=>{const r=calc(c);sumRows.push([title(c),c.year?+c.year:'',c.plate||'',c.vin||'',stn(c.status),c.buy?.date?{d:c.buy.date}:'',{n:r.buy},{n:r.exp},{n:r.inv},r.sold&&c.sell?.date?{d:c.sell.date}:'',r.sold?{n:r.sell}:'',r.sold?{n:r.profit}:'',r.days||''])});
+  if(list.length>1){const t=list.map(calc);sumRows.push([{t:'Итого'},'','','','','',{n:t.reduce((a,x)=>a+x.buy,0),b:1},{n:t.reduce((a,x)=>a+x.exp,0),b:1},{n:t.reduce((a,x)=>a+x.inv,0),b:1},'','',{n:t.reduce((a,x)=>a+(x.sold?x.profit:0),0),b:1},''])}
+  if(cid){const c=list[0],items=sortItems(c.items||[]),r=calc(c);
+    const rows=[ITEM_HDR,...items.map(i=>itemRow(i))];rows.push(['',{t:'Итого сделано'},'',{n:r.done.reduce((a,i)=>a+kzt(i.parts,i.cur,i.rate),0),b:1},{n:r.done.reduce((a,i)=>a+kzt(i.labor,i.cur,i.rate),0),b:1},{n:r.exp,b:1}]);
+    sheets.push({name:'Сервисная книжка',rows,w:ITEM_W});sheets.push({name:'Машина',rows:sumRows,w:[24,7,12,20,11,13,14,14,16,13,14,14,7]})}
+  else{sheets.push({name:'Гараж',rows:sumRows,w:[24,7,12,20,11,13,14,14,16,13,14,14,7]});
+    const rows=[['Машина',...ITEM_HDR]];list.forEach(c=>sortItems(c.items||[]).forEach(i=>rows.push(itemRow(i,c))));sheets.push({name:'Все работы',rows,w:[22,...ITEM_W]})}
+  const d=today().split('-').reverse().join('.');await saveFile(workbook(sheets),fnSafe(cid?`${title(list[0])}${list[0].plate?' '+list[0].plate:''} - книжка ${d}.xlsx`:`Автоучёт - гараж ${d}.xlsx`))}
+async function xlTemplate(){await saveFile(workbook([{name:'Книжка',w:[12,52,13,13,12,26],rows:[['Дата','Что сделано','Запчасти, ₸','Работа, ₸','Пробег, км','Кто делал, где'],[{d:today()},'Замена масла ДВС + фильтр',{n:40000},{n:5000},175500,'Дима'],['','Термостат (в план - без суммы)','','','','']]}]),'Автоучёт - шаблон.xlsx')}
+// --- кнопки в интерфейсе ---
+const XL_ICO='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 8l8 8M16 8l-8 8"/></svg>';
+const _carView=carView,_listView=listView;
+carView=function(c){const h=_carView(c);return h.replace(/<\/div><\/div>$/,`<div class="xl-row">${S.ro?'':`<button class="btn2" onclick="xlImport('${c.id}')">${XL_ICO}Загрузить из Excel</button>`}<button class="btn2" onclick="xlExport('${c.id}')">${XL_ICO}Скачать в Excel</button></div></div></div>`)};
+listView=function(){return _listView()+`<div class="xl-row xl-g">${S.ro?'':`<button class="btn2" onclick="xlImport()">${XL_ICO}Загрузить из Excel</button>`}${S.cars.length?`<button class="btn2" onclick="xlExport()">${XL_ICO}Весь гараж в Excel</button>`:''}</div>`};
 </script>
 
 </body></html>
