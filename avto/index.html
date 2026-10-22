@@ -23,6 +23,7 @@
 #login button{margin-top:6px;font:700 17px 'Golos Text',sans-serif;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,#ffcf7a,#ff9a1f);color:#0b0d10;cursor:pointer}
 #login button:disabled{opacity:.6}
 #lerr{min-height:18px;color:#ff6262;font-size:14px;text-align:center}
+.mig{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}.mig-r{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;padding:11px 14px;border-top:1px solid var(--line);font-family:var(--f-num);font-size:16px}.mig-r:first-child{border-top:0;font-family:var(--f-body);font-size:12px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:var(--s1)}.mig-r>:nth-child(2),.mig-r>:nth-child(3){text-align:right}.mig-r.mu{background:rgba(255,176,46,.08)}.mig-r b{font-family:var(--f-body);font-size:15px}.mig-r b small{display:block;font-size:11.5px;color:var(--mu);font-weight:500}.mig-t{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--mu);font-size:13px;margin:2px 0 10px}.mig-t button{border:1px solid var(--line);background:var(--s2);border-radius:10px;padding:7px 11px;color:var(--tx);font-weight:600}.rmode{display:grid;gap:8px}.rmode button{text-align:left;border:1px solid var(--line);background:var(--s1);border-radius:14px;padding:12px 14px;color:var(--tx)}.rmode button[aria-pressed=true]{border-color:var(--amber);background:rgba(255,176,46,.08)}.rmode small{display:block;color:var(--mu);font-size:12.5px;margin-top:2px}.rate .src{font-size:10px;font-weight:700;color:var(--amber);margin-left:5px;letter-spacing:.04em}
 .xl-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:14px}.xl-row .btn2{font-size:14px;padding:12px 10px}.xl-g{margin:18px 0 6px}
 .xl-sum{display:flex;flex-direction:column;gap:3px;margin:14px 0 8px;padding:12px 14px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}.xl-sum b{font-size:15px}.xl-sum span{color:var(--mu);font-size:13px}
 .xl-list{border:1px solid var(--line);border-radius:14px;overflow:hidden}.xl-r{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}.xl-r:first-child{border-top:0}.xl-r span{min-width:0;font-size:14px}.xl-r small{display:block;color:var(--mu);font-size:12px;margin-top:2px}.xl-r b{white-space:nowrap;font-size:14px}
@@ -446,6 +447,7 @@ const db={doc(path){const[c,id]=path.split('/'),q='coll=eq.'+enc(c)+'&id=eq.'+en
   onSnapshot(cb,err){let last;const s={run:async()=>{const r=(await rest('avto_docs?select=id,data&'+q))[0];const k=JSON.stringify(r||null);if(k===last)return;last=k;cb({id,exists:!!r,data:()=>r?r.data:undefined})}};subs.push(s);s.run().catch(e=>err&&err(e));return()=>subs.splice(subs.indexOf(s),1)}}},
  collection(c){return{onSnapshot(cb,err){let last;const s={run:async()=>{const rows=await rest('avto_docs?select=id,data&order=id&coll=eq.'+enc(c));const k=JSON.stringify(rows);if(k===last)return;last=k;cb({docs:rows.map(r=>({id:r.id,data:()=>r.data}))})}};subs.push(s);s.run().catch(e=>err&&err(e));return()=>subs.splice(subs.indexOf(s),1)}}}};
 const user={id:async()=>me,can:async()=>true,me:async()=>({name:names[me]||''}),profiles:async ids=>Object.fromEntries(ids.map(i=>[i,{name:names[i]||''}]))};
+window.avtoMig=async()=>{const t=await token();const r=await fetch(API+'/functions/v1/avto-mig',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:'{}'});const j=await r.json().catch(()=>null);await refresh();return j};
 window.claude={use:async k=>{await ready;return k==='db'?db:k==='user'?user:null}};
 async function enter(){me=sess.user.id;
   try{(await rest('avto_members?select=user_id,name')).forEach(m=>names[m.user_id]=m.name)}catch(e){if(!sess)return;showLogin('Нет связи с сервером. Проверьте интернет.');setTimeout(enter,5000);return}
@@ -1161,6 +1163,35 @@ const XL_ICO='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke
 const _carView=carView,_listView=listView;
 carView=function(c){const h=_carView(c);return h.replace(/<\/div><\/div>$/,`<div class="xl-row">${S.ro?'':`<button class="btn2" onclick="xlImport('${c.id}')">${XL_ICO}Загрузить из Excel</button>`}<button class="btn2" onclick="xlExport('${c.id}')">${XL_ICO}Скачать в Excel</button></div></div></div>`)};
 listView=function(){return _listView()+`<div class="xl-row xl-g">${S.ro?'':`<button class="btn2" onclick="xlImport()">${XL_ICO}Загрузить из Excel</button>`}${S.cars.length?`<button class="btn2" onclick="xlExport()">${XL_ICO}Весь гараж в Excel</button>`:''}</div>`};
+// ---------- курс МИГ ----------
+const MIGN={USD:['Доллар США','$'],EUR:['Евро','€'],RUB:['Рубль','₽'],KGS:['Сом','сом'],GBP:['Фунт','£'],CNY:['Юань','¥'],GOLD:['Золото, 1 г','Au']};
+const nf=v=>(+v).toLocaleString('ru-RU',{maximumFractionDigits:2}).replace(/[\s ]/g,' ');
+S.mig=null;S.rsrc='mig';
+function rateLabel(){const b=$('rateBtn');if(b)b.innerHTML='$ '+nf(S.usd)+(S.rsrc!='manual'&&S.mig?'<span class="src">МИГ</span>':'')}
+const _render=render;render=function(){_render();rateLabel()};
+function migAge(){return S.mig?.ts?Date.now()-S.mig.ts:Infinity}
+async function migRefresh(force){if(!window.avtoMig)return;const b=$('migbtn');if(b){b.disabled=true;b.textContent='Обновляю…'}
+  try{const j=await avtoMig();if(j?.rates){S.mig=j;if(force&&j.error)toast('МИГ не ответил, показан последний курс')}}catch{if(force)toast('Нет связи, показан последний курс')}
+  if($('migbox'))rateForm(true)}
+function migTable(){const m=S.mig;if(!m?.rates)return'<p class="hint">Курс МИГ ещё не загружен.</p>';
+  return `<div class="mig-t"><span>${m.title?'На '+esc(m.title):''}</span><button id="migbtn" onclick="migRefresh(true)">Обновить</button></div>
+  <div class="mig"><div class="mig-r"><span>Валюта</span><span>Покупка</span><span>Продажа</span></div>${m.rates.map(r=>`<div class="mig-r ${r.code=='USD'?'mu':''}"><b>${esc(r.code)}<small>${esc((MIGN[r.code]||[r.code])[0])}</small></b><span>${nf(r.buy)}</span><span>${nf(r.sell)}</span></div>`).join('')}</div>
+  <p class="hint">Покупка - по скольку МИГ берёт у вас валюту, продажа - по скольку продаёт. Обновляется само каждый час с 9:00 до 20:00.</p>`}
+rateForm=function(keep){if(!keep)S.rmode=S.rsrc=='manual'?'manual':'mig';const usd=S.mig?.rates?.find(r=>r.code=='USD');
+  sheet(`<div class="sh-h"><h2>Курс МИГ</h2><button class="x" aria-label="Закрыть" onclick="closeSheet()">✕</button></div><div id="migbox">${migTable()}</div>
+  ${S.ro?'':`<div class="lab">Курс доллара для расчётов</div><div class="rmode">
+   <button aria-pressed="${S.rmode=='mig'}" onclick="S.rmode='mig';rateForm(true)"><b>Как в МИГ - ${usd?nf(usd.sell)+' ₸':'обновится сам'}</b><small>Продажа $, меняется вместе с МИГ</small></button>
+   <button aria-pressed="${S.rmode=='manual'}" onclick="S.rmode='manual';rateForm(true);setTimeout(()=>$('rt')?.focus(),50)"><b>Свой курс</b><small>Не меняется, пока не поставите другой</small></button></div>
+   ${S.rmode=='manual'?`<div class="grid2" style="margin-top:10px">${fld('rt','1 $ = … ₸',S.rsrc=='manual'?S.usd:(usd?.sell||S.usd),{num:1,full:1})}</div>`:''}
+   <p class="hint">Старые записи в долларах хранят свой курс, пересчитываются только новые и итоги в $.</p><div class="acts"><button class="btn w" onclick="saveRate()">Сохранить</button></div>`}`);
+  if(!keep&&migAge()>120000)migRefresh()};
+saveRate=async function(){let d;if(S.rmode=='manual'){const r=pn(val('rt'));if(!(r>50&&r<5000)){toast('Похоже на опечатку в курсе');return}d={usd:r,src:'manual'}}
+  else{const u=S.mig?.rates?.find(r=>r.code=='USD')?.sell;d={usd:u||S.usd,src:'mig'}}
+  if(!await write(()=>db.doc('settings/main').set(d)))return;S.usd=d.usd;S.rsrc=d.src;closeSheet();S.anim=true;render();toast(d.src=='mig'?'Курс как в МИГ':'Свой курс сохранён')};
+(async()=>{const c=window.claude;if(!c)return;const d=await c.use('db');if(!d)return;
+  d.doc('settings/main').onSnapshot(s=>{const x=s.data()||{};S.rsrc=x.src||'manual';rateLabel()},()=>{});
+  d.doc('settings/mig').onSnapshot(s=>{S.mig=s.data()||null;rateLabel();if($('migbox')&&!$('migbtn')?.disabled)$('migbox').innerHTML=migTable()},()=>{});
+  setTimeout(()=>{if(migAge()>3600000)migRefresh()},1500)})();
 </script>
 
 </body></html>
