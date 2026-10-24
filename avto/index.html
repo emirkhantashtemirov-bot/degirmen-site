@@ -675,7 +675,7 @@ function xrayHTML(c,sums,o={}){const B=BODIES[bodyOf(c)],id='x'+(++svgN),wy=G-B.
    interior:A=>{const fs=B.seats[B.seats.length-1];anchors.interior=[f1(fs[0]-6),floor-30];return B.seats.map(([x,sc])=>seat(x,sc,A)).join('')+`<g transform="rotate(-64 ${sx} ${sy})"><ellipse ${A.s} stroke-width="2" cx="${sx}" cy="${sy}" rx="9.5" ry="2.8"/></g><path ${A.s} d="M${sx+2} ${sy+4}L${sx+16} ${sy+12}"/><path ${A.s} d="M${sx+8} ${sy-8}Q${cowl-14} ${belt-4} ${cowl+2} ${belt+2}"/>`}};
   const order=['body','interior','trans','engine','climate','electrics','wheels','chassis'];
   const svgParts=order.map(k=>{const A=st(k),has=(sums[k]||0)>0,cls='xp'+(o.sel?(o.sel==k?' hot':' dim'):'');
-    return `<g class="${cls}" style="color:${has?zone(k)[2]:'#4f5b69'}" ${has&&T(k)>.3?`filter="url(#${id}gl)"`:''} ${o.click?`onclick="pickZone('${k}')"`:''} aria-label="${zone(k)[1]}">${parts[k](A)}</g>`}).join('');
+    return `<g class="${cls}" data-z="${k}" style="color:${has?zone(k)[2]:'#4f5b69'}" ${has&&T(k)>.3?`filter="url(#${id}gl)"`:''} ${o.click?`onclick="pickZone('${k}')"`:''} aria-label="${zone(k)[1]}">${parts[k](A)}</g>`}).join('');
   // выноски: топ-3 зоны или выбранная
   const Z=Object.entries(sums).filter(x=>x[1]>0).sort((p,q)=>q[1]-p[1]);let pick=o.sel?Z.filter(x=>x[0]==o.sel):Z.slice(0,3);
   pick=pick.map(([k,v])=>({k,v,an:anchors[k]})).sort((p,q)=>(p.an?+p.an[0]:-1)-(q.an?+q.an[0]:-1));
@@ -1315,4 +1315,72 @@ carSVG=function(c,o){ o=o||{};
 })();
 </script>
 
+<style id="avto-explode">
+/* «Разобрать машину»: детали рентгена разлетаются, видно, во что ушли деньги */
+.xstage .xray{overflow:visible;transition:transform .7s cubic-bezier(.3,1.2,.4,1)}
+.xstage{transition:padding .6s cubic-bezier(.3,1.2,.4,1)}
+.xstage.xpl{padding-top:64px;padding-bottom:96px}
+.xstage.xpl .xray{transform:scale(.66)}
+.xp{transition:opacity .35s,translate .95s cubic-bezier(.3,1.32,.42,1)}
+.xstage.xpl .xc,.xstage.xpl .xlead{opacity:0!important;transition:opacity .2s}
+.xbar{display:flex;justify-content:center;margin-top:10px}
+.xbtn{display:flex;align-items:center;gap:6px;padding:10px 18px 10px 14px;border-radius:999px;border:1px solid rgba(90,216,255,.45);background:rgba(9,12,16,.82);color:var(--cyan);font:700 14px var(--f-body);letter-spacing:.02em;backdrop-filter:blur(4px);transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s}
+.xbtn:active{transform:scale(.93)}
+.xbtn svg{width:20px;height:20px}
+.xbtn[aria-pressed=true]{background:rgba(90,216,255,.16)}
+.xlab{opacity:0;transition:opacity .45s ease;pointer-events:none}
+.xstage.xpl .xlab{opacity:1;transition-delay:calc(.45s + var(--d,0s))}
+.xlab text{font-family:var(--f-num);paint-order:stroke;stroke:#090c10;stroke-width:3px;stroke-linejoin:round}
+.xlab .n{font:700 15px var(--f-body);fill:#c9d3de;letter-spacing:.02em}
+.xlab .v{font:700 20px var(--f-num)}
+.xat{pointer-events:none;animation:xat .95s cubic-bezier(.15,.7,.3,1) both;animation-delay:var(--dl,0s)}
+@keyframes xat{0%{opacity:0;translate:0 0;scale:.4}15%{opacity:1}100%{opacity:0;translate:var(--dx) var(--dy);scale:1.1}}
+.xflash{pointer-events:none;animation:xflash .6s ease-out both}
+@keyframes xflash{0%{opacity:.0}25%{opacity:.55}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.xp,.xstage .xray,.xlab{transition:none!important}.xat,.xflash{display:none}}
+</style>
+<script id="avto-explode-js">
+(()=>{
+// куда разлетается каждый узел (в единицах рисунка, машина смотрит вправо)
+const OFF={body:[0,-70],interior:[-80,-24],engine:[110,-14],electrics:[70,-78],climate:[118,44],trans:[-78,64],chassis:[0,70],wheels:[0,128]};
+const ATOM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>';
+const NS='http://www.w3.org/2000/svg';
+S.xpl=false;
+// кнопка на рентгене
+const _zb=zonesBlock;
+zonesBlock=function(items,car,interactive){const h=_zb.apply(this,arguments);if(!h)return h;
+  return h.replace('<span class="xtag">РЕНТГЕН</span></div>',`<span class="xtag">РЕНТГЕН</span></div><div class="xbar"><button class="xbtn" onclick="xplode(this)" aria-pressed="${S.xpl}">${ATOM}<span>${S.xpl?'Собрать машину':'Разобрать машину'}</span></button></div>`)};
+function sumsFor(stage){const c=S.cars.find(x=>x.id==S.open);const items=c?calc(c).done:S.cars.flatMap(x=>calc(x).done);const s={};items.forEach(i=>{const z=zoneOf(i);s[z]=(s[z]||0)+itemSum(i)});return s}
+function apply(stage,on,fx){const svg=stage.querySelector('svg.xray');if(!svg)return;
+  stage.classList.toggle('xpl',on);
+  const b=stage.closest('.sec')&&stage.closest('.sec').querySelector('.xbtn');if(b){b.setAttribute('aria-pressed',on);b.querySelector('span').textContent=on?'Собрать машину':'Разобрать машину'}
+  svg.querySelectorAll('path[stroke-dasharray="2 2"]').forEach(p=>{p.classList.add('xlead');p.nextElementSibling&&p.nextElementSibling.tagName=='circle'&&p.nextElementSibling.classList.add('xlead')});
+  const parts=[...svg.querySelectorAll('g.xp[data-z]')];
+  svg.querySelectorAll('.xlab').forEach(n=>n.remove());
+  parts.forEach(g=>{const o=OFF[g.dataset.z]||[0,0];g.style.translate=on?`${o[0]}px ${o[1]}px`:'0px 0px'});
+  if(!on)return;
+  const sums=sumsFor(stage),tot=Object.values(sums).reduce((a,v)=>a+v,0)||1;
+  const labs=[];parts.forEach(g=>{const z=g.dataset.z,v=sums[z]||0;if(!v)return;const o=OFF[z]||[0,0];let bb;try{bb=g.getBBox()}catch(e){return}
+    const below=o[1]>30;labs.push({z,v,x:bb.x+bb.width/2+o[0],y:below?bb.y+bb.height+o[1]+22:bb.y+o[1]-20,dir:below?1:-1})});
+  labs.sort((p,q)=>p.y-q.y);const placed=[];
+  labs.forEach(l=>{l.x=Math.max(30,Math.min(370,l.x));let n=0;while(n++<12&&placed.some(p=>Math.abs(p.x-l.x)<120&&Math.abs(p.y-l.y)<42))l.y+=42*l.dir;placed.push(l)});
+  labs.forEach((l,k)=>{const L=document.createElementNS(NS,'g');L.setAttribute('class','xlab');L.style.setProperty('--d',(k*0.07)+'s');
+    L.innerHTML=`<text x="${l.x.toFixed(1)}" y="${(l.y-9).toFixed(1)}" text-anchor="middle" class="n">${ZS[l.z]||zone(l.z)[1]} · ${Math.round(l.v/tot*100)}%</text><text x="${l.x.toFixed(1)}" y="${(l.y+10).toFixed(1)}" text-anchor="middle" class="v" fill="${zone(l.z)[2]}">${cm(l.v)}</text>`;
+    svg.appendChild(L)});
+  if(fx&&!RM){ // вспышка и «атомы» разлетаются из машины
+    let bb;try{bb=svg.querySelector('g.xp')?svg.getBBox():null}catch(e){}
+    if(bb){const fl=document.createElementNS(NS,'ellipse');fl.setAttribute('class','xflash');fl.setAttribute('cx',bb.x+bb.width/2);fl.setAttribute('cy',bb.y+bb.height/2);fl.setAttribute('rx',bb.width/2);fl.setAttribute('ry',bb.height/2);fl.setAttribute('fill','rgba(90,216,255,.35)');svg.appendChild(fl);setTimeout(()=>fl.remove(),700);
+      const cols=parts.map(g=>getComputedStyle(g).color);let h='';
+      for(let i=0;i<70;i++){const x=bb.x+Math.random()*bb.width,y=bb.y+Math.random()*bb.height,a=Math.atan2(y-(bb.y+bb.height/2),x-(bb.x+bb.width/2))+(Math.random()-.5),d=40+Math.random()*90;
+        h+=`<circle class="xat" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(0.8+Math.random()*1.8).toFixed(1)}" fill="${cols[i%cols.length]||'#5ad8ff'}" style="--dx:${(Math.cos(a)*d).toFixed(1)}px;--dy:${(Math.sin(a)*d).toFixed(1)}px;--dl:${(Math.random()*.18).toFixed(2)}s"/>`}
+      const A=document.createElementNS(NS,'g');A.innerHTML=h;svg.appendChild(A);setTimeout(()=>A.remove(),1300)}
+    try{navigator.vibrate&&navigator.vibrate([12,40,18])}catch(e){}
+  }}
+window.xplode=function(btn){const st=btn.closest('.sec').querySelector('.xstage');S.xpl=!S.xpl;apply(st,S.xpl,true)};
+// после перерисовки (например, выбрали узел) - сохранить разобранное состояние без повторной вспышки
+const _r=render;render=function(){_r.apply(this,arguments);if(S.xpl)document.querySelectorAll('.xstage').forEach(st=>{st.querySelectorAll('g.xp').forEach(g=>g.style.transition='none');apply(st,true,false);requestAnimationFrame(()=>st.querySelectorAll('g.xp').forEach(g=>g.style.transition=''))})};
+const _go=go;go=function(){S.xpl=false;return _go.apply(this,arguments)};
+const _oc=openCar;openCar=function(){S.xpl=false;return _oc.apply(this,arguments)};
+})();
+</script>
 </body></html>
