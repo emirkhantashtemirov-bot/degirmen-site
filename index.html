@@ -4032,7 +4032,8 @@ function sxBanScreen(row){if($('sxban'))return;const L=SXB[S.L]||SXB.ru,un=row?.
   <h2>${L[0]} 🔒</h2><p>${L[1]}</p>${row?.block_reason?`<div class="why"><b>${L[2]}:</b> «${e(row.block_reason)}»</div>`:''}${un&&new Date(un).getFullYear()<2900?`<p style="font-size:13px">${L[4]}: ${sxD(un)}</p>`:''}<button onclick="this.parentNode.remove()">${L[3]}</button>`;
   document.body.appendChild(d)}
 async function sxMe(){if(!S.me)return;const{data}=await sb.from('account_sanctions').select('*').eq('user_id',S.me.id).maybeSingle();S.sxMe=data||null;
-  if(data&&sxOn(data.blocked_until)){sxBanScreen(data);try{await sb.auth.signOut()}catch{}}}
+  if(data&&sxOn(data.blocked_until)){sxBanScreen(data);try{await sb.auth.signOut()}catch{}return}
+  const li=S.me.last_sign_in_at;if(data?.kick_after&&li&&new Date(data.kick_after)>new Date(li)){try{await sb.auth.signOut()}catch{}toast('Вы вышли из аккаунта: администратор завершил все сеансы. Войдите заново.',1)}}
 setInterval(sxMe,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)sxMe()});setTimeout(sxMe,2500);
 {const _a=auth;auth=async function(){await _a.apply(this,arguments);if(/banned/i.test(S.err||'')){S.err='Аккаунт заблокирован администратором';authM(S.after);sxBanScreen(null)}}}
 {const _c=cart;cart=function(){_c();const X=S.sxMe;if(X&&sxOn(X.no_orders_until)){const b=document.querySelector('#m .body');if(b&&!b.querySelector('.sxcart'))b.insertAdjacentHTML('afterbegin',`<div class="sxcart">🌯 Заказы для вас временно закрыты ${sxUntil(X.no_orders_until)}${X.orders_reason?`<br><span class="mu">«${e(X.orders_reason)}»</span>`:''}</div>`)}}}
