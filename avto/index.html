@@ -1383,4 +1383,399 @@ const _go=go;go=function(){S.xpl=false;return _go.apply(this,arguments)};
 const _oc=openCar;openCar=function(){S.xpl=false;return _oc.apply(this,arguments)};
 })();
 </script>
+
+<style id="avto-3d">
+/* 3D-голограмма «Куда ушли деньги» - отдельный блок, логика приложения не тронута */
+.xseg3d{display:inline-flex;gap:3px;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:3px;flex:none}
+.xseg3d button{border:0;background:none;padding:7px 16px;border-radius:9px;font:700 13px var(--f-num);color:var(--mu);transition:background .2s,color .2s,transform .15s cubic-bezier(.34,1.45,.64,1)}
+.xseg3d button:active{transform:scale(.93)}
+.xseg3d button[aria-pressed="true"]{background:var(--cyan);color:#06222e}
+.xseg3d button:disabled{opacity:.4}
+.x3dwrap{position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(rgba(90,216,255,.045) 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,rgba(90,216,255,.045) 1px,transparent 1px) 0 0/22px 22px,radial-gradient(120% 100% at 50% 0%,#0f1c26,#070b10 75%);border:1px solid rgba(90,216,255,.16);aspect-ratio:4/3;max-height:62vh;width:100%}
+.x3dwrap canvas{position:absolute;inset:0;display:block;width:100%!important;height:100%!important;touch-action:none;cursor:grab;outline:0}
+.x3dwrap canvas:active{cursor:grabbing}
+.x3d-hud{position:absolute;left:12px;bottom:10px;font:700 9.5px var(--f-num);letter-spacing:.16em;color:var(--cyan);opacity:.7;pointer-events:none}
+.x3dbar{display:flex;justify-content:center;margin-top:10px}
+.xbtn3d{display:flex;align-items:center;gap:6px;padding:9px 16px 9px 12px;border-radius:999px;border:1px solid rgba(90,216,255,.45);background:rgba(9,12,16,.82);color:var(--cyan);font:700 13px var(--f-body);backdrop-filter:blur(4px);transition:transform .2s cubic-bezier(.3,1.5,.5,1),background .2s}
+.xbtn3d:active{transform:scale(.93)}
+.xbtn3d[aria-pressed="true"]{background:rgba(90,216,255,.16)}
+.xbtn3d svg{width:18px;height:18px}
+.x3d-hint{position:absolute;left:0;right:0;top:10px;text-align:center;font-size:11.5px;color:var(--mu);pointer-events:none;transition:opacity .6s}
+.x3dlab{position:absolute;left:0;top:0;pointer-events:none;white-space:nowrap;padding:2px 7px 2px 6px;border-radius:7px;background:rgba(9,12,16,.78);border:1px solid color-mix(in srgb,var(--c) 60%,transparent);line-height:1.2;opacity:0;transition:opacity .35s;z-index:2;will-change:transform}
+.x3dlab small{font:600 10px var(--f-body);color:#c9d3de;margin-left:5px}
+.x3dlab b{font:700 11.5px var(--f-num);color:var(--c)}
+.x3dlab b::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c);margin-right:5px;vertical-align:1px;box-shadow:0 0 6px var(--c)}
+.x3dlab.on{opacity:1}
+.x3dlab.on.dim{opacity:.3}
+.x3dload{position:absolute;inset:0;display:grid;place-items:center;color:var(--mu);font-size:13px}
+</style>
+<script id="avto-3d-js">
+(()=>{ if(window.__av3d)return; window.__av3d=1;
+const CDN='https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+let T3=null, T3p=null;      // three.js и промис его загрузки
+let INST=null;              // живая сцена (одна на приложение)
+let VIEW=null, EXPL=false;  // ракурс и «разобрано» переживают перерисовку карточки
+let want3D=(()=>{try{return localStorage.getItem('av_x3d')=='1'}catch(e){return false}})();
+const save3D=v=>{try{localStorage.setItem('av_x3d',v?'1':'0')}catch(e){}};
+const sumsOf=car=>{const s={};calc(car).done.forEach(i=>{const z=zoneOf(i);s[z]=(s[z]||0)+itemSum(i)});return s};
+
+/* куда разлетаются узлы: [x вперёд, y вверх, z вбок] в метрах сцены (1 ед. = 10 px рисунка) */
+const OFF={body:[0,9,0],engine:[11,2.5,0],electrics:[3,6.5,-2],climate:[7,-1,7],trans:[-1,-4,0],chassis:[0,-8,0],interior:[-10,2,0],wheels:[0,-3,0]};
+
+function buildScene(car,sums){
+  const THREE=T3, V3=THREE.Vector3;
+  const B=BODIES[bodyOf(car)];
+  const [rear,front]=ext(B), cx=(rear+front)/2, sc=.1;
+  const X=x=>(x-cx)*sc, Y=y=>(G-y)*sc;
+  const len=(front-rear)*sc, W=len*.39, HW=W/2;
+  const R=B.r*sc, wy=R;
+  const roof=Math.min(...B.top.map(p=>p[1]));
+  const winB=Math.max(...B.win.flat().map(p=>p[1]));           // низ стёкол (пояс)
+  const belt=Y(winB), roofY=Y(roof);
+  const wsX=Math.max(...B.win[B.win.length-1].map(p=>p[0]));   // основание лобового
+  const topY=x=>Y(topAt(B,x));
+  // сужение кузова: крыша уже низа, нос и корма скруглены в плане
+  const zk=(x,y)=>{let k=1;if(y>belt)k-=.17*Math.min(1,(y-belt)/Math.max(1,roofY-belt));
+    const a=Math.abs(x)/(len/2);if(a>.62)k*=1-.16*Math.pow((a-.62)/.38,2);return k};
+  const hz=(x,y)=>HW*zk(x,y);
+
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(32,4/3,.5,400);
+  const rn=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
+  rn.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  scene.add(new THREE.AmbientLight(0xa9c8dc,.9));
+  const dl=new THREE.DirectionalLight(0xd7f1ff,1.1);dl.position.set(18,40,26);scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0x5a7c96,.6);dl2.position.set(-30,12,-24);scene.add(dl2);
+
+  const tot=Object.values(sums).reduce((a,v)=>a+v,0)||1, mx=Math.max(1,...Object.values(sums));
+  const MAT={},EMAT={};
+  const zcol=k=>new THREE.Color((sums[k]||0)>0?zone(k)[2]:'#55616f');
+  const lvl=k=>(sums[k]||0)>0?.35+.65*Math.sqrt(sums[k]/mx):0;
+  ['engine','trans','chassis','wheels','interior','electrics','climate'].forEach(k=>{const c=zcol(k),t=lvl(k);
+    MAT[k]=new THREE.MeshLambertMaterial({color:c.clone().multiplyScalar(.32),emissive:c,emissiveIntensity:.18+.55*t,transparent:true,opacity:t?.58+.34*t:.34});
+    EMAT[k]=new THREE.LineBasicMaterial({color:c.clone().lerp(new THREE.Color(0xffffff),.3),transparent:true,opacity:t?.55+.45*t:.3})});
+  const wrap=new THREE.Group();scene.add(wrap);
+  const ZG={};
+  const grp=k=>{const g=new THREE.Group();g.userData.zone=k;ZG[k]=g;wrap.add(g);return g};
+  const edges=(m,k,a=28)=>{m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry,a),EMAT[k]));return m};
+  const put=(g,geo,k,p,r,e=true,mat)=>{const m=new THREE.Mesh(geo,mat||MAT[k]);if(p)m.position.set(...p);if(r)m.rotation.set(...r);g.add(m);if(e)edges(m,k);return m};
+  const box=(g,k,p,s,r,e)=>put(g,new THREE.BoxGeometry(...s),k,p,r,e);
+  const cylX=(g,k,p,rad,l,seg=14,e=true)=>put(g,new THREE.CylinderGeometry(rad,rad,l,seg),k,p,[0,0,Math.PI/2],e);
+  const cylZ=(g,k,p,rad,l,seg=14,e=true)=>put(g,new THREE.CylinderGeometry(rad,rad,l,seg),k,p,[Math.PI/2,0,0],e);
+  const rod=(g,k,a,b,rad,seg=8)=>{const A=new V3(...a),Bv=new V3(...b),d=Bv.clone().sub(A),l=d.length();
+    const m=new THREE.Mesh(new THREE.CylinderGeometry(rad,rad,l,seg),MAT[k]);m.position.copy(A).addScaledVector(d,.5);m.quaternion.setFromUnitVectors(new V3(0,1,0),d.normalize());g.add(m);return m};
+  const tube=(g,k,pts,rad,seg=40)=>{const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new V3(...p))),seg,rad,6),MAT[k]);g.add(m);return m};
+  const helix=(g,k,x,y0,y1,z,rad,turns=6)=>{const pts=[];for(let i=0;i<=turns*12;i++){const a=i/12*Math.PI*2;pts.push(new V3(x+Math.cos(a)*rad,y0+(y1-y0)*i/(turns*12),z+Math.sin(a)*rad))}
+    const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),turns*16,.09,5),MAT[k]);g.add(m);return m};
+
+  /* ---------- кузов ---------- */
+  const body=grp('body');
+  const bt=lvl('body'), carCol=new THREE.Color(hexOf(car)||'#a7afba');
+  const holo=carCol.clone().lerp(new THREE.Color(0x7fe3ff),.45);
+  const ySill=Y(B.sill+2);
+  const shp=new THREE.Shape();
+  B.top.forEach((p,i)=>i?shp.lineTo(X(p[0]),Y(p[1])):shp.moveTo(X(p[0]),Y(p[1])));
+  shp.lineTo(X(B.top[B.top.length-1][0]),ySill);
+  const AR=R*1.13;
+  [B.fw,B.rw].forEach(ax=>{const xc=X(ax),th=Math.asin(Math.min(.99,(wy-ySill)/AR)),dx=Math.cos(th)*AR;
+    shp.lineTo(xc+dx,ySill);shp.absarc(xc,wy,AR,-th,Math.PI+th,false);shp.lineTo(xc-dx,ySill)});
+  shp.lineTo(X(B.top[0][0]),ySill);shp.closePath();
+  const bg=new THREE.ExtrudeGeometry(shp,{depth:W,bevelEnabled:true,bevelThickness:.7,bevelSize:.5,bevelSegments:3,curveSegments:14});
+  bg.translate(0,0,-HW);
+  {const p=bg.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i);p.setZ(i,p.getZ(i)*zk(x,y))}bg.computeVertexNormals()}
+  const bodyMat=new THREE.MeshLambertMaterial({color:holo.clone().multiplyScalar(.35),emissive:holo,emissiveIntensity:.1+.25*bt,transparent:true,opacity:.09+.08*bt,side:THREE.DoubleSide,depthWrite:false});
+  const shell=new THREE.Mesh(bg,bodyMat);shell.renderOrder=2;body.add(shell);
+  const shellE=new THREE.LineSegments(new THREE.EdgesGeometry(bg,22),new THREE.LineBasicMaterial({color:holo.clone().lerp(new THREE.Color(0xffffff),.35),transparent:true,opacity:.75}));shellE.renderOrder=3;body.add(shellE);
+  MAT.body=bodyMat;EMAT.body=shellE.material;
+  // боковые стёкла - на поверхности кузова с двух сторон
+  const glass=new THREE.MeshBasicMaterial({color:0x8fe0ff,transparent:true,opacity:.13,side:THREE.DoubleSide,depthWrite:false});
+  B.win.forEach(w=>{const s=new THREE.Shape();w.forEach((p,i)=>i?s.lineTo(X(p[0]),Y(p[1])):s.moveTo(X(p[0]),Y(p[1])));
+    [-1,1].forEach(sd=>{const g=new THREE.ShapeGeometry(s);const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setZ(i,sd*(hz(p.getX(i),p.getY(i))+.08));
+      const m=new THREE.Mesh(g,glass);m.renderOrder=4;body.add(m);
+      const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),EMAT.body);body.add(e)})});
+
+  /* ---------- колёса ---------- */
+  const wh=grp('wheels'), tw=R*.74, wz=HW-tw/2-.25;
+  const tireM=new THREE.MeshLambertMaterial({color:0x1a2129,emissive:zcol('wheels'),emissiveIntensity:.08+.2*lvl('wheels'),transparent:true,opacity:.9});
+  const mkWheel=(ax,sd)=>{const g=new THREE.Group();g.position.set(X(ax),wy,sd*wz);g.userData.xo=[0,0,sd*5];
+    const tire=new THREE.Mesh(new THREE.CylinderGeometry(R,R,tw,28,1,true),tireM);tire.rotation.x=Math.PI/2;g.add(tire);
+    const tE=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.CylinderGeometry(R,R,tw,28,1,false),30),EMAT.wheels);tE.rotation.x=Math.PI/2;g.add(tE);
+    put(g,new THREE.TorusGeometry(R*.84,R*.13,6,26),'wheels',[0,0,sd*tw*.5],null,false,tireM);       // боковина
+    put(g,new THREE.CylinderGeometry(R*.64,R*.64,.2,24),'wheels',[0,0,sd*(tw*.5-.12)],[Math.PI/2,0,0]); // обод
+    for(let i=0;i<5;i++){const a=i*Math.PI*2/5;put(g,new THREE.BoxGeometry(R*.52,.22,.18),'wheels',[Math.cos(a)*R*.33,Math.sin(a)*R*.33,sd*(tw*.5-.02)],[0,0,a],false)}
+    put(g,new THREE.CylinderGeometry(R*.17,R*.17,.5,10),'wheels',[0,0,sd*(tw*.5-.1)],[Math.PI/2,0,0]);
+    wh.add(g)};
+  [B.rw,B.fw].forEach(ax=>[-1,1].forEach(sd=>mkWheel(ax,sd)));
+
+  /* ---------- двигатель (продольный) ---------- */
+  const en=grp('engine');
+  const bay0=X(wsX)+.7, nose=X(front);
+  const eL=Math.min(6.4,(nose-bay0)*.56), eX0=bay0, eX1=eX0+eL, eXc=(eX0+eX1)/2;
+  let hood=99;for(let x=wsX;x<=front-6;x+=4)hood=Math.min(hood,topY(x));
+  const eTop=hood-.55, eBot=Math.max(ySill+.3,wy*.55), eH=eTop-eBot, eW=Math.min(W*.4,6.2);
+  box(en,'engine',[eXc,eBot+eH*.12,0],[eL*.86,eH*.24,eW*.62]);                       // поддон
+  box(en,'engine',[eXc,eBot+eH*.42,0],[eL,eH*.38,eW*.78]);                           // блок
+  box(en,'engine',[eXc,eBot+eH*.7,0],[eL*.96,eH*.18,eW*.86]);                        // ГБЦ
+  const vc=box(en,'engine',[eXc,eBot+eH*.86,0],[eL*.9,eH*.13,eW*.5]);               // клапанная крышка
+  for(let i=0;i<4;i++)cylX(en,'engine',[eX0+eL*(.18+.21*i),eBot+eH*.96,-eW*.12],.18,.5,8,false); // катушки
+  cylX(en,'engine',[eXc,eBot+eH*.8,eW*.42],.42,eL*.82,10);                           // впускной ресивер
+  for(let i=0;i<4;i++)rod(en,'engine',[eX0+eL*(.18+.21*i),eBot+eH*.8,eW*.42],[eX0+eL*(.18+.21*i),eBot+eH*.66,eW*.36],.16);
+  for(let i=0;i<4;i++)rod(en,'engine',[eX0+eL*(.18+.21*i),eBot+eH*.6,-eW*.4],[eX0+eL*(.3+.15*i),eBot+eH*.2,-eW*.46],.17); // выпуск
+  const pf=eX1+.25;                                                                  // шкивы спереди
+  const P=[[eBot+eH*.62,0,.62],[eBot+eH*.22,0,.78],[eBot+eH*.42,eW*.3,.42],[eBot+eH*.32,-eW*.33,.5]];
+  P.forEach(([y,z,r])=>cylX(en,'engine',[pf,y,z],r,.32,16));
+  tube(en,'engine',[[pf+.05,P[0][0]+.62,0],[pf+.05,P[2][0]+.4,P[2][1]+.3],[pf+.05,P[2][0]-.4,P[2][1]+.3],[pf+.05,P[1][0]-.78,.2],[pf+.05,P[3][0]-.5,P[3][1]-.4],[pf+.05,P[3][0]+.5,P[3][1]-.4],[pf+.05,P[0][0]+.62,0]],.07,60);
+  // радиатор с вентилятором
+  const rX=Math.min(nose-1.9,eX1+1.6), rH=Math.min(eH*1.05,topY(front-20)-ySill-.9);
+  const rad=box(en,'engine',[rX,ySill+.5+rH/2,0],[.45,rH,W*.62]);
+  for(let i=1;i<6;i++)box(en,'engine',[rX,ySill+.5+rH*i/6,0],[.5,.04,W*.6],null,false);
+  put(en,new THREE.TorusGeometry(Math.min(rH*.36,1.6),.1,6,24),'engine',[rX-.45,ySill+.5+rH/2,0],[0,Math.PI/2,0],false);
+  for(let i=0;i<5;i++){const a=i*Math.PI*2/5;put(en,new THREE.BoxGeometry(.06,Math.min(rH*.32,1.4),.5),'engine',[rX-.45,ySill+.5+rH/2,0],[a,0,0],false)}
+
+  /* ---------- коробка и привод ---------- */
+  const tr=grp('trans');
+  const tL=Math.min(5,eL*.8), tY=eBot+eH*.36;
+  put(tr,new THREE.CylinderGeometry(eW*.17,eW*.34,tL*.55,16),'trans',[eX0-tL*.27,tY,0],[0,0,Math.PI/2]);   // колокол
+  put(tr,new THREE.CylinderGeometry(eW*.12,eW*.17,tL*.45,12),'trans',[eX0-tL*.77,tY,0],[0,0,Math.PI/2]);   // хвостовик
+  for(let i=0;i<3;i++)box(tr,'trans',[eX0-tL*(.15+.25*i),tY-eW*.2,0],[.2,.16,eW*.36],null,false);          // рёбра картера
+  const dX=X(B.rw), dY=wy+.15, sA=[eX0-tL,tY-.1,0], sB=[dX+.9,dY+.1,0];
+  rod(tr,'trans',sA,sB,.22,10);                                                       // карданный вал
+  [sA,sB,[(sA[0]+sB[0])/2,(sA[1]+sB[1])/2,0]].forEach(p=>put(tr,new THREE.SphereGeometry(.34,10,8),'trans',p,null,false));
+  put(tr,new THREE.SphereGeometry(R*.38,16,12),'trans',[dX,dY,0],null,true);          // редуктор
+  cylX(tr,'trans',[dX+.35,dY,0],R*.42,.25,16);
+  [-1,1].forEach(sd=>cylZ(tr,'trans',[dX,wy,sd*(wz-tw*.3)/2],.18,wz-tw*.3,8,false));  // полуоси
+  [-1,1].forEach(sd=>cylZ(tr,'trans',[X(B.fw),wy,sd*(wz-tw*.3)*.55],.14,(wz-tw*.3)*.9,8,false)); // передние приводы
+
+  /* ---------- ходовая и тормоза ---------- */
+  const ch=grp('chassis');
+  const rz=Math.min(HW*.62,wz-tw/2-1.1);
+  [-1,1].forEach(sd=>box(ch,'chassis',[(X(B.rw)+X(B.fw))/2,ySill+.25,sd*rz],[X(B.fw)-X(B.rw)+R*2.4,.4,.55]));  // лонжероны
+  [B.rw,B.fw].forEach(ax=>{const xa=X(ax);box(ch,'chassis',[xa,ySill+.3,0],[1,.35,rz*2+.6]);                   // поперечины
+    [-1,1].forEach(sd=>{const zi=sd*(wz-tw/2-.55), yTop=Math.min(wy+R*1.35,topY(ax)-.7,(ax==B.fw?eTop:99));
+      helix(ch,'chassis',xa,wy+.35,yTop,zi,.42,6);                                      // пружина
+      rod(ch,'chassis',[xa,wy+.1,zi],[xa,yTop+.05,zi],.16);                             // амортизатор
+      box(ch,'chassis',[xa,yTop+.1,zi],[1.2,.14,1.2],null,false);                       // опора
+      rod(ch,'chassis',[xa-.9,wy-.35,sd*rz],[xa,wy-.25,sd*(wz-tw/2-.3)],.15);          // рычаги
+      rod(ch,'chassis',[xa+.9,wy-.35,sd*rz],[xa,wy-.25,sd*(wz-tw/2-.3)],.15);
+      cylZ(ch,'chassis',[xa,wy,sd*(wz-tw*.18)],R*.56,.22,24);                          // тормозной диск
+      box(ch,'chassis',[xa-R*.42,wy+R*.25,sd*(wz-tw*.18)],[.7,1.05,.62],[0,0,.5]);      // суппорт
+    })});
+  const rkX=X(B.fw)-R*.55;
+  cylZ(ch,'chassis',[rkX,wy+.35,0],.2,rz*1.8,10);                                      // рулевая рейка
+  [-1,1].forEach(sd=>rod(ch,'chassis',[rkX,wy+.35,sd*rz*.9],[X(B.fw)-R*.35,wy+.2,sd*(wz-tw/2-.3)],.1));
+
+  /* ---------- салон ---------- */
+  const it=grp('interior');
+  const fy=ySill+.45;
+  const rows=B.seats.slice().sort((a,b)=>b[0]-a[0]);
+  rows.forEach(([sx,s],ri)=>{const x=X(sx);
+    const cushTop=fy+2.3*Math.min(s,1.05), cL=3.6*s;
+    const roofAt=topY(sx-24), avail=roofAt-.7-cushTop;
+    const bH=Math.max(2,Math.min(4.6*s,avail-1.3)), hrH=Math.min(1.1,Math.max(.6,avail-bH-.15));
+    const seat=(z,wd)=>{box(it,'interior',[x,cushTop-.4,z],[cL,.8,wd]);
+      box(it,'interior',[x-cL*.38,fy+(cushTop-.8-fy)/2,z],[cL*.7,cushTop-.8-fy,wd*.7],null,false);
+      const bk=box(it,'interior',[x-cL/2-.1+Math.sin(.2)*bH/2,cushTop+bH/2-.2,z],[.75,bH,wd],[0,0,.2]);
+      box(it,'interior',[x-cL/2-.3+Math.sin(.2)*bH,cushTop+bH+hrH/2-.15,z],[.6,hrH,wd*.55],[0,0,.2])};
+    if(ri==0||rows.length>2&&ri==1){seat(-W*.22,W*.27);seat(W*.22,W*.27)}else seat(0,W*.66);
+  });
+  const fx=X(rows[0][0]);
+  const [stx,sty]=B.steer, sX=X(stx)-.2, sY=Y(sty)-.2, sZ=-W*.22;
+  const swm=put(it,new THREE.TorusGeometry(1.25,.16,8,28),'interior',[sX,sY,sZ],[0,Math.PI/2,.42],false);
+  rod(it,'interior',[sX,sY,sZ],[sX+2.2,sY-.9,sZ],.13);                                  // рулевая колонка
+  [0,1,2].forEach(i=>{const a=i*Math.PI*2/3+Math.PI/2;rod(it,'interior',[sX,sY,sZ],[sX-Math.sin(.42)*Math.cos(a)*1.1,sY+Math.sin(a)*1.1*Math.cos(.42),sZ+Math.cos(a)*1.1],.08)});
+  const dTop=Math.min(Y(sty)+.6,belt+.2), dX0=X(wsX)-.3;
+  box(it,'interior',[dX0-1.3,dTop-.9,0],[2.6,1.8,W*.84]);                              // торпедо
+  box(it,'interior',[dX0-2.3,dTop-.2,sZ],[.4,.7,2.2],[0,0,.3],false);                  // приборка
+  box(it,'interior',[(fx+dX0-2.6)/2,fy+.65,0],[Math.max(1,dX0-2.6-fx+2.4),1.1,1.4]);   // тоннель-консоль
+  rod(it,'interior',[(fx+dX0-2.6)/2+.6,fy+1.2,0],[(fx+dX0-2.6)/2+.4,fy+2.1,0],.1);
+  put(it,new THREE.SphereGeometry(.25,10,8),'interior',[(fx+dX0-2.6)/2+.4,fy+2.2,0],null,false);
+
+  /* ---------- электрика ---------- */
+  const el=grp('electrics');
+  const [hx,hy,hw2,hh]=B.hl, hz0=hz(X(hx),Y(hy))-1.6;
+  [-1,1].forEach(sd=>{const z=sd*hz0;box(el,'electrics',[X(hx)-.7,Y(hy)-.3,z],[1.1,Math.max(.7,hh*sc*1.4),hw2*sc*1.6]);
+    put(el,new THREE.CylinderGeometry(.42,.42,.2,14),'electrics',[X(hx)-.12,Y(hy)-.3,z-sd*.3],[0,0,Math.PI/2],false,new THREE.MeshBasicMaterial({color:0xe8f8ff}));
+    put(el,new THREE.CylinderGeometry(.3,.3,.2,12),'electrics',[X(hx)-.12,Y(hy)-.3,z+sd*.45],[0,0,Math.PI/2],false,new THREE.MeshBasicMaterial({color:0xbfe9ff}))});
+  const [tx,ty,tw2,th2]=B.tl, tz=hz(X(tx),Y(ty+th2/2))-1.1;
+  [-1,1].forEach(sd=>{box(el,'electrics',[X(tx+tw2/2)+.75,Y(ty+th2/2),sd*tz],[.6,Math.max(.8,th2*sc),1.6]);
+    put(el,new THREE.BoxGeometry(.12,Math.max(.6,th2*sc*.8),1.3),'electrics',[X(tx)+.5,Y(ty+th2/2),sd*tz],null,false,new THREE.MeshBasicMaterial({color:0xff4d4d,transparent:true,opacity:.9}))});
+  const bX=bay0+1.4, bZ=Math.min(HW-1.6,eW*.5+1.3), bY=Math.min(eTop-.7,eBot+eH*.62);
+  box(el,'electrics',[bX,bY,bZ],[1.9,1.3,1.4]);                                         // АКБ
+  [-1,1].forEach(s=>cylX(el,'electrics',[bX+s*.5,bY+.75,bZ],.13,.01+.2,8,false));
+  put(el,new THREE.CylinderGeometry(.13,.13,.25,8),'electrics',[bX-.5,bY+.75,bZ],null,false);
+  put(el,new THREE.CylinderGeometry(.13,.13,.25,8),'electrics',[bX+.5,bY+.75,bZ],null,false);
+  cylX(el,'electrics',[pf-.3,eBot+eH*.42,eW*.3+.0],.48,.9,14);                          // генератор
+  const hs=-(HW-1.3);
+  tube(el,'electrics',[[bX,bY+.4,bZ-.6],[bay0-.2,belt-.4,hs*.6],[X(B.fw)-R*1.6,ySill+.9,hs],[0,ySill+.8,hs],[X(B.rw)+R*1.5,ySill+.9,hs],[X(tx+tw2/2)+1,Y(ty+th2/2)-.6,-tz+.3]],.1,70);
+  tube(el,'electrics',[[bX,bY+.4,bZ],[X(hx)-1.3,Y(hy)-.1,hz0-.6],[X(hx)-1.6,Y(hy)-.3,0],[X(hx)-1.3,Y(hy)-.1,-hz0+.6]],.09,40);
+
+  /* ---------- климат ---------- */
+  const cl=grp('climate');
+  const acY=eBot+eH*.28, acZ=-eW*.5-.35;
+  cylX(cl,'climate',[pf-.6,acY,acZ],.5,1.2,14);                                         // компрессор
+  box(cl,'climate',[rX+.55,ySill+.5+rH*.48,0],[.18,rH*.9,W*.58]);                       // конденсер
+  const hcX=dX0-1.6;
+  box(cl,'climate',[hcX,fy+1.6,W*.06],[1.5,1.7,2.6]);                                   // печка/испаритель
+  tube(cl,'climate',[[pf-.6,acY+.4,acZ],[rX-.2,acY+1.1,acZ+.2],[rX+.4,ySill+.5+rH*.85,-W*.2]],.1,24);
+  tube(cl,'climate',[[pf-1.2,acY+.3,acZ+.2],[eX0+.5,eTop-.7,-eW*.45],[bay0-.3,belt-.6,-.6],[hcX+.6,fy+2.1,W*.06]],.1,30);
+  [-1,1].forEach(sd=>tube(cl,'climate',[[hcX,fy+2.5,W*.06],[hcX-.2,dTop-.4,sd*W*.2],[hcX-.6,dTop-.1,sd*W*.36]],.18,20));
+
+  /* платформа-голограмма под машиной */
+  const gnd=new THREE.Group();scene.add(gnd);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(len*.6,len*.615,96),new THREE.MeshBasicMaterial({color:0x5ad8ff,transparent:true,opacity:.45,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;gnd.add(ring);
+  const ring2=new THREE.Mesh(new THREE.RingGeometry(len*.66,len*.664,96),new THREE.MeshBasicMaterial({color:0x5ad8ff,transparent:true,opacity:.2,side:THREE.DoubleSide}));ring2.rotation.x=-Math.PI/2;gnd.add(ring2);
+  const cv=document.createElement('canvas');cv.width=cv.height=128;const cx2=cv.getContext('2d');const gr=cx2.createRadialGradient(64,64,4,64,64,64);gr.addColorStop(0,'rgba(90,216,255,.34)');gr.addColorStop(1,'rgba(90,216,255,0)');cx2.fillStyle=gr;cx2.fillRect(0,0,128,128);
+  const shTex=new THREE.CanvasTexture(cv);
+  const glow=new THREE.Mesh(new THREE.PlaneGeometry(len*1.15,W*1.9),new THREE.MeshBasicMaterial({map:shTex,transparent:true,depthWrite:false}));glow.rotation.x=-Math.PI/2;glow.position.y=.02;gnd.add(glow);
+  const grid=new THREE.GridHelper(len*1.3,26,0x1d5870,0x12303f);grid.material.transparent=true;grid.material.opacity=.5;grid.position.y=-.01;gnd.add(grid);
+
+  /* центры узлов (для подписей) и разлёт */
+  wrap.updateMatrixWorld(true);
+  const C0={};for(const k in ZG){const b=new THREE.Box3().setFromObject(ZG[k]);C0[k]=b.getCenter(new V3());C0[k].y=b.max.y}
+  ZG.wheels.children.forEach(g=>{g.userData.p0=g.position.clone()});
+  let ex=EXPL?1:0;  // 0 - собрано, 1 - разобрано
+  const applyEx=t=>{for(const k in ZG){const o=OFF[k]||[0,0,0];ZG[k].position.set(o[0]*t,o[1]*t,o[2]*t)}
+    ZG.wheels.children.forEach(g=>{const o=g.userData.xo;if(o)g.position.set(g.userData.p0.x+o[0]*t,g.userData.p0.y+o[1]*t,g.userData.p0.z+o[2]*t)})};
+  applyEx(ex);
+
+  return {THREE,scene,cam,rn,wrap,ZG,MAT,EMAT,C0,len,W,H:roofY,applyEx,get ex(){return ex},set ex(v){ex=v},
+    profile:B.top.map(p=>[X(p[0]),Y(p[1])]).concat([[X(front),ySill],[X(rear),ySill]]),hz,ySill};
+}
+
+/* ---------- живой экземпляр: камера, жесты, подписи, цикл ---------- */
+function makeInst(car,sums){
+  const S3=buildScene(car,sums), {THREE,scene,cam,rn,ZG,C0}=S3;
+  const cvs=rn.domElement;
+  const tot=Object.values(sums).reduce((a,v)=>a+v,0)||1;
+  const ctl=VIEW?{...VIEW}:{az:.95,el:.32,dist:0};
+  const baseD=S3.len*1.62; if(!ctl.dist)ctl.dist=baseD*(EXPL?1.55:1);
+  let target=EXPL?1:0, anim=null, lastTouch=0, root=null, visible=true, raf=0, disposed=false, sizeKey='';
+  const labs={};
+  for(const k in ZG){if(!((sums[k]||0)>0))continue;const d=document.createElement('div');d.className='x3dlab';d.style.setProperty('--c',zone(k)[2]);
+    d.innerHTML='<b>'+cm(sums[k])+'</b>';d.title=(ZS[k]||zone(k)[1])+' '+Math.round(sums[k]/tot*100)+'%';labs[k]=d}
+  const camAt=()=>{ctl.el=Math.max(-.05,Math.min(1.3,ctl.el));ctl.dist=Math.max(baseD*.55,Math.min(baseD*2.2,ctl.dist));
+    const ce=Math.cos(ctl.el),ty=S3.H*.38+(S3.ex*1.2),tx=S3.ex*3;
+    cam.position.set(tx+ctl.dist*ce*Math.sin(ctl.az),ty+ctl.dist*Math.sin(ctl.el),ctl.dist*ce*Math.cos(ctl.az));cam.lookAt(tx,ty,0)};
+  // жесты: вращение одним пальцем, щипок - масштаб
+  const pts=new Map();let pinch=0,moved=0,downT=0,downXY=null;
+  const onDown=e=>{pts.set(e.pointerId,[e.clientX,e.clientY]);try{cvs.setPointerCapture(e.pointerId)}catch(_){}lastTouch=performance.now();moved=0;downT=lastTouch;downXY=[e.clientX,e.clientY];
+    if(pts.size==2){const[a,b]=[...pts.values()];pinch=Math.hypot(a[0]-b[0],a[1]-b[1])}};
+  const onMove=e=>{const p=pts.get(e.pointerId);if(!p)return;const dx=e.clientX-p[0],dy=e.clientY-p[1];p[0]=e.clientX;p[1]=e.clientY;lastTouch=performance.now();
+    if(downXY&&Math.hypot(e.clientX-downXY[0],e.clientY-downXY[1])>6)moved=1;
+    if(pts.size==1){ctl.az-=dx*.0075;ctl.el+=dy*.006}
+    else if(pts.size==2){const[a,b]=[...pts.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch)ctl.dist*=pinch/d;pinch=d}
+    kick()};
+  const onUp=e=>{const tap=pts.size==1&&!moved&&performance.now()-downT<450;pts.delete(e.pointerId);if(pts.size<2)pinch=0;lastTouch=performance.now();
+    if(tap)pick(e)};
+  const onWheel=e=>{e.preventDefault();ctl.dist*=1+Math.sign(e.deltaY)*.08;lastTouch=performance.now();kick()};
+  cvs.addEventListener('pointerdown',onDown);cvs.addEventListener('pointermove',onMove);cvs.addEventListener('pointerup',onUp);cvs.addEventListener('pointercancel',onUp);
+  cvs.addEventListener('wheel',onWheel,{passive:false});
+  const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();
+  function pick(e){const b=cvs.getBoundingClientRect();ptr.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);ray.setFromCamera(ptr,cam);
+    const hits=ray.intersectObjects(S3.wrap.children,true).filter(h=>h.object.isMesh);
+    const zOf=o=>{while(o&&!o.userData.zone)o=o.parent;return o&&o.userData.zone};
+    const h=hits.find(h=>zOf(h.object)!='body')||hits[0];
+    if(h){const z=zOf(h.object);if(z){try{pickZone(z)}catch(_){}}}}
+  // подсветка выбранной зоны
+  function applySel(){const sel=S.zone;for(const k in S3.MAT){const on=!sel||sel==k,m=S3.MAT[k],e=S3.EMAT[k];
+    if(m.userData.op==null){m.userData.op=m.opacity;m.userData.ei=m.emissiveIntensity}if(e&&e.userData.op==null)e.userData.op=e.opacity;
+    m.opacity=m.userData.op*(on?1:.2);m.emissiveIntensity=m.userData.ei*(on?(sel?1.5:1):.4);if(e)e.opacity=e.userData.op*(on?1:.15)}
+    for(const k in labs)labs[k].classList.toggle('dim',!!sel&&sel!=k);kick()}
+  function setExpl(on,instant){EXPL=on;target=on?1:0;
+    const b=root&&root.parentNode&&root.parentNode.querySelector('.xbtn3d');if(b){b.setAttribute('aria-pressed',on);b.querySelector('span').textContent=on?'Собрать':'Разобрать'}
+    if(instant||RM){S3.ex=target;S3.applyEx(target);anim=null}else anim={t0:performance.now(),from:S3.ex,d0:ctl.dist,d1:baseD*(on?1.55:1)};
+    if(!instant){try{navigator.vibrate&&navigator.vibrate(on?[12,40,18]:[10])}catch(_){}}
+    kick()}
+  const ease=t=>{const c=1.4;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)}; // easeOutBack - пружинит
+  const tmp=new THREE.Vector3();
+  function placeLabels(){if(!root)return;const w=root.clientWidth,h=root.clientHeight,show=S3.ex>.85;const L=[];
+    for(const k in labs){const d=labs[k];if(!show){d.classList.remove('on');continue}
+      tmp.copy(C0[k]).add(ZG[k].position);tmp.y+=.8;tmp.project(cam);
+      if(tmp.z>1){d.classList.remove('on');continue}
+      L.push({d,x:(tmp.x*.5+.5)*w,y:(-tmp.y*.5+.5)*h,w:d.offsetWidth||110,h:d.offsetHeight||36})}
+    for(let it=0;it<40;it++){let mv=0;for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const A=L[i],Bq=L[j];
+        const ox=(A.w+Bq.w)/2+4-Math.abs(A.x-Bq.x),oy=(A.h+Bq.h)/2+3-Math.abs(A.y-Bq.y);if(ox>0&&oy>0){const sg=A.y<=Bq.y?-1:1;
+          if(ox<oy*1.6){const sx=A.x<=Bq.x?-1:1;A.x+=sx*ox/2;Bq.x-=sx*ox/2}else{A.y+=sg*oy/2;Bq.y-=sg*oy/2}mv=1}}
+      L.forEach(l=>{l.x=Math.max(l.w/2+4,Math.min(w-l.w/2-4,l.x));l.y=Math.max(l.h/2+4,Math.min(h-l.h/2-4,l.y))});if(!mv)break}
+    L.forEach(l=>{l.d.style.transform=`translate(${(l.x-l.w/2).toFixed(1)}px,${(l.y-l.h/2).toFixed(1)}px)`;l.d.classList.add('on')})}
+  function resize(){if(!root)return;const w=root.clientWidth,h=root.clientHeight,k=w+'x'+h;if(!w||!h||k==sizeKey)return;sizeKey=k;rn.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+  let idle=0;
+  function frame(){raf=0;if(disposed||!root)return;if(!root.isConnected||!visible||document.hidden)return;
+    const now=performance.now();resize();
+    if(!RM&&!pts.size&&now-lastTouch>4000)ctl.az+=.0035;
+    if(anim){const t=Math.min(1,(now-anim.t0)/950);const v=anim.from+(target-anim.from)*(target?ease(t):1-Math.pow(1-t,3));
+      S3.ex=v;S3.applyEx(v);ctl.dist=anim.d0+(anim.d1-anim.d0)*(1-Math.pow(1-t,3));if(t>=1){anim=null;S3.ex=target}}
+    camAt();rn.render(scene,cam);placeLabels();
+    VIEW={az:ctl.az,el:ctl.el,dist:ctl.dist};
+    // если ничего не двигается и автоповорот выключен - не крутим цикл зря
+    if(RM&&!anim&&!pts.size&&now-lastTouch>300){idle=1;return}
+    raf=requestAnimationFrame(frame)}
+  function kick(){idle=0;if(!raf&&!disposed)raf=requestAnimationFrame(frame)}
+  const io=new IntersectionObserver(es=>{visible=es.some(e=>e.isIntersecting);if(visible)kick()},{threshold:.02});
+  const onVis=()=>{if(!document.hidden)kick()};document.addEventListener('visibilitychange',onVis);
+  const onXB=()=>setExpl(!EXPL);
+  function attach(r){if(root===r)return;if(root){io.unobserve(root);const ob=root.parentNode&&root.parentNode.querySelector('.xbtn3d');if(ob)ob.removeEventListener('click',onXB)}
+    root=r;const ld=r.querySelector('.x3dload');if(ld)ld.remove();r.appendChild(cvs);for(const k in labs)r.appendChild(labs[k]);
+    const xb=r.parentNode.querySelector('.xbtn3d');if(xb)xb.addEventListener('click',onXB);
+    sizeKey='';io.observe(r);setExpl(EXPL,true);applySel();
+    const hn=r.querySelector('.x3d-hint');if(hn){if(VIEW||RM)hn.style.opacity='0';else setTimeout(()=>{hn.style.opacity='0'},3500)}
+    kick()}
+  function dispose(){if(disposed)return;disposed=true;cancelAnimationFrame(raf);try{io.disconnect()}catch(_){}document.removeEventListener('visibilitychange',onVis);
+    const ob=root&&root.parentNode&&root.parentNode.querySelector('.xbtn3d');if(ob)ob.removeEventListener('click',onXB);
+    scene.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(m.map)m.map.dispose();m.dispose()})});
+    try{rn.dispose();rn.forceContextLoss()}catch(_){}cvs.remove();for(const k in labs)labs[k].remove()}
+  // отладка: проверка, что узлы внутри силуэта кузова
+  function fit(){const was=S3.ex;S3.applyEx(0);S3.wrap.updateMatrixWorld(true);const poly=S3.profile,out=[];
+    const inPoly=(x,y)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>y)!=(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c};
+    const v=new THREE.Vector3();
+    for(const k in ZG){if(k=='body'||k=='wheels')continue;let bad=0,n=0,worst=null;
+      ZG[k].traverse(o=>{if(!o.isMesh)return;const p=o.geometry.attributes.position;for(let i=0;i<p.count;i+=3){v.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);n++;
+        const okXY=inPoly(v.x,v.y)||v.y<S3.ySill+.6, okZ=Math.abs(v.z)<=S3.hz(v.x,v.y)+.15;if(!okXY||!okZ){bad++;if(!worst)worst=[+v.x.toFixed(1),+v.y.toFixed(1),+v.z.toFixed(1)]}}});
+      if(bad)out.push(k+': '+bad+'/'+n+' '+JSON.stringify(worst))}
+    S3.applyEx(was);return out.length?out:'OK'}
+  return {car:car.id,key:JSON.stringify(sums),attach,dispose,applySel,setExpl,
+    hooks:{_setView:(az,el,d)=>{if(az!=null)ctl.az=az;if(el!=null)ctl.el=el;if(d!=null)ctl.dist=d;lastTouch=performance.now()+1e9;kick()},
+      _stats:()=>{let t=0;scene.traverse(o=>{if(o.isMesh)t+=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3});return{tris:Math.round(t),calls:rn.info.render.calls,ex:S3.ex}},
+      _fit:fit}};
+}
+
+/* ---------- загрузка three только по требованию ---------- */
+function loadThree(){if(T3)return Promise.resolve(T3);if(T3p)return T3p;
+  T3p=(async()=>{const c=document.createElement('canvas');if(!(c.getContext('webgl2')||c.getContext('webgl')))throw new Error('нет WebGL');
+    T3=await import(CDN);return T3})();T3p.catch(()=>{T3p=null});return T3p}
+function killInst(){if(INST){INST.dispose();INST=null}}
+function mount3D(sec){const r=sec&&sec.querySelector('.x3dwrap');if(!r||r.parentNode.hidden)return;
+  const car=S.cars.find(c=>c.id==S.open);if(!car)return;const sums=sumsOf(car),key=JSON.stringify(sums);
+  if(INST&&INST.car==car.id&&INST.key==key){INST.attach(r);Object.assign(r,INST.hooks);return}
+  if(!r.querySelector('.x3dload')&&!r.querySelector('canvas')){const ld=document.createElement('div');ld.className='x3dload';ld.textContent='Загружаю 3D…';r.appendChild(ld)}
+  loadThree().then(()=>{if(!r.isConnected||!want3D)return;const cur=S.cars.find(c=>c.id==S.open);if(!cur||cur.id!=car.id)return;
+    killInst();INST=makeInst(cur,sumsOf(cur));INST.attach(r);Object.assign(r,INST.hooks)})
+  .catch(e=>fallback2D(e))}
+function fallback2D(e){try{console.warn('3D недоступен, остаётся 2D:',(e&&e.message)||e)}catch(_){}
+  killInst();want3D=false;
+  document.querySelectorAll('.xseg3d button[data-m="3d"]').forEach(b=>{b.disabled=true;b.title='3D недоступен на этом устройстве'});setMode(false,true)}
+function setMode(on3,keep){want3D=on3;if(!keep)save3D(on3);
+  document.querySelectorAll('.zmap').forEach(sec=>{const x3=sec.querySelector('.x3dwrap');if(!x3)return;
+    sec.querySelectorAll('.xseg3d button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.m=='3d')==on3)));
+    const xs=sec.querySelector('.xstage'),xb=sec.querySelector('.xbar');if(xs)xs.hidden=on3;if(xb)xb.hidden=on3;x3.parentNode.hidden=!on3;
+    if(on3)mount3D(sec)});
+  if(!on3)killInst()}
+window.__av3dSetMode=setMode;
+
+/* тумблер 2D/3D и контейнер - только в карточке машины */
+const _zb=zonesBlock;
+zonesBlock=function(items,car,interactive){let h=_zb.apply(this,arguments);if(!interactive||!h)return h;
+  h=h.replace(/<div class="sec-h"><h2>Куда ушли деньги<\/h2><small>([^<]*)<\/small><\/div>/,(m,s)=>`<div class="sec-h"><h2>Куда ушли деньги</h2><div class="xseg3d" role="group" aria-label="Вид"><button data-m="2d" aria-pressed="${!want3D}" onclick="__av3dSetMode(false)">2D</button><button data-m="3d" aria-pressed="${want3D}" onclick="__av3dSetMode(true)">3D</button></div></div>`);
+  if(want3D){h=h.replace('<div class="xstage">','<div class="xstage" hidden>').replace('<div class="xbar">','<div class="xbar" hidden>')}
+  h=h.replace('<span class="xtag">РЕНТГЕН</span></div>',`<span class="xtag">РЕНТГЕН</span></div><div class="x3dbox"${want3D?'':' hidden'}><div class="x3dwrap"><span class="x3d-hint">Крутите пальцем · щипок - масштаб</span><span class="x3d-hud">ГОЛОГРАММА 3D</span></div><div class="x3dbar"><button class="xbtn3d" aria-pressed="${EXPL}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2" fill="currentColor"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg><span>${EXPL?'Собрать':'Разобрать'}</span></button></div></div>`);
+  return h};
+const _r3=render;
+render=function(){_r3.apply(this,arguments);try{
+  const sec=document.querySelector('.zmap .x3dwrap')?.closest('.zmap');
+  if(!sec||!S.open){killInst();return}
+  if(want3D)mount3D(sec);else killInst()}catch(e){console.warn(e)}};
+const _oc3=openCar;openCar=function(id){if(!INST||INST.car!=id){killInst();VIEW=null;EXPL=false}return _oc3.apply(this,arguments)};
+const _go3=go;go=function(){killInst();VIEW=null;EXPL=false;return _go3.apply(this,arguments)};
+})();
+</script>
 </body></html>
