@@ -1099,6 +1099,143 @@ textarea#kbtx{width:100%;min-height:96px;padding:14px 16px;border:0;border-radiu
 .dm-y{background:rgba(232,120,90,.16);color:#f0a08a}
 .dm-m{background:rgba(232,196,138,.13);color:#e8c48a}
 .dm-n{background:rgba(127,194,139,.14);color:#9fd4a8}
+/* ============================================================
+   DEGIRMEN PREMIUM - дизайн-система и ночная визуальная полировка
+   Аддитивный слой поверх базовых стилей. Анимации - только transform/opacity;
+   бесконечные - только видимость-гейted пар. prefers-reduced-motion и html.nomotion
+   гасят всё это автоматически через существующие глобальные правила.
+   ============================================================ */
+:root{
+/* радиусы */
+--r-xs:10px;--r-sm:14px;--r-md:18px;--r-lg:22px;--r-xl:26px;--r-2xl:28px;--r-3xl:32px;
+/* тени */
+--sh-1:0 2px 12px rgba(0,0,0,.22);--sh-2:0 10px 30px rgba(0,0,0,.38);--sh-3:0 24px 60px rgba(0,0,0,.5);
+/* золото бренда и линия-волосок */
+--gold:#e9c46a;--gold2:#d4a24c;--gold-t:#f3dfa9;
+--line:rgba(243,235,225,.065);--line-g:rgba(233,196,106,.22);
+/* тайминги и пружина нажатия */
+--t-fast:.18s;--t-med:.28s;--t-slow:.44s;--prs:.965;
+/* моноширинный для сумм (админка, итоги) */
+--mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,'Roboto Mono',monospace;
+}
+/* --- фокус с клавиатуры: золотое кольцо; при тапе подсветки нет --- */
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+/* --- карточки и панели: волосок + мягкая тень (единой системой) --- */
+.wide,.sm{position:relative;box-shadow:0 0 0 1px var(--line),0 10px 26px rgba(0,0,0,.26)}
+.card{box-shadow:0 0 0 1px var(--line),var(--sh-1)}
+.pill,.ftr,.pbar{box-shadow:0 0 0 1px var(--line),var(--sh-2)}
+.tst{border:1px solid var(--line);box-shadow:var(--sh-2)}
+.hero{background:linear-gradient(120deg,#34251b,#221812 62%);box-shadow:0 0 0 1px var(--line),var(--sh-2)}
+.shin{box-shadow:0 -24px 70px rgba(0,0,0,.5)}
+/* --- золото бренда: индикатор категории, цены, главные кнопки --- */
+.cats .ind{background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:2px}
+.wide .wp span,.sm .wp span{color:var(--gold-t);font-weight:700}
+/* экстремально длинные названия не вылетают за карточку, а аккуратно обрезаются */
+.wide .wn{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sm .wn{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.go{background:linear-gradient(180deg,#c74e35,var(--ac));box-shadow:0 8px 20px rgba(184,67,44,.32),inset 0 0 0 1px rgba(255,255,255,.07)}
+.main{background:linear-gradient(180deg,#c74e35,var(--ac));box-shadow:0 8px 22px rgba(184,67,44,.28)}
+.pill .pa{background:linear-gradient(180deg,#c74e35,var(--ac));box-shadow:0 6px 18px rgba(184,67,44,.32)}
+.tile.on .ic{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#402c10}
+.szi>span{box-shadow:0 8px 20px rgba(0,0,0,.35)}
+/* --- мельница в шапке: лопасти крутятся только пока html.busy (загрузка/обновление) --- */
+.hd .lg{display:flex;align-items:center;gap:9px}
+.lgm{width:22px;height:22px;flex:none;display:block;color:var(--gold)}
+.lgm svg{width:100%;height:100%;display:block}
+.lgm .lgbd{transform-box:fill-box;transform-origin:center}
+html.busy .lgm .lgbd{animation:lgspin 1.15s linear infinite}
+html.busy .lgm{color:var(--gold-t)}
+@keyframes lgspin{to{transform:rotate(360deg)}}
+/* --- пар над горячими напитками в меню: появляется только у видимых карточек (.vis от IntersectionObserver) --- */
+.stmw{position:absolute;pointer-events:none}
+.wide .stmw{left:26px;top:-6px;width:112px;height:64px}
+.sm .stmw{left:50%;top:-8px;width:96px;height:56px;margin-left:-48px}
+.stmw i{position:absolute;left:calc(14px + var(--i)*30px);bottom:8px;width:9px;height:22px;border-radius:6px;background:linear-gradient(180deg,rgba(246,241,234,0),rgba(246,241,234,.17) 35%,rgba(246,241,234,.04));opacity:0}
+html.motion .stmw.vis i{animation:cardstm 3s ease-in-out infinite;animation-delay:calc(var(--i)*.75s)}
+html:not(.motion) .stmw{display:none}
+#app.ov .stmw i,.scr .stmw i{animation-play-state:paused}
+@keyframes cardstm{0%{transform:translateY(8px) scaleX(1);opacity:0}30%{opacity:.9}60%{transform:translateY(-16px) scaleX(1.35);opacity:.55}100%{transform:translateY(-34px) scaleX(.8);opacity:0}}
+/* --- скелетоны: повторяют структуру карточки (фото + строки) и мерцают --- */
+.skw{height:196px;border-radius:var(--r-2xl);background:var(--c);padding:20px;display:flex;gap:12px;box-shadow:0 0 0 1px var(--line)}
+.skc2{height:236px;border-radius:var(--r-2xl);background:var(--c);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 0 0 1px var(--line)}
+.skph{flex:1;border-radius:var(--r-lg);background:var(--s1);position:relative;overflow:hidden}
+.skc2 .skph{height:110px;flex:none;border-radius:var(--r-md)}
+.sktx{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:6px 0 2px 4px}
+.skl{display:block;height:14px;border-radius:7px;background:var(--s1);position:relative;overflow:hidden}
+.skc{display:block;height:26px;width:96px;flex:none;border-radius:13px;background:var(--s1);position:relative;overflow:hidden}
+.skc.on{width:118px;background:var(--s2)}
+.skw .skph::after,.skc2 .skph::after,.skl::after,.skc::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.06) 50%,transparent 80%);animation:shm 1.4s infinite}
+.w1{width:78%}.w2{width:46%}.w3{width:58%}
+/* --- трекер заказа: пройденные шаги - золотые галочки, плавное заполнение, оживление текущего --- */
+.trk .tbar i{background:linear-gradient(90deg,var(--gold2),var(--ac));animation:fg .8s cubic-bezier(.25,1,.4,1) backwards}
+.trk .stp.d{color:var(--mu)}
+.trk .stp.d::before{background:var(--gold2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4.2 4.2L18 8.5' fill='none' stroke='%233a2708' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/8px 8px no-repeat;animation:dpop2 .4s var(--sp) backwards}
+.trk .cu{animation:cuin .45s var(--e) backwards}
+@keyframes dpop2{from{transform:scale(.4)}}
+@keyframes cuin{from{opacity:0;transform:translateY(6px)}}
+/* --- финал оплаты: мельница раскручивается, золотые частицы, крупная галочка --- */
+.payfx{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;background:radial-gradient(90% 70% at 50% 45%,rgba(28,18,12,.9),rgba(13,8,5,.95));animation:pfxin .3s var(--e) both}
+.payfx.out{animation:pfxout .4s var(--e) both}
+@keyframes pfxin{from{opacity:0}}
+@keyframes pfxout{to{opacity:0}}
+.pfxm{width:110px;height:110px;color:var(--gold);filter:drop-shadow(0 0 26px rgba(233,196,106,.35))}
+.pfxm .lgbd{transform-box:fill-box;transform-origin:center;animation:pfxspin 1.7s cubic-bezier(.45,.05,.3,1) both}
+@keyframes pfxspin{0%{transform:rotate(0)}22%{transform:rotate(46deg)}100%{transform:rotate(1040deg)}}
+.pfxc{position:absolute;inset:0;overflow:hidden}
+.pfxc i{position:absolute;left:50%;top:44%;width:7px;height:11px;border-radius:2px;background:var(--gc,#e9c46a);opacity:0;animation:pfxcf var(--t,.9s) ease-out var(--dl,.2s) both}
+@keyframes pfxcf{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.6)}12%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r)) scale(1)}}
+.pfxchk{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#cf5a41,var(--ac) 72%);box-shadow:0 0 0 7px rgba(184,67,44,.2),0 18px 44px rgba(0,0,0,.5);animation:pchk .55s var(--sp) both;animation-delay:1.05s}
+.pfxchk svg{width:44px;height:44px;color:#fff}
+.pfxchk path{stroke-dasharray:30;stroke-dashoffset:30;animation:pchkd .5s ease-out 1.2s forwards}
+@keyframes pchk{0%{transform:scale(0)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes pchkd{to{stroke-dashoffset:0}}
+.pfxt{font:700 21px var(--f);color:var(--gold-t);animation:pfxin .5s var(--e) 1.25s both}
+.pfxs{font:500 14px var(--f);color:var(--mu);animation:pfxin .5s var(--e) 1.35s both}
+/* --- золотая вспышка при посадке «летящего» товара в корзину --- */
+.flx{position:fixed;z-index:101;width:6px;height:6px;border-radius:50%;background:var(--gold);pointer-events:none;opacity:0;animation:flxa .45s ease-out both}
+@keyframes flxa{0%{opacity:.95;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)}}
+/* --- пустые состояния: рисованные иллюстрации вместо фонового рисунка --- */
+.empty::before{display:none}
+.emw{width:150px;height:126px;margin:0 auto 16px}
+.emw.ems{width:104px;height:88px;margin-bottom:12px}
+.emw svg{width:100%;height:100%;display:block;overflow:visible}
+html.motion .emw{animation:emfloat 4.6s ease-in-out infinite}
+@keyframes emfloat{50%{transform:translateY(-7px)}}
+.emw .emst path{fill:none;stroke:rgba(246,241,234,.4);stroke-width:3;stroke-linecap:round;opacity:0}
+html.motion .emw .emst path{animation:emstm 2.6s ease-in-out infinite}
+.emw .emst path:nth-child(2){animation-delay:1.2s}
+@keyframes emstm{0%{transform:translateY(6px);opacity:0}40%{opacity:.75}100%{transform:translateY(-10px);opacity:0}}
+/* --- пружинный отклик: добираем элементы, не охваченные базовым списком --- */
+html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch button,.pwg button,.nxstep button,.nxu,.gmhb,.gmcard,.kbmr,.kbit,.aimic,.aisb,.aigo,.rttg button,.nxdays button,.nxcovs button,.nxpre button,.kbgs button,.fncal button,.kl,.kb,.kb2){transition:transform .28s cubic-bezier(.34,1.5,.64,1),background-color .25s,color .25s,opacity .25s,border-color .25s}
+html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch button,.pwg button,.nxstep button,.nxu,.gmhb,.gmcard,.kbmr,.kbit,.aimic,.aisb,.aigo,.rttg button,.nxdays button,.nxcovs button,.nxpre button,.kbgs button,.fncal button,.kl,.kb,.kb2):active{transition-duration:.08s}
+:is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch button,.pwg button,.nxstep button,.nxu,.kbmr,.kbit,.rttg button,.nxdays button,.nxcovs button,.nxpre button,.fncal button):active{transform:scale(var(--prs))}
+/* --- суммы и номера заказов: табличные цифры, в админке - моноширинные --- */
+.mono,.sbig,.id,.skr b,.stn div span,.nxbig b,.nxus b,.fnkpi b,.fnpl b,.fnauto b,.fnrow b,.fntot b,.rpt b,.ftr .tt b,.fnit span:nth-child(n+2),.appd,.kunp{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.sbig,.nxbig b,.fnkpi b{font-feature-settings:'tnum'}
+/* --- кухня: читаемость с 1-2 метров, крупный тап мокрой рукой, один заметный вход нового заказа --- */
+.kc{position:relative;background:#1b130e;box-shadow:0 0 0 1px rgba(243,235,225,.05);border-radius:var(--r-lg)}
+.kcol h2{font-size:18px}
+.kch>b{font-size:27px}
+.ktm{font-size:22px}
+.kl{font-size:19px;line-height:1.3;padding:11px 12px;border-radius:var(--r-sm);min-height:56px}
+.kl b{color:var(--gold-t)}
+.kl small{font-size:14.5px}
+.knote{font-size:16px}
+.kb{padding:15px 12px;min-height:56px;font-size:18px;border-radius:16px}
+.kb2{width:54px;height:54px;border-radius:16px;font-size:20px}
+.kc.fresh{animation:kcin .5s var(--e) both,kfresh 1s ease-in-out .5s 3}
+.kc.fresh::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at 50% 40%,rgba(233,196,106,.4),rgba(233,196,106,.12) 55%,transparent 75%);opacity:0;animation:kfo 1s ease-out .5s 3 both}
+@keyframes kcin{from{opacity:0;transform:translateY(-16px) scale(.97)}}
+@keyframes kfo{from{opacity:1}to{opacity:0}}
+/* --- киоск: витрина - те же золотые акценты; собственный финал оплаты (apMill) не тронут --- */
+.kdin{border:1px solid var(--line-g);box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.25)}
+.kdn{text-shadow:0 0 34px rgba(233,196,106,.4)}
+.kdpay{border:1px solid var(--line-g)}
+.karts span{box-shadow:0 20px 50px rgba(0,0,0,.45),0 0 0 1px var(--line)}
+.klang button{transition:transform .25s var(--sp),background-color .25s,color .25s}
+.klang button:active{transform:scale(var(--prs))}
+.kwin{border:1px solid var(--line)}
 </style></head><body><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div class="tst" id="tst"></div>
 <script id="appjs" type="text/x-app">
 const sb=supabase.createClient('https://nctmbakzbzzkygndaklr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig');
@@ -1921,7 +2058,7 @@ let h=`<div class="spd nxday">${[0,1].map(n=>`<button class="${F.day==n?'on':''}
 const adv=F.adv?.payload?.advice;h+=`<div class="nxadv"><i>💡</i><div><b>${t('nx_adv')}</b><p>${adv?e(adv):t('nx_noadv')}</p></div></div>`;
 if(!F.kit)return h+nxSk();
 const rows=F.kit.filter(r=>I[r.item_uid]?.kind=='kitchen').sort((a,b)=>b.fc-a.fc);
-if(!rows.length)return h+`<div class="empty" style="padding:30px 10px">${t('nx_empty')}</div>`;
+if(!rows.length)return h+`<div class="empty" style="padding:30px 10px">${emArt('hill',1)}${t('nx_empty')}</div>`;
 const cal=rows.find(r=>r.info?.cal)?.info.cal;if(cal)h+=`<div class="nxcal">🎉 ${e(cal)}</div>`;
 const groups={};rows.forEach(r=>{const g=sgrp(I[r.item_uid].grp);(groups[g]=groups[g]||[]).push(r)});
 let n=0;const main=r=>+r.fc>=1.5||(r.info?.freq??1)>=.5,rare=rows.filter(r=>!main(r));
@@ -1964,7 +2101,7 @@ if(!F.acc)return h+nxSk();
 const K=F.acc.filter(r=>['kitchen','doner','lavash'].includes(r[2])&&r[5]>0),G={};
 F.acc.filter(r=>r[2]=='supply').forEach(r=>{const g=sgrp(r[6]);G[g]=G[g]||[0,0];G[g][0]+= +r[7];G[g][1]+= +r[5]});
 const GL=Object.entries(G).filter(([,v])=>v[0]>=1||v[1]>=1);
-if(!K.length&&!GL.length)return h+`<div class="empty" style="padding:30px 10px">${t('nx_empty')}</div>`;
+if(!K.length&&!GL.length)return h+`<div class="empty" style="padding:30px 10px">${emArt('hill',1)}${t('nx_empty')}</div>`;
 const err=K.reduce((a,r)=>a+Math.abs(r[3]-r[5]),0)+GL.reduce((a,[,v])=>a+Math.abs(v[0]-v[1]),0),act=K.reduce((a,r)=>a+ +r[5],0)+GL.reduce((a,[,v])=>a+v[1],0);
 const p=Math.max(0,Math.round(100-100*err/Math.max(act,1))),cov=K.length?Math.round(100*K.filter(r=>r[5]<=r[4]).length/K.length):0;
 const row=(nm,f,a,ok,i)=>{const mx=Math.max(f,a,1);return `<div class="nxac ent" style="--i:${Math.min(i,14)}"><div class="nxat"><b>${e(nm)}</b><span class="${ok?'up':'dn'}">${Math.round(f*10)/10} → ${Math.round(a)}</span></div><div class="nxab"><i class="a" style="--w:${(f/mx).toFixed(3)}"></i><i class="b" style="--w:${(a/mx).toFixed(3)}"></i></div></div>`};
@@ -2209,7 +2346,7 @@ else if(!D)body=`<div class="sk" style="height:150px;margin-top:16px"></div><div
 else{const rev=+D.rev||0,n=+D.n||0,avg=n?Math.round(rev/n):0,dp=pct(rev,+D.prev),vs=st.pd=='t'?t('st_vsd'):st.pd=='y'?t('st_vsy'):t('st_vs');
 body+=`<div class="skpi${st.loading?' ld':''}"><div class="mu">${t('st_rev')}</div><div class="sbig">${mn(Math.round(rev))}</div>${dp!==null?`<div class="sdl ${dp>=0?'up':'dn'}">${dp>=0?'▲':'▼'} ${Math.abs(dp)}% <span>${vs}</span></div>`:''}
 <div class="skr"><div><small>${t('st_n')}</small><b>${n}</b></div><div><small>${t('st_avg')}</small><b>${mn(avg)}</b></div></div></div>`;
-if(!n)body+=`<div class="empty" style="padding:30px 10px">${t('st_empty')}</div>`;
+if(!n)body+=`<div class="empty" style="padding:30px 10px">${emArt('hill',1)}${t('st_empty')}</div>`;
 else{const pay=(D.pay||[]).filter(p=>+p.s>0),tot=pay.reduce((a,p)=>a+ +p.s,0)||1;
 body+=`<div class="scard"><h4>${t('st_pay')}</h4><div class="sbar">${pay.map(p=>`<i style="flex:${+p.s};background:${PAYC[p.k]||PAYC.other}"></i>`).join('')}</div>
 ${pay.map(p=>`<div class="sleg"><span><i style="background:${PAYC[p.k]||PAYC.other}"></i>${t('pay_'+p.k)}</span><b>${mn(Math.round(+p.s))}</b><small>${Math.round(+p.s/tot*100)}% · ${p.n} ${t('chk')}</small></div>`).join('')}
@@ -2359,7 +2496,7 @@ async function loadUsed(){S.used=0;if(!S.me)return;const{data}=await sb.from('or
 const topbar=(title,fn='cl()')=>`<div class="top"><button class="rb" aria-label="←" onclick="${fn}">${IC.back}</button><h2>${title}</h2><span class="sp"></span></div>`;
 function prog(){if(!S.me)return `<div class="mu" style="margin:12px 4px;font-size:14px">${t('fc_rule')}</div>`;const n=S.pf?.orders_count||0,r=n%FREE_EVERY,a=avail();
 return `<div class="mu" style="margin:12px 4px;font-size:14px">${a?t('fc_have',S.L,{n:a}):t('fc_prog',S.L,{n,k:FREE_EVERY-r})}<div class="prg">${Array.from({length:FREE_EVERY},(_,i)=>`<i class="${a||i<r?'f':''}"></i>`).join('')}</div></div>`}
-function cart(){if(!S.cart.length){scr(topbar(t('cart'))+`<div class="empty"><h3>${t('empty')}</h3><p>${t('emptyH')}</p></div>`,'cart');return}
+function cart(){if(!S.cart.length){scr(topbar(t('cart'))+`<div class="empty">${emArt('cart')}<h3>${t('empty')}</h3><p>${t('emptyH')}</p></div>`,'cart');return}
 const hasDr=S.cart.some(l=>isDr(itemOf(l.id)));
 scr(topbar(t('cart'))+`<div class="body w" style="padding-bottom:130px">`+S.cart.map((l,i)=>`<div class="cl">${ph(itemOf(l.id))}<div class="mid"><b>${e(lineName(l))}</b><div class="mu" style="font-size:14px">${e(desc(l))}</div>${freeBtn(l,i)}${giftBtn(l,i)}</div><div style="text-align:right"><b>${mn(lineTot(l))}</b><div class="qty"><button class="c" onclick="cq(${i},-1)">−</button><b>${l.qty}</b><button class="c" onclick="cq(${i},1)">+</button></div></div></div>`).join('')+
 cartPairs()+
@@ -2370,6 +2507,7 @@ await loadPf2();await loadUsed();if(freeIn()>avail()){S.cart.forEach(l=>delete l
 if(ch){S.err=t('changed');cart();render();return}
 const items=S.cart.map(l=>({id:l.id,f:l.f,z:l.z,o:l.o,syr:l.syr,sg:l.sg,ing:l.ing,qty:l.qty,free:!!l.free||undefined,gift:l.gift||undefined,name:lineName(l,'ru'),desc:desc(l,'ru'),unit:unitFull(l),sum:lineTot(l)}));
 const{error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,pickup_time:pt});if(error){S.err=ordErr(error);cart();return}
+try{paidFx()}catch{}  // визуальный финал: мельница + частицы + галочка; сбой анимации не влияет на заказ
 S.cart=[];S.note='';S.pt='';S.v='ord';cl();await loadOrd();await loadUsed();render();window.scrollTo(0,0);toast(t('okord'))}
 // ---------- вход и профиль ----------
 function authM(from){S.after=from||null;scr(topbar(S.mode=='up'?t('reg'):t('signin'))+`<div class="body w">${tgLoginBtn()}${S.mode=='up'?`<input id="nn" placeholder="${t('name')}" autocomplete="name">`:''}<input id="em" type="email" placeholder="Email" autocomplete="email"><input id="pw" type="password" placeholder="${t('pw')}" autocomplete="${S.mode=='up'?'new-password':'current-password'}"><div class="err">${e(S.err)}</div><button class="main" style="margin-top:10px" onclick="auth()">${S.mode=='up'?t('doreg'):t('signin')}</button>${S.mode=='up'?consentLine():''}<p class="mu" style="cursor:pointer;text-align:center;margin-top:20px" onclick="S.mode=S.mode=='up'?'in':'up';S.err='';authM(S.after)">${S.mode=='up'?t('haveacc'):t('noacc')}</p></div>`,'auth')}
@@ -2386,7 +2524,7 @@ function kas(){const act=S.ord.filter(o=>!['done','cancelled'].includes(o.status
 const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы'):'')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
 if(S.kt=='stop'||(S.kt=='menu'&&!isAdm()))return tabs+[...S.items.map(x=>[x,'i']),...S.opts.filter(o=>o.categories.length).map(x=>[x,'o'])].map(([x,k])=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px"><span style="${x.sold_out?'opacity:.5':''}">${e(nm(x.name))}</span>${cc(x.sold_out,`so('${x.id}','${k}',${!x.sold_out})`,x.sold_out?t('back'):t('endd'))}</div>`).join('');
 if(S.kt=='menu')return tabs+menuEd();
-return tabs+(act.length?'':`<div class="empty"><p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
+return tabs+(act.length?'':`<div class="empty">${emArt('ord',1)}<p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
 function menuEd(){const num=(id,v)=>`<input id="${id}" type="number" min="0" step="10" inputmode="numeric" value="${v}">`,nin=(pre,n)=>LANGS.map(l=>`<input id="${pre}-${l}" placeholder="${l.toUpperCase()}" value="${e(n[l]||'')}">`).join('');
 return `<p class="mu" style="margin:8px 20px;font-size:14px">${t('medit')}</p>`+S.items.map(it=>`<details class="ed" ${S.open==it.id?'open':''} ontoggle="if(this.open)S.open='${it.id}'"><summary>${e(nm(it.name))} <span class="sm2">· ${mn(it.price)}</span></summary><div class="lab">${t('photo')}</div><div class="edp">${ph(it)}<div><label class="c fbtn">${t('upl')}<input type="file" accept="image/*" onchange="upPhoto('${it.id}',this)"></label>${it.image_url?`<div style="margin-top:8px"><button class="c" onclick="delPhoto('${it.id}')">${t('delph')}</button></div>`:''}</div></div><div class="lab">${t('nameL')}</div>${nin('n-'+it.id,it.name)}<div class="lab">${t('price')}</div>`+fills(it).map(f=>it.data.p[f].map((v,i)=>`<label class="kv"><span>${fills(it).length>1?e(nm(FL[f]||{ru:f}))+' ':''}${it.data.p[f].length>1?e(szl(it,i)):''}</span>${num(`p-${it.id}-${f}-${i}`,v)}</label>`).join('')).join('')+`<button class="main" style="margin-top:12px" onclick="saveItem('${it.id}')">${t('save')}</button></details>`).join('')+
 `<h3 style="margin:20px 20px 4px">${t('opts')}</h3>`+S.opts.filter(o=>o.categories.length).map(o=>`<details class="ed"><summary>${e(nm(o.name))} <span class="sm2">· +${o.price}</span></summary><div class="lab">${t('nameL')}</div>${nin('on-'+o.id,o.name)}<div class="lab">${t('price')}</div>${num('op-'+o.id,o.price)}<button class="main" style="margin-top:12px" onclick="saveOpt('${o.id}')">${t('save')}</button></details>`).join('')}
@@ -2413,22 +2551,23 @@ function tracker(o){const i=STEPS.indexOf(o.status),pct=pctOf(o),from=S.pp[o.id]
 return `<div class="trk ${o.status=='ready'?'rdy':''}${fx?' fx':''}"><div class="tbar"><i style="--p:${pct};--from:${from}"></i></div>${STEPS.map((s,k)=>`<div class="stp ${k<i?'d':k==i?'cu':''}">${t(s=='ready'?'b_ready':'s_'+s)}</div>`).join('')}</div>`}
 const pctOf=o=>Math.max(0,STEPS.indexOf(o.status))/(STEPS.length-1);
 function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it).replace('class="ph"','class="ph" style="width:56px;height:56px;flex:none;border-radius:14px"'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
-const hdr=()=>`<div class="hd"><div class="lg">DEGIRMEN</div><div class="hdr-r">${kbBtn()}${bellBtn()}<button class="rb${S.me&&S.pf?' avb':''}" aria-label="${t('profile')}" onclick="profileM()">${S.me&&S.pf?avatar(44):IC.user}</button></div></div>`;
+const hdr=()=>`<div class="hd"><div class="lg"><span class="lgm" aria-hidden="true"><svg viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><g class="lgbd"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3.5" fill="currentColor"/></g></svg></span>DEGIRMEN</div><div class="hdr-r">${kbBtn()}${bellBtn()}<button class="rb${S.me&&S.pf?' avb':''}" aria-label="${t('profile')}" onclick="profileM()">${S.me&&S.pf?avatar(44):IC.user}</button></div></div>`;
 const secOf=cat=>{const its=S.items.filter(i=>i.category==cat),def=SECS[cat];if(!def)return [{k:'a',l:null,items:its}];const used=new Set(),out=def.map(s=>({...s,items:s.ids.map(id=>its.find(i=>i.id==id)).filter(Boolean)}));out.forEach(s=>s.items.forEach(i=>used.add(i.id)));const rest=its.filter(i=>!used.has(i.id));if(rest.length)out[out.length-1].items.push(...rest);return out.filter(s=>s.items.length)};
 const price=i=>{const pc=Object.values(i.data.p).flat();return i.sold_out?t('gone'):(pc.length>1?t('from')+' ':'')+mn(Math.min(...pc))};
-const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${ph(i)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
-const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${ph(i)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
+const hotCat=i=>['cf','tea','tk'].includes(i.category),stmw=i=>hotCat(i)?'<span class="stmw" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></span>':'';
+const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
+const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
 function goSec(k){const el=document.getElementById('sec-'+k);el&&el.scrollIntoView({behavior:'smooth',block:'start'})}
 function render(){let h='',bar='';document.body.style.overflow=S.scr?'hidden':'';
-if(S.loading)h=hdr()+`<div class="cats"><button class="on">${t('c_dn')}</button></div><div class="list" style="padding-top:24px"><div class="sk"></div><div class="grid"><div class="sk s"></div><div class="sk s"></div></div></div>`;
-else if(S.fail)h=hdr()+`<div class="empty"><p>${t('loadfail')}: ${e(S.fail)}</p><button class="sec2" style="width:auto;padding:0 28px" onclick="boot()">${t('retry')}</button></div>`;
+	if(S.loading)h=hdr()+`<div class="cats"><span class="skc on"></span><span class="skc"></span><span class="skc"></span><span class="skc"></span></div><div class="list" style="padding-top:24px"><div class="skw"><div class="skph"></div><div class="sktx"><i class="skl w1"></i><i class="skl w2"></i></div></div><div class="grid"><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div></div></div>`;
+else if(S.fail)h=hdr()+`<div class="empty">${emArt('hill')}<p>${t('loadfail')}: ${e(S.fail)}</p><button class="sec2" style="width:auto;padding:0 28px" onclick="boot()">${t('retry')}</button></div>`;
 else if(S.v=='menu'){const ss_=secOf(S.cat),sub=SECS[S.cat]&&ss_.length>0;let n=0;
 h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+heroHtml()+`<div class="cats">${CATS.filter(c=>S.items.some(i=>i.category==c)).map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
 (sub?`<div class="subs">${ss_.map(s=>`<button onclick="goSec('${s.k}')">${t(s.l)}</button>`).join('')}</div>`:'')+
 `<div class="cv">`+ss_.map(s=>`<div id="sec-${s.k}">${s.l?`<div class="sec">${t(s.l)}</div>`:'<div style="height:20px"></div>'}<div class="list">${wide(s.items[0],n++)}${s.items.length>1?`<div class="grid">${s.items.slice(1).map(i=>small(i,n++)).join('')}</div>`:''}</div></div>`).join('')+`</div></div>`;
 const ac=activeMine(),rd=ac.some(o=>o.status=='ready'),nC=S.cart.reduce((a,x)=>a+x.qty,0);
 bar=aiFab()+`<div class="pill"><button onclick="goOrd()">${t('orders')}${ac.length?`<i class="dot ${rd?'r':''}"></i>`:''}</button>${staff()?`<button onclick="goKas()">${t('kas')}</button>`:''}<button class="pa" onclick="cart()">${t('cart')}${nC&&(S.shownTot??tot())>0?' · '+mn(S.shownTot??tot()):''}</button></div>`}
-else if(S.v=='ord'){const ac=activeMine(),hi=mine().filter(o=>!ac.includes(o));h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('myord'),"goMenu()")+(S.me?rateCard()+(S.ord.length?'':`<div class="empty"><p>${t('noord')}</p></div>`)+ac.map(o=>orderCard(o,1)).join('')+(hi.length?`<div class="lab" style="margin:22px 24px 4px">${t('hist')}</div>`+hi.map(o=>orderCard(o,0)).join(''):'')+gameCard()+`<div style="padding:0 20px">${prog()}</div>`:`<div class="empty"><p>${t('loginSee')}</p><button class="main" style="width:auto;padding:0 32px" onclick="authM()">${t('login')}</button></div>`)+`</div>`}
+else if(S.v=='ord'){const ac=activeMine(),hi=mine().filter(o=>!ac.includes(o));h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('myord'),"goMenu()")+(S.me?rateCard()+(S.ord.length?'':`<div class="empty">${emArt('ord')}<p>${t('noord')}</p></div>`)+ac.map(o=>orderCard(o,1)).join('')+(hi.length?`<div class="lab" style="margin:22px 24px 4px">${t('hist')}</div>`+hi.map(o=>orderCard(o,0)).join(''):'')+gameCard()+`<div style="padding:0 20px">${prog()}</div>`:`<div class="empty">${emArt('ord')}<p>${t('loginSee')}</p><button class="main" style="width:auto;padding:0 32px" onclick="authM()">${t('login')}</button></div>`)+`</div>`}
 else h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('kas'),"goMenu()")+kas()+`</div>`;
 paint(h)
 if(S._b!==bar){$('bar').innerHTML=bar;S._b=bar}}
@@ -3171,7 +3310,7 @@ function kioskIdle(){const n=Date.now();
   if(idle>lim){if(busy){AP.warn=15;kioskLayer()}else kioskReset()}}
 // корзина киоска: без входа, без бонусов и времени, с именем для табло
 {const _c=cart;cart=function(){if(!isKiosk())return _c();
-  if(!S.cart.length){scr(topbar(t('cart'))+`<div class="empty"><h3>${t('empty')}</h3><p>${t('emptyH')}</p></div>`,'cart');return}
+  if(!S.cart.length){scr(topbar(t('cart'))+`<div class="empty">${emArt('cart')}<h3>${t('empty')}</h3><p>${t('emptyH')}</p></div>`,'cart');return}
   scr(topbar(t('cart'))+`<div class="body w kcart" style="padding-bottom:150px">`+S.cart.map((l,i)=>`<div class="cl">${ph(itemOf(l.id))}<div class="mid"><b>${e(lineName(l))}</b><div class="mu" style="font-size:14px">${e(desc(l))}</div></div><div style="text-align:right"><b>${mn(lineTot(l))}</b><div class="qty"><button class="c" onclick="cq(${i},-1)">−</button><b>${l.qty}</b><button class="c" onclick="cq(${i},1)">+</button></div></div></div>`).join('')+
   cartPairs()+`<div class="lab">${t('k_name')}</div><input id="kn" maxlength="20" autocomplete="off" placeholder="${t('k_nameph')}" value="${e(S.kname||'')}" oninput="S.kname=this.value"><div class="lab">${t('notel')}</div><input id="nt" maxlength="80" autocomplete="off" placeholder="${t('notePh')}" value="${e(S.note||'')}" oninput="S.note=this.value"><div class="kpaynote">${IC.chk||''}<span>${t('k_pay')}</span></div><div class="err">${e(S.err)}</div></div><div class="ftr"><div class="tt"><div>${t('tot')}</div><b>${mn(tot())}</b></div><button class="main" id="kgo" onclick="place()">${t('k_go')}</button></div>`,'cart')}}
 {const _p=place;place=async function(){if(!isKiosk())return _p();const b=$('kgo');if(b){if(b.disabled)return;b.disabled=true;b.classList.add('busy')}S.err='';
@@ -4041,6 +4180,67 @@ Object.assign(T.ru,{e_blocked:'Оформление заказов для ваш
 Object.assign(T.kk||{},{e_blocked:'Сіздің аккаунтыңыз үшін тапсырыс беру уақытша жабылған.'});
 Object.assign(T.en||{},{e_blocked:'Ordering is temporarily disabled for your account by the administrator.'});
 
+/* ============================================================
+   DEGIRMEN PREMIUM - визуальные хуки (ночная полировка)
+   Только внешний вид: новые функции + обёртки в принятом здесь стиле.
+   Логика, имена, вызовы sb и структура данных не изменены (см. CHANGES.md).
+   ============================================================ */
+// --- пустые состояния: рисованные SVG-иллюстрации (пар - только при включённых анимациях) ---
+function emArt(k,sm){const mark=(x,y,s,c)=>`<g transform="translate(${x} ${y}) scale(${s})" fill="none" stroke="${c}" stroke-width="4.6" stroke-linejoin="round" stroke-linecap="round"><path d="M-8 28l4-26h8l4 26z"/><path d="M-4 16h8"/><path d="M0 0L-14-18l-4 4z"/><path d="M0 0L18-14l-4-4z"/><path d="M0 0L14 18l4-4z"/><path d="M0 0L-18 14l4 4z"/><circle r="3" fill="${c}"/></g>`;
+let svg='';
+if(k=='cart')svg=`<svg viewBox="0 0 150 126"><ellipse cx="75" cy="112" rx="33" ry="6" fill="rgba(0,0,0,.4)"/><g class="emst"><path d="M63 24c-4-5 4-8 0-14"/><path d="M76 22c-4-5 4-8 0-14"/></g><path d="M53 46h44l-5.5 58a8 8 0 0 1-8 7H66.5a8 8 0 0 1-8-7z" fill="#f3ebe1"/><rect x="48" y="38" width="54" height="10" rx="5" fill="#d8b48a"/><rect x="61" y="30" width="28" height="9" rx="4.5" fill="#c9a06b"/>${mark(75,86,.5,'#b8432c')}</svg>`;
+else if(k=='ord')svg=`<svg viewBox="0 0 150 126"><ellipse cx="75" cy="114" rx="36" ry="5" fill="rgba(0,0,0,.4)"/><path d="M53 20h44v88l-7.3-5-7.4 5-7.3-5-7.3 5-7.4-5-7.3 5z" fill="#f3ebe1"/>${mark(75,44,.5,'#b8432c')}<g stroke="#cdbba9" stroke-width="4" stroke-linecap="round"><path d="M64 66h22"/><path d="M64 76h16"/><path d="M64 86h22"/></g></svg>`;
+else svg=`<svg viewBox="0 0 150 126"><circle cx="118" cy="28" r="12" fill="#d9a54a" opacity=".45"/><ellipse cx="34" cy="24" rx="13" ry="5" fill="#f3ebe1" opacity=".13"/><ellipse cx="44" cy="21" rx="8" ry="4" fill="#f3ebe1" opacity=".1"/><path d="M0 112q75-44 150 0v6H0z" fill="#3a2a1f"/><path d="M70 94l2.5-32h5l2.5 32z" fill="#d8b48a"/><path d="M67.5 62h15l-3-8h-9z" fill="#8f3a25"/><g fill="#f3ebe1" opacity=".95"><path d="M75 46l-3.5-32 9 1-1.5 29z"/><path d="M75 46l32-3.5-1 9-29-1.5z"/><path d="M75 46l3.5 32-9-1 1.5-29z"/><path d="M75 46l-32 3.5 1-9 29 1.5z"/></g><circle cx="75" cy="46" r="3.6" fill="#3b2117"/></svg>`;
+return `<div class="emw${sm?' ems':''}" aria-hidden="true">${svg}</div>`}
+// --- мельница в шапке крутится, пока грузится меню или обновляются заказы ---
+let _bn=0;
+function busyFx(on){try{if(on){_bn++;document.documentElement.classList.add('busy');return}_bn=Math.max(0,_bn-1);if(!_bn)document.documentElement.classList.remove('busy')}catch{}}
+{const _lm=loadMenu;loadMenu=async function(){busyFx(1);try{return await _lm.apply(this,arguments)}finally{busyFx(0)}}}
+{const _lo=loadOrd;loadOrd=async function(){busyFx(1);const t0=Date.now();try{return await _lo.apply(this,arguments)}finally{const d=Date.now()-t0;setTimeout(()=>busyFx(0),Math.max(0,650-d))}}}
+// --- пар над горячими напитками: анимируется только у видимых карточек ---
+let _steamIO=null;
+function steamScan(){try{
+ if(_steamIO){_steamIO.disconnect();_steamIO=null}
+ const ws=document.querySelectorAll('#app .stmw');
+ if(!ws.length)return;
+ if(!('IntersectionObserver'in window)||RM)return;
+ _steamIO=new IntersectionObserver(es=>{es.forEach(x=>x.target.classList.toggle('vis',x.isIntersecting))},{rootMargin:'120px 0px'});
+ ws.forEach(w=>_steamIO.observe(w));
+}catch{}}
+{const _r=render;render=function(){const r=_r.apply(this,arguments);steamScan();return r}}
+// --- финал оплаты: мельница раскручивается, золотые частицы, крупная галочка ---
+function pfxMill(){return `<svg viewBox="0 0 64 64" class="pfxm" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><path d="M28 46h8"/><g class="lgbd"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3" fill="currentColor"/></g></svg>`}
+function paidFx(){try{
+ const d=document.createElement('div');d.className='payfx';
+ let s=7;const rr=()=>((s=(s*16807)%2147483647)/2147483647);
+ const CS=['#e9c46a','#d4a24c','#f3dfa9','#b8432c','#f3ebe1'];let conf='';
+ for(let i=0;i<26;i++){const a=rr()*Math.PI*2,v=90+rr()*150;conf+=`<i style="--x:${Math.round(Math.cos(a)*v)}px;--y:${Math.round(Math.sin(a)*v-50)}px;--r:${Math.round(rr()*720-360)}deg;--t:${(0.75+rr()*0.65).toFixed(2)}s;--dl:${(0.14+rr()*0.22).toFixed(2)}s;--gc:${CS[i%CS.length]}"></i>`}
+ d.innerHTML=pfxMill()+`<div class="pfxc">${conf}</div><div class="pfxchk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pfxt">${e(t('okord').split('.')[0])}</div><div class="pfxs">${e(t('timeN'))}</div>`;
+ document.body.appendChild(d);
+ try{navigator.vibrate&&navigator.vibrate([18,50,18,50,70])}catch{}
+ setTimeout(()=>{try{d.classList.add('out')}catch{}},2050);
+ setTimeout(()=>{try{d.remove()}catch{}},2500);
+}catch(err){try{console.warn('paidFx:',err)}catch{}}}
+// --- вибрация главных действий (на click, не на pointerdown; обычные кнопки не трогаем) ---
+{const _sc=setCat;setCat=function(k){if(S.cat!=k)try{navigator.vibrate&&navigator.vibrate(10)}catch{};return _sc.apply(this,arguments)}}
+{const _pl=place;place=async function(){try{if(!isKiosk())navigator.vibrate&&navigator.vibrate(12)}catch{};return _pl.apply(this,arguments)}}
+// --- полёт в корзину: перезапуск .bump + золотые искры при посадке ---
+{const _fl=flight;flight=function(){try{const b=document.querySelector('#bar .pa');if(b)b.classList.remove('bump')}catch{}
+ const r=_fl.apply(this,arguments);
+ try{setTimeout(()=>{if(RM)return;const tg=document.querySelector('#bar .pa');if(!tg)return;const b=tg.getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2;
+  for(let i=0;i<6;i++){const p=document.createElement('i');p.className='flx';const a=i/6*Math.PI*2;p.style.left=(cx-3)+'px';p.style.top=(cy-3)+'px';p.style.setProperty('--x',Math.round(Math.cos(a)*26)+'px');p.style.setProperty('--y',Math.round(Math.sin(a)*26-10)+'px');document.body.appendChild(p);setTimeout(()=>p.remove(),520)}},610)}catch{}
+ return r}}
+// --- итог в шите корзины: подпрыгивание и докрутка цифр при изменении количества ---
+function twNum(el,from,to){try{const t0=performance.now(),st=now=>{const k=Math.min(1,(now-t0)/400),v=from+(to-from)*(1-Math.pow(1-k,3));el.textContent=mn(Math.round(v));if(k<1)requestAnimationFrame(st);else el.textContent=mn(to)};requestAnimationFrame(st)}catch{}}
+function totOld(sel){try{const f=document.querySelector(sel);return f?parseFloat(String(f.textContent).replace(/[^\d]/g,''))||0:null}catch{return null}}
+function bumpTotal(oldV){try{if(oldV==null||RM||!document.documentElement.classList.contains('motion'))return;const f=document.querySelector('#m .ftr .tt b');if(!f)return;f.classList.remove('bump');void f.offsetWidth;f.classList.add('bump');twNum(f,oldV,tot())}catch{}}
+{const _cq=cq;cq=function(...a){const o=totOld('#m .ftr .tt b');const r=_cq.apply(this,a);bumpTotal(o);return r}}
+{const _u=up;up=function(...a){const o=totOld('#m .ftr .tt b');const r=_u.apply(this,a);bumpTotal(o);return r}}
+// --- после закрытия экрана с выросшей суммой пилюля докручивается (кроме пути add(), там свой полёт) ---
+{const _cl=cl;cl=function(){let oldV=null;try{const b=document.querySelector('#bar .pa');oldV=b?parseFloat(String(b.textContent).replace(/[^\d]/g,''))||0:null}catch{}
+ const r=_cl.apply(this,arguments);
+ try{if(S.shownTot==null&&oldV!=null&&tot()>oldV&&!RM&&document.documentElement.classList.contains('motion')){const b=document.querySelector('#bar .pa');if(b){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');tween(b,oldV,tot())}}}catch{}
+ return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
