@@ -3905,6 +3905,141 @@ function docDeep(){const k=new URLSearchParams(location.search).get('doc');if(!k
 {const t0=Date.now(),iv=setInterval(()=>{if((S.items||[]).length||Date.now()-t0>4000){clearInterval(iv);setTimeout(docDeep,300)}},150)}
 // согласие под формой регистрации
 const consentLine=()=>`<p class="mu ab-cons">${t('ab_consent').replace('{a}',`<a onclick="docM('terms')">${t('ab_consent_a')}</a>`).replace('{b}',`<a onclick="docM('privacy')">${t('ab_consent_b')}</a>`)}</p>`;
+// ---------- «Суд мельницы»: санкции к аккаунтам (только админ) ----------
+{const css=`
+.sx{margin:18px 0 6px;border-radius:24px;padding:16px;background:radial-gradient(120% 90% at 100% 0%,rgba(184,67,44,.28),transparent 60%),linear-gradient(160deg,#241712,#160e0b);border:1px solid rgba(233,196,106,.22);position:relative;overflow:hidden}
+.sx::before{content:'';position:absolute;right:-30px;top:-30px;width:140px;height:140px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23e9c46a' stroke-width='2' opacity='.13'%3E%3Cpath d='M32 6v52M14 58h36M10 18h44M10 18l-6 16h12zM54 18l-6 16h12zM4 34q6 6 12 0M48 34q6 6 12 0'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
+.sxh{display:flex;align-items:center;gap:10px}.sxh b{font:800 18px var(--f);letter-spacing:.01em}.sxh small{margin-left:auto;font:600 11px var(--f);color:#e9c46a;opacity:.75;letter-spacing:.08em}
+.sxst{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 14px}.sxst span{padding:6px 11px;border-radius:999px;font:600 13px var(--f);background:rgba(255,255,255,.07)}
+.sxst .ok{background:rgba(110,190,120,.16);color:#9fd8a8}.sxst .bad{background:rgba(184,67,44,.3);color:#ffb4a2}.sxst .warn{background:rgba(233,196,106,.16);color:#f0d38a}
+.sxg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sxb{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:12px 12px 11px;border-radius:18px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.05);color:var(--tx);cursor:pointer;transition:transform .15s,background .2s}
+.sxb:active{transform:scale(.96)}.sxb i{font-style:normal;font-size:24px;line-height:1}.sxb b{font:700 14.5px var(--f)}.sxb small{font:500 12px var(--f);color:var(--mu);line-height:1.25}
+.sxb.red{background:rgba(184,67,44,.22);border-color:rgba(255,120,90,.25)}.sxb.gold{background:rgba(233,196,106,.12);border-color:rgba(233,196,106,.25)}.sxb.green{background:rgba(110,190,120,.13);border-color:rgba(110,190,120,.25)}
+.sxlog{margin-top:14px;border-top:1px dashed rgba(233,196,106,.22);padding-top:10px}.sxlog h5{margin:0 0 6px;font:700 13px var(--f);color:#e9c46a;letter-spacing:.06em;text-transform:uppercase}
+.sxl{display:flex;gap:10px;padding:7px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05)}.sxl:last-child{border:0}.sxl i{font-style:normal;width:22px;text-align:center}.sxl div{flex:1;min-width:0}.sxl small{display:block;color:var(--mu);font-size:12px;margin-top:1px}
+.sxdur{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}.sxdur button,.sxrs button{border:1px solid var(--s2);background:none;color:var(--tx);border-radius:16px;padding:9px 14px;font:600 14px var(--f);cursor:pointer}
+.sxdur button.on{background:var(--ac);border-color:var(--ac);color:#fff}.sxrs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 4px}.sxrs button{padding:6px 11px;font-size:13px;font-weight:500;color:var(--mu)}
+.sxsh h3{margin:0 0 4px}.sxsh p{margin:0 0 12px;color:var(--mu);font-size:14px}.sxpw{display:flex;gap:8px;align-items:center}.sxpw input{flex:1;font-family:ui-monospace,monospace;letter-spacing:.04em}
+.sxpw button{flex:none;height:50px;width:50px;border-radius:25px;border:0;background:var(--s2);color:var(--tx);font-size:20px;cursor:pointer}
+.sxgo{width:100%;height:56px;border:0;border-radius:28px;margin-top:14px;font:800 16px var(--f);color:#fff;background:linear-gradient(135deg,#d0533a,#8d2b1b);box-shadow:0 8px 24px rgba(184,67,44,.35);cursor:pointer}
+.sxgo.calm{background:linear-gradient(135deg,#5fae6e,#2f7a46);box-shadow:0 8px 24px rgba(95,174,110,.3)}
+.nxu[data-sx]{position:relative}.nxu[data-sx]::after{content:attr(data-sx);position:absolute;left:44px;top:6px;padding:2px 7px;border-radius:9px;font:700 10.5px var(--f);background:#8d2b1b;color:#ffd6cb;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.nxu[data-sx="🌯"]::after{background:#7a5a17;color:#ffe9b0}
+/* молоток судьи */
+.sxv{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(10,6,4,.55);backdrop-filter:blur(3px);animation:sxfade .25s ease both;pointer-events:none}
+.sxv.out{animation:sxfade .35s ease reverse both}
+.sxv .gv{width:150px;height:150px;transform-origin:85% 85%;animation:sxhit .55s cubic-bezier(.5,-0.4,.6,1.4) both}
+.sxv .bang{position:absolute;font:900 54px var(--f);color:#ffcf7a;text-shadow:0 4px 0 #8d2b1b,0 0 30px rgba(255,160,80,.6);opacity:0;animation:sxbang .5s .42s cubic-bezier(.2,1.6,.4,1) both}
+.sxv .stamp{position:absolute;top:calc(50% + 70px);padding:8px 18px;border:4px solid #e0503a;border-radius:10px;color:#e0503a;font:900 22px var(--f);letter-spacing:.12em;transform:rotate(-8deg) scale(2.2);opacity:0;animation:sxstamp .35s .75s cubic-bezier(.3,1.5,.5,1) both;background:rgba(20,8,6,.6)}
+.sxv .stamp.green{border-color:#7fd08e;color:#7fd08e}
+@keyframes sxfade{from{opacity:0}to{opacity:1}}
+@keyframes sxhit{0%{transform:rotate(-55deg) translateY(-20px)}55%{transform:rotate(-70deg) translateY(-26px)}78%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+@keyframes sxbang{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:scale(1)}}
+@keyframes sxstamp{to{opacity:1;transform:rotate(-8deg) scale(1)}}
+.sxshake{animation:sxshk .35s .45s both}@keyframes sxshk{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-1px)}}
+/* экран заблокированного */
+#sxban{position:fixed;inset:0;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:32px 24px calc(32px + env(safe-area-inset-bottom));text-align:center;background:radial-gradient(90% 60% at 50% 30%,#3a1610,#120907 70%);color:#f4e9df;animation:sxfade .4s both}
+#sxban svg{width:170px;height:170px;margin-bottom:8px}#sxban h2{margin:0;font:800 26px var(--f)}#sxban p{margin:0;max-width:340px;color:#d6c3b6;font-size:15px;line-height:1.45}
+#sxban .why{margin-top:6px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.06);border:1px dashed rgba(233,196,106,.35);font-size:14px}
+#sxban button{margin-top:18px;height:52px;padding:0 28px;border:0;border-radius:26px;background:#f4e9df;color:#1a130f;font:700 16px var(--f);cursor:pointer}
+#sxban .bl{transform-origin:32px 26px;animation:sxspin 9s linear infinite}#sxban.stop .bl{animation:sxjam 2.4s ease-in-out infinite}
+#sxban .lk{transform-origin:32px 40px;animation:sxswing 2.4s ease-in-out infinite}
+@keyframes sxspin{to{transform:rotate(360deg)}}@keyframes sxjam{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}@keyframes sxswing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.sxcart{margin:0 0 12px;padding:12px 14px;border-radius:18px;background:rgba(184,67,44,.16);border:1px solid rgba(255,120,90,.25);font-size:14px}
+@media (prefers-reduced-motion:reduce){.sxv .gv,.sxv .bang,.sxv .stamp,.sxshake,#sxban .bl,#sxban .lk{animation:none!important;opacity:1}}`;
+const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)}
+
+const SX={
+  dur:[[60,'1 час'],[1440,'Сутки'],[10080,'Неделя'],[43200,'Месяц'],[0,'Навсегда ♾']],
+  rs:['Заказал 90 донеров ради прикола','Спам заказами','Не забрал заказ','Хамил кассиру','Подозрительная активность','Просто потому что'],
+  err:{forbidden:'Судить может только админ',self:'Себя судить нельзя 🙂',admin:'Админа судить нельзя - сначала снимите с него корону 👑',no_user:'Пользователь не найден',weak_pw:'Пароль - от 8 до 72 символов',nothing:'Конфисковывать нечего - бонусов 0',bad_kind:'Неизвестная мера'},
+  log:{ban:['⛓','В подвал'],unban:['🔓','Выпущен из подвала'],no_orders:['🌯','Запрет на донер'],allow_orders:['🌯','Запрет на донер снят'],kick:['🚪','Выгнан со всех устройств'],password:['🔑','Выдан новый ключ (пароль)'],confiscate:['🫘','Конфискованы бонусы'],amnesty:['🕊','Амнистия']}};
+const sxD=d=>new Date(d).toLocaleString('ru',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const sxUntil=d=>!d?'':new Date(d).getFullYear()>2900?'навсегда':'до '+sxD(d);
+const sxOn=d=>d&&new Date(d)>new Date();
+function sxErr(er){const m=String(er?.message||er||''),k=(m.match(/sanction:([a-z_]+)/)||[])[1];
+  if(/admin_sanction/.test(m)&&/(not find|does not exist|schema cache)/i.test(m))return 'Суд ещё не открыт: функцию в базе нужно подтвердить';
+  return SX.err[k]||m}
+
+// панель в карточке пользователя
+async function sxLoad(id){const{data,error}=await sb.rpc('admin_sanction_info',{p_user:id});if(S.ur?.id!=id)return;S.ur.sx=error?{err:sxErr(error)}:data;sxPaint()}
+function sxHtml(u){const X=S.ur?.sx;if(u.role=='admin')return `<div class="sx"><div class="sxh"><span style="font-size:22px">⚖️</span><b>Суд мельницы</b></div><p class="mu" style="margin:10px 0 0;font-size:14px">Админ неподсуден 👑 Чтобы применить меры, сначала смените ему роль.</p></div>`;
+  const no=`<small>ДЕЛО №${u.id.slice(0,4).toUpperCase()}</small>`;
+  if(!X)return `<div class="sx"><div class="sxh"><span style="font-size:22px">⚖️</span><b>Суд мельницы</b>${no}</div><div class="sk" style="height:150px;margin-top:12px;border-radius:18px"></div></div>`;
+  if(X.err)return `<div class="sx"><div class="sxh"><span style="font-size:22px">⚖️</span><b>Суд мельницы</b>${no}</div><p class="mu" style="margin:10px 0 0;font-size:14px">${e(X.err)}</p></div>`;
+  const ban=sxOn(X.blocked_until),nob=sxOn(X.no_orders_until),bon=X.orders_count||0;
+  const chips=[ban?`<span class="bad">⛓ В подвале ${sxUntil(X.blocked_until)}</span>`:'',nob?`<span class="warn">🌯 Без донера ${sxUntil(X.no_orders_until)}</span>`:'',!ban&&!nob?`<span class="ok">🕊 На свободе</span>`:'',
+    `<span>📱 Устройств: ${X.sessions||0}</span>`,`<span>🫘 Бонусов: ${bon}</span>`].join('');
+  const B=(cls,ic,ti,sub,fn)=>`<button class="sxb ${cls}" onclick="${fn}"><i>${ic}</i><b>${ti}</b><small>${sub}</small></button>`;
+  const btns=[
+    ban?B('green','🔓','Выпустить','снять блокировку',`sxDo('unban')`):B('red','⛓','В подвал','блокировка аккаунта',`sxSheet('ban')`),
+    nob?B('green','🌯','Вернуть донер','снять запрет на заказы',`sxDo('allow_orders')`):B('','🌯','Запрет на донер','нельзя оформлять заказы',`sxSheet('no_orders')`),
+    B('gold','🔑','Новый ключ','сменить пароль',`sxPw()`),
+    B('','🚪','Выгнать с кухни','выход на всех устройствах',`sxAsk('kick')`),
+    B('','🫘','Конфискация','обнулить бонусы ('+bon+')',`sxAsk('confiscate')`),
+    B('green','🕊','Амнистия','снять всё и вернуть бонусы',`sxAsk('amnesty')`)].join('');
+  const log=(X.log||[]).length?`<div class="sxlog"><h5>Материалы дела</h5>${X.log.map(l=>{const L=SX.log[l.kind]||['•',l.kind],m=l.meta||{};
+    const ex=[l.until?sxUntil(l.until):'',m.prev?m.prev+' шт.':'',m.back?'вернули '+m.back:'',m.kicked?'устройств: '+m.kicked:''].filter(Boolean).join(' · ');
+    return `<div class="sxl"><i>${L[0]}</i><div>${L[1]}${ex?' · '+e(ex):''}${l.reason?`<small>«${e(l.reason)}»</small>`:''}<small>${sxD(l.at)}${l.by?' · судья '+e(l.by):''}</small></div></div>`}).join('')}</div>`:'';
+  return `<div class="sx"><div class="sxh"><span style="font-size:22px">⚖️</span><b>Суд мельницы</b>${no}</div><div class="sxst">${chips}</div><div class="sxg">${btns}</div>${ban&&X.block_reason?`<p class="mu" style="font-size:13px;margin:10px 2px 0">Причина: «${e(X.block_reason)}»</p>`:''}${log}</div>`}
+function sxPaint(){const u=(S.us?.list||[]).find(x=>x.id==S.ur?.id),w=document.querySelector('.nxw #sxbox');if(u&&w)w.innerHTML=sxHtml(u)}
+{const _u=urRender;urRender=function(){_u();const R=S.ur,u=(S.us?.list||[]).find(x=>x.id==R?.id);if(!u||!isAdm()||u.id==S.me?.id)return;
+  const anchor=document.querySelector('.nxw .aprole')||document.querySelector('.nxw .nxbtns');if(!anchor)return;
+  anchor.insertAdjacentHTML('afterend',`<div id="sxbox">${sxHtml(u)}</div>`);if(R.sx===undefined&&u.role!='admin'){R.sx=null;sxLoad(u.id)}}}
+
+// окна приговора
+function sxSheet(kind){const ban=kind=='ban';S.sxd={kind,min:ban?1440:1440,rs:''};
+  shw(`<div class="nxsh sxsh"><h3>${ban?'⛓ В подвал':'🌯 Запрет на донер'}</h3><p>${ban?'Человек не сможет войти в приложение, его сразу выкинет со всех устройств.':'Войти сможет, но оформить заказ - нет.'}</p>
+  <div class="lab">Срок</div><div class="sxdur">${SX.dur.map(([m,n])=>`<button class="${m==S.sxd.min?'on':''}" onclick="S.sxd.min=${m};[...this.parentNode.children].forEach(b=>b.classList.remove('on'));this.classList.add('on')">${n}</button>`).join('')}</div>
+  <div class="lab">За что</div><input id="sxr" maxlength="140" placeholder="Причина (увидит наказанный)"><div class="sxrs">${SX.rs.map(r=>`<button onclick="$('sxr').value=this.textContent">${e(r)}</button>`).join('')}</div>
+  <button class="sxgo" onclick="sxDo('${kind}',S.sxd.min,$('sxr').value)">⚖️ Вынести приговор</button></div>`)}
+function sxGen(){const a='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789',w=['Doner','Mill','Kofe','Ayran','Lavash','Navoi'];const r=new Uint32Array(6);crypto.getRandomValues(r);
+  return w[r[0]%w.length]+'-'+Array.from(r.slice(1),x=>a[x%a.length]).join('')+(r[5]%90+10)}
+function sxPw(){shw(`<div class="nxsh sxsh"><h3>🔑 Новый ключ от мельницы</h3><p>Старый пароль перестанет работать, человека выкинет со всех устройств. Новый передайте ему лично.</p>
+  <div class="sxpw"><input id="sxpw" maxlength="72" autocomplete="off" spellcheck="false" value="${sxGen()}"><button title="Другой" onclick="$('sxpw').value=sxGen()">🎲</button><button title="Скопировать" onclick="navigator.clipboard?.writeText($('sxpw').value).then(()=>toast('Скопировано'))">📋</button></div>
+  <button class="sxgo" style="background:linear-gradient(135deg,#e9c46a,#b8862b);color:#1a130f" onclick="sxDo('password',null,null,$('sxpw').value)">🔑 Сменить пароль</button></div>`)}
+function sxAsk(kind){const u=(S.us?.list||[]).find(x=>x.id==S.ur?.id),X=S.ur?.sx||{};
+  const M={kick:['🚪 Выгнать с кухни','Все сессии будут закрыты, придётся войти заново. Пароль не меняется.','Выгнать',''],
+    confiscate:['🫘 Конфискация бонусов',`Прогресс лояльности (${X.orders_count||0}) обнулится: бесплатный кофе и уровни придётся копить заново. Амнистия вернёт.`,'Конфисковать',''],
+    amnesty:['🕊 Амнистия','Снимем блокировку и запрет на донер, вернём конфискованные бонусы. Начнём с чистого листа.','Помиловать','calm']}[kind];
+  shw(`<div class="nxsh sxsh"><h3>${M[0]}</h3><p>${e(u?.name||'')}: ${M[1]}</p><button class="sxgo ${M[3]}" onclick="sxDo('${kind}')">${M[2]}</button><button class="sec2" onclick="cp()">Отмена</button></div>`)}
+const SXST={ban:'В ПОДВАЛ',unban:'СВОБОДЕН',no_orders:'БЕЗ ДОНЕРА',allow_orders:'ДОНЕР ВЕРНУЛИ',kick:'ВЫГНАН',password:'КЛЮЧ СМЕНЁН',confiscate:'КОНФИСКОВАНО',amnesty:'ПОМИЛОВАН'};
+function sxBang(kind){const good=['unban','allow_orders','amnesty'].includes(kind);if(RM){toast(SXST[kind]);return}
+  const v=document.createElement('div');v.className='sxv';v.innerHTML=`<svg class="gv" viewBox="0 0 100 100"><g transform="rotate(-35 50 50)"><rect x="22" y="22" width="44" height="22" rx="5" fill="#8a4b2a" stroke="#3a1d10" stroke-width="3"/><rect x="18" y="20" width="8" height="26" rx="3" fill="#e9c46a" stroke="#3a1d10" stroke-width="3"/><rect x="62" y="20" width="8" height="26" rx="3" fill="#e9c46a" stroke="#3a1d10" stroke-width="3"/><rect x="41" y="44" width="7" height="46" rx="3" fill="#a8623a" stroke="#3a1d10" stroke-width="3"/></g><ellipse cx="50" cy="94" rx="30" ry="5" fill="#000" opacity=".35"/></svg><div class="bang">${good?'ТУК!':'БАХ!'}</div><div class="stamp${good?' green':''}">${SXST[kind]}</div>`;
+  document.body.appendChild(v);const m=$('m');m.classList.remove('sxshake');void m.offsetWidth;if(!good)m.classList.add('sxshake');
+  try{navigator.vibrate&&navigator.vibrate(good?[20]:[30,60,80])}catch{}
+  setTimeout(()=>v.classList.add('out'),1600);setTimeout(()=>{v.remove();m.classList.remove('sxshake')},1950)}
+async function sxDo(kind,min=null,reason=null,pw=null){const id=S.ur?.id;if(!id||S.sxBusy)return;S.sxBusy=1;
+  try{const{data,error}=await sb.rpc('admin_sanction',{p_user:id,p_kind:kind,p_minutes:min,p_reason:reason||null,p_password:pw});
+    if(error){toast(sxErr(error),1);return}
+    cp();S.ur.sx=data;sxPaint();sxBang(kind);sxListLoad();
+    if(kind=='password')toast('Пароль сменён. Передайте его лично 🔑')}
+  finally{S.sxBusy=0}}
+
+// отметки в списке пользователей
+async function sxListLoad(){if(!isAdm())return;const{data}=await sb.rpc('admin_sanctioned');S.sxL={};(data||[]).forEach(r=>S.sxL[r.user_id]=r.blocked?'⛓':'🌯');if(S.scr=='users')usList()}
+{const _h=usListHtml;usListHtml=function(){let h=_h();for(const id in S.sxL||{})h=h.replace(`onclick="usrM('${id}')"`,`onclick="usrM('${id}')" data-sx="${S.sxL[id]}"`);return h}}
+{const _m=usersM;usersM=async function(){const p=_m.apply(this,arguments);sxListLoad();return p}}
+
+// для наказанного: экран «мельница закрыта» и плашка в корзине
+const SXB={ru:['Мельница для вас закрыта','Жернова остановлены решением администрации Degirmen.','Причина','Понятно','Срок'],
+  kk:['Диірмен сіз үшін жабық','Degirmen әкімшілігінің шешімімен тоқтатылды.','Себебі','Түсінікті','Мерзімі'],
+  en:['The mill is closed for you','Your account was blocked by Degirmen administration.','Reason','OK','Until']};
+function sxBanScreen(row){if($('sxban'))return;const L=SXB[S.L]||SXB.ru,un=row?.blocked_until;
+  const d=document.createElement('div');d.id='sxban';d.className='stop';
+  d.innerHTML=`<svg viewBox="0 0 64 64" fill="none" stroke="#e9c46a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-30h8l4 30z" fill="#2a1a12"/><g class="bl"><path d="M32 26L18 9l-4 4z"/><path d="M32 26L49 12l-4-4z"/><path d="M32 26L46 43l4-4z"/><path d="M32 26L14 39l4 4z"/></g><circle cx="32" cy="26" r="3" fill="#e9c46a"/><path d="M8 58h48" stroke="#8a6a3a"/><g class="lk"><path d="M26 44v-5a6 6 0 0 1 12 0v5" stroke="#d9d4ce"/><rect x="23" y="44" width="18" height="13" rx="3" fill="#b8432c" stroke="#ffb4a2"/><circle cx="32" cy="50" r="1.8" fill="#ffd6cb" stroke="none"/></g></svg>
+  <h2>${L[0]} 🔒</h2><p>${L[1]}</p>${row?.block_reason?`<div class="why"><b>${L[2]}:</b> «${e(row.block_reason)}»</div>`:''}${un&&new Date(un).getFullYear()<2900?`<p style="font-size:13px">${L[4]}: ${sxD(un)}</p>`:''}<button onclick="this.parentNode.remove()">${L[3]}</button>`;
+  document.body.appendChild(d)}
+async function sxMe(){if(!S.me)return;const{data}=await sb.from('account_sanctions').select('*').eq('user_id',S.me.id).maybeSingle();S.sxMe=data||null;
+  if(data&&sxOn(data.blocked_until)){sxBanScreen(data);try{await sb.auth.signOut()}catch{}}}
+setInterval(sxMe,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)sxMe()});setTimeout(sxMe,2500);
+{const _a=auth;auth=async function(){await _a.apply(this,arguments);if(/banned/i.test(S.err||'')){S.err='Аккаунт заблокирован администратором';authM(S.after);sxBanScreen(null)}}}
+{const _c=cart;cart=function(){_c();const X=S.sxMe;if(X&&sxOn(X.no_orders_until)){const b=document.querySelector('#m .body');if(b&&!b.querySelector('.sxcart'))b.insertAdjacentHTML('afterbegin',`<div class="sxcart">🌯 Заказы для вас временно закрыты ${sxUntil(X.no_orders_until)}${X.orders_reason?`<br><span class="mu">«${e(X.orders_reason)}»</span>`:''}</div>`)}}}
+Object.assign(T.ru,{e_blocked:'Оформление заказов для вашего аккаунта временно закрыто администратором.'});
+Object.assign(T.kk||{},{e_blocked:'Сіздің аккаунтыңыз үшін тапсырыс беру уақытша жабылған.'});
+Object.assign(T.en||{},{e_blocked:'Ordering is temporarily disabled for your account by the administrator.'});
+
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
