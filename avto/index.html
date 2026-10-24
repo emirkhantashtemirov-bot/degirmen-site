@@ -1778,4 +1778,17 @@ const _oc3=openCar;openCar=function(id){if(!INST||INST.car!=id){killInst();VIEW=
 const _go3=go;go=function(){killInst();VIEW=null;EXPL=false;return _go3.apply(this,arguments)};
 })();
 </script>
+
+<style id="avto-game">
+.gamecard{display:flex;align-items:center;gap:14px;margin:18px 0 6px;padding:14px 16px;border-radius:20px;text-decoration:none;color:#eef2f6;background:radial-gradient(120% 140% at 100% 0%,rgba(255,173,66,.22),transparent 60%),linear-gradient(160deg,#141a26,#0b0f17);border:1px solid rgba(255,173,66,.28);position:relative;overflow:hidden}
+.gamecard svg{flex:none;width:52px;height:52px}
+.gamecard b{display:block;font:400 17px 'Russo One','Golos Text',sans-serif;letter-spacing:.02em}
+.gamecard small{display:block;color:#9aa5b4;font-size:13px;margin-top:2px}
+.gamecard em{margin-left:auto;font-style:normal;font:700 13px 'Golos Text',sans-serif;color:#1a0f02;background:linear-gradient(180deg,#ffc76e,#ffad42);border-radius:999px;padding:8px 14px;flex:none}
+.gamecard:active{transform:scale(.98)}
+</style>
+<script id="avto-game-js">
+(()=>{const card=`<a class="gamecard" href="drive.html"><svg viewBox="0 0 52 52" fill="none"><rect x="1" y="1" width="50" height="50" rx="14" fill="#0b0f17" stroke="rgba(255,173,66,.5)"/><path d="M14 40l8-26h8l8 26" stroke="#ffad42" stroke-width="2.4" stroke-linejoin="round"/><path d="M26 18v4M26 27v4M26 36v3" stroke="#ffd48a" stroke-width="2.4" stroke-linecap="round"/><circle cx="40" cy="12" r="3.5" fill="#eef1f8"/></svg><span><b>Ночной заезд</b><small>Мини-игра · таблица лидеров семьи</small></span><em>Играть</em></a>`;
+const _r=render;render=function(){_r.apply(this,arguments);try{if(S.view=='cars'&&!S.open){const m=document.getElementById('main');if(m&&!m.querySelector('.gamecard'))m.insertAdjacentHTML('beforeend',card)}}catch(e){}}})();
+</script>
 </body></html>
