@@ -2299,7 +2299,7 @@ function setL(l){S.L=l;LS.set('dn_l',l);document.documentElement.lang=l;if(S.me)
 const pl=(on,fn,l)=>`<button class="pl ${on?'on':''}" onclick="${fn}">${l}</button>`,cc=(on,fn,l)=>`<button class="c ${on?'on':''}" onclick="${fn}">${l}</button>`;
 // ---------- карточка позиции ----------
 const defLine=(it,qty=1,z=0)=>({id:it.id,f:fills(it)[0],z,o:[],qty,syr:-1,sg:0,ing:Object.fromEntries(gi(it).map(k=>[k,1]))});
-function pushLine(l){const sg=x=>JSON.stringify([x.id,x.f,x.z,[...x.o].sort(),x.syr,x.sg,x.ing]),m=S.cart.find(x=>!x.free&&sg(x)==sg(l));m?m.qty+=l.qty:S.cart.push(l)}
+function pushLine(l){const sg=x=>JSON.stringify([x.id,x.f,x.z,[...x.o].sort(),x.syr,x.sg,x.ing]),m=S.cart.find(x=>!x.free&&sg(x)==sg(l));if(m){m.qty=Math.min(QMAX,m.qty+l.qty);if(m.qty==QMAX)toast(t('e_qmax'))}else{if(S.cart.length>=LMAX){toast(t('e_too_big'),1);return}l.qty=Math.min(QMAX,l.qty);S.cart.push(l)}}
 function op_(id,ev){const it=itemOf(id);if(it.sold_out)return;S.sel=defLine(it);const src=ev&&ev.currentTarget&&ev.currentTarget.querySelector('.ph');
 if(document.startViewTransition&&!RM&&src){src.style.viewTransitionName='hero';document.startViewTransition(()=>{src.style.viewTransitionName='';S.vt=1;if(S.sel)prod();S.vt=0}).finished.finally(()=>{const c=document.querySelector('.circ');if(c)c.style.viewTransitionName=''})}else prod()}
 // закрытие: фото «возвращается» в карточку
@@ -2349,7 +2349,7 @@ const a=el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`
 let done=0;const fin=()=>{if(done)return;done=1;el.remove();S.shownTot=null;render();const b=document.querySelector('#bar .pa');if(!b)return;b.classList.add('bump');tween(b,prev,tot())};a.onfinish=fin;setTimeout(fin,760)}  // запасной таймер: если вкладка в фоне и событие не пришло
 function tween(b,from,to){const t0=performance.now(),lab=t('cart'),f=v=>lab+(v>0?' · '+mn(Math.round(v)):'');const st=now=>{const k=Math.min(1,(now-t0)/450),v=from+(to-from)*(1-Math.pow(1-k,3));b.textContent=f(v);if(k<1)requestAnimationFrame(st);else b.textContent=f(to)};requestAnimationFrame(st)}
 function up(id,z){const it=itemOf(id);if(!it||it.sold_out)return;pushLine(defLine(it,1,z));cart();render()}
-function cq(i,d){const l=S.cart[i];l.qty+=d;if(l.qty<1)S.cart.splice(i,1);cart();render()}
+const QMAX=20,LMAX=30;function cq(i,d){const l=S.cart[i];if(d>0&&l.qty>=QMAX){toast(t('e_qmax'),1);return}l.qty+=d;if(l.qty<1)S.cart.splice(i,1);cart();render()}
 // ---------- корзина ----------
 const avail=()=>Math.max(0,Math.floor((S.pf?.orders_count||0)/FREE_EVERY)-S.used),freeIn=()=>S.cart.filter(l=>l.free).length;
 // Бесплатный кофе: заработано = orders_count/7, использовано = строки с free в неотменённых заказах (учёт без правки базы, см. db/NEXT.sql)
@@ -2505,11 +2505,11 @@ addEventListener('touchend',end);addEventListener('touchcancel',end);
 // ---------- исправления по внешнему разбору (11.10) ----------
 // Цены и бесплатный кофе теперь проверяет база (orders_guard). Здесь: понятные ошибки, защита от двойного нажатия,
 // время самовывоза по Алматы, отмена заказа гостем, касса видит все активные заказы, обновление после сна телефона.
-Object.assign(T.ru,{e_too_many:'Слишком много заказов подряд. Подождите пару минут.',e_bad_time:'Время самовывоза — сегодня и не в прошлом.',e_free:'Бесплатный кофе сейчас недоступен — убрали его из корзины.',e_bad_qty:'Проверьте количество.',e_too_big:'Слишком большой заказ — разделите на два.',e_empty:'Корзина пуста.',e_closed:'Сейчас мы закрыты. Выберите время самовывоза с 8:00 до 21:45.',e_closed_time:'Мы работаем с 8:00 до 22:00 — выберите время с 8:00 до 21:45.',
+Object.assign(T.ru,{e_too_many:'Слишком много заказов подряд. Подождите пару минут.',e_bad_time:'Время самовывоза — сегодня и не в прошлом.',e_free:'Бесплатный кофе сейчас недоступен — убрали его из корзины.',e_bad_qty:'Не больше 20 шт. одной позиции - остальное оформите вторым заказом.',e_qmax:'Максимум 20 шт. одной позиции в заказе',e_too_big:'Слишком большой заказ — разделите на два.',e_empty:'Корзина пуста.',e_closed:'Сейчас мы закрыты. Выберите время самовывоза с 8:00 до 21:45.',e_closed_time:'Мы работаем с 8:00 до 22:00 — выберите время с 8:00 до 21:45.',
 cnl:'Отменить заказ',cnl_sure:'Точно отменить? Нажмите ещё раз',cnl_ok:'Заказ отменён',cnl_no:'Заказ уже готовят — отменить можно только на кассе'});
-Object.assign(T.kk,{e_too_many:'Тапсырыс тым көп. Бірнеше минут күтіңіз.',e_bad_time:'Алып кету уақыты — бүгін және өткен уақыт емес.',e_free:'Тегін кофе қазір қолжетімсіз — себеттен алынды.',e_bad_qty:'Санын тексеріңіз.',e_too_big:'Тапсырыс тым үлкен — екіге бөліңіз.',e_empty:'Себет бос.',e_closed:'Қазір жабықпыз. Алып кету уақытын 8:00–21:45 аралығынан таңдаңыз.',e_closed_time:'Біз 8:00–22:00 жұмыс істейміз — 8:00–21:45 аралығын таңдаңыз.',
+Object.assign(T.kk,{e_too_many:'Тапсырыс тым көп. Бірнеше минут күтіңіз.',e_bad_time:'Алып кету уақыты — бүгін және өткен уақыт емес.',e_free:'Тегін кофе қазір қолжетімсіз — себеттен алынды.',e_bad_qty:'Бір позициядан 20 данадан артық емес - қалғанын екінші тапсырыспен рәсімдеңіз.',e_qmax:'Бір позициядан ең көбі 20 дана',e_too_big:'Тапсырыс тым үлкен — екіге бөліңіз.',e_empty:'Себет бос.',e_closed:'Қазір жабықпыз. Алып кету уақытын 8:00–21:45 аралығынан таңдаңыз.',e_closed_time:'Біз 8:00–22:00 жұмыс істейміз — 8:00–21:45 аралығын таңдаңыз.',
 cnl:'Тапсырысты болдырмау',cnl_sure:'Растайсыз ба? Тағы басыңыз',cnl_ok:'Тапсырыс болдырылмады',cnl_no:'Тапсырыс дайындалып жатыр — тек кассада болдырмауға болады'});
-Object.assign(T.en,{e_too_many:'Too many orders in a row. Please wait a couple of minutes.',e_bad_time:'Pickup time must be today and not in the past.',e_free:'Free coffee is not available right now — removed it from the cart.',e_bad_qty:'Check the quantity.',e_too_big:'The order is too big — split it in two.',e_empty:'The cart is empty.',e_closed:'We are closed now. Pick a pickup time between 8:00 and 21:45.',e_closed_time:'We are open 8:00–22:00 — pick a time between 8:00 and 21:45.',
+Object.assign(T.en,{e_too_many:'Too many orders in a row. Please wait a couple of minutes.',e_bad_time:'Pickup time must be today and not in the past.',e_free:'Free coffee is not available right now — removed it from the cart.',e_bad_qty:'No more than 20 of one item - place the rest as a second order.',e_qmax:'Maximum 20 of one item per order',e_too_big:'The order is too big — split it in two.',e_empty:'The cart is empty.',e_closed:'We are closed now. Pick a pickup time between 8:00 and 21:45.',e_closed_time:'We are open 8:00–22:00 — pick a time between 8:00 and 21:45.',
 cnl:'Cancel order',cnl_sure:'Sure? Tap again',cnl_ok:'Order cancelled',cnl_no:'Already being prepared — cancel at the counter'});
 ['ru','kk','en'].forEach(l=>{if(T[l].notePh)T[l].notePh=T[l].notePh.replace('20','80')});
 
@@ -2524,7 +2524,9 @@ function ordErr(er){const m=String(er?.message||''),k=(m.match(/order:([a-z_]+)/
 
 // двойное нажатие на «Оформить» больше не создаёт два заказа
 {const _place=place;place=async function(){if(S.placing)return;S.placing=1;const btn=()=>document.querySelector('#m .ftr .main');const b=btn();if(b){b.disabled=true;b.classList.add('busy')}
-  try{await _place()}finally{S.placing=0;const b2=btn();if(b2){b2.disabled=false;b2.classList.remove('busy')}}}}
+  try{if(S.cart.length>LMAX){S.err=t('e_too_big')}else if(S.cart.some(l=>l.qty>QMAX)){S.cart.forEach(l=>l.qty=Math.min(QMAX,l.qty));S.err=t('e_bad_qty')}else await _place();
+    if(S.err&&S.scr=='cart'){cart();toast(S.err,1);const er=document.querySelector('#m .err');if(er)er.scrollIntoView({behavior:'smooth',block:'center'})}}
+  finally{S.placing=0;const b2=btn();if(b2){b2.disabled=false;b2.classList.remove('busy')}}}}
 
 // касса: все активные заказы (даже утренние предзаказы к вечеру) + последние 50 для истории
 loadOrd=async function(){if(!S.me){S.ord=[];return}
