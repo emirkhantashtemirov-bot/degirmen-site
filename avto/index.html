@@ -1194,4 +1194,125 @@ saveRate=async function(){let d;if(S.rmode=='manual'){const r=pn(val('rt'));if(!
   setTimeout(()=>{if(migAge()>3600000)migRefresh()},1500)})();
 </script>
 
+
+<style id="avto-polish">
+/* ============================================================
+   Полировка (аддитивный слой): переходы, пружинные шиты, свайп,
+   микроанимации нажатий, каскад записей книжки, оптимизации.
+   Только transform/opacity; prefers-reduced-motion гасит всё
+   глобальным правилом выше. Логика приложения не тронута.
+   ============================================================ */
+/* --- переходы экранов: View Transitions API (обёртки в скрипте ниже) --- */
+::view-transition-old(root){animation-duration:.22s;animation-timing-function:cubic-bezier(.4,0,1,1)}
+::view-transition-new(root){animation-duration:.3s;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-name:avVtIn}
+@keyframes avVtIn{from{opacity:0;transform:translateY(12px)}}
+/* запасной вариант без View Transitions: страница мягко въезжает */
+#main.anim{animation:avPage .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes avPage{from{opacity:0;transform:translateY(8px)}}
+/* --- нижние окна (sheets): пружинный въезд сверху вниз и мягкий выезд --- */
+.sheet{animation:avFade .22s ease both}
+.sheet>div{animation:avUp .46s cubic-bezier(.3,1.28,.44,1) both}
+@keyframes avUp{from{transform:translateY(102%)}}
+@keyframes avFade{from{opacity:0}}
+.sheet>div.drag{animation:none;transition:transform .3s cubic-bezier(.3,1.28,.44,1)}
+.sheet.closing{animation:avFadeOut .24s ease both}
+.sheet.closing>div{animation:avDown .26s cubic-bezier(.55,0,.85,.36) both!important;transform:none!important}
+@keyframes avDown{to{transform:translateY(104%)}}
+@keyframes avFadeOut{to{opacity:0}}
+/* --- микроанимации нажатий: упругий отклик всего, что тапается --- */
+.tb,.chips button,.x,.edit,.btn2,.back,.seg button,.bodies button,.catgrid button,
+.swatches button,.zl,.tl-i,.row,.lotc,.rd-stops button,.rmode button,.mig-t button,
+.add,.cur button,.rate,.zfilter,.todo input,.todo button,.lnk{transition:transform .18s cubic-bezier(.34,1.45,.64,1),background-color .2s,color .2s,border-color .2s,opacity .2s,box-shadow .2s}
+.tb:active,.chips button:active,.x:active,.edit:active,.btn2:active,.back:active,.seg button:active,
+.bodies button:active,.catgrid button:active,.swatches button:active,.zl:active,.tl-i:active,.row:active,
+.lotc:active,.rd-stops button:active,.rmode button:active,.mig-t button:active,.add:active,.cur button:active,
+.rate:active,.zfilter:active,.todo input:active,.todo button:active,.lnk:active{transform:scale(.955)}
+/* выбранный чип подпрыгивает */
+.chips button[aria-pressed="true"]{animation:avPop .3s cubic-bezier(.34,1.5,.64,1)}
+@keyframes avPop{55%{transform:scale(1.06)}}
+/* --- записи сервисной книжки появляются каскадом (--ti ставится скриптом) --- */
+.anim .tl .tl-i{animation:avRise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--ti,0)*45ms)}
+.anim .tl-m{animation:avFade .4s ease both}
+@keyframes avRise{from{opacity:0;transform:translateY(10px)}}
+/* галочка «сделано» в планах - пружинный щелчок */
+.todo input:checked{animation:avPop .25s cubic-bezier(.34,1.5,.64,1)}
+/* тумблер «себе» - мягче */
+.sw::after{transition:transform .28s cubic-bezier(.34,1.45,.64,1),width .2s}
+/* --- тач-устройства: hover-подъём карточек не залипает --- */
+@media (hover:none){.cc:hover{transform:none;box-shadow:none}.zl:hover,.tl-i:hover,.row:hover{background:transparent}}
+/* --- тост мягче --- */
+.toast{transition:opacity .28s var(--e),transform .32s cubic-bezier(.3,1.3,.5,1)}
+/* --- оптимизация длинных списков: без тяжёлых фильтров у записей --- */
+.xp.hot{animation-duration:2.2s}
+</style>
+<script id="avto-polish-js">
+(()=>{ if(window.__avPolish)return; window.__avPolish=1;
+const RMV=RM; // константа приложения (prefers-reduced-motion)
+/* ---------- 1. Плавные переходы экранов (гараж <-> карточка <-> отчёт) ----------
+   View Transitions, если браузер умеет: снимаем класс .anim у новой страницы,
+   чтобы снапшот был цельным; одометры и спидометры доигрывают уже поверх.
+   Без VT работает CSS-запаска avPage. При reduced-motion - без переходов. */
+const HASVT='startViewTransition' in document;
+let vtBusy=false, vtQ=[];
+const vt=(fn)=>function(...a){
+  if(!HASVT||RMV){ return fn.apply(this,a) }
+  if(vtBusy){ vtQ.push(()=>fn.apply(this,a)); return }   // накопим: исполнятся все по порядку
+  let tr;
+  try{ tr=document.startViewTransition(()=>{ fn.apply(this,a);
+    const m=document.getElementById('main'); if(m)m.classList.remove('anim'); }) }
+  catch(e){ return fn.apply(this,a) }
+  vtBusy=true;
+  const fin=()=>{ vtBusy=false; if(vtQ.length){ const q=vtQ; vtQ=[]; q.forEach(f=>{try{f()}catch(e){}}) } };
+  try{ tr.finished.then(fin,fin); tr.ready&&tr.ready.catch(()=>{}) }catch(e){ fin() } };
+try{ go=vt(go); openCar=vt(openCar); }catch(e){}
+/* ---------- 2. Нижние окна: пружина + свайп вниз для закрытия + выезд ---------- */
+function host(){ return document.getElementById('sheet') }
+function panel(){ const h=host(); return h&&h.firstElementChild&&h.firstElementChild.firstElementChild }
+function hardClose(sc){ const h=host(); if(!h)return; if(sc&&h.firstElementChild!==sc)return; h.innerHTML=''; document.body.style.overflow='' }
+const _sheet=sheet;
+sheet=function(h){ _sheet(h);
+  const sc=host()&&host().firstElementChild, p=sc&&sc.firstElementChild; if(!p)return;
+  if(RMV)return;
+  let y0=0,dy=0,on=false,t0=0;
+  const down=e=>{ if(sc.classList.contains('closing'))return; const t=e.touches[0],pr=p.getBoundingClientRect();
+    if(t.clientY-pr.top>76&&p.scrollTop>0)return; // тянут либо за шапку, либо от верха прокрутки
+    on=true;y0=t.clientY;dy=0;t0=performance.now();p.classList.add('drag');p.style.transform='' };
+  const move=e=>{ if(!on)return; const y=e.touches[0].clientY-y0;
+    if(y>0){ dy=y; if(e.cancelable)e.preventDefault(); p.style.transform='translateY('+dy+'px)';
+      sc.style.background='rgba(3,4,6,'+Math.max(.12,.6-dy/520)+')'; p.style.overflow='hidden'; }
+    else { dy=0; p.style.transform=''; p.style.overflow=''; } };
+  const up=()=>{ if(!on)return; on=false; p.classList.remove('drag'); p.style.overflow='';
+    const v=dy/Math.max(1,performance.now()-t0);
+    if(dy>110||v>.55){ // закрыть по свайпу
+      p.style.transform='translateY('+Math.max(dy,30)+'px)';
+      requestAnimationFrame(()=>{ sc.classList.add('closing'); p.style.transform=''; });
+      setTimeout(()=>hardClose(sc),250);
+    } else { p.style.transform=''; sc.style.background=''; } };
+  p.addEventListener('touchstart',down,{passive:true});
+  p.addEventListener('touchmove',move,{passive:false});
+  p.addEventListener('touchend',up); p.addEventListener('touchcancel',up);
+};
+const _close=closeSheet;
+closeSheet=function(){ const sc=host()&&host().firstElementChild;
+  if(!sc||RMV||sc.classList.contains('closing')){ hardClose(); return }
+  const p=sc.firstElementChild; if(p)p.style.transform='';
+  sc.classList.add('closing'); setTimeout(()=>hardClose(sc),250); };
+/* ---------- 3. Каскад записей сервисной книжки (--ti) ---------- */
+const _render=render;
+render=function(){ _render.apply(this,arguments);
+  try{ const m=document.getElementById('main'); if(!m.classList.contains('anim'))return;
+    let k=0; m.querySelectorAll('.tl').forEach(tl=>{ [...tl.children].forEach(el=>{ el.style.setProperty('--ti',Math.min(k++%18,17)) }) });
+  }catch(e){} };
+/* ---------- 4. Оптимизация: кэш SVG машин (по содержимому) ----------
+   Раньше каждый render строил все машины заново (поиск в гараже - на каждую букву).
+   Кэш по ключу содержимого даёт мгновенный ответ; выдаваемые id внутри
+   копий совпадают, но defs идентичны - рендер не меняется. */
+const _carSVG=carSVG, SVGc=new Map();
+carSVG=function(c,o){ o=o||{};
+  const k=[c&&c.body,c&&c.hex,c&&c.color,c&&c.make,c&&c.model,!!o.mini,!!o.drive,!!o.big,!!o.scan,!!o.nolabels].join('|');
+  const hit=SVGc.get(k); if(hit!==undefined)return hit;
+  const h=_carSVG(c,o); if(SVGc.size>96)SVGc.delete(SVGc.keys().next().value); SVGc.set(k,h); return h };
+})();
+</script>
+
 </body></html>
