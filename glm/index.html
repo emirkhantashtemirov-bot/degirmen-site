@@ -1224,8 +1224,8 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
 .knote{font-size:16px}
 .kb{padding:15px 12px;min-height:56px;font-size:18px;border-radius:16px}
 .kb2{width:54px;height:54px;border-radius:16px;font-size:20px}
-.kc.fresh{animation:kcin .5s var(--e) both}
-.kc.fresh::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at 50% 40%,rgba(233,196,106,.4),rgba(233,196,106,.12) 55%,transparent 75%);opacity:0;animation:kfo 1.3s ease-out 1 both}
+.kc.fresh{animation:kcin .5s var(--e) both,kfresh 1s ease-in-out .5s 3}
+.kc.fresh::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at 50% 40%,rgba(233,196,106,.4),rgba(233,196,106,.12) 55%,transparent 75%);opacity:0;animation:kfo 1s ease-out .5s 3 both}
 @keyframes kcin{from{opacity:0;transform:translateY(-16px) scale(.97)}}
 @keyframes kfo{from{opacity:1}to{opacity:0}}
 /* --- киоск: витрина - те же золотые акценты; собственный финал оплаты (apMill) не тронут --- */
