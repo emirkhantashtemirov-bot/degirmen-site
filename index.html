@@ -4269,7 +4269,7 @@ const geoAge=at=>at?Math.round((Date.now()-new Date(at))/60000):null;
 const geoOn=d=>d.at&&Date.now()-new Date(d.at)<120000;
 function geoLeaflet(){if(window.L&&L.map)return Promise.resolve();return new Promise((ok,no)=>{const c=document.createElement('link');c.rel='stylesheet';c.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(c);
   const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)})}
-async function geoM(){if(!isAdm())return;GEO.fit=false;GEO.map=null;GEO.mk={};GEO.circ={};GEO.home={};GEO.trail=null;
+async function geoM(){if(!S.dev)return;GEO.fit=false;GEO.map=null;GEO.mk={};GEO.circ={};GEO.home={};GEO.trail=null;
   scr(topbar('Где планшеты','apDevM()')+`<div class="body w"><div class="geomap" id="geomap"></div><div class="geol" id="geol">${nxSk()}</div>
   <button class="main" style="margin-top:14px" onclick="geoAdd()">+ Добавить планшет</button>
   <p class="mu" style="font-size:13px;line-height:1.5;margin:12px 4px">Приложение для планшета: <a href="/guard/" target="_blank" style="color:var(--lt)">degirmen-navoi.kz/guard</a> - скачать и установить APK, ввести код. Тревога в Telegram, если планшет отошёл от точки дальше 150 м или пропал из сети больше чем на 3 минуты.</p></div>`,'geo');
@@ -4306,7 +4306,10 @@ function geoRename(id){const d=GEO.list.find(x=>x.id==id);shw(`<div class="nxsh"
 async function geoRenameGo(id){const{error}=await sb.rpc('admin_device_set',{p_id:id,p_name:$('geon').value.trim()});if(error){toast(error.message,1);return}cp();geoLoad()}
 function geoDel(id){const d=GEO.list.find(x=>x.id==id);shw(`<div class="nxsh"><h3>Отвязать «${e(d?.name||'')}»?</h3><p class="mu">Планшет перестанет отправлять место и пропадёт со списка. Чтобы вернуть, добавьте его заново.</p><button class="main" onclick="geoDelGo('${id}')">Отвязать</button><button class="sec2" onclick="cp()">Отмена</button></div>`)}
 async function geoDelGo(id){const{error}=await sb.rpc('admin_device_set',{p_id:id,p_archive:true});if(error){toast(error.message,1);return}cp();if(GEO.mk[id]&&GEO.map){GEO.map.removeLayer(GEO.mk[id]);GEO.map.removeLayer(GEO.circ[id])}delete GEO.mk[id];geoLoad()}
-{const _d=apDevM;apDevM=function(){_d.apply(this,arguments);if(!isAdm())return;const w=document.querySelector('#m .apdw');if(w&&!w.querySelector('.geoent'))w.insertAdjacentHTML('afterbegin',`<div class="apdev geoent"><div class="apdi">📍</div><div class="apdb"><b>Где планшеты</b><p>Живая карта планшетов точки. Тревога в Telegram, если планшет унесли или он пропал из сети.</p><button class="main" onclick="geoM()">Открыть карту</button></div></div>`)}}
+{const _d=apDevM;apDevM=function(){_d.apply(this,arguments);if(!S.dev)return;const w=document.querySelector('#m .apdw');if(w&&!w.querySelector('.geoent'))w.insertAdjacentHTML('afterbegin',`<div class="apdev geoent"><div class="apdi">📍</div><div class="apdb"><b>Где планшеты <span class="devtag">🛠 только у разработчика</span></b><p>Живая карта планшетов точки. Тревога в Telegram, если планшет унесли или он пропал из сети.</p><button class="main" onclick="geoM()">Открыть карту</button></div></div>`)}}
+// права разработчика: проверяются на сервере (is_dev), здесь только показываем
+{const st=document.createElement('style');st.textContent='.devtag{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:linear-gradient(135deg,#e9c46a,#b8862b);color:#1a130f;font:700 11px var(--f);vertical-align:2px}';document.head.appendChild(st)}
+{const _l=loadPf;loadPf=async function(){const r=await _l.apply(this,arguments);try{const{data}=await sb.rpc('is_dev');S.dev=data===true}catch(e){S.dev=false}return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
