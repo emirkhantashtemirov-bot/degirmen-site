@@ -1,0 +1,33 @@
+name: build-apk
+on:
+  push:
+    branches: [android-tracker]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.7' }
+      - name: Build
+        run: gradle assembleRelease --no-daemon --stacktrace 2>&1 | tee build.log; test ${PIPESTATUS[0]} -eq 0
+      - name: Publish result
+        if: always()
+        run: |
+          mkdir -p /tmp/out
+          cp app/build/outputs/apk/release/app-release.apk /tmp/out/degirmen-guard.apk 2>/dev/null || true
+          tail -c 20000 build.log > /tmp/out/build.log || true
+          echo "${GITHUB_SHA}" > /tmp/out/SHA
+          git config user.name "apk-bot"; git config user.email "apk-bot@users.noreply.github.com"
+          git checkout --orphan apk-out
+          git rm -rf . -q
+          git clean -fdxq
+          cp /tmp/out/* .
+          git add -A
+          git commit -m "APK for ${GITHUB_SHA}"
+          git push -f origin apk-out
