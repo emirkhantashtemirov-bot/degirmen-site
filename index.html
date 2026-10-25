@@ -4255,6 +4255,58 @@ function bumpTotal(oldV){try{if(oldV==null||RM||!document.documentElement.classL
  const _c=cart;cart=function(){const r=_c.apply(this,arguments);saveCart();return r};
  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveCart()});addEventListener('pagehide',saveCart);
  document.addEventListener('input',e=>{if(e.target&&e.target.id=='nt')saveCart()})}
+// ================= ГДЕ ПЛАНШЕТЫ (админ): живая карта, тревоги в Telegram =================
+{const css=`.geomap{height:min(56vh,460px);border-radius:22px;overflow:hidden;background:#141a22;margin:4px 0 14px}
+.geol{display:flex;flex-direction:column;gap:10px}.geod{background:var(--c);border:1px solid var(--s2);border-radius:20px;padding:12px 14px}
+.geoh{display:flex;align-items:center;gap:10px}.geoh b{font-size:16px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.geost{font:600 12px var(--f);padding:4px 10px;border-radius:999px;white-space:nowrap}.geost.on{background:rgba(110,190,120,.18);color:#8fd69c}.geost.off{background:rgba(184,67,44,.25);color:#ffb4a2}.geost.new{background:rgba(233,196,106,.18);color:#f0d38a}
+.geom{color:var(--mu);font-size:13px;margin:6px 0 8px;line-height:1.45}.geob{display:flex;flex-wrap:wrap;gap:6px}.geob button{border:1px solid var(--s2);background:none;color:var(--tx);border-radius:14px;padding:7px 12px;font:600 13px var(--f);cursor:pointer}
+.geocode{font:800 40px ui-monospace,monospace;letter-spacing:.2em;text-align:center;margin:10px 0;color:var(--lt)}
+.geopin{display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%)}.geopin span{background:#1a130f;color:#f4e9df;border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:2px 7px;font:700 12px system-ui;white-space:nowrap}.geopin i{width:14px;height:14px;border-radius:50%;margin-top:3px;border:3px solid #fff;box-shadow:0 0 0 4px rgba(0,0,0,.25)}
+.geopin.on i{background:#3fb36a}.geopin.off i{background:#e0503a}`;const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)}
+const GEO={map:null,mk:{},circ:{},home:{},trail:null,timer:null,list:[],fit:false};
+const geoAge=at=>at?Math.round((Date.now()-new Date(at))/60000):null;
+const geoOn=d=>d.at&&Date.now()-new Date(d.at)<120000;
+function geoLeaflet(){if(window.L&&L.map)return Promise.resolve();return new Promise((ok,no)=>{const c=document.createElement('link');c.rel='stylesheet';c.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(c);
+  const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)})}
+async function geoM(){if(!isAdm())return;GEO.fit=false;GEO.map=null;GEO.mk={};GEO.circ={};GEO.home={};GEO.trail=null;
+  scr(topbar('Где планшеты','apDevM()')+`<div class="body w"><div class="geomap" id="geomap"></div><div class="geol" id="geol">${nxSk()}</div>
+  <button class="main" style="margin-top:14px" onclick="geoAdd()">+ Добавить планшет</button>
+  <p class="mu" style="font-size:13px;line-height:1.5;margin:12px 4px">Приложение для планшета: <a href="/guard/" target="_blank" style="color:var(--lt)">degirmen-navoi.kz/guard</a> - скачать и установить APK, ввести код. Тревога в Telegram, если планшет отошёл от точки дальше 150 м или пропал из сети больше чем на 3 минуты.</p></div>`,'geo');
+  try{await geoLeaflet()}catch(e){$('geomap').innerHTML='<div class="empty" style="padding:30px">Карта не загрузилась - проверьте интернет</div>'}
+  if(window.L&&$('geomap')){GEO.map=L.map('geomap',{zoomControl:true,attributionControl:true}).setView([43.238,76.889],12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap, © CARTO'}).addTo(GEO.map)}
+  geoLoad();clearInterval(GEO.timer);GEO.timer=setInterval(()=>{if(S.scr!='geo'){clearInterval(GEO.timer);return}if(!document.hidden)geoLoad()},5000)}
+async function geoLoad(){const{data,error}=await sb.rpc('admin_devices');if(S.scr!='geo')return;if(error){$('geol').innerHTML=`<div class="empty">${e(error.message)}</div>`;return}GEO.list=data||[];geoPaint()}
+function geoPaint(){const L_=GEO.list,w=$('geol');if(!w)return;
+  w.innerHTML=L_.length?L_.map(d=>{const on=geoOn(d),age=geoAge(d.at);
+    const stc=!d.paired?'new':on?'on':'off',stt=!d.paired?(d.code?'код '+d.code:'не привязан'):on?'на связи':age==null?'ещё не было связи':'был '+(age<60?age+' мин':Math.round(age/60)+' ч')+' назад';
+    const meta=d.paired&&d.at?[d.batt>=0&&d.batt!=null?'🔋 '+d.batt+'%'+(d.charging?' ⚡':''):'',d.net?d.net:'',d.acc!=null?'точность ±'+Math.round(d.acc)+' м':'',d.home_lat&&d.lat?Math.round(geoDist(d.home_lat,d.home_lng,d.lat,d.lng))+' м от точки':''].filter(Boolean).join(' · '):d.paired?'Ждём первую отправку с планшета':'Введите код в приложении на планшете (действует 30 минут)';
+    return `<div class="geod"><div class="geoh"><b>${e(d.name)}</b><span class="geost ${stc}">${stt}</span></div><div class="geom">${e(meta)}</div><div class="geob">
+      ${d.lat?`<button onclick="geoFocus('${d.id}')">Показать</button><button onclick="geoTrail('${d.id}')">Маршрут 6 ч</button><a class="geob" style="display:contents" href="https://maps.google.com/?q=${d.lat},${d.lng}" target="_blank"><button>Google Maps</button></a><button onclick="geoHome('${d.id}')">Точка здесь</button>`:''}
+      <button onclick="geoCode('${d.id}')">${d.paired?'Перепривязать':'Новый код'}</button><button onclick="geoRename('${d.id}')">Имя</button><button onclick="geoDel('${d.id}')">Отвязать</button></div></div>`}).join(''):`<div class="empty" style="padding:20px">Планшетов пока нет. Нажмите «Добавить планшет».</div>`;
+  if(!GEO.map||!window.L)return;const pts=[];
+  L_.forEach(d=>{if(!d.lat)return;const on=geoOn(d),ll=[d.lat,d.lng];pts.push(ll);
+    const icon=L.divIcon({className:'',html:`<div class="geopin ${on?'on':'off'}"><span>${e(d.name)}</span><i></i></div>`,iconSize:[0,0]});
+    if(GEO.mk[d.id]){GEO.mk[d.id].setLatLng(ll).setIcon(icon)}else GEO.mk[d.id]=L.marker(ll,{icon}).addTo(GEO.map);
+    const r=Math.min(d.acc||0,500);if(GEO.circ[d.id])GEO.circ[d.id].setLatLng(ll).setRadius(r);else GEO.circ[d.id]=L.circle(ll,{radius:r,color:on?'#3fb36a':'#e0503a',weight:1,fillOpacity:.12}).addTo(GEO.map);
+    if(d.home_lat&&!GEO.home[d.id])GEO.home[d.id]=L.circle([d.home_lat,d.home_lng],{radius:150,color:'#e9c46a',weight:1,dashArray:'4 6',fill:false}).addTo(GEO.map)});
+  if(!GEO.fit&&pts.length){GEO.fit=true;pts.length==1?GEO.map.setView(pts[0],17):GEO.map.fitBounds(pts,{padding:[40,40],maxZoom:17})}}
+function geoDist(a,b,c,d){const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function geoFocus(id){const d=GEO.list.find(x=>x.id==id);if(d&&GEO.map){GEO.map.setView([d.lat,d.lng],17);window.scrollTo({top:0,behavior:'smooth'});document.querySelector('#m .scr')?.scrollTo({top:0,behavior:'smooth'})}}
+async function geoTrail(id){const{data,error}=await sb.rpc('admin_device_track',{p_id:id,p_hours:6});if(error){toast(error.message,1);return}if(!GEO.map)return;
+  if(GEO.trail)GEO.map.removeLayer(GEO.trail);const pts=(data||[]).map(p=>[p[0],p[1]]);if(pts.length<2){toast('За 6 часов планшет не двигался');geoFocus(id);return}
+  GEO.trail=L.polyline(pts,{color:'#e9c46a',weight:3,opacity:.85}).addTo(GEO.map);GEO.map.fitBounds(GEO.trail.getBounds(),{padding:[40,40]});document.querySelector('#m .scr')?.scrollTo({top:0,behavior:'smooth'})}
+function geoAdd(){shw(`<div class="nxsh"><h3>Новый планшет</h3><p class="mu" style="margin:0 0 10px">Как назвать: «Касса», «Киоск», «Кухня»…</p><input id="geon" maxlength="40" placeholder="Название"><button class="main" style="margin-top:10px" onclick="geoAddGo()">Получить код</button></div>`);setTimeout(()=>$('geon')?.focus(),300)}
+async function geoAddGo(){const n=$('geon').value.trim()||'Планшет';const{data,error}=await sb.rpc('admin_device_add',{p_name:n});if(error){toast(error.message,1);return}geoShowCode(data.name,data.code);geoLoad()}
+async function geoCode(id){const d=GEO.list.find(x=>x.id==id);const{data,error}=await sb.rpc('admin_device_code',{p_id:id});if(error){toast(error.message,1);return}geoShowCode(d?.name||'',data.code);geoLoad()}
+function geoShowCode(n,c){shw(`<div class="nxsh"><h3>Код для «${e(n)}»</h3><div class="geocode">${e(c)}</div><ol class="apsteps"><li>На планшете откройте <b>degirmen-navoi.kz/guard</b> и установите приложение «Degirmen Защита»</li><li>Введите этот код и нажмите «Привязать»</li><li>Нажмите все кнопки разрешений: местоположение «Всегда», батарея без ограничений</li></ol><p class="mu" style="font-size:13px">Код действует 30 минут.</p><button class="sec2" onclick="cp()">Готово</button></div>`)}
+async function geoHome(id){const{error}=await sb.rpc('admin_device_set',{p_id:id,p_home:true});if(error){toast(error.message,1);return}Object.values(GEO.home).forEach(c=>GEO.map&&GEO.map.removeLayer(c));GEO.home={};toast('Точка запомнена: тревога, если планшет отойдёт дальше 150 м');geoLoad()}
+function geoRename(id){const d=GEO.list.find(x=>x.id==id);shw(`<div class="nxsh"><h3>Название</h3><input id="geon" maxlength="40" value="${e(d?.name||'')}"><button class="main" style="margin-top:10px" onclick="geoRenameGo('${id}')">Сохранить</button></div>`)}
+async function geoRenameGo(id){const{error}=await sb.rpc('admin_device_set',{p_id:id,p_name:$('geon').value.trim()});if(error){toast(error.message,1);return}cp();geoLoad()}
+function geoDel(id){const d=GEO.list.find(x=>x.id==id);shw(`<div class="nxsh"><h3>Отвязать «${e(d?.name||'')}»?</h3><p class="mu">Планшет перестанет отправлять место и пропадёт со списка. Чтобы вернуть, добавьте его заново.</p><button class="main" onclick="geoDelGo('${id}')">Отвязать</button><button class="sec2" onclick="cp()">Отмена</button></div>`)}
+async function geoDelGo(id){const{error}=await sb.rpc('admin_device_set',{p_id:id,p_archive:true});if(error){toast(error.message,1);return}cp();if(GEO.mk[id]&&GEO.map){GEO.map.removeLayer(GEO.mk[id]);GEO.map.removeLayer(GEO.circ[id])}delete GEO.mk[id];geoLoad()}
+{const _d=apDevM;apDevM=function(){_d.apply(this,arguments);if(!isAdm())return;const w=document.querySelector('#m .apdw');if(w&&!w.querySelector('.geoent'))w.insertAdjacentHTML('afterbegin',`<div class="apdev geoent"><div class="apdi">📍</div><div class="apdb"><b>Где планшеты</b><p>Живая карта планшетов точки. Тревога в Telegram, если планшет унесли или он пропал из сети.</p><button class="main" onclick="geoM()">Открыть карту</button></div></div>`)}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>

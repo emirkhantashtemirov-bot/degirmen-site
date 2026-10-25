@@ -2,5 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /avto/
 Disallow: /glm/
+Disallow: /guard/
 
 Sitemap: https://degirmen-navoi.kz/sitemap.xml
