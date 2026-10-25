@@ -4,33 +4,39 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Brewsell - эспрессо-смесь в итальянском стиле</title>
-<meta name="description" content="Brewsell: тёмная итальянская обжарка, 65% арабики Бразилии и 35% робусты Индонезии. Крепкий кофе без кислинки. Рецепты эспрессо, гейзерной кофеварки, турки и капучино.">
+<meta name="description" content="Brewsell: тёмная итальянская обжарка, 65% арабики Бразилии и 35% робусты Индонезии. Крепкий кофе без кислинки. Рецепты для рожковой и автоматической кофемашины, турки и гейзера.">
 <meta name="theme-color" content="#1A100B">
 <meta property="og:title" content="Brewsell - miscela espresso all'italiana">
-<meta property="og:description" content="Крепкий, без кислинки. Фундук, злаки, тёмный шоколад, сливочное масло.">
+<meta property="og:description" content="Крепкий, без кислинки. Фундук, злаки, тёмный шоколад, сливочное масло. Пачка 1 кг - 9 500 ₸.">
+<meta property="og:image" content="https://degirmen-navoi.kz/brewsell/label.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Bodoni+Moda:ital,opsz,wght@0,6..96,600;0,6..96,800;1,6..96,500;1,6..96,600&family=Oswald:wght@400;500;600&family=Manrope:wght@400;500;700&display=swap">
 <style>
-/* Ночной итальянский бар: эспрессо-фон, кремовая бумага, красный и зелёный триколор. 3D-сцена на фоне, текст поверх. */
+/* Ночной итальянский бар: эспрессо-фон, кремовая бумага, триколор. 3D-сцена фиксирована за текстом и плавно догоняет прокрутку. */
 :root{
-  --esp:#1A100B; --esp2:#24160F; --cream:#F1E4CB; --paper:#E8D6B3; --red:#C0392B; --green:#3E7A4F; --gold:#D9A85C; --mu:#BFAE95; --line:rgba(241,228,203,.16);
+  --esp:#1A100B; --cream:#F1E4CB; --red:#C0392B; --green:#3E7A4F; --gold:#D9A85C; --mu:#BFAE95; --line:rgba(241,228,203,.16);
   --f-logo:'Yesteryear','Brush Script MT',cursive; --f-disp:'Bodoni Moda',Didot,Georgia,serif; --f-lab:'Oswald','Arial Narrow',sans-serif; --f-body:'Manrope',system-ui,sans-serif;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--esp);color:var(--cream);font:16px/1.6 var(--f-body);overflow-x:hidden}
-#gl{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;pointer-events:none}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--esp);color:var(--cream);font:16px/1.6 var(--f-body);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+#gl{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100lvh;z-index:0;display:block;pointer-events:none}
 .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .flag{position:fixed;left:0;right:0;top:0;height:4px;z-index:30;display:flex}.flag i{flex:1}.flag i:nth-child(1){background:var(--green)}.flag i:nth-child(2){background:var(--cream)}.flag i:nth-child(3){background:var(--red)}
-header{position:fixed;left:0;right:0;top:4px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left));background:linear-gradient(var(--esp) 30%,transparent);}
-.logo{font:400 30px/1 var(--f-logo);color:var(--red);text-shadow:1px 1px 0 #000;text-decoration:none}
+.bar-p{position:fixed;left:0;top:4px;height:2px;width:100%;z-index:31;background:var(--gold);transform-origin:0 0;transform:scaleX(0)}
+header{position:fixed;left:0;right:0;top:4px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left));background:linear-gradient(var(--esp) 30%,transparent)}
+.logo{font:400 30px/1 var(--f-logo);color:var(--red);text-shadow:1px 1px 0 #000;text-decoration:none;display:inline-block;transition:transform .3s}
+.logo:hover{transform:rotate(-4deg) scale(1.06)}
 nav{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
-nav a{font:500 12px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--mu);text-decoration:none;white-space:nowrap;padding:6px 0}
-nav a.on,nav a:hover{color:var(--cream)}
+nav a{position:relative;font:500 12px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--mu);text-decoration:none;white-space:nowrap;padding:6px 0}
+nav a::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1.5px;background:var(--gold);transform:scaleX(0);transition:transform .35s}
+nav a.on,nav a:hover{color:var(--cream)}nav a.on::after,nav a:hover::after{transform:scaleX(1)}
+.btn.hbuy{display:none}
 main{position:relative;z-index:2}
 section{min-height:100vh;padding:110px max(20px,env(safe-area-inset-right)) 80px max(20px,env(safe-area-inset-left));display:flex;align-items:center}
 .wrap{width:100%;max-width:1120px;margin:0 auto}
+.stage{display:none}
 .eyebrow{font:500 12px var(--f-lab);letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
 h1,h2{font-family:var(--f-disp);font-weight:800;line-height:1.02;margin:12px 0 18px;text-wrap:balance}
 h1{font-size:clamp(40px,8.4vw,92px)}
@@ -41,15 +47,32 @@ h2 em,h1 em{font-style:italic;font-weight:600;color:var(--gold)}
 .col{max-width:560px}
 .hero{align-items:flex-end;padding-bottom:12vh}
 .brand{font:400 clamp(84px,19vw,200px)/.8 var(--f-logo);color:var(--red);text-shadow:3px 3px 0 #000;transform:rotate(-6deg);transform-origin:left bottom;display:inline-block;margin:22px 0 10px -4px}
+.brand span{display:inline-block;opacity:0;transform:translateY(40px) rotate(8deg);animation:ink .9s cubic-bezier(.2,.9,.25,1.2) forwards}
+@keyframes ink{to{opacity:1;transform:none}}
 .btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;font:500 14px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--esp);background:var(--cream);border:1.5px solid var(--cream)}
-.btn.ghost{background:transparent;color:var(--cream)}
+/* кнопки: блик, нажатие, рябь, на десктопе - магнит */
+.btn{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;font:500 14px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--esp);background:var(--cream);border:1.5px solid var(--cream);cursor:pointer;transition:transform .25s cubic-bezier(.2,.9,.3,1.3),box-shadow .3s,background .3s,color .3s;will-change:transform}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);transform:translateX(-120%);animation:shine 4.5s ease-in-out infinite}
+.btn.ghost{background:transparent;color:var(--cream)}.btn.ghost::before{background:linear-gradient(105deg,transparent 35%,rgba(241,228,203,.25) 50%,transparent 65%)}
+.btn:hover{box-shadow:0 10px 30px -8px rgba(217,168,92,.55)}
+.btn.ghost:hover{background:rgba(241,228,203,.08)}
+.btn:active{transform:scale(.95)!important}
+.btn .ar{display:inline-block;transition:transform .3s}.btn:hover .ar{transform:translateX(4px)}
+.btn.red{background:var(--red);border-color:var(--red);color:var(--cream)}
+@keyframes shine{0%,62%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.rip{position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.45);transform:scale(0);animation:rip .65s ease-out forwards;z-index:-1}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.bean-p{position:fixed;left:-6px;top:-8px;z-index:60;width:12px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a5230,#2a150b 70%);pointer-events:none}
+.bean-p::after{content:'';position:absolute;left:50%;top:15%;bottom:15%;width:1.5px;margin-left:-.75px;background:#120804;border-radius:2px}
 .btn:focus-visible,nav a:focus-visible,.tab:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-.seal{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:92px;height:92px;border-radius:50%;border:2px solid var(--red);color:var(--red);transform:rotate(-12deg);background:rgba(26,16,11,.6);margin-top:24px;line-height:1}
+.seal{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:92px;height:92px;border-radius:50%;border:2px solid var(--red);color:var(--red);background:rgba(26,16,11,.6);margin-top:24px;line-height:1;animation:wob 6s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(-4deg) scale(1.04)}}
 .seal i{font:italic 600 14px var(--f-disp)}.seal b{font:600 13px var(--f-lab);letter-spacing:.1em;margin-top:2px}.seal small{font:600 10px var(--f-lab);letter-spacing:.08em;margin-top:5px;border-top:1px solid var(--red);padding-top:4px}
-.right{justify-content:flex-end}.right .col{margin-left:auto}
+.right .col{margin-left:auto}
 .notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:26px 0 30px}
-.note{border:1px solid var(--line);border-radius:18px;padding:16px;background:rgba(26,16,11,.62);backdrop-filter:blur(6px)}
+.note,.orig,.recipe{background:rgba(26,16,11,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.note{border:1px solid var(--line);border-radius:18px;padding:16px;transition:transform .35s cubic-bezier(.2,.9,.3,1.3),border-color .3s}
+.note:hover{transform:translateY(-4px) rotate(-.6deg);border-color:rgba(217,168,92,.5)}
 .note b{display:block;font:600 21px/1.15 var(--f-disp)}.note span{font-size:13px;color:var(--mu)}
 .prof{display:flex;flex-direction:column;gap:12px;max-width:440px}
 .pr{display:grid;grid-template-columns:120px 1fr 26px;align-items:center;gap:12px;font:500 12px var(--f-lab);letter-spacing:.16em;text-transform:uppercase}
@@ -57,24 +80,39 @@ h2 em,h1 em{font-style:italic;font-weight:600;color:var(--gold)}
 .pr em{font-style:normal;color:var(--mu);text-align:right}
 .in .pr .bar i{width:var(--v)}
 .origins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
-.orig{border:1px solid var(--line);border-radius:20px;padding:18px;background:rgba(26,16,11,.62);backdrop-filter:blur(6px)}
+.orig{border:1px solid var(--line);border-radius:20px;padding:18px}
 .orig .pct{font:800 46px/1 var(--f-disp);color:var(--gold)}.orig h3{margin:6px 0 2px;font:600 20px var(--f-disp)}.orig small{font:500 11px var(--f-lab);letter-spacing:.18em;color:var(--red);text-transform:uppercase}.orig p{margin:8px 0 0;font-size:14px;color:#E2D3B8}
-.mix{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:18px}.mix i:first-child{flex:65;background:var(--gold)}.mix i:last-child{flex:35;background:var(--red)}
-.roastline{display:flex;flex-direction:column;gap:0;margin-top:22px;border-left:2px solid var(--line);padding-left:18px}
-.st{padding:12px 0;opacity:.35;transition:opacity .5s}.st.on{opacity:1}
+.mix{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:18px;background:rgba(241,228,203,.1)}.mix i{transition:flex-grow 1.6s cubic-bezier(.2,.8,.2,1);flex:0 0 0}.mix i:first-child{background:var(--gold)}.mix i:last-child{background:var(--red)}
+.mix.in i:first-child{flex:65 1 0}.mix.in i:last-child{flex:35 1 0}
+.roastline{display:flex;flex-direction:column;margin-top:22px;border-left:2px solid var(--line);padding-left:18px}
+.st{padding:12px 0;opacity:.35;transition:opacity .5s,transform .5s;position:relative}.st.on{opacity:1;transform:translateX(6px)}
+.st::before{content:'';position:absolute;left:-25px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--esp);border:2px solid var(--line);transition:background .5s,border-color .5s}
+.st.on::before{background:var(--gold);border-color:var(--gold)}
 .st b{display:block;font:600 22px var(--f-disp)}.st span{font-size:14px;color:#E2D3B8}
 .st small{font:500 11px var(--f-lab);letter-spacing:.2em;color:var(--gold)}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 16px}
-.tab{border:1.5px solid var(--line);background:rgba(26,16,11,.55);color:var(--cream);border-radius:999px;padding:11px 16px;font:500 13px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
-.tab[aria-selected="true"]{background:var(--cream);color:var(--esp);border-color:var(--cream)}
-.recipe{border:1px solid var(--line);border-radius:22px;padding:20px;background:rgba(26,16,11,.7);backdrop-filter:blur(8px);max-width:560px}
+.tabs{position:relative;display:inline-flex;flex-wrap:wrap;gap:6px;margin:22px 0 16px;padding:5px;border-radius:28px;border:1.5px solid var(--line);background:rgba(26,16,11,.55)}
+.tab{position:relative;z-index:1;border:0;background:transparent;color:var(--cream);border-radius:999px;padding:10px 15px;font:500 13px var(--f-lab);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:color .35s}
+.tab[aria-selected="true"]{color:var(--esp)}
+.pill{position:absolute;z-index:0;left:0;top:0;border-radius:999px;background:var(--cream);transition:transform .45s cubic-bezier(.2,.9,.3,1.15),width .45s cubic-bezier(.2,.9,.3,1.15),height .45s;pointer-events:none}
+.recipe{border:1px solid var(--line);border-radius:22px;padding:20px;max-width:560px;transition:opacity .25s,transform .25s}
+.recipe.sw{opacity:0;transform:translateY(8px)}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
 .fact{border-radius:14px;background:rgba(241,228,203,.06);padding:10px 12px}.fact b{display:block;font:800 22px/1.1 var(--f-disp);color:var(--gold)}.fact span{font:500 11px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
 .recipe ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.recipe li{opacity:0;transform:translateX(-8px);animation:li .45s forwards}
+@keyframes li{to{opacity:1;transform:none}}
+.gold{margin-top:12px;font:500 11px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--mu)}
 .cups{margin-top:18px;font:500 13px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
-.try{min-height:auto;padding-top:120px;padding-bottom:120px}
+.buyfacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0 6px;max-width:520px}
+.buyfacts div{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:rgba(26,16,11,.62)}
+.buyfacts b{display:block;font:800 26px/1.05 var(--f-disp);color:var(--gold)}.buyfacts span{font:500 11px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.price{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap;font:800 clamp(44px,7vw,72px)/1 var(--f-disp);color:var(--cream)}
+.price small{font:500 16px var(--f-lab);letter-spacing:.14em;color:var(--mu)}
+.hint{margin-top:10px;font:500 11px var(--f-lab);letter-spacing:.18em;text-transform:uppercase;color:var(--mu)}
+.try{padding-top:120px;padding-bottom:120px}
 .card{border-radius:28px;background:var(--cream);color:var(--esp);padding:clamp(22px,4vw,44px);position:relative;overflow:hidden;max-width:760px}
-.card::before{content:'';position:absolute;left:0;right:0;top:0;height:16px;background:repeating-linear-gradient(90deg,var(--red) 0 22px,var(--cream) 22px 44px)}
+.card::before{content:'';position:absolute;left:0;right:0;top:0;height:16px;background:repeating-linear-gradient(90deg,var(--red) 0 22px,var(--cream) 22px 44px);animation:awn 8s linear infinite}
+@keyframes awn{to{background-position:44px 0}}
 .card h2{color:var(--esp);margin-top:18px}.card h2 em{color:var(--red)}
 .card p{color:#4A3527}
 .card h2,.card p{text-shadow:none}
@@ -82,37 +120,53 @@ h2 em,h1 em{font-style:italic;font-weight:600;color:var(--gold)}
 .info{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:10px;font:500 13px var(--f-lab);letter-spacing:.12em;text-transform:uppercase;color:#6B5242}
 footer{position:relative;z-index:2;padding:30px max(20px,env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));border-top:1px solid var(--line);color:var(--mu);font-size:13px;background:var(--esp)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
-.lbl{position:fixed;z-index:3;pointer-events:none;transform:translate(-50%,-130%);font:500 11px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--cream);background:rgba(26,16,11,.8);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap;opacity:0;transition:opacity .4s}
+.lbl{position:fixed;left:0;top:0;z-index:3;pointer-events:none;font:500 11px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--cream);background:rgba(26,16,11,.82);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap;opacity:0;transition:opacity .3s;will-change:transform}
+.lbl b{color:var(--gold);margin-left:4px}
+.drag{touch-action:pan-y}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}.reveal.in{opacity:1;transform:none}
-@media (max-width:720px){nav{display:none}.notes,.origins{grid-template-columns:1fr 1fr}.pr{grid-template-columns:96px 1fr 22px}.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{padding-bottom:9vh}section{align-items:flex-end}}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.pr .bar i{transition:none}}
+@media (max-width:720px){
+  nav{display:none}.btn.hbuy{display:inline-flex;padding:9px 14px;font-size:12px}
+  .grain{display:none}
+  .note,.orig,.recipe,.buyfacts div{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(26,16,11,.84)}
+  section{padding-top:84px;align-items:flex-start}
+  .hero{padding-bottom:8vh}
+  .stage{display:block;height:34vh}
+  .stage.tall{height:40vh}
+  .notes,.origins{grid-template-columns:1fr 1fr}.pr{grid-template-columns:96px 1fr 22px}
+  .tabs{display:flex}.tab{flex:1 1 40%;padding:10px 8px}
+  .lbl{font-size:9.5px;padding:3px 7px;letter-spacing:.1em}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important}.brand span{opacity:1;transform:none}.reveal{opacity:1;transform:none;transition:none}.pr .bar i{transition:none}.recipe li{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 <canvas id="gl" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="bar-p" id="barp" aria-hidden="true"></div>
 <header>
   <a class="logo" href="#top">Brewsell</a>
   <nav aria-label="Разделы">
-    <a href="#taste">Вкус</a><a href="#origin">Зерно</a><a href="#roast">Обжарка</a><a href="#brew">Рецепты</a><a href="#try">Попробовать</a>
+    <a href="#taste">Вкус</a><a href="#origin">Зерно</a><a href="#roast">Обжарка</a><a href="#brew">Рецепты</a><a href="#buy">Купить</a><a href="#try">Попробовать</a>
   </nav>
+  <a class="btn red hbuy" href="#buy">Купить</a>
 </header>
 
 <main>
 <section class="hero" id="top" data-scene="hero">
   <div class="wrap">
+    <div class="stage tall" aria-hidden="true"></div>
     <div class="eyebrow reveal">Miscela espresso all'italiana</div>
-    <div class="brand reveal" aria-hidden="true">Brewsell</div>
+    <div class="brand" aria-hidden="true" id="brand">Brewsell</div>
     <h1 class="reveal">Крепкий. Без кислинки. <em>Как в итальянском баре.</em></h1>
     <p class="lead reveal">Тёмная итальянская обжарка: 65% арабики из Бразилии и 35% робусты из Индонезии. Во вкусе фундук, злаки, тёмный шоколад и сливочное масло.</p>
-    <div class="btns reveal"><a class="btn" href="#brew">Как приготовить</a><a class="btn ghost" href="#try">Где попробовать</a></div>
+    <div class="btns reveal"><a class="btn" href="#buy" data-burst>Купить пачку <span class="ar">→</span></a><a class="btn ghost" href="#brew">Как приготовить</a></div>
     <div class="seal reveal" aria-label="Без кислинки"><i>senza</i><b>ACIDITÀ</b><small>БЕЗ КИСЛИНКИ</small></div>
   </div>
 </section>
 
 <section id="taste" data-scene="taste" class="right">
-  <div class="wrap"><div class="col">
+  <div class="wrap"><div class="stage" aria-hidden="true"></div><div class="col">
     <div class="eyebrow reveal">Il gusto · вкус</div>
     <h2 class="reveal">Шоколад, орех <em>и ни капли кислоты</em></h2>
     <div class="notes reveal">
@@ -132,23 +186,23 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 </section>
 
 <section id="origin" data-scene="origin">
-  <div class="wrap"><div class="col">
+  <div class="wrap"><div class="stage" aria-hidden="true"></div><div class="col">
     <div class="eyebrow reveal">Il chicco · зерно</div>
     <h2 class="reveal">Два континента <em>в одной чашке</em></h2>
     <p class="lead reveal">Классический итальянский приём: мягкую сладкую арабику усиливают робустой. Так эспрессо получается крепким, плотным и с густой пенкой.</p>
     <div class="origins reveal">
-      <div class="orig"><div class="pct">65%</div><small>Арабика</small><h3>Бразилия</h3><p>Основа вкуса: шоколад, орех и мягкая сладость.</p></div>
-      <div class="orig"><div class="pct">35%</div><small>Робуста</small><h3>Индонезия</h3><p>Крепость, плотное тело и густая пенка. Кофеина больше, чем в арабике.</p></div>
+      <div class="orig"><div class="pct" data-count="65">0%</div><small>Арабика</small><h3>Бразилия</h3><p>Основа вкуса: шоколад, орех и мягкая сладость.</p></div>
+      <div class="orig"><div class="pct" data-count="35">0%</div><small>Робуста</small><h3>Индонезия</h3><p>Крепость, плотное тело и густая пенка. Кофеина больше, чем в арабике.</p></div>
     </div>
     <div class="mix reveal" aria-label="65% арабика, 35% робуста"><i></i><i></i></div>
   </div></div>
 </section>
 
 <section id="roast" data-scene="roast" class="right">
-  <div class="wrap"><div class="col">
+  <div class="wrap"><div class="stage" aria-hidden="true"></div><div class="col">
     <div class="eyebrow reveal">La tostatura · обжарка</div>
     <h2 class="reveal">Тёмная <em>итальянская обжарка</em></h2>
-    <p class="lead reveal">Листайте: зерно на фоне проходит путь от зелёного до тёмного. Чем дольше обжарка, тем меньше кислотности и больше шоколадной горчинки.</p>
+    <p class="lead reveal">Листайте: зерно проходит путь от зелёного до тёмного. Чем дольше обжарка, тем меньше кислотности и больше шоколадной горчинки.</p>
     <div class="roastline">
       <div class="st" data-st="0"><small>Шаг 1</small><b>Зелёное зерно</b><span>Сырое, травянистое, кофе в нём ещё не чувствуется.</span></div>
       <div class="st" data-st="1"><small>Шаг 2</small><b>Первый крэк</b><span>Зерно раскрывается и светлеет до корицы. Здесь много кислотности, это светлая обжарка.</span></div>
@@ -158,167 +212,371 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-betw
 </section>
 
 <section id="brew" data-scene="brew">
-  <div class="wrap"><div class="col">
+  <div class="wrap"><div class="stage tall" aria-hidden="true"></div><div class="col">
     <div class="eyebrow reveal">La ricetta · рецепты</div>
     <h2 class="reveal">Как приготовить <em>дома</em></h2>
     <div class="tabs reveal" role="tablist" aria-label="Способ приготовления">
-      <button class="tab" role="tab" aria-selected="true" data-r="espresso">Эспрессо</button>
-      <button class="tab" role="tab" aria-selected="false" data-r="moka">Гейзерная</button>
+      <i class="pill" aria-hidden="true"></i>
+      <button class="tab" role="tab" aria-selected="true" data-r="rozh">Рожковая</button>
+      <button class="tab" role="tab" aria-selected="false" data-r="avto">Автомат</button>
       <button class="tab" role="tab" aria-selected="false" data-r="turka">Турка</button>
-      <button class="tab" role="tab" aria-selected="false" data-r="capp">Капучино</button>
+      <button class="tab" role="tab" aria-selected="false" data-r="moka">Гейзер</button>
     </div>
     <div class="recipe reveal" id="recipe" role="tabpanel" aria-live="polite"></div>
-    <div class="cups reveal">1 кг ≈ 100 чашек эспрессо</div>
+    <div class="cups reveal">1 кг ≈ 55 двойных эспрессо по 18 г</div>
   </div></div>
 </section>
 
-<section class="try" id="try" data-scene="try">
+<section id="buy" data-scene="buy" class="drag">
+  <div class="wrap"><div class="stage tall" aria-hidden="true"></div><div class="col">
+    <div class="eyebrow reveal">Compra · купить</div>
+    <h2 class="reveal">Пачка домой, <em>как в баре</em></h2>
+    <div class="price reveal"><span data-count="9500" data-sep="1">0</span> ₸ <small>/ 1 кг зерна</small></div>
+    <div class="buyfacts reveal">
+      <div><b>≈ 55</b><span>двойных эспрессо</span></div>
+      <div><b>≈ 173 ₸</b><span>за чашку</span></div>
+      <div><b>0</b><span>кислинки</span></div>
+    </div>
+    <p class="lead reveal">Закажите в приложении Degirmen Navoi и заберите пачку на кассе. Пока ждёте, сварим вам эспрессо на этом же зерне.</p>
+    <div class="btns reveal"><a class="btn red" href="/?buy=bw" data-burst>Купить в приложении <span class="ar">→</span></a></div>
+    <div class="hint reveal">Пачку можно покрутить пальцем</div>
+  </div></div>
+</section>
+
+<section class="try drag" id="try" data-scene="try">
   <div class="wrap">
+    <div class="stage" aria-hidden="true"></div>
     <div class="card reveal">
       <div class="eyebrow" style="color:#B0352A">Prova al bar · попробуйте</div>
       <h2>Мы варим этот кофе <em>каждый день</em></h2>
       <p>Зайдите в Degirmen Navoi: выпейте эспрессо или капучино на Brewsell, и если понравится, заберите пачку домой прямо с кассы.</p>
       <div class="info"><span>Алматы, Навои 310А</span><span>Ежедневно 8:00-22:00</span><span>Пачка 1 кг, зерно</span></div>
-      <div class="btns"><a class="btn" href="https://2gis.kz/almaty/search/%D0%9D%D0%B0%D0%B2%D0%BE%D0%B8%20310%D0%90" target="_blank" rel="noopener">Маршрут</a><a class="btn ghost" href="/">Заказать кофе в приложении</a></div>
+      <div class="btns"><a class="btn" href="https://2gis.kz/almaty/search/%D0%9D%D0%B0%D0%B2%D0%BE%D0%B8%20310%D0%90" target="_blank" rel="noopener">Маршрут <span class="ar">→</span></a><a class="btn ghost" href="/?buy=bw">Заказать в приложении</a></div>
     </div>
   </div>
 </section>
 </main>
 
 <footer><div class="wrap"><span>Brewsell · miscela espresso all'italiana</span><span>Импортёр: ТОО «HALAL TRADE COMPANY», Алматы, Навои 310А · +7 700 555 00 27</span></div></footer>
-<div class="lbl" id="lb0">Бразилия · арабика</div><div class="lbl" id="lb1">Индонезия · робуста</div><div class="lbl" id="lb2">Алматы · Brewsell</div>
+<div id="lbls" aria-hidden="true"></div>
 
 <script>
-// рецепты и вкладки - без 3D, работают всегда
+// всё, что не 3D: рецепты, вкладки, появление, кнопки. Работает и без WebGL.
 const R={
- espresso:{f:[['18 г','молотого'],['36 г','в чашке'],['25-30 с','пролив']],s:['Помол мелкий, как сахарная пудра.','Вода 92-94 °C. Утрамбуйте таблетку ровно, без перекоса.','Ждите 25-30 секунд на 36 г напитка. Быстрее - помол мельче, дольше - крупнее.','Пейте сразу, пока жива пенка.']},
- moka:{f:[['20 г','на 3 чашки'],['средний','огонь'],['4-5 мин','до шипения']],s:['Помол чуть крупнее эспрессо.','Налейте горячую воду до клапана: так кофе не перегреется.','Засыпьте кофе с горкой и разровняйте, не трамбуя.','Средний огонь, крышка открыта. Как только зашипит, снимите и остудите низ под холодной водой.']},
- turka:{f:[['8 г','на 100 мл'],['очень','мелкий помол'],['не','кипятить']],s:['Засыпьте кофе в холодную воду, по желанию сахар.','Медленный огонь. Не мешайте, когда появится корочка.','Как пенка поднимется к горлышку, снимите с огня. Не давайте закипеть.','Дайте постоять минуту, чтобы гуща осела.']},
- capp:{f:[['18 г','двойной эспрессо'],['150 мл','молока'],['60-65 °C','молоко']],s:['Сварите двойной эспрессо по рецепту выше.','Взбейте холодное молоко до глянцевой пены, без крупных пузырей.','Не перегревайте выше 65 °C: молоко потеряет сладость.','Вливайте молоко в центр, в конце рисуйте сердце.']}};
-const rec=document.getElementById('recipe');
-function showR(k){const r=R[k];rec.innerHTML=`<div class="facts">${r.f.map(([b,s])=>`<div class="fact"><b>${b}</b><span>${s}</span></div>`).join('')}</div><ol>${r.s.map(x=>`<li>${x}</li>`).join('')}</ol>`;
-  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.r==k)));window.__brew=k}
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showR(t.dataset.r)));showR('espresso');
-// появление блоков
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
-document.querySelectorAll('.reveal,#prof').forEach(el=>io.observe(el));
-// подсветка меню
-const links=[...document.querySelectorAll('nav a')];
-addEventListener('scroll',()=>{const y=innerHeight*.45;let cur='';document.querySelectorAll('section[id]').forEach(s=>{const r=s.getBoundingClientRect();if(r.top<y&&r.bottom>y)cur=s.id});links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+cur))},{passive:true});
+ rozh:{f:[['18 г','молотого'],['36 г','в чашке'],['25-30 с','пролив']],s:['Вода 92-94 °C, давление 9 бар. Прогрейте рожок и чашку.','Помол мелкий. Засыпьте 18 г, разровняйте и утрамбуйте ровно, без перекоса.','Пролейте немного воды через группу, вставьте рожок и сразу запускайте.','Цель: 36 г напитка за 25-30 секунд. Течёт быстрее - мелите мельче, дольше - крупнее.','Для капучино взбейте молоко до 55-65 °C, не горячее: так оно остаётся сладким.'],g:'Золотой стандарт эспрессо: 1 к 2 за 25-30 секунд'},
+ avto:{f:[['макс.','крепость'],['30-40 мл','эспрессо'],['мелкий','помол']],s:['Засыпайте в бункер зерна на 3-5 дней и закрывайте крышку: на воздухе кофе выдыхается.','Помол ставьте средне-мелкий. Меняйте ступень только при работающих жерновах.','Крепость на максимум, объём эспрессо 30-40 мл, температура высокая.','После смены помола первые 2-3 чашки пробные, дальше вкус выровняется.','Раз в неделю промывайте заварочный блок, раз в 1-2 месяца чистите от накипи.'],g:'Сухое тёмное зерно не забивает жернова автомата'},
+ turka:{f:[['10 г','на 100 мл'],['пудра','помол'],['3-4 мин','тихий огонь']],s:['Засыпьте кофе в холодную воду, по желанию сахар. Перемешайте один раз и больше не трогайте.','Самый тихий огонь или песок. Чем медленнее нагрев, тем гуще пенка.','Как только пенка поднимется к горлышку, снимите. Кипеть кофе не должен.','Разложите пенку ложкой по чашкам, затем налейте кофе и дайте минуту осесть гуще.'],g:'Золотое правило турки: 1 к 10 и никогда не кипятить'},
+ moka:{f:[['20 г','на 3 чашки'],['1 к 7','кофе к воде'],['4-5 мин','средний огонь']],s:['Помол средне-мелкий, чуть крупнее, чем для эспрессо.','Налейте горячую воду до клапана: так кофе не пережарится на плите.','Засыпьте кофе с горкой и разровняйте пальцем. Не трамбуйте.','Средний огонь, крышка открыта. Как поток посветлеет и зашипит, снимите и остудите низ холодной водой.'],g:'Гейзер - домашний эспрессо итальянцев. Главное: снять вовремя'}};
+const rec=document.getElementById('recipe'),tabs=[...document.querySelectorAll('.tab')],pill=document.querySelector('.pill');
+function movePill(){const a=tabs.find(t=>t.getAttribute('aria-selected')=='true');if(!a)return;pill.style.width=a.offsetWidth+'px';pill.style.height=a.offsetHeight+'px';pill.style.transform=`translate(${a.offsetLeft}px,${a.offsetTop}px)`}
+function showR(k,anim){const r=R[k];const put=()=>{rec.innerHTML=`<div class="facts">${r.f.map(([b,s])=>`<div class="fact"><b>${b}</b><span>${s}</span></div>`).join('')}</div><ol>${r.s.map((x,i)=>`<li style="animation-delay:${.05+i*.07}s">${x}</li>`).join('')}</ol><div class="gold">${r.g}</div>`;rec.classList.remove('sw')};
+  tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.r==k)));movePill();
+  if(anim){rec.classList.add('sw');setTimeout(put,180)}else put();
+  window.__brew=k;dispatchEvent(new CustomEvent('brew',{detail:k}))}
+tabs.forEach(t=>t.addEventListener('click',()=>{if(window.__brew!=t.dataset.r)showR(t.dataset.r,1)}));
+showR('rozh');addEventListener('resize',movePill);document.fonts&&document.fonts.ready.then(movePill);
+// логотип по буквам
+{const b=document.getElementById('brand');b.innerHTML=[...b.textContent].map((c,i)=>`<span style="animation-delay:${.15+i*.07}s">${c}</span>`).join('')}
+// появление и счётчики
+const fmt=(n,sep)=>sep?String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '):String(n);
+function count(el){const to=+el.dataset.count,sep=el.dataset.sep,pct=el.classList.contains('pct'),t0=performance.now();
+  const step=now=>{const k=Math.min(1,(now-t0)/1300),v=Math.round(to*(1-Math.pow(1-k,3)));el.textContent=fmt(v,sep)+(pct?'%':'');if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');e.target.querySelectorAll('[data-count]').forEach(count);io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal,#prof,.mix').forEach(el=>io.observe(el));
+// рябь от нажатия, магнит на десктопе, зёрна-конфетти
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches,RMo=matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('.btn').forEach(b=>{
+  b.addEventListener('pointerdown',e=>{const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height)*2.2,d=document.createElement('span');d.className='rip';d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),700)});
+  if(fine&&!RMo){b.addEventListener('pointermove',e=>{const r=b.getBoundingClientRect();b.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.3}px)`});b.addEventListener('pointerleave',()=>{b.style.transform=''})}
+  if(b.hasAttribute('data-burst'))b.addEventListener('click',()=>{if(RMo)return;const r=b.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    for(let i=0;i<14;i++){const p=document.createElement('i');p.className='bean-p';document.body.appendChild(p);const a=Math.random()*Math.PI*2,v=120+Math.random()*160,rot=Math.random()*720-360;
+      p.animate([{transform:`translate(${cx}px,${cy}px) rotate(0deg)`,opacity:1},{transform:`translate(${cx+Math.cos(a)*v}px,${cy+Math.sin(a)*v+140}px) rotate(${rot}deg)`,opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.2,.7,.4,1)',fill:'forwards'}).onfinish=()=>p.remove()}})});
+// меню и полоска прогресса - по кэшу позиций, без замеров на каждом скролле
+const links=[...document.querySelectorAll('nav a')],barp=document.getElementById('barp');let POS=[];
+function measureNav(){POS=[...document.querySelectorAll('section[id]')].map(s=>[s.id,s.offsetTop,s.offsetHeight])}
+measureNav();addEventListener('load',measureNav);addEventListener('resize',measureNav);
+let ticking=0;addEventListener('scroll',()=>{if(ticking)return;ticking=1;requestAnimationFrame(()=>{ticking=0;const y=scrollY+innerHeight*.45;let cur='';for(const [id,t,h] of POS)if(y>=t&&y<t+h)cur=id;
+  links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+cur));barp.style.transform=`scaleX(${Math.min(1,scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight))})`})},{passive:true});
 </script>
 
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const mobile=matchMedia('(max-width:720px)').matches;
+const mobile=innerWidth<=720;
 const cv=document.getElementById('gl');
-let rn;try{rn=new THREE.WebGLRenderer({canvas:cv,antialias:!mobile,alpha:true,powerPreference:'high-performance'})}catch(e){throw e}
-rn.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.6:2));rn.outputColorSpace=THREE.SRGBColorSpace;rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.05;
+const rn=new THREE.WebGLRenderer({canvas:cv,antialias:!mobile,alpha:true,powerPreference:'high-performance'});
+rn.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.5:2));rn.outputColorSpace=THREE.SRGBColorSpace;rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.05;
 const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x1A100B,14,30);
 const cam=new THREE.PerspectiveCamera(38,1,.1,100);cam.position.set(0,0,12);
-
-// окружение для бликов: тёплая «студия» из светящихся панелей (без внешних файлов)
-{const pm=new THREE.PMREMGenerator(rn);const env=new THREE.Scene();env.background=new THREE.Color(0x140c08);
- const panel=(w,h,c,x,y,z,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;m.lookAt(0,0,0);env.add(m)};
- panel(8,4,0xffe2b8,6,5,4);panel(6,6,0xff9a5a,-7,2,-3);panel(10,2,0xfff3e0,0,8,-6);panel(4,8,0x6b3a22,0,-6,6);
+// тёплая «студия» для бликов, без внешних файлов
+{const pm=new THREE.PMREMGenerator(rn),env=new THREE.Scene();env.background=new THREE.Color(0x140c08);
+ const panel=(w,h,c,x,y,z)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.lookAt(0,0,0);env.add(m)};
+ panel(8,4,0xffe2b8,6,5,4);panel(6,6,0xff9a5a,-7,2,-3);panel(10,2,0xfff3e0,0,8,-6);panel(4,8,0x6b3a22,0,-6,6);panel(5,3,0xffffff,-3,4,7);
  scene.environment=pm.fromScene(env,.04).texture}
 scene.add(new THREE.AmbientLight(0xffe6c8,.35));
 const key=new THREE.DirectionalLight(0xffd9a8,2.2);key.position.set(5,6,6);scene.add(key);
 const rim=new THREE.DirectionalLight(0xff7a4a,1.4);rim.position.set(-6,-2,-4);scene.add(rim);
+const V=(x,y)=>new THREE.Vector2(x,y);
 
-// --- зерно: сфера, сплюснутая и с бороздкой ---
-function beanGeo(){const g=new THREE.SphereGeometry(1,40,28),p=g.attributes.position,v=new THREE.Vector3();
+// ---------- материалы ----------
+const ceramic=new THREE.MeshPhysicalMaterial({color:0xf4efe6,roughness:.22,clearcoat:1,clearcoatRoughness:.08});
+const chrome=new THREE.MeshStandardMaterial({color:0xd8d8dc,metalness:1,roughness:.2});
+const blackM=new THREE.MeshStandardMaterial({color:0x151110,roughness:.45});
+const redM=new THREE.MeshPhysicalMaterial({color:0xB5302A,roughness:.32,clearcoat:.9,clearcoatRoughness:.15});
+const graph=new THREE.MeshPhysicalMaterial({color:0x2b2a2c,roughness:.35,metalness:.3,clearcoat:.6});
+const copper=new THREE.MeshStandardMaterial({color:0xc8743f,metalness:1,roughness:.28,side:THREE.DoubleSide});
+const wood=new THREE.MeshStandardMaterial({color:0x5a3520,roughness:.65});
+const streamMat=new THREE.MeshStandardMaterial({color:0x5a2a10,roughness:.15,emissive:0x1a0802,transparent:true,opacity:.95});
+function cremaTexture(){const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d'),gr=g.createRadialGradient(128,128,8,128,128,128);
+  gr.addColorStop(0,'#d39a5c');gr.addColorStop(.55,'#b06a33');gr.addColorStop(.85,'#7a3a16');gr.addColorStop(1,'#4a210c');g.fillStyle=gr;g.fillRect(0,0,256,256);
+  g.lineWidth=2.5;for(let i=0;i<6;i++){g.strokeStyle='rgba(240,196,140,.3)';g.beginPath();for(let a=0;a<Math.PI*3.2;a+=.08){const r=8+a*11+i*3;g.lineTo(128+Math.cos(a+i*1.05)*r,128+Math.sin(a+i*1.05)*r)}g.stroke()}
+  for(let i=0;i<500;i++){g.fillStyle=Math.random()<.5?'rgba(58,26,8,.35)':'rgba(245,205,150,.3)';g.beginPath();g.arc(Math.random()*256,Math.random()*256,Math.random()*1.8,0,7);g.fill()}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+const cremaMat=new THREE.MeshStandardMaterial({map:cremaTexture(),roughness:.3});
+
+// ---------- зерно ----------
+function beanGeo(seg=40){const g=new THREE.SphereGeometry(1,seg,Math.round(seg*.7)),p=g.attributes.position,v=new THREE.Vector3();
   for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);let x=v.x*.68,y=v.y,z=v.z*.5;
-    if(z>0){z*=.82;const cx=.07*Math.sin(y*3.2),d=Math.exp(-Math.pow((x-cx)/.085,2))*(1-y*y*.6);z-=d*.24}
-    p.setXYZ(i,x,y,z)}g.computeVertexNormals();return g}
-const BEAN=beanGeo();
+    if(z>0){z*=.82;const cx=.07*Math.sin(y*3.2),d=Math.exp(-Math.pow((x-cx)/.085,2))*(1-y*y*.6);z-=d*.24}p.setXYZ(i,x,y,z)}
+  g.computeVertexNormals();return g}
+const BEAN=beanGeo(mobile?28:40),BEANS=beanGeo(16);
 const roastCols=[new THREE.Color(0x7d8a52),new THREE.Color(0xb98a52),new THREE.Color(0x6a3f22),new THREE.Color(0x2a160c)];
-const beanMat=new THREE.MeshPhysicalMaterial({color:roastCols[3],roughness:.38,metalness:0,clearcoat:.6,clearcoatRoughness:.35,sheen:.3,sheenColor:new THREE.Color(0x8a5a3a)});
-const N=mobile?46:84;const beans=new THREE.InstancedMesh(BEAN,beanMat,N);scene.add(beans);
-const B=[];for(let i=0;i<N;i++){const r=3.2+Math.random()*5.5,a=Math.random()*Math.PI*2,h=(Math.random()-.5)*7;
-  B.push({r,a,h,s:.32+Math.random()*.28,sp:(.04+Math.random()*.08)*(Math.random()<.5?-1:1),rx:Math.random()*6,ry:Math.random()*6,rz:Math.random()*6,vr:(Math.random()-.5)*.6,ph:Math.random()*6})}
-// герой: одно крупное зерно
-const hero=new THREE.Mesh(BEAN,beanMat);hero.scale.setScalar(1.9);scene.add(hero);
+const beanMat=new THREE.MeshPhysicalMaterial({color:roastCols[3],roughness:.38,clearcoat:.6,clearcoatRoughness:.35});
+const roastMat=beanMat.clone();
 
-// --- глобус: точки, регионы, дуги до Алматы ---
+// ---------- чашка ----------
+const SEG=mobile?28:40;
+const cupGeo=new THREE.LatheGeometry([[0,0],[.30,0],[.33,.03],[.38,.30],[.46,.66],[.49,.72],[.47,.735],[.44,.68],[.36,.33],[.30,.11],[0,.11]].map(([x,y])=>V(x,y)),SEG);
+const handleGeo=new THREE.TorusGeometry(.13,.035,10,24,Math.PI*1.25);
+const saucerGeo=new THREE.LatheGeometry([[0,0],[.5,0],[.74,.05],[.8,.085],[.78,.1],[.55,.055],[0,.055]].map(([x,y])=>V(x,y)),SEG);
+const discGeo=new THREE.CircleGeometry(1,36);
+function makeCup(saucer=true){const g=new THREE.Group();g.add(new THREE.Mesh(cupGeo,ceramic));
+  const h=new THREE.Mesh(handleGeo,ceramic);h.position.set(.47,.42,0);h.rotation.z=-Math.PI*.625;g.add(h);
+  if(saucer){const s=new THREE.Mesh(saucerGeo,ceramic);s.position.y=-.055;g.add(s)}
+  const liq=new THREE.Mesh(discGeo,cremaMat);liq.rotation.x=-Math.PI/2;g.add(liq);
+  g.userData.level=0;g.userData.liq=liq;
+  g.userData.set=l=>{l=Math.max(0,Math.min(.98,l));g.userData.level=l;const y=.11+l*.57;liq.position.y=y;liq.scale.setScalar(.30+(y-.11)/.57*.14-.006);liq.visible=l>.02};
+  g.userData.set(0);return g}
+
+// ---------- пар ----------
+const puffTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba(255,240,220,.6)');gr.addColorStop(1,'rgba(255,240,220,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+const steams=[],tv=new THREE.Vector3(),ws=new THREE.Vector3();
+function steam(obj,off,n,size){const arr=[];for(let i=0;i<n;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,transparent:true,depthWrite:false,opacity:0}));s.userData={t:i/n,x:(Math.random()-.5)*.6};s.visible=false;scene.add(s);arr.push(s)}
+  const e={obj,off:new THREE.Vector3(...off),arr,size,amt:0};steams.push(e);return e}
+function runSteam(dt){for(const e of steams){const on=e.amt>.01&&e.obj.visible;if(!on){if(e.vis){e.arr.forEach(s=>s.visible=false);e.vis=false}continue}e.vis=true;
+  tv.copy(e.off);e.obj.localToWorld(tv);const k=e.obj.getWorldScale(ws).x*e.size;
+  for(const s of e.arr){s.visible=true;const d=s.userData;d.t+=dt*.28;if(d.t>1)d.t-=1;
+    s.position.set(tv.x+(d.x+Math.sin(d.t*6+d.x*9)*.25)*k,tv.y+d.t*2.4*k,tv.z+.1);s.scale.setScalar((.25+d.t*1.0)*k);s.material.opacity=e.amt*.2*Math.sin(d.t*Math.PI)}}}
+
+// ---------- ГЕРОЙ: чашка, в которую падают зёрна ----------
+const hero=makeCup();scene.add(hero);hero.rotation.x=.42;
+const FALL=[],ripples=[];
+for(let i=0;i<7;i++){const b=new THREE.Mesh(BEAN,beanMat);b.scale.setScalar(.085);b.visible=false;hero.add(b);b.userData={y:2+Math.random()*4,v:0,x:(Math.random()-.5)*.24,z:(Math.random()-.5)*.24,r:Math.random()*6,wait:.6+Math.random()*1.5};FALL.push(b)}
+const ripGeo=new THREE.RingGeometry(.82,1,40);
+for(let i=0;i<4;i++){const m=new THREE.Mesh(ripGeo,new THREE.MeshBasicMaterial({color:0xf3cf9a,transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.userData={t:1};hero.add(m);ripples.push(m)}
+let ripI=0;const heroSteam=steam(hero,[0,.85,0],10,1);
+// вихрь зёрен вокруг
+const N=mobile?34:78;const beans=new THREE.InstancedMesh(BEANS,beanMat,N);scene.add(beans);
+const B=[];for(let i=0;i<N;i++){B.push({r:3.2+Math.random()*5.5,a:Math.random()*Math.PI*2,h:(Math.random()-.5)*7,s:.3+Math.random()*.26,sp:(.04+Math.random()*.08)*(Math.random()<.5?-1:1),rx:Math.random()*6,ry:Math.random()*6,rz:Math.random()*6,vr:(Math.random()-.5)*.6,ph:Math.random()*6})}
+
+// ---------- ВКУС: стопки чашек = шкалы ----------
+const VALS=[4,0,2,4,4],NAMES=['Аромат','Кислотность','Сладость','Горечь','Тело'];
+const stacks=new THREE.Group();scene.add(stacks);const SC=[],cols=[];
+VALS.forEach((v,ci)=>{const col=new THREE.Group();col.position.x=(ci-2)*1.25;stacks.add(col);cols.push(col);const s=new THREE.Mesh(saucerGeo,ceramic);s.position.y=-.055;col.add(s);
+  for(let k=0;k<v;k++){const c=makeCup(false);c.rotation.y=(k%2?.5:-.4)+ci*.7;c.userData.ty=k*.735;c.userData.d=ci*.11+k*.16;if(k==v-1)c.userData.set(.8);c.visible=false;col.add(c);SC.push(c)}});
+let stackT=-1;
+
+// ---------- ЗЕРНО: глобус ----------
 const globe=new THREE.Group();scene.add(globe);const GR=2.6;
-{const n=mobile?1400:2400,pos=new Float32Array(n*3);for(let i=0;i<n;i++){const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),t=i*2.399963;pos.set([Math.cos(t)*r*GR,y*GR,Math.sin(t)*r*GR],i*3)}
+{const n=mobile?1300:2400,pos=new Float32Array(n*3);for(let i=0;i<n;i++){const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),t=i*2.399963;pos.set([Math.cos(t)*r*GR,y*GR,Math.sin(t)*r*GR],i*3)}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
  globe.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xE8D6B3,size:.035,transparent:true,opacity:.55,depthWrite:false})));
- const sh=new THREE.Mesh(new THREE.SphereGeometry(GR*.985,48,32),new THREE.MeshStandardMaterial({color:0x2a1a12,roughness:.9,transparent:true,opacity:.85}));globe.add(sh);
+ globe.add(new THREE.Mesh(new THREE.SphereGeometry(GR*.985,40,28),new THREE.MeshStandardMaterial({color:0x2a1a12,roughness:.9,transparent:true,opacity:.85})));
  for(let k=-2;k<=2;k++){const r=GR*Math.cos(k*Math.PI/6),ring=new THREE.Mesh(new THREE.TorusGeometry(r*1.001,.006,4,96),new THREE.MeshBasicMaterial({color:0xD9A85C,transparent:true,opacity:.25}));ring.rotation.x=Math.PI/2;ring.position.y=GR*Math.sin(k*Math.PI/6);globe.add(ring)}}
 const ll=(lat,lon,r=GR)=>{const ph=(90-lat)*Math.PI/180,th=(lon+180)*Math.PI/180;return new THREE.Vector3(-r*Math.sin(ph)*Math.cos(th),r*Math.cos(ph),r*Math.sin(ph)*Math.sin(th))};
-const PTS=[{p:ll(-12,-50),c:0xD9A85C},{p:ll(-3,113),c:0xC0392B},{p:ll(43.24,76.89),c:0xF1E4CB}];
+const PTS=[{p:ll(-12,-50),c:0xD9A85C,t:'Бразилия · арабика'},{p:ll(-3,113),c:0xC0392B,t:'Индонезия · робуста'},{p:ll(43.24,76.89),c:0xF1E4CB,t:'Алматы · Brewsell'}];
 const markers=PTS.map(o=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.07,16,12),new THREE.MeshBasicMaterial({color:o.c}));m.position.copy(o.p);globe.add(m);
   const halo=new THREE.Mesh(new THREE.RingGeometry(.1,.16,32),new THREE.MeshBasicMaterial({color:o.c,transparent:true,opacity:.7,side:THREE.DoubleSide}));halo.position.copy(o.p.clone().multiplyScalar(1.01));halo.lookAt(o.p.clone().multiplyScalar(2));globe.add(halo);m.userData.halo=halo;return m});
-const arcs=[0,1].map(i=>{const a=PTS[i].p,b=PTS[2].p,mid=a.clone().add(b).multiplyScalar(.5).normalize().multiplyScalar(GR*1.55);
-  const curve=new THREE.QuadraticBezierCurve3(a,mid,b),g=new THREE.TubeGeometry(curve,80,.018,6,false);const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:PTS[i].c,transparent:true,opacity:.95}));globe.add(m);g.setDrawRange(0,0);return m});
+const curves=[0,1].map(i=>{const a=PTS[i].p,b=PTS[2].p;return new THREE.QuadraticBezierCurve3(a,a.clone().add(b).multiplyScalar(.5).normalize().multiplyScalar(GR*1.55),b)});
+const arcs=curves.map((c,i)=>{const g=new THREE.TubeGeometry(c,80,.018,6,false);const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:PTS[i].c}));globe.add(m);g.setDrawRange(0,0);return m});
+const runners=curves.map(c=>{const b=new THREE.Mesh(BEANS,beanMat);b.scale.setScalar(.09);b.visible=false;globe.add(b);b.userData.curve=c;return b});
 globe.rotation.y=-1.2;
 
-// --- гейзерная кофеварка: восьмигранная, как классическая итальянская ---
-const moka=new THREE.Group();scene.add(moka);
-{const metal=new THREE.MeshStandardMaterial({color:0xcfcfd2,metalness:1,roughness:.32});
- const lathe=(pts,y)=>{const m=new THREE.Mesh(new THREE.LatheGeometry(pts.map(([x,h])=>new THREE.Vector2(x,h)),8),metal);m.position.y=y;moka.add(m);return m};
- lathe([[0,0],[.95,0],[1.05,.08],[.82,1.05],[.78,1.12]],-2.1);
- lathe([[.78,0],[.86,.08],[1.02,1.05],[.99,1.16],[.3,1.22],[0,1.24]],-0.98);
- const knob=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),new THREE.MeshStandardMaterial({color:0x111111,roughness:.5}));knob.position.y=.3;moka.add(knob);
- const spout=new THREE.Mesh(new THREE.ConeGeometry(.16,.5,8,1,true),metal);spout.position.set(1.02,-.0,0);spout.rotation.z=-Math.PI/2.6;moka.add(spout);
- const hm=new THREE.MeshStandardMaterial({color:0x151110,roughness:.55});const h1=new THREE.Mesh(new THREE.BoxGeometry(.18,1.1,.22),hm);h1.position.set(-1.38,-.55,0);h1.rotation.z=-.12;moka.add(h1);
- const h2=new THREE.Mesh(new THREE.BoxGeometry(.5,.16,.2),hm);h2.position.set(-1.18,0,0);moka.add(h2);const h3=new THREE.Mesh(new THREE.BoxGeometry(.4,.14,.2),hm);h3.position.set(-1.16,-1.08,0);moka.add(h3);
- const valve=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.14,12),new THREE.MeshStandardMaterial({color:0xb8892e,metalness:1,roughness:.3}));valve.position.set(.82,-1.55,.42);valve.rotation.z=Math.PI/2;moka.add(valve)}
-moka.position.set(2.6,-.2,0);
+// ---------- ОБЖАРКА: большое зерно ----------
+const roast=new THREE.Mesh(BEAN,roastMat);scene.add(roast);const roastSteam=steam(roast,[0,1.1,0],9,1);
 
-// --- пар и дымок: мягкие спрайты ---
-const puff=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba(255,240,220,.55)');gr.addColorStop(1,'rgba(255,240,220,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
-const smoke=[];for(let i=0;i<26;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false,opacity:0}));s.userData={t:Math.random(),x:(Math.random()-.5)*.9};scene.add(s);smoke.push(s)}
+// ---------- РЕЦЕПТЫ: четыре способа и пролив в чашку ----------
+const brew=new THREE.Group();scene.add(brew);
+const bCup=makeCup();bCup.scale.setScalar(.95);brew.add(bCup);const brewSteam=steam(bCup,[0,.8,0],8,.8);
+const cyl=new THREE.CylinderGeometry(1,1,1,10,1,true);
+const streams=[0,1].map(()=>{const m=new THREE.Mesh(cyl,streamMat);brew.add(m);m.visible=false;return m});
+const box=(w,h,d,mat,x,y,z,g)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);g.add(m);return m};
+const cy=(r1,r2,h,mat,x,y,z,g,seg=24)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg),mat);m.position.set(x,y,z);g.add(m);return m};
+const mark=(g,x,y,z)=>{const o=new THREE.Object3D();o.position.set(x,y,z);g.add(o);return o};
+function screenTex(txt){const c=document.createElement('canvas');c.width=256;c.height=128;const g=c.getContext('2d');g.fillStyle='#120c08';g.fillRect(0,0,256,128);g.fillStyle='#ffb35c';g.font='600 30px Oswald, Arial Narrow, sans-serif';g.textAlign='center';g.fillText(txt,128,58);g.font='500 20px Oswald, sans-serif';g.fillStyle='#d9a85c';g.fillText('BREWSELL ●●●●○',128,96);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+const M={};
+{ // рожковая: ретро-красная
+ const g=new THREE.Group();
+ box(1.7,.12,1.05,chrome,0,-.17,0,g);box(1.9,2.75,1.05,redM,0,1.15,-.98,g);box(1.9,.62,1.55,redM,0,2.2,-.25,g);box(1.95,.06,1.6,chrome,0,2.54,-.25,g);
+ for(let i=-1;i<=1;i+=2)cy(.03,.03,1.5,chrome,i*.9,2.72,-.25,g,8).rotation.x=Math.PI/2;
+ cy(.3,.32,.2,chrome,0,1.8,0,g);cy(.31,.27,.2,chrome,0,1.6,0,g);
+ const h=cy(.055,.07,.95,blackM,.62,1.6,.25,g,12);h.rotation.z=Math.PI/2;h.rotation.y=-.45;
+ cy(.04,.03,.12,chrome,-.08,1.45,0,g,8);cy(.04,.03,.12,chrome,.08,1.45,0,g,8);
+ const ga=cy(.24,.24,.06,chrome,-.55,1.05,-.44,g);ga.rotation.x=Math.PI/2;const gf=cy(.2,.2,.02,new THREE.MeshBasicMaterial({color:0xf4efe6}),-.55,1.05,-.405,g);gf.rotation.x=Math.PI/2;
+ const nd=box(.02,.17,.01,new THREE.MeshBasicMaterial({color:0xB5302A}),-.55,1.05,-.39,g);nd.geometry.translate(0,.08,0);g.userData.needle=nd;
+ const w=cy(.03,.03,1.1,chrome,.85,1.3,-.15,g,8);w.rotation.z=.25;
+ g.userData.sp=[mark(g,-.08,1.39,0),mark(g,.08,1.39,0)];M.rozh=g}
+{ // автомат: графит, экран
+ const g=new THREE.Group();
+ box(1.4,.1,1.0,chrome,0,-.16,0,g);box(1.75,2.9,1.0,graph,0,1.25,-.95,g);box(1.75,.75,1.6,graph,0,2.32,-.25,g);
+ const sc=new THREE.Mesh(new THREE.PlaneGeometry(.95,.42),new THREE.MeshBasicMaterial({map:screenTex('ЭСПРЕССО')}));sc.position.set(0,2.4,.552);g.add(sc);
+ for(let i=0;i<3;i++){const b=cy(.06,.06,.03,chrome,-.4+i*.4,2.08,.56,g,16);b.rotation.x=Math.PI/2}
+ box(.5,.14,.36,chrome,0,1.88,.05,g);cy(.035,.03,.1,chrome,-.07,1.77,.05,g,8);cy(.035,.03,.1,chrome,.07,1.77,.05,g,8);
+ g.userData.sp=[mark(g,-.07,1.72,.05),mark(g,.07,1.72,.05)];M.avto=g}
+{ // турка: медная, с деревянной ручкой
+ const g=new THREE.Group(),piv=new THREE.Group();piv.position.set(-.95,.95,0);g.add(piv);
+ piv.add(new THREE.Mesh(new THREE.LatheGeometry([[0,0],[.36,0],[.4,.04],[.38,.36],[.3,.58],[.33,.7],[.39,.78]].map(([x,y])=>V(x,y)),32),copper));
+ const foam=new THREE.Mesh(discGeo,cremaMat);foam.rotation.x=-Math.PI/2;foam.position.y=.52;foam.scale.setScalar(.31);piv.add(foam);
+ const hd=cy(.045,.05,1.1,wood,-.85,.48,0,piv,10);hd.rotation.z=Math.PI/2-.4;
+ g.userData.sp=[mark(piv,.42,.79,0)];g.userData.piv=piv;g.userData.tilt=-1.1;M.turka=g}
+{ // гейзер: восьмигранная мока
+ const g=new THREE.Group(),piv=new THREE.Group();piv.position.set(-1.2,.6,0);g.add(piv);const m=new THREE.Group();m.scale.setScalar(.62);piv.add(m);
+ const lathe=(pts,y)=>{const o=new THREE.Mesh(new THREE.LatheGeometry(pts.map(([x,h])=>V(x,h)),8),chrome);o.position.y=y;m.add(o)};
+ lathe([[0,0],[.95,0],[1.05,.08],[.82,1.05],[.78,1.12]],0);lathe([[.78,0],[.86,.08],[1.02,1.05],[.99,1.16],[.3,1.22],[0,1.24]],1.12);
+ const kn=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),blackM);kn.position.y=2.4;m.add(kn);
+ const sp=new THREE.Mesh(new THREE.ConeGeometry(.16,.5,8,1,true),chrome);sp.position.set(1.02,2.1,0);sp.rotation.z=-Math.PI/2.6;m.add(sp);
+ box(.18,1.1,.22,blackM,-1.38,1.55,0,m).rotation.z=-.12;box(.5,.16,.2,blackM,-1.18,2.1,0,m);box(.4,.14,.2,blackM,-1.16,1.02,0,m);
+ g.userData.sp=[mark(m,1.25,2.2,0)];g.userData.piv=piv;g.userData.tilt=-.95;M.moka=g}
+const MK=['rozh','avto','turka','moka'];MK.forEach(k=>{brew.add(M[k]);M[k].visible=false});
+let curM=window.__brew||'rozh',prevM=null,swT=-9,pourT=0,T=0;
+addEventListener('brew',e=>{if(e.detail==curM)return;prevM=curM;curM=e.detail;swT=T;pourT=T+.5;bCup.userData.set(0)});
+const up=new THREE.Vector3(0,1,0),pa=new THREE.Vector3(),pb=new THREE.Vector3(),pd=new THREE.Vector3(),pc=new THREE.Vector3();
+function setStream(m,a,b,w){pd.subVectors(b,a);const L=pd.length();m.position.addVectors(a,b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(up,pd.normalize());m.scale.set(w,L,w)}
 
-// --- метки регионов поверх canvas ---
-const lb=[0,1,2].map(i=>document.getElementById('lb'+i));
-// --- прогресс по секциям ---
-const secs=[...document.querySelectorAll('section[data-scene]')];
-function weights(){const h=innerHeight,w={};secs.forEach(s=>{const r=s.getBoundingClientRect(),c=r.top+r.height/2-h/2;w[s.dataset.scene]=Math.max(0,1-Math.abs(c)/(h*.85))});return w}
-function prog(name){const s=document.getElementById(name),r=s.getBoundingClientRect();return Math.min(1,Math.max(0,(innerHeight*.55-r.top)/(r.height*.95)))}
-const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,mix=(a,b,t)=>a+(b-a)*t;
-function size(){const w=innerWidth,h=innerHeight;rn.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
-let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
-const dummy=new THREE.Object3D(),tmp=new THREE.Vector3(),col=new THREE.Color();let last=performance.now(),T=0,visible=true;
-document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible){last=performance.now();loop()}});
-const stEls=[...document.querySelectorAll('.st')];
-function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;T+=RM?0:dt;
-  const W=weights(),side=mobile?0:1;
-  // обжарка: цвет зерна по прокрутке секции roast (до неё - зелёное -> тёмное уже готово в герое)
-  const rp=W.roast>0.05?prog('roast'):(W.hero>.3||W.taste>.3?1:1);let rq=W.roast>0.05?Math.min(1,rp*1.25):1;
-  const seg=rq*3,i0=Math.min(2,Math.floor(seg));col.copy(roastCols[i0]).lerp(roastCols[i0+1],seg-i0);beanMat.color.copy(col);beanMat.roughness=mix(.85,.3,rq);beanMat.clearcoat=mix(0,.8,Math.max(0,rq-.6)/.4);
-  stEls.forEach(e=>e.classList.toggle('on',W.roast>.2&&Math.min(2,Math.floor(rq*2.999))==+e.dataset.st));
-  // крупное зерно: в герое справа, в обжарке по центру-справа, иначе уходит
-  const hw=W.hero||0,rw=W.roast||0,tw=W.taste||0;
-  const heroVis=Math.max(hw,rw);hero.visible=heroVis>.02;
-  hero.position.set(mix(mobile?0:4.3,mobile?0:-3.2,rw/(hw+rw+1e-6)),mobile?mix(1.6,1.8,rw):mix(.6,0,rw),mix(0,1.5,rw));
-  hero.scale.setScalar(mix(.2,mobile?1.35:1.9,ease(Math.min(1,heroVis*1.2))));
-  hero.rotation.set(.4+my*.4+Math.sin(T*.6)*.15,T*.45+mx*.8,.3+Math.sin(T*.4)*.1);
-  // россыпь зёрен: вихрь в герое и во вкусе, прячется к глобусу и рецептам
-  const swirl=Math.max(hw*.8,tw,(W.try||0)*.6),spread=mix(.25,1,swirl);
-  for(let i=0;i<N;i++){const b=B[i];b.a+=b.sp*dt*(1+tw*1.5);const r=b.r*spread;dummy.position.set(Math.cos(b.a)*r+(tw*side*-1.8),b.h*spread+Math.sin(T*.8+b.ph)*.25,Math.sin(b.a)*r-2);
-    dummy.rotation.set(b.rx+T*b.vr,b.ry+T*b.vr*.7,b.rz);dummy.scale.setScalar(b.s*Math.min(1,swirl*1.6+.0001));dummy.updateMatrix();beans.setMatrixAt(i,dummy.matrix)}
-  beans.instanceMatrix.needsUpdate=true;beans.visible=swirl>.02;
+// ---------- КУПИТЬ: фирменная пачка ----------
+const pack=new THREE.Group();scene.add(pack);
+{const w=1.5,h=2.9,r=.14,sh=new THREE.Shape();sh.moveTo(-w/2+r,-h/2);sh.lineTo(w/2-r,-h/2);sh.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);sh.lineTo(w/2,h/2-r);sh.quadraticCurveTo(w/2,h/2,w/2-r,h/2);sh.lineTo(-w/2+r,h/2);sh.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);sh.lineTo(-w/2,-h/2+r);sh.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);
+ const g=new THREE.ExtrudeGeometry(sh,{depth:.46,bevelEnabled:true,bevelThickness:.1,bevelSize:.08,bevelSegments:4,curveSegments:6});g.center();
+ const foil=new THREE.MeshPhysicalMaterial({color:0x24150e,roughness:.5,metalness:.15,clearcoat:.4,clearcoatRoughness:.5});pack.add(new THREE.Mesh(g,foil));
+ const crM=new THREE.MeshStandardMaterial({color:0x3a2318,roughness:.6}),crD=new THREE.MeshStandardMaterial({color:0x2a170f,roughness:.7});
+ box(1.62,.2,.36,crM,0,h/2+.12,0,pack);for(let i=0;i<14;i++)box(.03,.2,.37,crD,-.75+i*.115,h/2+.12,0,pack);
+ const lt=new THREE.TextureLoader().load('label.jpg');lt.colorSpace=THREE.SRGBColorSpace;lt.anisotropy=4;
+ const lab=new THREE.Mesh(new THREE.PlaneGeometry(1.24,2.48),new THREE.MeshStandardMaterial({map:lt,roughness:.55}));lab.position.z=.335;pack.add(lab);
+ const bc=document.createElement('canvas');bc.width=256;bc.height=512;const bt=new THREE.CanvasTexture(bc);bt.colorSpace=THREE.SRGBColorSpace;
+ const drawBack=()=>{const x=bc.getContext('2d');x.fillStyle='#24150e';x.fillRect(0,0,256,512);x.save();x.translate(128,250);x.rotate(-.12);x.fillStyle='#c0392b';x.font='86px Yesteryear, cursive';x.textAlign='center';x.fillText('Brewsell',0,0);x.restore();
+   x.textAlign='center';x.fillStyle='#d9a85c';x.font='600 17px Oswald, sans-serif';x.fillText('MISCELA · ESPRESSO',128,300);x.fillStyle='#bfae95';x.font='500 15px Oswald, sans-serif';x.fillText('DEGIRMEN-NAVOI.KZ',128,470);
+   x.strokeStyle='#5a3a28';x.lineWidth=6;x.beginPath();x.arc(128,110,26,0,7);x.stroke();x.fillStyle='#3a2318';x.beginPath();x.arc(128,110,16,0,7);x.fill();
+   ['#2F5E3A','#F1E4CB','#B5302A'].forEach((c,i)=>{x.fillStyle=c;x.fillRect(48+i*53,340,53,8)});bt.needsUpdate=true};
+ drawBack();document.fonts&&document.fonts.load('86px Yesteryear').then(drawBack).catch(()=>{});
+ const bk=new THREE.Mesh(new THREE.PlaneGeometry(1.4,2.8),new THREE.MeshStandardMaterial({map:bt,roughness:.5}));bk.position.z=-.335;bk.rotation.y=Math.PI;pack.add(bk)}
+pack.userData={rot:.5,vel:.6};
+
+// ---------- ПОПРОБОВАТЬ: чашка, которую можно крутить ----------
+const endCup=makeCup();endCup.userData.set(.86);scene.add(endCup);endCup.rotation.x=.38;endCup.userData.rot=0;endCup.userData.vel=.25;const endSteam=steam(endCup,[0,.8,0],10,1);
+
+// крутить пальцем: горизонтальный жест, вертикальный скролл не мешаем
+function dragSpin(el,obj){let on=false,lx=0,lt=0;el.addEventListener('pointerdown',e=>{if(e.target.closest('a,button'))return;on=true;lx=e.clientX;lt=performance.now()});
+  addEventListener('pointermove',e=>{if(!on)return;const dx=e.clientX-lx,now=performance.now();lx=e.clientX;obj.userData.rot+=dx*.012;obj.userData.vel=Math.max(-14,Math.min(14,dx*.012/Math.max(.008,(now-lt)/1000)));lt=now},{passive:true});
+  const stop=()=>{on=false};addEventListener('pointerup',stop);addEventListener('pointercancel',stop)}
+dragSpin(document.getElementById('buy'),pack);dragSpin(document.getElementById('try'),endCup);
+
+// ---------- подписи поверх canvas ----------
+const lblBox=document.getElementById('lbls');
+const mkL=html=>{const d=document.createElement('div');d.className='lbl';d.innerHTML=html;lblBox.appendChild(d);return d};
+const gL=PTS.map(o=>mkL(o.t)),sL=NAMES.map((n,i)=>mkL((mobile?['Аром.','Кисл.','Слад.','Горечь','Тело'][i]:n)+'<b>'+VALS[i]+'</b>'));
+let VW=1,VH=1;
+function place(el,obj,off,vis){if(vis<=.01){if(el._o!==0){el.style.opacity=0;el._o=0}return}tv.set(off[0],off[1],off[2]);obj.localToWorld(tv);tv.project(cam);
+  el.style.transform=`translate(${((tv.x*.5+.5)*VW).toFixed(1)}px,${((-tv.y*.5+.5)*VH).toFixed(1)}px) translate(-50%,-50%)`;const o=+Math.min(1,vis).toFixed(2);if(el._o!==o){el.style.opacity=o;el._o=o}}
+
+// ---------- прокрутка: кэш позиций + плавное догоняние ----------
+const secs=[...document.querySelectorAll('section[data-scene]')];let SI=[];
+function measure(){SI=secs.map(s=>({n:s.dataset.scene,top:s.offsetTop,h:s.offsetHeight}))}
+measure();addEventListener('load',measure);document.fonts&&document.fonts.ready.then(measure);new ResizeObserver(measure).observe(document.querySelector('main'));
+function size(){const w=innerWidth,h=cv.clientHeight||innerHeight;if(w===VW&&h===VH)return;VW=w;VH=h;rn.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+size();addEventListener('resize',size);
+let sy=scrollY,mx=0,my=0;addEventListener('pointermove',e=>{if(e.pointerType=='mouse'){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5}},{passive:true});
+const W={},P={};
+function weights(){const vh=innerHeight;for(const s of SI){const c=s.top+s.h/2-sy-vh/2,den=Math.max(vh*.8,s.h*.62);W[s.n]=Math.max(0,1-Math.abs(c)/den);P[s.n]=(sy+vh*.55-s.top)/(s.h*.95)}}
+// где на экране «сцена» объекта: на телефоне - в верхней части, над текстом
+const HALF=Math.tan(19*Math.PI/180)*12,yAt=f=>HALF*(1-2*f);
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,mix=(a,b,t)=>a+(b-a)*t,cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const backE=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)},sm=(a,b,x)=>{const t=cl((x-a)/(b-a));return t*t*(3-2*t)};
+const dummy=new THREE.Object3D(),col=new THREE.Color(),stEls=[...document.querySelectorAll('.st')];
+let last=performance.now(),visible=!document.hidden,hlev=0;
+document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible){last=performance.now();requestAnimationFrame(loop)}});
+function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;T+=RM?dt*.25:dt;
+  size();sy+=(scrollY-sy)*(1-Math.exp(-dt*(mobile?10:7)));if(Math.abs(scrollY-sy)<.5)sy=scrollY;weights();
+  const halfW=HALF*VW/VH;
+  // герой
+  const hw=W.hero||0;hero.visible=hw>.02;
+  if(hero.visible){const s=mobile?Math.min(1.25,halfW*.55):1.85;hero.scale.setScalar(s*mix(.7,1,ease(hw)));hero.position.set(mobile?0:Math.min(3.9,halfW*.52),mobile?yAt(.27)-.45*s:1.05+(1-hw)*1.5,0);
+    hero.rotation.y=Math.sin(T*.3)*.4+mx*.6;hero.rotation.x=.42+my*.15;
+    hlev=Math.min(.82,hlev+dt*.22);hero.userData.set(hlev+Math.sin(T*2)*.004);hero.userData.liq.rotation.z=T*.15;
+    const ly=hero.userData.liq.position.y;
+    for(const b of FALL){const d=b.userData;if(d.wait>0){d.wait-=dt;b.visible=false;continue}b.visible=true;d.v+=dt*4.5;d.y-=d.v*dt;d.r+=dt*4;
+      b.position.set(d.x,d.y,d.z);b.rotation.set(d.r,d.r*.7,d.r*.3);
+      if(d.y<ly){const r=ripples[ripI++%ripples.length];r.userData.t=0;r.position.set(d.x,ly+.003,d.z);d.y=2.6+Math.random()*2;d.v=0;d.wait=.3+Math.random()*1.4;b.visible=false}}
+    for(const r of ripples){const d=r.userData;d.t=Math.min(1,d.t+dt*1.4);r.scale.setScalar(.03+d.t*.3);r.material.opacity=(1-d.t)*.75}}
+  heroSteam.amt=hw;
+  // вихрь
+  const tw=W.taste||0,swirl=Math.max(hw*.85,(W.buy||0)*.5,(W.try||0)*.4,tw*.35),spread=mix(.25,1,swirl);beans.visible=swirl>.02;
+  if(beans.visible){for(let i=0;i<N;i++){const b=B[i];b.a+=b.sp*dt;const r=b.r*spread;dummy.position.set(Math.cos(b.a)*r,b.h*spread+Math.sin(T*.8+b.ph)*.25,Math.sin(b.a)*r-3);
+    dummy.rotation.set(b.rx+T*b.vr,b.ry+T*b.vr*.7,b.rz);dummy.scale.setScalar(b.s*Math.min(1,swirl*1.6));dummy.updateMatrix();beans.setMatrixAt(i,dummy.matrix)}beans.instanceMatrix.needsUpdate=true}
+  // стопки
+  stacks.visible=tw>.02;
+  if(stacks.visible){if(tw>.5&&stackT<0)stackT=T;const t0=stackT<0?-9:T-stackT;
+    const s=mobile?Math.min(.5,halfW*2/7.2):.62;stacks.scale.setScalar(s*mix(.8,1,ease(tw)));stacks.position.set(mobile?0:-3.3,mobile?yAt(.31)-1.3*s:-1.2,0);
+    stacks.rotation.set(.32,Math.sin(T*.25)*.25+mx*.4,0);
+    for(const c of SC){const t=t0-c.userData.d;c.visible=t>0;if(!c.visible)continue;const off=t<.42?6*Math.pow(1-t/.42,2):Math.max(0,Math.sin((t-.42)*14)*.12*Math.exp(-(t-.42)*7));c.position.y=c.userData.ty+off}}
+  else if(tw<.01)stackT=-1;
+  cols.forEach((c,i)=>place(sL[i],c,[0,-.45,0],stacks.visible&&stackT>=0?cl((T-stackT-.4)*2)*cl(tw*2-.4):0));
   // глобус
-  const ow=W.origin||0;globe.visible=ow>.02;globe.scale.setScalar(mix(.6,mobile?.72:1,ease(ow)));globe.position.set(mobile?0:mix(4.5,3.1,ow),mobile?2.9:0,0);
-  globe.rotation.y+=dt*.12;globe.rotation.x=.25+my*.15;
-  arcs.forEach((a,i)=>{const n=a.geometry.index.count;a.geometry.setDrawRange(0,Math.floor(n*Math.min(1,Math.max(0,(ow-.35)/.5-i*.12))))});
-  markers.forEach((m,i)=>{const s=1+Math.sin(T*3+i)*.25;m.userData.halo.scale.setScalar(s)});
-  // кофеварка
-  const bw=W.brew||0;moka.visible=bw>.02;moka.scale.setScalar(mix(.5,mobile?.5:.95,ease(bw)));moka.position.set(mobile?0:mix(5,3.2,bw),mobile?3:-.2,0);moka.rotation.y=T*.35+mx*.6;moka.rotation.x=.12;
-  // дымок: над зерном в обжарке, пар над кофеваркой
-  smoke.forEach((s,i)=>{const d=s.userData;d.t+=dt*.25;if(d.t>1)d.t=0;const src=bw>rw?moka:hero,amt=bw>rw?bw:Math.max(0,rw*(rq>.5?1:.4));
-    tmp.copy(src.position);const top=bw>rw?1.25*moka.scale.x:hero.scale.x*1.1;s.position.set(tmp.x+d.x+Math.sin(d.t*6+i)*.15,tmp.y+top+d.t*2.2,tmp.z+.2);s.scale.setScalar(.25+d.t*1.1);s.material.opacity=amt*.16*Math.sin(d.t*Math.PI)});
+  const ow=W.origin||0;globe.visible=ow>.02;
+  if(globe.visible){globe.scale.setScalar(mix(.6,mobile?Math.min(.62,halfW*.36):1,ease(ow)));globe.position.set(mobile?0:mix(4.5,3.1,ow),mobile?yAt(.2):0,0);
+    globe.rotation.y+=dt*.12;globe.rotation.x=.25+my*.15;const ap=cl((ow-.35)/.5);
+    arcs.forEach((a,i)=>a.geometry.setDrawRange(0,Math.floor(a.geometry.index.count*cl(ap-i*.12))));
+    runners.forEach((b,i)=>{b.visible=ap>=1;if(!b.visible)return;b.userData.curve.getPoint((T*.25+i*.5)%1,b.position);b.rotation.set(T*3,T*2,0)});
+    markers.forEach((m,i)=>m.userData.halo.scale.setScalar(1+Math.sin(T*3+i)*.25))}
+  PTS.forEach((o,i)=>{let v=0;if(globe.visible&&ow>.45){markers[i].getWorldPosition(pa);pc.copy(pa).sub(globe.position).normalize();pd.copy(cam.position).sub(pa).normalize();v=pc.dot(pd)>.15?(ow-.45)*3:0}place(gL[i],markers[i],[0,.22,0],v)});
+  // обжарка
+  const rw=W.roast||0;roast.visible=rw>.02;
+  if(roast.visible){const rq=cl((P.roast||0)*1.15),seg=rq*3,i0=Math.min(2,Math.floor(seg));col.copy(roastCols[i0]).lerp(roastCols[i0+1],seg-i0);roastMat.color.copy(col);roastMat.roughness=mix(.85,.3,rq);roastMat.clearcoat=mix(0,.85,cl((rq-.6)/.4));
+    stEls.forEach(e=>{const on=Math.min(2,Math.floor(rq*2.999))==+e.dataset.st;if(e._on!==on){e.classList.toggle('on',on);e._on=on}});
+    const s=mobile?Math.min(1.15,halfW*.5):1.9;roast.scale.setScalar(Math.max(.001,s*ease(cl(rw*1.2))));roast.position.set(mobile?0:-3.2,mobile?yAt(.2):0,mobile?0:1.2);
+    roast.rotation.set(.4+my*.4+Math.sin(T*.6)*.15,T*.45+mx*.8+rq*2,.3+Math.sin(T*.4)*.1+(rq>.33&&rq<.45?Math.sin(T*40)*.03:0));roastSteam.amt=rw*(rq>.5?1:.3)}else roastSteam.amt=0;
+  // рецепты
+  const bw=W.brew||0;brew.visible=bw>.02;
+  if(brew.visible){const s=mobile?Math.min(.62,halfW*.3):.85;brew.scale.setScalar(s*mix(.8,1,ease(bw)));brew.position.set(mobile?.25:Math.min(3.1,halfW*.45),mobile?yAt(.36)-.2:-1.5,0);
+    brew.rotation.y=-.45+Math.sin(T*.35)*.25+mx*.5;brew.rotation.x=.12;
+    const k=cl((T-swT)/.7);for(const key of MK){const g=M[key];if(key==curM){g.visible=true;g.scale.setScalar(Math.max(.001,k<1?backE(k):1));g.rotation.y=(1-k)*-1.4}
+      else if(key==prevM&&k<.5){g.visible=true;const o=1-ease(cl((T-swT)/.35));g.scale.setScalar(Math.max(.001,o));g.rotation.y=(1-o)*1.4}else g.visible=false}
+    const g=M[curM],p=((T-pourT)%6.5+6.5)%6.5,tilt=g.userData.piv?sm(.5,1.3,p)-sm(4.3,5,p):0;
+    if(g.userData.piv)g.userData.piv.rotation.z=tilt*g.userData.tilt;
+    const pouring=p>1.2&&p<4.5&&T>pourT;
+    bCup.userData.set(p<5.6?cl((p-1.3)/3.2)*.82:.82*(1-cl((p-5.6)/.6)));bCup.userData.liq.rotation.z=T*.2;
+    if(g.userData.needle)g.userData.needle.rotation.z+=((pouring?-1.1+Math.sin(T*9)*.05:.6)-g.userData.needle.rotation.z)*Math.min(1,dt*4);
+    const two=g.userData.sp.length>1;
+    g.userData.sp.forEach((spt,i)=>{const st=streams[i];st.visible=pouring;if(!pouring)return;spt.getWorldPosition(pa);brew.worldToLocal(pa);
+      pb.set(g.userData.piv?pa.x*.25:(two?(i?.03:-.03):0),bCup.userData.liq.position.y*bCup.scale.y+.01,0);
+      setStream(st,pa,pb,(.022+Math.sin(T*30+i)*.003)*(p<1.5?cl((p-1.2)/.3):p>4.2?cl((4.5-p)/.3):1)+.0001)});
+    if(!two)streams[1].visible=false;
+    brewSteam.amt=bw*(bCup.userData.level>.3?1:0)}else brewSteam.amt=0;
+  // пачка
+  const kw=W.buy||0;pack.visible=kw>.02;
+  if(pack.visible){const u=pack.userData;u.vel=Math.abs(u.vel)>.7?u.vel*Math.exp(-dt*2.2):mix(u.vel,.6,dt*2);u.rot+=u.vel*dt;
+    const s=mobile?Math.min(.52,halfW*.3):1;pack.scale.setScalar(Math.max(.001,s*mix(.7,1,backE(cl(kw*1.3)))));pack.position.set(mobile?0:3.4,mobile?yAt(.26):-.1+Math.sin(T*1.2)*.12,0);
+    pack.rotation.set(Math.sin(T*.7)*.06+my*.1,u.rot+mx*.4,Math.sin(T*.9)*.04)}
+  // финальная чашка
+  const yw=W.try||0;endCup.visible=yw>.02;
+  if(endCup.visible){const u=endCup.userData;u.vel=Math.abs(u.vel)>.35?u.vel*Math.exp(-dt*2.2):mix(u.vel,.25,dt*2);u.rot+=u.vel*dt;
+    const s=mobile?Math.min(1.3,halfW*.6):2.2;endCup.scale.setScalar(s*mix(.7,1,ease(yw)));endCup.position.set(mobile?0:4.1,mobile?yAt(.2)-.4*s:-1.1,mobile?0:-1);endCup.rotation.y=u.rot;u.liq.rotation.z=T*.1}
+  endSteam.amt=yw;
+  runSteam(dt);
   cam.position.x=mix(cam.position.x,mx*.6,.05);cam.position.y=mix(cam.position.y,-my*.4,.05);cam.lookAt(0,0,0);
   rn.render(scene,cam);
-  // подписи к точкам глобуса
-  PTS.forEach((o,i)=>{const el=lb[i];if(ow<.45||mobile){el.style.opacity=0;return}markers[i].getWorldPosition(tmp);const facing=tmp.clone().sub(globe.position).normalize().dot(cam.position.clone().sub(tmp).normalize());
-    tmp.project(cam);el.style.left=((tmp.x*.5+.5)*innerWidth)+'px';el.style.top=((-tmp.y*.5+.5)*innerHeight)+'px';el.style.opacity=facing>.15?Math.min(1,(ow-.45)*3):0});
 }
 function loop(){if(!visible)return;frame();requestAnimationFrame(loop)}
-loop();
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
