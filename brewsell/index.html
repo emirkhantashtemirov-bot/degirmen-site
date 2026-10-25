@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Brewsell - эспрессо-смесь в итальянском стиле</title>
+<meta name="description" content="Brewsell: тёмная итальянская обжарка, 65% арабики Бразилии и 35% робусты Индонезии. Крепкий кофе без кислинки. Рецепты эспрессо, гейзерной кофеварки, турки и капучино.">
+<meta name="theme-color" content="#1A100B">
+<meta property="og:title" content="Brewsell - miscela espresso all'italiana">
+<meta property="og:description" content="Крепкий, без кислинки. Фундук, злаки, тёмный шоколад, сливочное масло.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Bodoni+Moda:ital,opsz,wght@0,6..96,600;0,6..96,800;1,6..96,500;1,6..96,600&family=Oswald:wght@400;500;600&family=Manrope:wght@400;500;700&display=swap">
+<style>
+/* Ночной итальянский бар: эспрессо-фон, кремовая бумага, красный и зелёный триколор. 3D-сцена на фоне, текст поверх. */
+:root{
+  --esp:#1A100B; --esp2:#24160F; --cream:#F1E4CB; --paper:#E8D6B3; --red:#C0392B; --green:#3E7A4F; --gold:#D9A85C; --mu:#BFAE95; --line:rgba(241,228,203,.16);
+  --f-logo:'Yesteryear','Brush Script MT',cursive; --f-disp:'Bodoni Moda',Didot,Georgia,serif; --f-lab:'Oswald','Arial Narrow',sans-serif; --f-body:'Manrope',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--esp);color:var(--cream);font:16px/1.6 var(--f-body);overflow-x:hidden}
+#gl{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;pointer-events:none}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.flag{position:fixed;left:0;right:0;top:0;height:4px;z-index:30;display:flex}.flag i{flex:1}.flag i:nth-child(1){background:var(--green)}.flag i:nth-child(2){background:var(--cream)}.flag i:nth-child(3){background:var(--red)}
+header{position:fixed;left:0;right:0;top:4px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) 10px max(18px,env(safe-area-inset-left));background:linear-gradient(var(--esp) 30%,transparent);}
+.logo{font:400 30px/1 var(--f-logo);color:var(--red);text-shadow:1px 1px 0 #000;text-decoration:none}
+nav{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+nav a{font:500 12px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--mu);text-decoration:none;white-space:nowrap;padding:6px 0}
+nav a.on,nav a:hover{color:var(--cream)}
+main{position:relative;z-index:2}
+section{min-height:100vh;padding:110px max(20px,env(safe-area-inset-right)) 80px max(20px,env(safe-area-inset-left));display:flex;align-items:center}
+.wrap{width:100%;max-width:1120px;margin:0 auto}
+.eyebrow{font:500 12px var(--f-lab);letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+h1,h2{font-family:var(--f-disp);font-weight:800;line-height:1.02;margin:12px 0 18px;text-wrap:balance}
+h1{font-size:clamp(40px,8.4vw,92px)}
+h2{font-size:clamp(34px,6vw,64px)}
+h1,h2,.lead{text-shadow:0 2px 18px rgba(26,16,11,.9)}
+h2 em,h1 em{font-style:italic;font-weight:600;color:var(--gold)}
+.lead{font-size:clamp(16px,1.6vw,19px);color:#E2D3B8;max-width:560px}
+.col{max-width:560px}
+.hero{align-items:flex-end;padding-bottom:12vh}
+.brand{font:400 clamp(84px,19vw,200px)/.8 var(--f-logo);color:var(--red);text-shadow:3px 3px 0 #000;transform:rotate(-6deg);transform-origin:left bottom;display:inline-block;margin:0 0 10px -4px}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:999px;font:500 14px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--esp);background:var(--cream);border:1.5px solid var(--cream)}
+.btn.ghost{background:transparent;color:var(--cream)}
+.btn:focus-visible,nav a:focus-visible,.tab:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.seal{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:92px;height:92px;border-radius:50%;border:2px solid var(--red);color:var(--red);transform:rotate(-12deg);background:rgba(26,16,11,.6);margin-top:24px;line-height:1}
+.seal i{font:italic 600 14px var(--f-disp)}.seal b{font:600 13px var(--f-lab);letter-spacing:.1em;margin-top:2px}.seal small{font:600 10px var(--f-lab);letter-spacing:.08em;margin-top:5px;border-top:1px solid var(--red);padding-top:4px}
+.right{justify-content:flex-end}.right .col{margin-left:auto}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:26px 0 30px}
+.note{border:1px solid var(--line);border-radius:18px;padding:16px;background:rgba(26,16,11,.62);backdrop-filter:blur(6px)}
+.note b{display:block;font:600 21px/1.15 var(--f-disp)}.note span{font-size:13px;color:var(--mu)}
+.prof{display:flex;flex-direction:column;gap:12px;max-width:440px}
+.pr{display:grid;grid-template-columns:120px 1fr 26px;align-items:center;gap:12px;font:500 12px var(--f-lab);letter-spacing:.16em;text-transform:uppercase}
+.pr .bar{height:8px;border-radius:4px;background:rgba(241,228,203,.12);overflow:hidden}.pr .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--red));transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.pr em{font-style:normal;color:var(--mu);text-align:right}
+.in .pr .bar i{width:var(--v)}
+.origins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.orig{border:1px solid var(--line);border-radius:20px;padding:18px;background:rgba(26,16,11,.62);backdrop-filter:blur(6px)}
+.orig .pct{font:800 46px/1 var(--f-disp);color:var(--gold)}.orig h3{margin:6px 0 2px;font:600 20px var(--f-disp)}.orig small{font:500 11px var(--f-lab);letter-spacing:.18em;color:var(--red);text-transform:uppercase}.orig p{margin:8px 0 0;font-size:14px;color:#E2D3B8}
+.mix{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:18px}.mix i:first-child{flex:65;background:var(--gold)}.mix i:last-child{flex:35;background:var(--red)}
+.roastline{display:flex;flex-direction:column;gap:0;margin-top:22px;border-left:2px solid var(--line);padding-left:18px}
+.st{padding:12px 0;opacity:.35;transition:opacity .5s}.st.on{opacity:1}
+.st b{display:block;font:600 22px var(--f-disp)}.st span{font-size:14px;color:#E2D3B8}
+.st small{font:500 11px var(--f-lab);letter-spacing:.2em;color:var(--gold)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 16px}
+.tab{border:1.5px solid var(--line);background:rgba(26,16,11,.55);color:var(--cream);border-radius:999px;padding:11px 16px;font:500 13px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--cream);color:var(--esp);border-color:var(--cream)}
+.recipe{border:1px solid var(--line);border-radius:22px;padding:20px;background:rgba(26,16,11,.7);backdrop-filter:blur(8px);max-width:560px}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.fact{border-radius:14px;background:rgba(241,228,203,.06);padding:10px 12px}.fact b{display:block;font:800 22px/1.1 var(--f-disp);color:var(--gold)}.fact span{font:500 11px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.recipe ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.cups{margin-top:18px;font:500 13px var(--f-lab);letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+.try{min-height:auto;padding-top:120px;padding-bottom:120px}
+.card{border-radius:28px;background:var(--cream);color:var(--esp);padding:clamp(22px,4vw,44px);position:relative;overflow:hidden;max-width:760px}
+.card::before{content:'';position:absolute;left:0;right:0;top:0;height:16px;background:repeating-linear-gradient(90deg,var(--red) 0 22px,var(--cream) 22px 44px)}
+.card h2{color:var(--esp);margin-top:18px}.card h2 em{color:var(--red)}
+.card p{color:#4A3527}
+.card h2,.card p{text-shadow:none}
+.card .btn{background:var(--esp);color:var(--cream);border-color:var(--esp)}.card .btn.ghost{background:transparent;color:var(--esp)}
+.info{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:10px;font:500 13px var(--f-lab);letter-spacing:.12em;text-transform:uppercase;color:#6B5242}
+footer{position:relative;z-index:2;padding:30px max(20px,env(safe-area-inset-right)) calc(30px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));border-top:1px solid var(--line);color:var(--mu);font-size:13px;background:var(--esp)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+.lbl{position:fixed;z-index:3;pointer-events:none;transform:translate(-50%,-130%);font:500 11px var(--f-lab);letter-spacing:.16em;text-transform:uppercase;color:var(--cream);background:rgba(26,16,11,.8);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap;opacity:0;transition:opacity .4s}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}.reveal.in{opacity:1;transform:none}
+@media (max-width:720px){nav{display:none}.notes,.origins{grid-template-columns:1fr 1fr}.pr{grid-template-columns:96px 1fr 22px}.facts{grid-template-columns:repeat(3,minmax(0,1fr))}.hero{padding-bottom:9vh}section{align-items:flex-end}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.pr .bar i{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+<header>
+  <a class="logo" href="#top">Brewsell</a>
+  <nav aria-label="Разделы">
+    <a href="#taste">Вкус</a><a href="#origin">Зерно</a><a href="#roast">Обжарка</a><a href="#brew">Рецепты</a><a href="#try">Попробовать</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero" id="top" data-scene="hero">
+  <div class="wrap">
+    <div class="eyebrow reveal">Miscela espresso all'italiana</div>
+    <div class="brand reveal" aria-hidden="true">Brewsell</div>
+    <h1 class="reveal">Крепкий. Без кислинки. <em>Как в итальянском баре.</em></h1>
+    <p class="lead reveal">Тёмная итальянская обжарка: 65% арабики из Бразилии и 35% робусты из Индонезии. Во вкусе фундук, злаки, тёмный шоколад и сливочное масло.</p>
+    <div class="btns reveal"><a class="btn" href="#brew">Как приготовить</a><a class="btn ghost" href="#try">Где попробовать</a></div>
+    <div class="seal reveal" aria-label="Без кислинки"><i>senza</i><b>ACIDITÀ</b><small>БЕЗ КИСЛИНКИ</small></div>
+  </div>
+</section>
+
+<section id="taste" data-scene="taste" class="right">
+  <div class="wrap"><div class="col">
+    <div class="eyebrow reveal">Il gusto · вкус</div>
+    <h2 class="reveal">Шоколад, орех <em>и ни капли кислоты</em></h2>
+    <div class="notes reveal">
+      <div class="note"><b>Фундук</b><span>тёплый ореховый тон с первого глотка</span></div>
+      <div class="note"><b>Злаки</b><span>хлебная корочка, печенье</span></div>
+      <div class="note"><b>Тёмный шоколад</b><span>горьковатое долгое послевкусие</span></div>
+      <div class="note"><b>Сливочное масло</b><span>плотное, обволакивающее тело</span></div>
+    </div>
+    <div class="prof reveal" id="prof">
+      <div class="pr"><span>Аромат</span><div class="bar"><i style="--v:80%"></i></div><em>4</em></div>
+      <div class="pr"><span>Кислотность</span><div class="bar"><i style="--v:2%"></i></div><em>0</em></div>
+      <div class="pr"><span>Сладость</span><div class="bar"><i style="--v:40%"></i></div><em>2</em></div>
+      <div class="pr"><span>Горечь</span><div class="bar"><i style="--v:80%"></i></div><em>4</em></div>
+      <div class="pr"><span>Тело</span><div class="bar"><i style="--v:80%"></i></div><em>4</em></div>
+    </div>
+  </div></div>
+</section>
+
+<section id="origin" data-scene="origin">
+  <div class="wrap"><div class="col">
+    <div class="eyebrow reveal">Il chicco · зерно</div>
+    <h2 class="reveal">Два континента <em>в одной чашке</em></h2>
+    <p class="lead reveal">Классический итальянский приём: мягкую сладкую арабику усиливают робустой. Так эспрессо получается крепким, плотным и с густой пенкой.</p>
+    <div class="origins reveal">
+      <div class="orig"><div class="pct">65%</div><small>Арабика</small><h3>Бразилия</h3><p>Основа вкуса: шоколад, орех и мягкая сладость.</p></div>
+      <div class="orig"><div class="pct">35%</div><small>Робуста</small><h3>Индонезия</h3><p>Крепость, плотное тело и густая пенка. Кофеина больше, чем в арабике.</p></div>
+    </div>
+    <div class="mix reveal" aria-label="65% арабика, 35% робуста"><i></i><i></i></div>
+  </div></div>
+</section>
+
+<section id="roast" data-scene="roast" class="right">
+  <div class="wrap"><div class="col">
+    <div class="eyebrow reveal">La tostatura · обжарка</div>
+    <h2 class="reveal">Тёмная <em>итальянская обжарка</em></h2>
+    <p class="lead reveal">Листайте: зерно на фоне проходит путь от зелёного до тёмного. Чем дольше обжарка, тем меньше кислотности и больше шоколадной горчинки.</p>
+    <div class="roastline">
+      <div class="st" data-st="0"><small>Шаг 1</small><b>Зелёное зерно</b><span>Сырое, травянистое, кофе в нём ещё не чувствуется.</span></div>
+      <div class="st" data-st="1"><small>Шаг 2</small><b>Первый крэк</b><span>Зерно раскрывается и светлеет до корицы. Здесь много кислотности, это светлая обжарка.</span></div>
+      <div class="st" data-st="2"><small>Шаг 3</small><b>Тёмная обжарка</b><span>Кислотность уходит, проступают шоколад и орех, на зерне масляный блеск. Это Brewsell.</span></div>
+    </div>
+  </div></div>
+</section>
+
+<section id="brew" data-scene="brew">
+  <div class="wrap"><div class="col">
+    <div class="eyebrow reveal">La ricetta · рецепты</div>
+    <h2 class="reveal">Как приготовить <em>дома</em></h2>
+    <div class="tabs reveal" role="tablist" aria-label="Способ приготовления">
+      <button class="tab" role="tab" aria-selected="true" data-r="espresso">Эспрессо</button>
+      <button class="tab" role="tab" aria-selected="false" data-r="moka">Гейзерная</button>
+      <button class="tab" role="tab" aria-selected="false" data-r="turka">Турка</button>
+      <button class="tab" role="tab" aria-selected="false" data-r="capp">Капучино</button>
+    </div>
+    <div class="recipe reveal" id="recipe" role="tabpanel" aria-live="polite"></div>
+    <div class="cups reveal">1 кг ≈ 100 чашек эспрессо</div>
+  </div></div>
+</section>
+
+<section class="try" id="try" data-scene="try">
+  <div class="wrap">
+    <div class="card reveal">
+      <div class="eyebrow" style="color:#B0352A">Prova al bar · попробуйте</div>
+      <h2>Мы варим этот кофе <em>каждый день</em></h2>
+      <p>Зайдите в Degirmen Navoi: выпейте эспрессо или капучино на Brewsell, и если понравится, заберите пачку домой прямо с кассы.</p>
+      <div class="info"><span>Алматы, Навои 310А</span><span>Ежедневно 8:00-22:00</span><span>Пачка 1 кг, зерно</span></div>
+      <div class="btns"><a class="btn" href="https://2gis.kz/almaty/search/%D0%9D%D0%B0%D0%B2%D0%BE%D0%B8%20310%D0%90" target="_blank" rel="noopener">Маршрут</a><a class="btn ghost" href="/">Заказать кофе в приложении</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>Brewsell · miscela espresso all'italiana</span><span>Импортёр: ТОО «HALAL TRADE COMPANY», Алматы, Навои 310А · +7 700 555 00 27</span></div></footer>
+<div class="lbl" id="lb0">Бразилия · арабика</div><div class="lbl" id="lb1">Индонезия · робуста</div><div class="lbl" id="lb2">Алматы · Brewsell</div>
+
+<script>
+// рецепты и вкладки - без 3D, работают всегда
+const R={
+ espresso:{f:[['18 г','молотого'],['36 г','в чашке'],['25-30 с','пролив']],s:['Помол мелкий, как сахарная пудра.','Вода 92-94 °C. Утрамбуйте таблетку ровно, без перекоса.','Ждите 25-30 секунд на 36 г напитка. Быстрее - помол мельче, дольше - крупнее.','Пейте сразу, пока жива пенка.']},
+ moka:{f:[['20 г','на 3 чашки'],['средний','огонь'],['4-5 мин','до шипения']],s:['Помол чуть крупнее эспрессо.','Налейте горячую воду до клапана: так кофе не перегреется.','Засыпьте кофе с горкой и разровняйте, не трамбуя.','Средний огонь, крышка открыта. Как только зашипит, снимите и остудите низ под холодной водой.']},
+ turka:{f:[['8 г','на 100 мл'],['очень','мелкий помол'],['не','кипятить']],s:['Засыпьте кофе в холодную воду, по желанию сахар.','Медленный огонь. Не мешайте, когда появится корочка.','Как пенка поднимется к горлышку, снимите с огня. Не давайте закипеть.','Дайте постоять минуту, чтобы гуща осела.']},
+ capp:{f:[['18 г','двойной эспрессо'],['150 мл','молока'],['60-65 °C','молоко']],s:['Сварите двойной эспрессо по рецепту выше.','Взбейте холодное молоко до глянцевой пены, без крупных пузырей.','Не перегревайте выше 65 °C: молоко потеряет сладость.','Вливайте молоко в центр, в конце рисуйте сердце.']}};
+const rec=document.getElementById('recipe');
+function showR(k){const r=R[k];rec.innerHTML=`<div class="facts">${r.f.map(([b,s])=>`<div class="fact"><b>${b}</b><span>${s}</span></div>`).join('')}</div><ol>${r.s.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.r==k)));window.__brew=k}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showR(t.dataset.r)));showR('espresso');
+// появление блоков
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal,#prof').forEach(el=>io.observe(el));
+// подсветка меню
+const links=[...document.querySelectorAll('nav a')];
+addEventListener('scroll',()=>{const y=innerHeight*.45;let cur='';document.querySelectorAll('section[id]').forEach(s=>{const r=s.getBoundingClientRect();if(r.top<y&&r.bottom>y)cur=s.id});links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')=='#'+cur))},{passive:true});
+</script>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobile=matchMedia('(max-width:720px)').matches;
+const cv=document.getElementById('gl');
+let rn;try{rn=new THREE.WebGLRenderer({canvas:cv,antialias:!mobile,alpha:true,powerPreference:'high-performance'})}catch(e){throw e}
+rn.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.6:2));rn.outputColorSpace=THREE.SRGBColorSpace;rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.05;
+const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x1A100B,14,30);
+const cam=new THREE.PerspectiveCamera(38,1,.1,100);cam.position.set(0,0,12);
+
+// окружение для бликов: тёплая «студия» из светящихся панелей (без внешних файлов)
+{const pm=new THREE.PMREMGenerator(rn);const env=new THREE.Scene();env.background=new THREE.Color(0x140c08);
+ const panel=(w,h,c,x,y,z,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=ry;m.lookAt(0,0,0);env.add(m)};
+ panel(8,4,0xffe2b8,6,5,4);panel(6,6,0xff9a5a,-7,2,-3);panel(10,2,0xfff3e0,0,8,-6);panel(4,8,0x6b3a22,0,-6,6);
+ scene.environment=pm.fromScene(env,.04).texture}
+scene.add(new THREE.AmbientLight(0xffe6c8,.35));
+const key=new THREE.DirectionalLight(0xffd9a8,2.2);key.position.set(5,6,6);scene.add(key);
+const rim=new THREE.DirectionalLight(0xff7a4a,1.4);rim.position.set(-6,-2,-4);scene.add(rim);
+
+// --- зерно: сфера, сплюснутая и с бороздкой ---
+function beanGeo(){const g=new THREE.SphereGeometry(1,40,28),p=g.attributes.position,v=new THREE.Vector3();
+  for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);let x=v.x*.68,y=v.y,z=v.z*.5;
+    if(z>0){z*=.82;const cx=.07*Math.sin(y*3.2),d=Math.exp(-Math.pow((x-cx)/.085,2))*(1-y*y*.6);z-=d*.24}
+    p.setXYZ(i,x,y,z)}g.computeVertexNormals();return g}
+const BEAN=beanGeo();
+const roastCols=[new THREE.Color(0x7d8a52),new THREE.Color(0xb98a52),new THREE.Color(0x6a3f22),new THREE.Color(0x2a160c)];
+const beanMat=new THREE.MeshPhysicalMaterial({color:roastCols[3],roughness:.38,metalness:0,clearcoat:.6,clearcoatRoughness:.35,sheen:.3,sheenColor:new THREE.Color(0x8a5a3a)});
+const N=mobile?46:84;const beans=new THREE.InstancedMesh(BEAN,beanMat,N);scene.add(beans);
+const B=[];for(let i=0;i<N;i++){const r=3.2+Math.random()*5.5,a=Math.random()*Math.PI*2,h=(Math.random()-.5)*7;
+  B.push({r,a,h,s:.32+Math.random()*.28,sp:(.04+Math.random()*.08)*(Math.random()<.5?-1:1),rx:Math.random()*6,ry:Math.random()*6,rz:Math.random()*6,vr:(Math.random()-.5)*.6,ph:Math.random()*6})}
+// герой: одно крупное зерно
+const hero=new THREE.Mesh(BEAN,beanMat);hero.scale.setScalar(1.9);scene.add(hero);
+
+// --- глобус: точки, регионы, дуги до Алматы ---
+const globe=new THREE.Group();scene.add(globe);const GR=2.6;
+{const n=mobile?1400:2400,pos=new Float32Array(n*3);for(let i=0;i<n;i++){const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),t=i*2.399963;pos.set([Math.cos(t)*r*GR,y*GR,Math.sin(t)*r*GR],i*3)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+ globe.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xE8D6B3,size:.035,transparent:true,opacity:.55,depthWrite:false})));
+ const sh=new THREE.Mesh(new THREE.SphereGeometry(GR*.985,48,32),new THREE.MeshStandardMaterial({color:0x2a1a12,roughness:.9,transparent:true,opacity:.85}));globe.add(sh);
+ for(let k=-2;k<=2;k++){const r=GR*Math.cos(k*Math.PI/6),ring=new THREE.Mesh(new THREE.TorusGeometry(r*1.001,.006,4,96),new THREE.MeshBasicMaterial({color:0xD9A85C,transparent:true,opacity:.25}));ring.rotation.x=Math.PI/2;ring.position.y=GR*Math.sin(k*Math.PI/6);globe.add(ring)}}
+const ll=(lat,lon,r=GR)=>{const ph=(90-lat)*Math.PI/180,th=(lon+180)*Math.PI/180;return new THREE.Vector3(-r*Math.sin(ph)*Math.cos(th),r*Math.cos(ph),r*Math.sin(ph)*Math.sin(th))};
+const PTS=[{p:ll(-12,-50),c:0xD9A85C},{p:ll(-3,113),c:0xC0392B},{p:ll(43.24,76.89),c:0xF1E4CB}];
+const markers=PTS.map(o=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.07,16,12),new THREE.MeshBasicMaterial({color:o.c}));m.position.copy(o.p);globe.add(m);
+  const halo=new THREE.Mesh(new THREE.RingGeometry(.1,.16,32),new THREE.MeshBasicMaterial({color:o.c,transparent:true,opacity:.7,side:THREE.DoubleSide}));halo.position.copy(o.p.clone().multiplyScalar(1.01));halo.lookAt(o.p.clone().multiplyScalar(2));globe.add(halo);m.userData.halo=halo;return m});
+const arcs=[0,1].map(i=>{const a=PTS[i].p,b=PTS[2].p,mid=a.clone().add(b).multiplyScalar(.5).normalize().multiplyScalar(GR*1.55);
+  const curve=new THREE.QuadraticBezierCurve3(a,mid,b),g=new THREE.TubeGeometry(curve,80,.018,6,false);const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:PTS[i].c,transparent:true,opacity:.95}));globe.add(m);g.setDrawRange(0,0);return m});
+globe.rotation.y=-1.2;
+
+// --- гейзерная кофеварка: восьмигранная, как классическая итальянская ---
+const moka=new THREE.Group();scene.add(moka);
+{const metal=new THREE.MeshStandardMaterial({color:0xcfcfd2,metalness:1,roughness:.32});
+ const lathe=(pts,y)=>{const m=new THREE.Mesh(new THREE.LatheGeometry(pts.map(([x,h])=>new THREE.Vector2(x,h)),8),metal);m.position.y=y;moka.add(m);return m};
+ lathe([[0,0],[.95,0],[1.05,.08],[.82,1.05],[.78,1.12]],-2.1);
+ lathe([[.78,0],[.86,.08],[1.02,1.05],[.99,1.16],[.3,1.22],[0,1.24]],-0.98);
+ const knob=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),new THREE.MeshStandardMaterial({color:0x111111,roughness:.5}));knob.position.y=.3;moka.add(knob);
+ const spout=new THREE.Mesh(new THREE.ConeGeometry(.16,.5,8,1,true),metal);spout.position.set(1.02,-.0,0);spout.rotation.z=-Math.PI/2.6;moka.add(spout);
+ const hm=new THREE.MeshStandardMaterial({color:0x151110,roughness:.55});const h1=new THREE.Mesh(new THREE.BoxGeometry(.18,1.1,.22),hm);h1.position.set(-1.38,-.55,0);h1.rotation.z=-.12;moka.add(h1);
+ const h2=new THREE.Mesh(new THREE.BoxGeometry(.5,.16,.2),hm);h2.position.set(-1.18,0,0);moka.add(h2);const h3=new THREE.Mesh(new THREE.BoxGeometry(.4,.14,.2),hm);h3.position.set(-1.16,-1.08,0);moka.add(h3);
+ const valve=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.14,12),new THREE.MeshStandardMaterial({color:0xb8892e,metalness:1,roughness:.3}));valve.position.set(.82,-1.55,.42);valve.rotation.z=Math.PI/2;moka.add(valve)}
+moka.position.set(2.6,-.2,0);
+
+// --- пар и дымок: мягкие спрайты ---
+const puff=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,2,32,32,32);gr.addColorStop(0,'rgba(255,240,220,.55)');gr.addColorStop(1,'rgba(255,240,220,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+const smoke=[];for(let i=0;i<26;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:puff,transparent:true,depthWrite:false,opacity:0}));s.userData={t:Math.random(),x:(Math.random()-.5)*.9};scene.add(s);smoke.push(s)}
+
+// --- метки регионов поверх canvas ---
+const lb=[0,1,2].map(i=>document.getElementById('lb'+i));
+// --- прогресс по секциям ---
+const secs=[...document.querySelectorAll('section[data-scene]')];
+function weights(){const h=innerHeight,w={};secs.forEach(s=>{const r=s.getBoundingClientRect(),c=r.top+r.height/2-h/2;w[s.dataset.scene]=Math.max(0,1-Math.abs(c)/(h*.85))});return w}
+function prog(name){const s=document.getElementById(name),r=s.getBoundingClientRect();return Math.min(1,Math.max(0,(innerHeight*.55-r.top)/(r.height*.95)))}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,mix=(a,b,t)=>a+(b-a)*t;
+function size(){const w=innerWidth,h=innerHeight;rn.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}addEventListener('resize',size);size();
+let mx=0,my=0;addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+const dummy=new THREE.Object3D(),tmp=new THREE.Vector3(),col=new THREE.Color();let last=performance.now(),T=0,visible=true;
+document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible){last=performance.now();loop()}});
+const stEls=[...document.querySelectorAll('.st')];
+function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;T+=RM?0:dt;
+  const W=weights(),side=mobile?0:1;
+  // обжарка: цвет зерна по прокрутке секции roast (до неё - зелёное -> тёмное уже готово в герое)
+  const rp=W.roast>0.05?prog('roast'):(W.hero>.3||W.taste>.3?1:1);let rq=W.roast>0.05?Math.min(1,rp*1.25):1;
+  const seg=rq*3,i0=Math.min(2,Math.floor(seg));col.copy(roastCols[i0]).lerp(roastCols[i0+1],seg-i0);beanMat.color.copy(col);beanMat.roughness=mix(.85,.3,rq);beanMat.clearcoat=mix(0,.8,Math.max(0,rq-.6)/.4);
+  stEls.forEach(e=>e.classList.toggle('on',W.roast>.2&&Math.min(2,Math.floor(rq*2.999))==+e.dataset.st));
+  // крупное зерно: в герое справа, в обжарке по центру-справа, иначе уходит
+  const hw=W.hero||0,rw=W.roast||0,tw=W.taste||0;
+  const heroVis=Math.max(hw,rw);hero.visible=heroVis>.02;
+  hero.position.set(mix(mobile?0:4.3,mobile?0:-3.2,rw/(hw+rw+1e-6)),mobile?mix(1.6,1.8,rw):mix(.6,0,rw),mix(0,1.5,rw));
+  hero.scale.setScalar(mix(.2,mobile?1.35:1.9,ease(Math.min(1,heroVis*1.2))));
+  hero.rotation.set(.4+my*.4+Math.sin(T*.6)*.15,T*.45+mx*.8,.3+Math.sin(T*.4)*.1);
+  // россыпь зёрен: вихрь в герое и во вкусе, прячется к глобусу и рецептам
+  const swirl=Math.max(hw*.8,tw,(W.try||0)*.6),spread=mix(.25,1,swirl);
+  for(let i=0;i<N;i++){const b=B[i];b.a+=b.sp*dt*(1+tw*1.5);const r=b.r*spread;dummy.position.set(Math.cos(b.a)*r+(tw*side*-1.8),b.h*spread+Math.sin(T*.8+b.ph)*.25,Math.sin(b.a)*r-2);
+    dummy.rotation.set(b.rx+T*b.vr,b.ry+T*b.vr*.7,b.rz);dummy.scale.setScalar(b.s*Math.min(1,swirl*1.6+.0001));dummy.updateMatrix();beans.setMatrixAt(i,dummy.matrix)}
+  beans.instanceMatrix.needsUpdate=true;beans.visible=swirl>.02;
+  // глобус
+  const ow=W.origin||0;globe.visible=ow>.02;globe.scale.setScalar(mix(.6,mobile?.72:1,ease(ow)));globe.position.set(mobile?0:mix(4.5,3.1,ow),mobile?2.9:0,0);
+  globe.rotation.y+=dt*.12;globe.rotation.x=.25+my*.15;
+  arcs.forEach((a,i)=>{const n=a.geometry.index.count;a.geometry.setDrawRange(0,Math.floor(n*Math.min(1,Math.max(0,(ow-.35)/.5-i*.12))))});
+  markers.forEach((m,i)=>{const s=1+Math.sin(T*3+i)*.25;m.userData.halo.scale.setScalar(s)});
+  // кофеварка
+  const bw=W.brew||0;moka.visible=bw>.02;moka.scale.setScalar(mix(.5,mobile?.5:.95,ease(bw)));moka.position.set(mobile?0:mix(5,3.2,bw),mobile?3:-.2,0);moka.rotation.y=T*.35+mx*.6;moka.rotation.x=.12;
+  // дымок: над зерном в обжарке, пар над кофеваркой
+  smoke.forEach((s,i)=>{const d=s.userData;d.t+=dt*.25;if(d.t>1)d.t=0;const src=bw>rw?moka:hero,amt=bw>rw?bw:Math.max(0,rw*(rq>.5?1:.4));
+    tmp.copy(src.position);const top=bw>rw?1.25*moka.scale.x:hero.scale.x*1.1;s.position.set(tmp.x+d.x+Math.sin(d.t*6+i)*.15,tmp.y+top+d.t*2.2,tmp.z+.2);s.scale.setScalar(.25+d.t*1.1);s.material.opacity=amt*.16*Math.sin(d.t*Math.PI)});
+  cam.position.x=mix(cam.position.x,mx*.6,.05);cam.position.y=mix(cam.position.y,-my*.4,.05);cam.lookAt(0,0,0);
+  rn.render(scene,cam);
+  // подписи к точкам глобуса
+  PTS.forEach((o,i)=>{const el=lb[i];if(ow<.45||mobile){el.style.opacity=0;return}markers[i].getWorldPosition(tmp);const facing=tmp.clone().sub(globe.position).normalize().dot(cam.position.clone().sub(tmp).normalize());
+    tmp.project(cam);el.style.left=((tmp.x*.5+.5)*innerWidth)+'px';el.style.top=((-tmp.y*.5+.5)*innerHeight)+'px';el.style.opacity=facing>.15?Math.min(1,(ow-.45)*3):0});
+}
+function loop(){if(!visible)return;frame();requestAnimationFrame(loop)}
+loop();
+</script>
+</body>
+</html>
