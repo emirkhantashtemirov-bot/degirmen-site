@@ -1289,6 +1289,17 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
 .csec .sec{padding-top:18px}
 .csec:last-child{min-height:calc(100vh - var(--catsH,70px) - 90px);padding-bottom:110px}
 .csec .bwcard{margin-top:14px}
+
+/* производительность: декоративные анимации стоят на паузе вне экрана и во время быстрой прокрутки */
+.bwcard{contain:layout paint}
+.bwcard::after{animation:none!important;display:none}
+.bwbtn{animation:none!important}
+.bwbtn::after{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 2px rgba(181,48,42,.6);animation:bwring 2.4s ease-out infinite;pointer-events:none}
+@keyframes bwring{0%{transform:scale(1);opacity:.9}70%,100%{transform:scale(1.35,1.6);opacity:0}}
+.bwbtn{overflow:visible}
+.bwp .fr::after{animation:none!important;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.18) 48%,transparent 60%)}
+.bwp-b,.bwp-r,.bwo{will-change:transform}
+.offs,.offs *,.offs::after,.offs *::after{animation-play-state:paused!important}
 </style></head><body><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div class="tst" id="tst"></div>
 <script id="appjs" type="text/x-app">
 // запрос без ответа не вешает приложение: 25 с на обычные запросы, дольше на ИИ и загрузку фото
@@ -4382,6 +4393,14 @@ function spy(){raf=0;if(S.v!='menu'||S.scr||Date.now()<lockT)return;const cs=doc
   if(cur&&cur!=S.cat){S.cat=cur;nxCats()}}
 addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(spy)},{passive:true});
 addEventListener('scrollend',()=>{lockT=0;spy()});
+})();
+
+// ---------- производительность ленты меню ----------
+(function(){
+ // 1) карточка Brewsell и герой анимируются, только когда видны на экране
+ const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('offs',!e.isIntersecting)),{rootMargin:'80px'}):null;
+ const watch=()=>{if(!io)return;document.querySelectorAll('#app .bwcard,#app .hero').forEach(el=>{if(!el._io){el._io=1;el.classList.add('offs');io.observe(el)}})};
+ const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};
 })();
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
