@@ -306,8 +306,8 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mobile=innerWidth<=720;
 const cv=document.getElementById('gl');
-const rn=new THREE.WebGLRenderer({canvas:cv,antialias:!mobile,alpha:true,powerPreference:'high-performance'});
-rn.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.5:2));rn.outputColorSpace=THREE.SRGBColorSpace;rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.05;
+const rn=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,powerPreference:'high-performance'});
+rn.setPixelRatio(Math.min(devicePixelRatio||1,mobile?1.75:2));rn.outputColorSpace=THREE.SRGBColorSpace;rn.toneMapping=THREE.ACESFilmicToneMapping;rn.toneMappingExposure=1.05;
 const scene=new THREE.Scene();scene.fog=new THREE.Fog(0x1A100B,14,30);
 const cam=new THREE.PerspectiveCamera(38,1,.1,100);cam.position.set(0,0,12);
 // тёплая «студия» для бликов, без внешних файлов
@@ -492,26 +492,29 @@ function place(el,obj,off,vis){if(vis<=.01){if(el._o!==0){el.style.opacity=0;el.
 
 // ---------- прокрутка: кэш позиций + плавное догоняние ----------
 const secs=[...document.querySelectorAll('section[data-scene]')];let SI=[];
-function measure(){SI=secs.map(s=>({n:s.dataset.scene,top:s.offsetTop,h:s.offsetHeight}))}
+function measure(){SI=secs.map(s=>{const st=s.querySelector('.stage');return {n:s.dataset.scene,top:s.offsetTop,h:s.offsetHeight,st:st&&st.offsetHeight?{top:st.offsetTop,h:st.offsetHeight}:null}})}
 measure();addEventListener('load',measure);document.fonts&&document.fonts.ready.then(measure);new ResizeObserver(measure).observe(document.querySelector('main'));
 function size(){const w=innerWidth,h=cv.clientHeight||innerHeight;if(w===VW&&h===VH)return;VW=w;VH=h;rn.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 size();addEventListener('resize',size);
 let sy=scrollY,mx=0,my=0;addEventListener('pointermove',e=>{if(e.pointerType=='mouse'){mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5}},{passive:true});
 const W={},P={};
-function weights(){const vh=innerHeight;for(const s of SI){const c=s.top+s.h/2-sy-vh/2,den=Math.max(vh*.8,s.h*.62);W[s.n]=Math.max(0,1-Math.abs(c)/den);P[s.n]=(sy+vh*.55-s.top)/(s.h*.95)}}
+// телефон: 3D-объект привязан к своему окну-сцене в тексте и листается вместе со страницей
+const MS={};
+function weights(){const vh=innerHeight;if(mobile){for(const s of SI){const st=s.st;P[s.n]=(sy+vh*.55-s.top)/(s.h*.95);if(!st){W[s.n]=0;continue}const top=st.top-sy;MS[s.n]={cy:top+st.h/2,h:st.h};W[s.n]=(top+st.h>-vh*.15&&top<vh*1.15)?1:0}return}for(const s of SI){const c=s.top+s.h/2-sy-vh/2,den=Math.max(vh*.8,s.h*.62);W[s.n]=Math.max(0,1-Math.abs(c)/den);P[s.n]=(sy+vh*.55-s.top)/(s.h*.95)}}
 // где на экране «сцена» объекта: на телефоне - в верхней части, над текстом
 const HALF=Math.tan(19*Math.PI/180)*12,yAt=f=>HALF*(1-2*f);
+function mfit(n,w,h,cy){const m=MS[n]||{cy:VH/2,h:VH*.35},wy=HALF*(1-2*m.cy/VH),sh=m.h/VH*2*HALF,hw=HALF*VW/VH,s=Math.min(sh*.86/h,hw*2*.86/w);return {s,y:wy-cy*s}}
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,mix=(a,b,t)=>a+(b-a)*t,cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const backE=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)},sm=(a,b,x)=>{const t=cl((x-a)/(b-a));return t*t*(3-2*t)};
 const dummy=new THREE.Object3D(),col=new THREE.Color(),stEls=[...document.querySelectorAll('.st')];
 let last=performance.now(),visible=!document.hidden,hlev=0;
 document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible){last=performance.now();requestAnimationFrame(loop)}});
 function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;T+=RM?dt*.25:dt;
-  size();sy+=(scrollY-sy)*(1-Math.exp(-dt*(mobile?10:7)));if(Math.abs(scrollY-sy)<.5)sy=scrollY;weights();
+  size();if(mobile)sy=scrollY;else{sy+=(scrollY-sy)*(1-Math.exp(-dt*7));if(Math.abs(scrollY-sy)<.5)sy=scrollY}weights();
   const halfW=HALF*VW/VH;
   // герой
   const hw=W.hero||0;hero.visible=hw>.02;
-  if(hero.visible){const s=mobile?Math.min(1.25,halfW*.55):1.85;hero.scale.setScalar(s*mix(.7,1,ease(hw)));hero.position.set(mobile?0:Math.min(3.9,halfW*.52),mobile?yAt(.27)-.45*s:1.05+(1-hw)*1.5,0);
+  if(hero.visible){const F=mobile&&mfit('hero',1.7,1.05,.35),s=mobile?F.s:1.85;hero.scale.setScalar(s*mix(.7,1,ease(hw)));hero.position.set(mobile?0:Math.min(3.9,halfW*.52),mobile?F.y:1.05+(1-hw)*1.5,0);
     hero.rotation.y=Math.sin(T*.3)*.4+mx*.6;hero.rotation.x=.42+my*.15;
     hlev=Math.min(.82,hlev+dt*.22);hero.userData.set(hlev+Math.sin(T*2)*.004);hero.userData.liq.rotation.z=T*.15;
     const ly=hero.userData.liq.position.y;
@@ -527,14 +530,14 @@ function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);la
   // стопки
   stacks.visible=tw>.02;
   if(stacks.visible){if(tw>.5&&stackT<0)stackT=T;const t0=stackT<0?-9:T-stackT;
-    const s=mobile?Math.min(.5,halfW*2/7.2):.62;stacks.scale.setScalar(s*mix(.8,1,ease(tw)));stacks.position.set(mobile?0:-3.3,mobile?yAt(.31)-1.3*s:-1.2,0);
+    const F=mobile&&mfit('taste',6.6,3.7,1.2),s=mobile?F.s:.62;stacks.scale.setScalar(s*mix(.8,1,ease(tw)));stacks.position.set(mobile?0:-3.3,mobile?F.y:-1.2,0);
     stacks.rotation.set(.32,Math.sin(T*.25)*.25+mx*.4,0);
     for(const c of SC){const t=t0-c.userData.d;c.visible=t>0;if(!c.visible)continue;const off=t<.42?6*Math.pow(1-t/.42,2):Math.max(0,Math.sin((t-.42)*14)*.12*Math.exp(-(t-.42)*7));c.position.y=c.userData.ty+off}}
   else if(tw<.01)stackT=-1;
   cols.forEach((c,i)=>place(sL[i],c,[0,-.45,0],stacks.visible&&stackT>=0?cl((T-stackT-.4)*2)*cl(tw*2-.4):0));
   // глобус
   const ow=W.origin||0;globe.visible=ow>.02;
-  if(globe.visible){globe.scale.setScalar(mix(.6,mobile?Math.min(.62,halfW*.36):1,ease(ow)));globe.position.set(mobile?0:mix(4.5,3.1,ow),mobile?yAt(.2):0,0);
+  if(globe.visible){const F=mobile&&mfit('origin',5.5,5.5,0);globe.scale.setScalar(mobile?F.s:mix(.6,1,ease(ow)));globe.position.set(mobile?0:mix(4.5,3.1,ow),mobile?F.y:0,0);
     globe.rotation.y+=dt*.12;globe.rotation.x=.25+my*.15;const ap=cl((ow-.35)/.5);
     arcs.forEach((a,i)=>a.geometry.setDrawRange(0,Math.floor(a.geometry.index.count*cl(ap-i*.12))));
     runners.forEach((b,i)=>{b.visible=ap>=1;if(!b.visible)return;b.userData.curve.getPoint((T*.25+i*.5)%1,b.position);b.rotation.set(T*3,T*2,0)});
@@ -544,11 +547,11 @@ function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);la
   const rw=W.roast||0;roast.visible=rw>.02;
   if(roast.visible){const rq=cl((P.roast||0)*1.15),seg=rq*3,i0=Math.min(2,Math.floor(seg));col.copy(roastCols[i0]).lerp(roastCols[i0+1],seg-i0);roastMat.color.copy(col);roastMat.roughness=mix(.85,.3,rq);roastMat.clearcoat=mix(0,.85,cl((rq-.6)/.4));
     stEls.forEach(e=>{const on=Math.min(2,Math.floor(rq*2.999))==+e.dataset.st;if(e._on!==on){e.classList.toggle('on',on);e._on=on}});
-    const s=mobile?Math.min(1.15,halfW*.5):1.9;roast.scale.setScalar(Math.max(.001,s*ease(cl(rw*1.2))));roast.position.set(mobile?0:-3.2,mobile?yAt(.2):0,mobile?0:1.2);
+    const F=mobile&&mfit('roast',1.5,2.1,0),s=mobile?F.s:1.9;roast.scale.setScalar(Math.max(.001,s*ease(cl(rw*1.2))));roast.position.set(mobile?0:-3.2,mobile?F.y:0,mobile?0:1.2);
     roast.rotation.set(.4+my*.4+Math.sin(T*.6)*.15,T*.45+mx*.8+rq*2,.3+Math.sin(T*.4)*.1+(rq>.33&&rq<.45?Math.sin(T*40)*.03:0));roastSteam.amt=rw*(rq>.5?1:.3)}else roastSteam.amt=0;
   // рецепты
   const bw=W.brew||0;brew.visible=bw>.02;
-  if(brew.visible){const s=mobile?Math.min(.62,halfW*.3):.85;brew.scale.setScalar(s*mix(.8,1,ease(bw)));brew.position.set(mobile?.25:Math.min(3.1,halfW*.45),mobile?yAt(.36)-.2:-1.5,0);
+  if(brew.visible){const F=mobile&&mfit('brew',3.7,3.1,1.2),s=mobile?F.s:.85;brew.scale.setScalar(s*mix(.8,1,ease(bw)));brew.position.set(mobile?.3*s:Math.min(3.1,halfW*.45),mobile?F.y:-1.5,0);
     brew.rotation.y=-.45+Math.sin(T*.35)*.25+mx*.5;brew.rotation.x=.12;
     const k=cl((T-swT)/.7);for(const key of MK){const g=M[key];if(key==curM){g.visible=true;g.scale.setScalar(Math.max(.001,k<1?backE(k):1));g.rotation.y=(1-k)*-1.4}
       else if(key==prevM&&k<.5){g.visible=true;const o=1-ease(cl((T-swT)/.35));g.scale.setScalar(Math.max(.001,o));g.rotation.y=(1-o)*1.4}else g.visible=false}
@@ -566,12 +569,12 @@ function frame(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);la
   // пачка
   const kw=W.buy||0;pack.visible=kw>.02;
   if(pack.visible){const u=pack.userData;u.vel=Math.abs(u.vel)>.7?u.vel*Math.exp(-dt*2.2):mix(u.vel,.6,dt*2);u.rot+=u.vel*dt;
-    const s=mobile?Math.min(.52,halfW*.3):1;pack.scale.setScalar(Math.max(.001,s*mix(.7,1,backE(cl(kw*1.3)))));pack.position.set(mobile?0:3.4,mobile?yAt(.26):-.1+Math.sin(T*1.2)*.12,0);
+    const F=mobile&&mfit('buy',1.7,3.3,0),s=mobile?F.s:1;pack.scale.setScalar(Math.max(.001,s*mix(.7,1,backE(cl(kw*1.3)))));pack.position.set(mobile?0:3.4,(mobile?F.y:-.1)+Math.sin(T*1.2)*.08*s,0);
     pack.rotation.set(Math.sin(T*.7)*.06+my*.1,u.rot+mx*.4,Math.sin(T*.9)*.04)}
   // финальная чашка
   const yw=W.try||0;endCup.visible=yw>.02;
   if(endCup.visible){const u=endCup.userData;u.vel=Math.abs(u.vel)>.35?u.vel*Math.exp(-dt*2.2):mix(u.vel,.25,dt*2);u.rot+=u.vel*dt;
-    const s=mobile?Math.min(1.3,halfW*.6):2.2;endCup.scale.setScalar(s*mix(.7,1,ease(yw)));endCup.position.set(mobile?0:4.1,mobile?yAt(.2)-.4*s:-1.1,mobile?0:-1);endCup.rotation.y=u.rot;u.liq.rotation.z=T*.1}
+    const F=mobile&&mfit('try',1.7,1.05,.35),s=mobile?F.s:2.2;endCup.scale.setScalar(s*mix(.7,1,ease(yw)));endCup.position.set(mobile?0:4.1,mobile?F.y:-1.1,mobile?0:-1);endCup.rotation.y=u.rot;u.liq.rotation.z=T*.1}
   endSteam.amt=yw;
   runSteam(dt);
   cam.position.x=mix(cam.position.x,mx*.6,.05);cam.position.y=mix(cam.position.y,-my*.4,.05);cam.lookAt(0,0,0);
