@@ -745,6 +745,7 @@ a.tgb{text-decoration:none;-webkit-tap-highlight-color:transparent}
 .fnl.exp .fnt,.fnl.pay .fnt{grid-column:1/2;text-align:right}.fnl.exp .fnx,.fnl.pay .fnx{grid-column:2/3;justify-self:end}
 .fnx{flex:none;width:38px;height:38px;border:0;border-radius:12px;background:none;color:var(--mu);font:400 22px var(--f);cursor:pointer}
 .fnadd{width:100%;margin-top:6px;padding:10px;border-radius:14px;border:1px dashed rgba(243,235,225,.18);background:none;color:var(--mu);font:600 14px var(--f);cursor:pointer}
+.fnwo .fnpl span{flex:1;min-width:0}.fnwo .fnpl .fnx{margin-right:-8px}.fnwo .fnl.wo{margin-top:10px}.fnwo .fnl.wo .fnn+.fnn{margin-top:6px}
 .fnd.ok{color:#9fd39f}.fnd.bad{color:#ff9a86}
 .fnnote2{width:100%;min-height:64px;margin-top:10px;padding:12px 14px;border:0;border-radius:16px;background:var(--s2);color:var(--tx);font:15px/1.4 var(--f);resize:vertical}
 .fnfoot{display:flex;flex-direction:column;gap:2px;margin:6px 0 14px}
@@ -3114,7 +3115,7 @@ const fnDraftK=d=>'dn_fin_'+d;
 function finM(tab){if(!staff())return;const F=S.fn=S.fn||{d:almDay(0),mode:'manual',ym:almDay(0).slice(0,7)};F.tab=isAdm()?tab||F.tab||'day':'day';finRender();finLoad()}
 async function finLoad(){const F=S.fn,k=F.seq=(F.seq||0)+1;F.ld=1;F.err=null;finRender();
  try{if(F.tab=='day'){const[r,l]=await Promise.all([sb.rpc('fin_day',{p_d:F.d}),isAdm()?sb.rpc('fin_days_list',{p_from:F.d.slice(0,7)+'-01',p_to:almDay(0)}):Promise.resolve({data:null})]);
-   if(r.error)throw r.error;if(k!=F.seq)return;F.data=r.data;F.list=l.data||[];finForm()}
+   if(r.error)throw r.error;if(k!=F.seq)return;F.data=r.data;F.list=l.data||[];finForm();finWoLoad()}
   else if(F.tab=='month'){const from=F.ym+'-01',end=new Date(new Date(from+'T00:00').getFullYear(),new Date(from+'T00:00').getMonth()+1,0),to=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
    const r=await sb.rpc('fin_month',{p_from:from,p_to:to<almDay(0)?to:almDay(0)});if(r.error)throw r.error;if(k!=F.seq)return;F.mon=r.data}
   else if(F.tab=='set'){const r=await sb.rpc('fin_ref');if(r.error)throw r.error;if(k!=F.seq)return;F.ref=r.data;F.refEd={}}
@@ -3240,7 +3241,7 @@ function finDayH(){const F=S.fn,D=F.data,A=isAdm(),today=almDay(0);
   <div class="fnrow"><span>Остаток нал по факту</span>${fnInp(f.cash_left,`finF('cash_left',this)`,'','пересчитайте')}</div>
   <div class="fnrow"><span>Разница</span><b id="fns_diff" class="fnd ${c.diff==null?'':Math.abs(c.diff)<=500?'ok':'bad'}">${c.diff==null?'впишите фактический остаток':(c.diff>=0?'+':'')+fnM(c.diff)}</b></div>
   <textarea class="fnnote2" placeholder="Комментарий (необязательно)" oninput="finF('note',this)" ${dis}>${e(f.note)}</textarea></div></fieldset>`;
- return h+finFoot(can)}
+ return h+finWoH()+finFoot(can)}
 function finFoot(can){const F=S.fn,dd=F.data?.day||{},A=isAdm();if(!can)return A&&dd.status=='closed'?`<div class="fnfoot"><button class="sec2" onclick="finReopen()">Открыть день для правок</button></div>`:'';
  return `<div class="fnfoot"><button class="main${F.busy?' busy':''}" onclick="finSave(false)" ${F.busy?'disabled':''}>${F.busy?'Сохраняю…':'Сохранить'}</button>${dd.status!='closed'?`<button class="sec2 fncl" onclick="finClose(this)" ${F.busy?'disabled':''}>Закрыть день</button>`:A?`<button class="sec2" onclick="finReopen()">Открыть день для правок</button>`:''}</div>`}
 const finCam=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>`;
@@ -4402,6 +4403,33 @@ addEventListener('scrollend',()=>{lockT=0;spy()});
  const watch=()=>{if(!io)return;document.querySelectorAll('#app .bwcard,#app .hero').forEach(el=>{if(!el._io){el._io=1;el.classList.add('offs');io.observe(el)}})};
  const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};
 })();
+// ---------- списания в отчёте дня + подключение кассиров к боту ----------
+function finWoLoad(){const F=S.fn;if(!F)return;const d=F.d;sb.rpc('writeoff_list',{p_d:d}).then(r=>{if(!S.fn||S.fn.d!=d)return;S.fn.wo=r.error?[]:(r.data||[]);S.fn.woD=d;S.fn.woErr=r.error?String(r.error.message||r.error):null;if(S.scr=='fin')finRender()});finStaffLoad()}
+const woCan=()=>isAdm()||S.fn.d==almDay(0);
+function finWoH(){const F=S.fn;if(!F||!F.data)return '';const can=woCan(),L=F.woD==F.d?(F.wo||[]):[],w=F.wf=F.wf||{name:'',qty:'',unit:'шт',amount:'',reason:''},sum=L.reduce((a,x)=>a+(+x.amount||0),0);
+ let h=`<div class="fncard fnwo"><div class="fnh">Списание</div><div class="fnhint">Что выбросили, испортилось или съели сотрудники. То же можно написать боту в Telegram: «списание: баклава 2 шт 1800».</div>`;
+ if(F.woErr)h+=`<div class="fnwarn">Списания не загрузились: ${e(F.woErr)}</div>`;
+ h+=L.map(x=>`<div class="fnpl"><span>${e(x.name)}<small>${[x.qty!=null?(+x.qty)+' '+e(x.unit||'шт'):'',x.reason?e(x.reason):'',x.src=='bot'?'из бота':'',x.by?e(x.by):''].filter(Boolean).join(' · ')}</small></span><b>${x.amount!=null?fnM(x.amount):''}</b>${can?`<button class="fnx" onclick="woDel(${x.id})" aria-label="удалить">×</button>`:''}</div>`).join('');
+ if(!L.length&&F.woD==F.d)h+=`<div class="fnhint">За этот день списаний нет.</div>`;
+ if(can)h+=`<div class="fnl wo"><input class="fnn" placeholder="Что списали" value="${e(w.name)}" oninput="S.fn.wf.name=this.value"><div class="fnl2"><select onchange="S.fn.wf.unit=this.value">${FUN.map(u=>`<option ${w.unit==u?'selected':''}>${u}</option>`).join('')}</select>${fnInp(w.qty,'S.fn.wf.qty=this.value','fnq','кол-во')}${fnInp(w.amount,'S.fn.wf.amount=this.value','fnt','сумма ₸')}</div><input class="fnn" placeholder="Причина (необязательно)" value="${e(w.reason)}" oninput="S.fn.wf.reason=this.value"><button class="fnadd" onclick="woAdd()" ${F.woBusy?'disabled':''}>${F.woBusy?'Записываю…':'+ Записать списание'}</button></div>`;
+ if(sum)h+=`<div class="fntot"><span>Списано на сумму</span><b>${fnM(sum)}</b></div>`;
+ return h+`</div>`+finStaffH()}
+async function woAdd(){const F=S.fn,w=F.wf;if(F.woBusy)return;const name=(w.name||'').trim();if(!name){toast('Напишите, что списали',1);return}
+ const qty=fnN(w.qty),amount=fnN(w.amount);if(qty==null&&amount==null){toast('Укажите количество или сумму',1);return}
+ F.woBusy=1;finRender();
+ const r=await sb.rpc('writeoff_add',{p_d:F.d,p:{name,qty,unit:qty!=null?w.unit:null,amount,reason:(w.reason||'').trim()||null}});
+ F.woBusy=0;if(r.error){const m=String(r.error.message||r.error);toast(/locked/.test(m)?'Кассир может писать только за сегодня':/wo:qty/.test(m)?'Количество должно быть больше нуля':'Не записалось: '+m,1);finRender();return}
+ F.wo=r.data||[];F.woD=F.d;F.wf={name:'',qty:'',unit:w.unit,amount:'',reason:''};toast('Списание записано');finRender()}
+async function woDel(id){const F=S.fn;if(!confirm('Убрать эту запись о списании?'))return;const r=await sb.rpc('writeoff_void',{p_id:id});if(r.error){toast(String(r.error.message||r.error),1);return}F.wo=r.data||[];F.woD=F.d;finRender()}
+async function finStaffLoad(){const F=S.fn;if(!F||!isAdm()||F.staff!=null||F.stBusy)return;F.stBusy=1;const[a,b]=await Promise.all([sb.rpc('staff_list'),sb.rpc('nexus_bot')]);F.stBusy=0;F.staff=a.error?[]:(a.data||[]);F.stBot=b.data||null;if(S.scr=='fin')finRender()}
+function finStaffH(){const F=S.fn;if(!isAdm())return '';const L=(F.staff||[]).filter(x=>x.active);
+ return `<div class="fncard fnwo"><div class="fnh">Кассиры в Telegram-боте</div><div class="fnhint">Подключённый кассир может писать боту «списание: ...». Выручку и отчёты бот ему не присылает.</div>${L.map(x=>`<div class="fnpl"><span>${e(x.name)}</span><button class="fnx" onclick="staffOff(${x.chat_id})" aria-label="отключить">×</button></div>`).join('')||(F.staff?`<div class="fnhint">Пока никого не подключено.</div>`:'')}<button class="fnadd" onclick="staffInvite()">+ Подключить кассира</button></div>`}
+async function staffInvite(){const F=S.fn;const name=(prompt('Имя кассира (так оно будет в списаниях):')||'').trim().slice(0,40);if(!name)return;if(!F.stBot){toast('Бот ещё не настроен',1);return}
+ const r=await sb.rpc('staff_invite',{p_name:name});if(r.error){toast(String(r.error.message||r.error),1);return}
+ const url=`https://t.me/${F.stBot}?start=staff_${r.data}`;
+ try{if(navigator.share){await navigator.share({title:'Бот Degirmen для кассира',text:'Откройте ссылку и нажмите «Запустить»:',url});return}}catch(er){if(er&&er.name=='AbortError')return}
+ try{await navigator.clipboard.writeText(url);toast('Ссылка скопирована. Отправьте её кассиру')}catch{prompt('Скопируйте ссылку и отправьте кассиру:',url)}}
+async function staffOff(id){if(!confirm('Отключить этого сотрудника от бота?'))return;const r=await sb.rpc('staff_off',{p_chat:id});if(r.error){toast(String(r.error.message||r.error),1);return}S.fn.staff=r.data||[];finRender()}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
