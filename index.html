@@ -4520,6 +4520,7 @@ async function payRefund(id,b){if(!b.dataset.sure){b.dataset.sure=1;b.classList.
 const ordErrPay=m=>/order:unpaid/.test(m)?'Сначала заказ должен быть оплачен':/order:paid_online/.test(m)?'Заказ оплачен онлайн: отменить можно только через «Возврат»':/order:online/.test(m)?'Онлайн-оплату отмечает только банк':m;
 
 // тестовая позиция «Воздух»: только для админов
+if(!isAdm())S.items=S.items.filter(i=>!i.data?.test);  // сохранённое меню тоже без тестовой позиции
 {const _lm=loadMenu;loadMenu=async function(){await _lm();if(!isAdm())S.items=S.items.filter(i=>!i.data?.test)}}
 {const _lp=loadPf;loadPf=async function(){await _lp();if(isAdm()&&!S.items.some(i=>i.data?.test)){await loadMenu();render()}}}
 
