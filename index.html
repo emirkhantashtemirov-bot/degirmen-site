@@ -4515,7 +4515,7 @@ async function payCheck(id,b){if(b)b.disabled=true;const{data}=await sb.function
   toast(data?.pay=='paid'?'Оплата подтверждена банком':data?.pay=='failed'?'Банк: оплата не прошла':'Банк ещё не подтвердил оплату',data?.pay!='paid')}
 async function payRefund(id,b){if(!b.dataset.sure){b.dataset.sure=1;b.classList.add('sure');b.textContent='Точно вернуть деньги?';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.classList.remove('sure');b.textContent='Возврат'}},4000);return}
   b.disabled=true;b.textContent='Возвращаем…';const{data,error}=await sb.functions.invoke('epay',{body:{op:'refund',order_id:id}});
-  if(data?.ok)toast('Деньги возвращены, заказ отменён');else toast(data?.error=='min_10'?'Банк не возвращает суммы меньше 10 ₸':data?.error=='forbidden'?'Возврат могут делать только владельцы':'Банк не выполнил возврат: '+(data?.err||data?.bank||error?.message||''),1);
+  if(data?.ok)toast('Деньги возвращены, заказ отменён');else if(data?.pending)toast('Банк принял возврат и проводит его. Заказ отметится сам, нажимать ещё раз не нужно');else toast(data?.error=='min_10'?'Банк не возвращает суммы меньше 10 ₸':data?.error=='forbidden'?'Возврат могут делать только владельцы':'Банк не выполнил возврат: '+(data?.err||data?.bank||error?.message||''),1);
   await loadOrd();S._h=null;render()}
 const ordErrPay=m=>/order:unpaid/.test(m)?'Сначала заказ должен быть оплачен':/order:paid_online/.test(m)?'Заказ оплачен онлайн: отменить можно только через «Возврат»':/order:online/.test(m)?'Онлайн-оплату отмечает только банк':m;
 

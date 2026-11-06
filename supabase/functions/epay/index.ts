@@ -86,6 +86,22 @@ async function verify(invoice: string) {
   return { pay: failed ? "failed" : "pending", order: o.id, bank: tr?.statusName ?? s?.resultCode };
 }
 
+// Возврат у банка асинхронный («in progress»): довести заказ до «возвращено», когда банк закончит
+async function refundSettle(invoice: string, by?: string) {
+  const { data: tx } = await pdb.from("epay_tx").select("*").eq("invoice", invoice).maybeSingle();
+  if (!tx || !["REFUND_PENDING", "REFUND"].includes(tx.status)) return false;
+  const c = await cfg();
+  const s = await status(c, invoice);
+  if (s?.transaction?.statusName !== "REFUND") return false;
+  await pdb.from("epay_tx").update({ status: "REFUND", raw: { ...(tx.raw ?? {}), status: s }, updated_at: new Date().toISOString() }).eq("invoice", invoice);
+  const { data: o } = await db.from("orders").select("pay_status").eq("id", tx.order_id).single();
+  if (o?.pay_status !== "refunded") {
+    await db.from("orders").update({ pay_status: "refunded", refunded_at: new Date().toISOString(), status: "cancelled" }).eq("id", tx.order_id);
+    await pdb.from("epay_refunds").insert({ order_id: tx.order_id, invoice, amount: tx.amount, by_user: by ?? tx.raw?.refund_by ?? "00000000-0000-0000-0000-000000000000" });
+  }
+  return true;
+}
+
 async function caller(req: Request) {
   const auth = req.headers.get("Authorization") ?? "";
   if (!auth) return null;
@@ -115,6 +131,7 @@ Deno.serve(async (req) => {
       const { data: tt } = await db.from("paloma_config").select("v").eq("k", "trigger_token").maybeSingle();
       if (!tt?.v || body.token !== tt.v) return json({ error: "forbidden" }, 403);
       const c = await cfg();
+      if (body.invoice) { const inv = String(body.invoice).replace(/\D/g, ""); await refundSettle(inv); const s = await status(c, inv); return json({ bank: s?.transaction?.statusName ?? s?.resultCode, amount: s?.transaction?.amount ?? null }); }
       const tk = await token(c);
       const s = await status(c, "100000");
       return json({ env: c.env, token: !!tk.access_token, expires: tk.expires_in, scope: tk.scope, status_probe: s?.resultCode ?? s });
@@ -159,7 +176,7 @@ Deno.serve(async (req) => {
       if (!own && !isStaff) return json({ error: "forbidden" }, 403);
       const { data: tx } = await pdb.from("epay_tx").select("invoice").eq("order_id", oid).order("created_at", { ascending: false }).limit(3);
       let res: any = { pay: o.pay_status };
-      for (const t of tx ?? []) { res = await verify(t.invoice); if (res.pay === "paid") break; }
+      for (const t of tx ?? []) { if (await refundSettle(t.invoice)) return json({ pay: "refunded" }); res = await verify(t.invoice); if (res.pay === "paid") break; }
       return json(res);
     }
 
@@ -167,20 +184,19 @@ Deno.serve(async (req) => {
       const { data: may } = await me.uc.rpc("can_refund");
       if (may !== true) return json({ error: "forbidden" }, 403);
       if (o.pay_status !== "paid") return json({ error: "not_paid" });
-      const { data: tx } = await pdb.from("epay_tx").select("*").eq("order_id", oid).eq("status", "CHARGE").order("created_at", { ascending: false }).limit(1);
+      const { data: tx } = await pdb.from("epay_tx").select("*").eq("order_id", oid).in("status", ["CHARGE", "REFUND_PENDING"]).order("created_at", { ascending: false }).limit(1);
       const t = tx?.[0];
       if (!t?.tx_id) return json({ error: "no_tx" });
       if (t.amount < 10) return json({ error: "min_10" });
+      // возврат уже отправлен - второй раз не шлём, только проверяем
+      if (t.status === "REFUND_PENDING") return json(await refundSettle(t.invoice, me.id) ? { ok: true } : { ok: false, pending: true });
       const c = await cfg();
       const r = await op(c, t.tx_id, "refund");
-      const s = await status(c, t.invoice);
-      const done = s?.transaction?.statusName === "REFUND";
-      await pdb.from("epay_tx").update({ status: s?.transaction?.statusName ?? t.status, raw: { refund: r, status: s }, updated_at: new Date().toISOString() }).eq("invoice", t.invoice);
-      if (done) {
-        await db.from("orders").update({ pay_status: "refunded", refunded_at: new Date().toISOString(), status: "cancelled" }).eq("id", oid);
-        await pdb.from("epay_refunds").insert({ order_id: oid, invoice: t.invoice, amount: t.amount, by_user: me.id });
-      }
-      return json({ ok: done, bank: s?.transaction?.statusName ?? null, http: r.status, err: done ? null : r.body });
+      const accepted = r.ok || /in progress/i.test(r.body);
+      if (!accepted) return json({ ok: false, http: r.status, err: r.body });
+      await pdb.from("epay_tx").update({ status: "REFUND_PENDING", raw: { ...(t.raw ?? {}), refund: r, refund_by: me.id }, updated_at: new Date().toISOString() }).eq("invoice", t.invoice);
+      for (let i = 0; i < 6; i++) { await new Promise((z) => setTimeout(z, 2500)); if (await refundSettle(t.invoice, me.id)) return json({ ok: true }); }
+      return json({ ok: false, pending: true });
     }
     return json({ error: "unknown_op" }, 400);
   } catch (e) {
