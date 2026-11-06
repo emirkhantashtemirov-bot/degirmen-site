@@ -105,6 +105,13 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
   if (pay) { t += `\n👥 <b>Зарплаты и авансы: ${money(pay)}</b>\n`; for (const l of L.filter((l) => l.kind === "pay")) t += `• ${esc(l.name || GS[l.grp] || "")}: ${money(+l.total)}\n`; }
   const dups = findDups(L, bot), dk = Object.keys(dups);
   if (dk.length) t += `\n⚠️ <b>Возможный двойной учёт: ${dk.length}</b>\n${dk.map((i) => `• ${esc(L[+i].name || "закуп")} ${money(+L[+i].total)} - есть и в отчёте, и в боте (${esc(dups[+i].by)})`).join("\n")}\nПроверьте в приложении: Финансы → День.\n`;
+  const ar = (D.arrivals || []).filter((a: any) => a.in);
+  if (ar.length) {
+    const { data: sc } = await c.db.from("paloma_config").select("v").eq("k", "shift_start").maybeSingle();
+    let S: Record<string, string> = {}; try { S = JSON.parse(sc?.v || "{}"); } catch { /* */ }
+    const m = (t: string) => { const [h, mi] = t.split(":"); return +h * 60 + +mi; };
+    t += `\n⏰ <b>Приход на работу</b>\n${ar.map((a: any) => { const st = S[a.role], late = st ? m(a.in) - m(st) : 0; return `• ${esc(a.name || GS[a.role] || "")} ${a.in}${late > 10 ? ` - опоздание ${late} мин` : ""}`; }).join("\n")}\n`;
+  }
   // 6. Касса
   const prev = nn(D.prev_cash), out = nn(dd.owner_out) || 0, left = nn(dd.cash_left);
   const expect = (prev || 0) + cashS - buyCash - exp - pay - out;
@@ -119,6 +126,32 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
 }
 
 // ---------- фото листа кассы -> черновик ----------
+const ASK: Record<string, string> = { biz: "🏢 Деньги ТОО", own: "👤 Свои деньги", cash: "💵 Из кассы" };
+const ASK_S: Record<string, string> = { biz: "🏢 ТОО", own: "👤 Свои", cash: "💵 Касса" };
+function draftKb(id: number, x: any) {
+  const ask = x.ask || [];
+  return { inline_keyboard: [
+    ...ask.map((a: any, i: number) => (["biz", "own", "cash"] as const).map((k) => ({ text: `${a.src === k ? "✅" : `${i + 1}.`} ${ASK_S[k]}`, callback_data: `rpa:${id}:${i}:${k}` }))),
+    ...((x._dup || []).length ? [[{ text: "✅ Записать без повторов", callback_data: `rep:${id}:nodup` }]] : []),
+    [{ text: "✅ Записать", callback_data: `rep:${id}:save` }, { text: "✅ Записать и закрыть день", callback_data: `rep:${id}:close` }],
+    [{ text: "❌ Отмена", callback_data: `rep:${id}:void` }],
+  ] };
+}
+// кнопка «откуда деньги» под черновиком: запоминаем выбор и перерисовываем сообщение
+export async function reportAskPick(c: Ctx, q: any) {
+  const [, idS, iS, k] = String(q.data).split(":");
+  const chat = q.message?.chat?.id, ans = (text: string) => c.tg("answerCallbackQuery", { callback_query_id: q.id, text });
+  if (!(await ownerUid(c, chat))) { await ans("Только владелец"); return; }
+  const { data: dr } = await c.db.from("bot_day_drafts").select("*").eq("id", Number(idS)).maybeSingle();
+  if (!dr || dr.chat_id !== chat || dr.status !== "draft" || !ASK[k]) { await ans("Уже неактуально"); return; }
+  const x = dr.data, a = (x.ask || [])[Number(iS)];
+  if (!a) { await ans("Не найдено"); return; }
+  a.src = k;
+  await c.db.from("bot_day_drafts").update({ data: x }).eq("id", dr.id).eq("status", "draft");
+  await c.tg("editMessageText", { chat_id: chat, message_id: q.message.message_id, parse_mode: "HTML", text: draftText(dr.d, x, !!x._ex, x._dupd || {}), reply_markup: draftKb(dr.id, x) });
+  await ans(`${a.name}: ${ASK[k]}`);
+}
+
 function draftText(d: string, x: any, existing: boolean, dups: Record<number, any> = {}) {
   const sum = (a: any[]) => (a || []).reduce((s, l) => s + (+l.total || 0), 0);
   const buy = x.buy || [], exp = x.exp || [], pay = x.pay || [];
@@ -131,7 +164,11 @@ function draftText(d: string, x: any, existing: boolean, dups: Record<number, an
   }
   if (exp.length) t += `\n🧾 <b>Расходы: ${money(sum(exp))}</b>\n${exp.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
   if (pay.length) t += `\n👥 <b>Зарплаты и авансы: ${money(sum(pay))}</b>\n${pay.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
-  if ((x.unsure || []).length) t += `\n⚠️ <i>Проверьте: ${esc(x.unsure.slice(0, 5).join("; "))}</i>\n`;
+  const ask = x.ask || [];
+  if (ask.length) t += `\n❓ <b>Откуда были деньги?</b> Сумма записана в названии, а не в «цена Итого». Выберите кнопками ниже:\n${ask.map((a: any, i: number) => `${i + 1}. ${esc(a.name)} - ${money(a.total)}${a.src ? ` → ${ASK[a.src]}` : " → ?"}`).join("\n")}\n`;
+  const ar = (x.arrivals || []).filter((a: any) => a.in);
+  if (ar.length) t += `\n⏰ <b>Приход</b> (не деньги)\n${ar.map((a: any) => `• ${esc(a.name || GS[a.role] || "")} ${a.in}${a.out ? `-${a.out}` : ""}`).join("\n")}\n`;
+  if ((x.unsure || []).length) t += `\n⚠️ <i>Проверьте: ${esc(x.unsure.slice(0, 6).join("; "))}</i>\n`;
   const dk = Object.keys(dups);
   if (dk.length) t += `\n⚠️ <b>Похоже на двойной учёт: ${dk.length}</b>\nЭти закупы уже пришли через бота:\n${dk.map((i) => `• ${esc(buy[+i].name || "закуп")} ${money(+buy[+i].total)} - в боте: ${esc(dups[+i].what)} ${money(dups[+i].total)} (${esc(dups[+i].by)})`).join("\n")}\nЕсли это те же покупки, нажмите «Записать без повторов».\n`;
   if (existing) t += `\n❗️ За ${DM(d)} уже есть отчёт в приложении. «Записать» <b>заменит</b> его этими цифрами.`;
@@ -195,15 +232,12 @@ export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string,
   const existing = !!cur?.day?.d && ((cur.lines || []).length > 0 || [cur.day.kaspi, cur.day.halyk, cur.day.cash_sales, cur.day.cash_left].some((v: any) => v != null));
   const buyL = (x.buy || []).map((l: any) => ({ ...l, kind: "buy" }));
   const dups = findDups(buyL, cur?.bot || []);
-  x._dup = Object.keys(dups).map(Number);
+  x._dup = Object.keys(dups).map(Number); x._dupd = dups; x._ex = existing;
+  x.ask = (x.ask || []).map((a: any) => ({ ...a, src: null }));
   const { data: dr, error } = await c.db.from("bot_day_drafts").insert({ chat_id: chat, user_id: uid, d, data: x }).select("id").single();
   if (error) return send("Не получилось сохранить черновик, попробуйте ещё раз.");
   const id = dr.id;
-  return send(draftText(d, x, existing, dups), { reply_markup: { inline_keyboard: [
-    ...(x._dup.length ? [[{ text: "✅ Записать без повторов", callback_data: `rep:${id}:nodup` }]] : []),
-    [{ text: "✅ Записать", callback_data: `rep:${id}:save` }, { text: "✅ Записать и закрыть день", callback_data: `rep:${id}:close` }],
-    [{ text: "❌ Отмена", callback_data: `rep:${id}:void` }],
-  ] } });
+  return send(draftText(d, x, existing, dups), { reply_markup: draftKb(id, x) });
 }
 
 export async function reportCallback(c: Ctx, q: any) {
@@ -220,15 +254,18 @@ export async function reportCallback(c: Ctx, q: any) {
     await c.tg("editMessageText", { chat_id: chat, message_id: q.message.message_id, text: `${base}\n❌ Отменено, ничего не записал.` });
     await ans("Отменено"); return;
   }
+  const open = (dr.data?.ask || []).filter((a: any) => !a.src);
+  if (open.length) { await c.tg("answerCallbackQuery", { callback_query_id: q.id, text: `Сначала выберите, откуда деньги: ${open.map((a: any) => a.name).join(", ")}`.slice(0, 190), show_alert: true }); return; }
   const { data: lock } = await c.db.from("bot_day_drafts").update({ status: "ok" }).eq("id", dr.id).eq("status", "draft").select("id");
   if (!lock?.length) { await ans("Уже записано"); return; }
   const x = dr.data, cur = await finAs(c, uid, "day", dr.d), dd = cur?.day || {};
   const lines = [
     ...(x.buy || []).filter((_: any, i: number) => !(act === "nodup" && (x._dup || []).includes(i))).map((l: any) => ({ kind: "buy", grp: l.grp, name: l.name, unit: l.unit, qty: l.qty, price: l.price, total: l.total })),
+    ...(x.ask || []).filter((a: any) => a.src === "cash").map((a: any) => ({ kind: "buy", grp: a.near || "kitchen", name: a.name, total: a.total })),
     ...(x.exp || []).map((l: any) => ({ kind: "exp", grp: l.grp, name: l.name, total: l.total })),
     ...(x.pay || []).map((l: any) => ({ kind: "pay", grp: l.grp, name: l.name, total: l.total })),
   ];
-  const p = { kaspi: x.kaspi, halyk: x.halyk, glovo: x.glovo, cash_sales: x.cash_sales, cash_left: x.cash_left, owner_out: dd.owner_out ?? 0, note: dd.note || "из Telegram", src: "photo", lines };
+  const p = { kaspi: x.kaspi, halyk: x.halyk, glovo: x.glovo, cash_sales: x.cash_sales, cash_left: x.cash_left, owner_out: dd.owner_out ?? 0, note: dd.note || "из Telegram", src: "photo", lines, ask: (x.ask || []).filter((a: any) => a.src === "biz" || a.src === "own"), arrivals: x.arrivals || [] };
   try {
     await finAs(c, uid, "save", dr.d, p);
     if (act === "close") await finAs(c, uid, "close", dr.d);

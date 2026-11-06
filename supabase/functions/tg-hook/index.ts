@@ -3,7 +3,7 @@
 // Вебхук проверяется тем же секретом, что и в nexus. Задачи (отчёты, настройка) - только с trigger_token.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buyIncoming, buyCallback, buyUndo, joinRequest, joinCallback, buyDaily, buyMonth, BUY_HELP } from "./purchases.ts";
-import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, findDups, REPORT_HELP } from "./report.ts";
+import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, findDups, reportAskPick, REPORT_HELP } from "./report.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const TG = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
@@ -52,6 +52,7 @@ async function onUpdate(u: any, secret: string) {
     const q = u.callback_query, chat = q.message?.chat?.id;
     const { who, owner } = await whoIs(chat);
     if (String(q.data).startsWith("buy:")) return buyCallback(ctx, q, who);
+    if (String(q.data).startsWith("rpa:")) return reportAskPick(ctx, q);
     if (String(q.data).startsWith("repd:")) return reportDayPicked(ctx, q);
     if (String(q.data).startsWith("rep:")) return reportCallback(ctx, q);
     if (String(q.data).startsWith("join:")) return joinCallback(ctx, q, owner, STAFF_HELP);

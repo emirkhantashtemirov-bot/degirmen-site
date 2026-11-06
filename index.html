@@ -735,6 +735,7 @@ a.tgb{text-decoration:none;-webkit-tap-highlight-color:transparent}
 .fngh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}.fngh b{font-size:15px}.fngh span{color:var(--mu);font-size:14px}
 .fnl{padding:8px;border-radius:16px;background:var(--s1);margin:6px 0;transition:background .3s}
 .fndup{margin:8px 2px 2px;padding:10px 12px;border-radius:12px;background:rgba(233,196,106,.13);color:#f3dfa9;font-size:13.5px;line-height:1.4}.fndup b{color:#fff}.fndup .fndb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.fndup button{flex:1;min-width:120px;padding:9px 10px;border-radius:10px;border:0;font:inherit;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}.fndup button.y{background:#e9c46a;color:#2a2112}.fndupok{margin:6px 2px 0;font-size:12px;color:var(--mu,#9aa)}.fnl.dup{box-shadow:inset 0 0 0 1px rgba(233,196,106,.7)}
+.fnask{margin:6px 0;padding:10px 12px;border-radius:14px;background:rgba(233,196,106,.1)}.fnask b{color:#fff}.fnask .fndb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.fnask button{flex:1;min-width:90px;padding:9px 8px;border-radius:10px;border:0;font:inherit;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}.fnask button.on{background:#e9c46a;color:#2a2112}.fnar{display:grid;grid-template-columns:1.1fr 1.4fr .9fr .9fr auto;gap:6px;align-items:center;margin:6px 0}.fnar input,.fnar select{min-width:0}.fnar .late{grid-column:1/-1;font-size:12px;color:#f3a9a9;margin:-2px 2px 2px}
 .fnl.new{box-shadow:inset 0 0 0 1px rgba(233,196,106,.55);background:rgba(233,196,106,.07)}
 .fnl input,.fnl select{margin:0;padding:10px 12px;border-radius:12px;font-size:15px;background:var(--s2)}
 .fnl .fnn{width:100%}
@@ -4721,6 +4722,40 @@ function finDupUndo(i){const l=S.fn.f.lines[i];if(!l)return;l.dup_ok=false;fnDir
   if(n&&!F.dupSure){F.dupSure=1;setTimeout(()=>{F.dupSure=0},8000);toast(`Есть ${n} возможных повтора с ботом. Проверьте строки с ⚠️ или нажмите ещё раз, чтобы сохранить как есть`,1);
    document.querySelector('.fnl.dup')?.scrollIntoView({behavior:'smooth',block:'center'});return}
   F.dupSure=0;return _s(close)}}
+
+// Лист кассы: строки с непонятными деньгами (ТОО / свои / касса) и время прихода сотрудников
+const FAR=[['usta','Уста'],['kassa','Касса'],['kitchen','Кухня'],['tech','Техперсонал']];
+const FASK={biz:'🏢 Деньги ТОО',own:'👤 Свои деньги',cash:'💵 Из кассы'};
+{const _f=finForm;finForm=function(){_f();const F=S.fn,D=F.data||{};if(!F.f)return;
+  if(!F.restored||!Array.isArray(F.f.arrivals))F.f.arrivals=(D.arrivals||[]).map(a=>({role:a.role,name:a.name||'',in:a.in||'',out:a.out||''}));
+  if(!Array.isArray(F.f.ask))F.f.ask=[]}}
+{const _m=finMerge;finMerge=function(o){_m(o);const f=S.fn?.f;if(!f||!o||typeof o!='object')return;
+  if(Array.isArray(o.ask))o.ask.forEach(a=>{const t=fnN(a.total);if(a.name&&t)(f.ask=f.ask||[]).push({name:String(a.name).slice(0,80),total:Math.round(t),near:a.near||'kitchen',src:null})});
+  if(Array.isArray(o.arrivals)&&o.arrivals.length)f.arrivals=o.arrivals.map(a=>({role:a.role||'other',name:a.name||'',in:a.in||'',out:a.out||''}))}}
+function finAsk(i,src){const F=S.fn,a=F.f.ask[i];if(!a)return;
+  if(src=='cash'){F.f.lines.push({kind:'buy',grp:a.near||'kitchen',name:a.name,unit:'',qty:'',price:'',total:String(a.total),_tm:true});F.f.ask.splice(i,1);toast('Добавлено в закуп из кассы')}
+  else a.src=src;fnDirty();finRender()}
+function finAr(i,k,el){const a=S.fn.f.arrivals[i];if(!a)return;a[k]=el.value;fnDirty();if(k=='role'||(k=='in'&&/^\d{1,2}:\d{2}$/.test(el.value)))finRender()}
+function finArAdd(){(S.fn.f.arrivals=S.fn.f.arrivals||[]).push({role:'kassa',name:'',in:'',out:''});fnDirty();finRender()}
+function finArDel(i){S.fn.f.arrivals.splice(i,1);fnDirty();finRender()}
+function finAskH(){const F=S.fn,A=F.f?.ask||[],can=F.data?.can_edit;if(!A.length)return '';
+  return `<div class="fncard"><div class="fnh">❓ Откуда были деньги?</div><div class="fnhint">Сумма записана в названии, а не в колонке «цена Итого» - обычно это деньги ТОО или владельца. Выберите для каждой строки.</div>${A.map((a,i)=>`<div class="fnask"><b>${e(a.name)} - ${fnM(a.total)}</b>${a.src?` · ${FASK[a.src]}`:''}${can?`<div class="fndb">${['biz','own','cash'].map(k=>`<button class="${a.src==k?'on':''}" onclick="finAsk(${i},'${k}')">${FASK[k]}</button>`).join('')}</div>`:''}</div>`).join('')}</div>`}
+const finLate=(a)=>{const st={usta:'09:00',kassa:'07:30',kitchen:'07:00',tech:'08:00'}[a.role];if(!st||!/^\d{1,2}:\d{2}$/.test(a.in||''))return 0;const m=t=>{const[h,mi]=t.split(':');return +h*60+ +mi};return Math.max(0,m(a.in)-m(st))};
+function finArH(){const F=S.fn,A=F.f?.arrivals||[],can=F.data?.can_edit,dis=can?'':'disabled';if(!A.length&&!can)return '';
+  return `<div class="fncard"><div class="fnh">⏰ Приход на работу</div><div class="fnhint">Время с листа - не деньги. Опоздания собираются в отчёт за месяц.</div>${A.map((a,i)=>{const l=finLate(a);return `<div class="fnar"><select onchange="finAr(${i},'role',this)" ${dis}>${[...FAR,['other','Другое']].map(([k,t])=>`<option value="${k}" ${a.role==k?'selected':''}>${t}</option>`).join('')}</select><input placeholder="имя" value="${e(a.name)}" oninput="finAr(${i},'name',this)" ${dis}><input placeholder="пришёл" inputmode="numeric" value="${e(a.in)}" oninput="finAr(${i},'in',this)" ${dis}><input placeholder="ушёл" inputmode="numeric" value="${e(a.out)}" oninput="finAr(${i},'out',this)" ${dis}>${can?`<button class="fnx" onclick="finArDel(${i})" aria-label="удалить">×</button>`:'<span></span>'}${l>10?`<div class="late">опоздание ${l} мин</div>`:''}</div>`}).join('')}${can?`<button class="fnadd" onclick="finArAdd()">+ отметить приход</button>`:''}</div>`}
+{const _dh=finDayH;finDayH=function(){let h=_dh();const F=S.fn;if(!F?.data||!F.f||(F.mode=='photo'&&F.data.can_edit))return h;
+  const ask=finAskH();if(ask){const i=h.indexOf('<div class="fncard">');h=i<0?h+ask:h.slice(0,i)+ask+h.slice(i)}
+  const ar=finArH(),j=h.indexOf('<div class="fncard"><div class="fnh">Наличные в кассе');return j<0?h+ar:h.slice(0,j)+ar+h.slice(j)}}
+{const _s=finSave;finSave=function(close){const F=S.fn,n=(F.f?.ask||[]).filter(a=>!a.src).length;
+  if(n){toast(`Выберите, откуда деньги: ${n} строк${n==1?'а':n<5?'и':''} вверху отчёта`,1);document.querySelector('.fnask')?.scrollIntoView({behavior:'smooth',block:'center'});return}
+  return _s(close)}}
+// месяц: опоздания
+{const _l=finLoad;finLoad=async function(){await _l();const F=S.fn;if(F?.tab!='month'||!isAdm())return;
+  const from=F.ym+'-01',x=new Date(from+'T00:00'),end=new Date(x.getFullYear(),x.getMonth()+1,0),to=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
+  const r=await sb.rpc('arrivals_stats',{p_from:from,p_to:to});if(!r.error){F.arr=r.data;if(S.scr=='fin')finRender()}}}
+{const _mh=finMonH;finMonH=function(){let h=_mh();const F=S.fn,P=F.arr?.people||[];if(!F.mon||!P.length)return h;
+  const RL=Object.fromEntries(FAR);
+  return h+`<div class="fncard"><div class="fnh">⏰ Приход на работу</div><div class="fnhint">Опоздание - пришёл позже начала смены больше чем на 10 минут. Начало смены: ${Object.entries(F.arr.shift||{}).map(([k,v])=>`${RL[k]||k} ${v}`).join(', ')}.</div>${P.map(p=>`<div class="fnpl${p.late>=3?' neg':''}"><span>${e(p.name)}<small>${RL[p.role]||''} · дней ${p.days} · в среднем приходит в ${p.avg_in||'—'}</small></span><b>${p.late?`${p.late} опозд.${p.late_avg?` ~${p.late_avg} мин`:''}`:'вовремя'}</b></div>`).join('')}</div>`}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>

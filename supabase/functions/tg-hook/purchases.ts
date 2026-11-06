@@ -254,6 +254,10 @@ export async function buyMonth(c: Ctx, ym?: string) {
     t += `\n${blockLines(P, B)}\n\n<b>Откуда деньги</b>\n${srcLine(P)}\n`;
   }
   if (form) t += `\n✍️ Вписано вручную в «Отчёт дня»: ${money(form)}`;
+  // опоздания за месяц (время прихода с листа кассы)
+  const { data: AS } = await c.db.rpc("arrivals_stats", { p_from: from, p_to: to });
+  const late = (AS?.people || []).filter((p: any) => p.late > 0);
+  if ((AS?.people || []).length) t += `\n\n⏰ <b>Опоздания</b> (позже начала смены больше чем на 10 мин)\n${late.length ? late.map((p: any) => `• ${esc(p.name)}: ${p.late} из ${p.days} дн.${p.late_avg ? `, в среднем на ${p.late_avg} мин` : ""}`).join("\n") : "Никто не опаздывал 👍"}`;
   t += `\n\nПодробно с графиками: приложение → «Закупы».`;
   return { text: t };
 }
