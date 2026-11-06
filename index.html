@@ -2591,7 +2591,7 @@ async function so(id,k,v){const{error}=await sb.rpc(k=='i'?'set_sold_out':'set_o
 const tmx=o=>o.pickup_time?`<div>${t('at','ru')} ${new Date(o.pickup_time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</div>`:'';
 function its(o,L){return o.items.map(i=>{const it=i.f!==undefined&&itemOf(i.id);const n=it?lineName(i,L):i.name,d=it?desc(i,L):i.desc;return `${i.qty}× ${e(n)} <span class="mu">${e(d)}</span>`}).join('<br>')}
 function kas(){const act=S.ord.filter(o=>!['done','cancelled'].includes(o.status));
-const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы'):'')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
+const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы')+cc(0,"finM('buy')",'Закупы'):'')+cc(0,'tutM()','🎓 Обучение')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
 if(S.kt=='stop'||(S.kt=='menu'&&!isAdm()))return tabs+[...S.items.map(x=>[x,'i']),...S.opts.filter(o=>o.categories.length).map(x=>[x,'o'])].map(([x,k])=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px"><span style="${x.sold_out?'opacity:.5':''}">${e(nm(x.name))}</span>${cc(x.sold_out,`so('${x.id}','${k}',${!x.sold_out})`,x.sold_out?t('back'):t('endd'))}</div>`).join('');
 if(S.kt=='menu')return tabs+menuEd();
 return tabs+(act.length?'':`<div class="empty">${emArt('ord',1)}<p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
@@ -3121,6 +3121,7 @@ async function finLoad(){const F=S.fn,k=F.seq=(F.seq||0)+1;F.ld=1;F.err=null;fin
    if(r.error)throw r.error;if(k!=F.seq)return;F.data=r.data;F.list=l.data||[];finForm();finWoLoad()}
   else if(F.tab=='month'){const from=F.ym+'-01',end=new Date(new Date(from+'T00:00').getFullYear(),new Date(from+'T00:00').getMonth()+1,0),to=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');
    const r=await sb.rpc('fin_month',{p_from:from,p_to:to<almDay(0)?to:almDay(0)});if(r.error)throw r.error;if(k!=F.seq)return;F.mon=r.data}
+  else if(F.tab=='buy'){const r=await buyLoad();if(k!=F.seq)return;F.buy=r}
   else if(F.tab=='set'){const r=await sb.rpc('fin_ref');if(r.error)throw r.error;if(k!=F.seq)return;F.ref=r.data;F.refEd={}}
   else if(F.tab=='stock'){const r=await sb.rpc('fin_stock_get',{p_d:F.sd||almDay(0)});if(r.error)throw r.error;if(k!=F.seq)return;F.st=r.data;F.stEd={...(r.data?.cur||{})}}}
  catch(er){if(k!=F.seq)return;F.err=String(er.message||er)}
@@ -3194,9 +3195,9 @@ function finMerge(o){const F=S.fn,f=F.f;if(!o||typeof o!='object')return;let n=0
 
 // ---------- экран ----------
 function finRender(){const F=S.fn;if(!F)return;let b='';const A=isAdm();
- const tabs=A?`<div class="sseg fntabs">${[['day','День'],['month','Месяц'],['stock','Остатки'],['set','Настройки']].map(([k,l])=>`<button class="${F.tab==k?'on':''}" onclick="finSet('tab','${k}')">${l}</button>`).join('')}</div>`:'';
+ const tabs=A?`<div class="sseg fntabs">${[['day','День'],['month','Месяц'],['buy','Закупы'],['stock','Остатки'],['set','Настройки']].map(([k,l])=>`<button class="${F.tab==k?'on':''}" onclick="finSet('tab','${k}')">${l}</button>`).join('')}</div>`:'';
  if(F.err)b+=`<div class="err" style="margin:14px 4px">${e(F.err)}</div>`;
- if(F.tab=='day')b+=finDayH();else if(F.tab=='month')b+=finMonH();else if(F.tab=='stock')b+=finStockH();else b+=finSetH();
+ if(F.tab=='day')b+=finDayH();else if(F.tab=='month')b+=finMonH();else if(F.tab=='buy')b+=buyH();else if(F.tab=='stock')b+=finStockH();else b+=finSetH();
  scr(topbar(A?'Финансы':'Отчёт дня')+`<div class="body w fnw">${tabs}${b}</div>`,'fin');if(F._top&&!F.ld){F._top=0;const o=document.querySelector('#m .scr');if(o)o.scrollTop=0}}
 const fnInp=(v,on,cls='',ph='')=>`<input class="${cls}" inputmode="decimal" value="${e(v??'')}" placeholder="${e(ph)}" oninput="${on}">`;
 function finDayH(){const F=S.fn,D=F.data,A=isAdm(),today=almDay(0);
@@ -4580,6 +4581,109 @@ async function qrCancel(id){qrClose();try{await sb.rpc('cancel_my_order',{p_id:i
   async function upd(){try{const r=await fetch(location.pathname+'?vchk='+Date.now(),{method:'HEAD',cache:'no-store'});const et=r.headers.get('etag')||r.headers.get('last-modified');if(!et)return;
     if(base===null){base=et;return}if(et!==base&&!busy()){location.reload()}}catch{}}
   upd();setInterval(upd,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)upd()})}
+
+
+// ---------- закупы из Telegram-бота и раздел «Закупы» (06.11.2026) ----------
+// Чек в боте -> bot_buys. В «Отчёте дня» закупы из бота видны отдельным блоком и вычитаются из кассы (только «Из кассы»).
+// «Деньги ТОО» в кассу не входят. Раздел «Финансы → Закупы»: блоки, источники денег, график по дням, все чеки.
+const BUY_SRC={cash:['💵','Из кассы'],kaspi:['📱','Kaspi'],biz:['🏢','Деньги ТОО'],own:['👤','Свои деньги']};
+const BUY_BL_DEF=[['meat','🥩 Мясо и курица'],['veg','🥔 Овощи и фрукты'],['dairy','🥛 Молочка'],['grocery','🧂 Бакалея'],['bread','🫓 Хлеб и лаваш'],['drinks','💧 Напитки и вода'],['coffee','☕ Кофе и чай'],['pack','📦 Упаковка и хозтовары'],['other','🧾 Прочее']];
+document.head.insertAdjacentHTML('beforeend',`<style>
+.byk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.byk>div{background:var(--c);border-radius:18px;padding:12px 14px}.byk span{display:block;color:var(--mu);font-size:13px}.byk b{font-size:19px}
+.byk>div.big{grid-column:1/-1}.byk>div.big b{font-size:26px}.byk>div.biz{background:rgba(120,160,220,.13)}
+.bybar{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0 0 10px}.bybar .t{font-size:14px}.bybar b{font-size:14px;text-align:right}
+.bybar i{grid-column:1/-1;display:block;height:8px;border-radius:5px;background:var(--s2);overflow:hidden}.bybar i u{display:block;height:100%;border-radius:5px;background:var(--ac)}
+.bych{display:flex;align-items:flex-end;gap:3px;height:130px;margin:6px 0 4px}.bych div{flex:1;display:flex;flex-direction:column-reverse;min-width:0;height:100%;cursor:pointer}
+.bych div u{display:block;background:var(--ac);border-radius:3px 3px 0 0}.bych div s{display:block;background:#7aa3dc;text-decoration:none}
+.bych div.on u{background:#f3dfa9}.bydays{display:flex;justify-content:space-between;color:var(--mu);font-size:11px}
+.byleg{display:flex;gap:14px;font-size:12px;color:var(--mu);margin:4px 0 0}.byleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.bychk{background:var(--s1);border-radius:16px;padding:10px 14px;margin:0 0 8px}.bychk summary{list-style:none;display:grid;grid-template-columns:1fr auto;gap:2px 10px;cursor:pointer}
+.bychk summary::-webkit-details-marker{display:none}.bychk summary small{color:var(--mu);font-size:12px;grid-column:1/-1}
+.bychk ul{margin:8px 0 4px;padding-left:16px;font-size:14px;line-height:1.5;color:var(--tx)}.bychk .tag{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--s2);margin-left:6px;white-space:nowrap}
+.bychk .tag.biz{background:rgba(120,160,220,.2)}.bychk button{margin-top:6px;background:transparent;border:1px solid var(--off);color:var(--mu);border-radius:12px;padding:6px 12px;font:600 13px var(--f)}
+</style>`);
+const buyBl=()=>{const b=S.fn?.buy?.blocks;return Array.isArray(b)&&b.length?b:BUY_BL_DEF};
+const buySrcTag=s=>{const x=BUY_SRC[s]||['🧾',s||'?'];return `<span class="tag ${s=='biz'?'biz':''}">${x[0]} ${x[1]}</span>`};
+const buyChk=(b,canVoid)=>`<details class="bychk"><summary><span>${e(b.vendor||'Закуп')}${buySrcTag(b.source)}</span><b>${fnM(b.total)}</b><small>${e(b.by||'')} · ${new Date(b.at||b.d+'T12:00').toLocaleString('ru',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}${b.kind=='photo'?' · фото чека':b.kind=='voice'?' · голосовое':''}</small></summary>
+ <ul>${(b.items||[]).map(i=>`<li>${e(i.name)}${i.qty!=null?` - ${+i.qty} ${e(i.unit||'')}`:''}: ${fnM(i.total)}</li>`).join('')}</ul>${canVoid?`<button onclick="buyVoid(${b.id},this)">Убрать из учёта</button>`:''}</details>`;
+
+// «Отчёт дня»: закупы из бота
+{const _fc=finCalc;finCalc=function(){const c=_fc(),B=S.fn?.data?.bot||[];
+  const cash=B.filter(b=>(b.source||'cash')=='cash').reduce((a,b)=>a+(+b.total||0),0),all=B.reduce((a,b)=>a+(+b.total||0),0),biz=B.filter(b=>b.source=='biz').reduce((a,b)=>a+(+b.total||0),0);
+  c.botCash=cash;c.botAll=all;c.botBiz=biz;c.buyCash+=cash;c.buyAll+=all;c.expect-=cash;if(c.left!=null)c.diff=c.left-c.expect;return c}}
+{const _dh=finDayH;finDayH=function(){let h=_dh();const B=S.fn?.data?.bot||[];if(!B.length)return h;
+  const tot=B.reduce((a,b)=>a+(+b.total||0),0),cash=B.filter(b=>(b.source||'cash')=='cash').reduce((a,b)=>a+(+b.total||0),0),biz=B.filter(b=>b.source=='biz').reduce((a,b)=>a+(+b.total||0),0);
+  const card=`<div class="fncard"><div class="fnh">🤖 Закупы из Telegram-бота: ${fnM(tot)}</div><div class="fnhint">Подставились сами, вписывать вручную не нужно.${cash?` Из кассы взято ${fnM(cash)} - уже учтено в остатке наличных.`:''}${biz?` На деньги ТОО ${fnM(biz)} - в кассу не входит.`:''}</div>${B.map(b=>buyChk(b,isAdm())).join('')}</div>`;
+  const i=h.indexOf('<div class="fnst');if(i<0)return h+card;const j=h.indexOf('</div>',i)+6;return h.slice(0,j)+card+h.slice(j)}}
+
+// «Финансы → Закупы»
+function buyRange(){const F=S.fn;if(F.bm=='day')return[F.d,F.d];const from=F.ym+'-01',x=new Date(from+'T00:00'),end=new Date(x.getFullYear(),x.getMonth()+1,0);
+  const to=[end.getFullYear(),String(end.getMonth()+1).padStart(2,'0'),String(end.getDate()).padStart(2,'0')].join('-');return[from,to<almDay(0)?to:almDay(0)]}
+async function buyLoad(){const[f,t]=buyRange();const r=await sb.rpc('buy_report',{p_from:f,p_to:t});if(r.error)throw r.error;return r.data}
+function buyH(){const F=S.fn,R=F.buy,m=F.bm||'month';
+  let h=`<div class="sseg mini" style="margin:0 0 10px"><button class="${m=='month'?'on':''}" onclick="finSet('bm','month');finLoad()">Месяц</button><button class="${m=='day'?'on':''}" onclick="finSet('bm','day');finLoad()">День</button></div>`;
+  h+=m=='month'?`<div class="fnday"><button class="rb" onclick="finMon(-1)">‹</button><label class="fndl"><b>${fnMon(F.ym)}</b></label><button class="rb" onclick="finMon(1)" ${F.ym>=almDay(0).slice(0,7)?'disabled':''}>›</button></div>`
+    :`<div class="fnday"><button class="rb" onclick="finDay(-1)">‹</button><label class="fndl"><b>${fnD(F.d)}</b><input type="date" value="${F.d}" max="${almDay(0)}" onchange="this.value&&finSet('d',this.value)"></label><button class="rb" onclick="finDay(1)" ${F.d>=almDay(0)?'disabled':''}>›</button></div>`;
+  if(F.ld&&!R)return h+`<div class="fnld">Считаю…</div>`;if(!R)return h;
+  const by=R.by_source||{},bot=+R.total||0,form=+R.day_form||0,all=bot+form,BL=buyBl(),bb=R.by_block||{},mx=Math.max(1,...Object.values(bb).map(Number));
+  h+=`<div class="byk"><div class="big"><span>Весь закуп ${m=='month'?'за месяц':'за день'}</span><b>${fnM(all)}</b></div>
+   <div><span>💵 Из кассы</span><b>${fnM(+by.cash||0)}</b></div><div><span>📱 Kaspi</span><b>${fnM(+by.kaspi||0)}</b></div>
+   <div class="biz"><span>🏢 Деньги ТОО</span><b>${fnM(+by.biz||0)}</b></div><div><span>👤 Свои деньги</span><b>${fnM(+by.own||0)}</b></div></div>`;
+  if(form)h+=`<div class="fnnote">Ещё ${fnM(form)} вписано вручную в «Отчёт дня» (не через бота). Это входит в «Весь закуп», но без разбивки по блокам.</div>`;
+  if(bot){h+=`<div class="fncard"><div class="fnh">По блокам</div>${BL.filter(([k])=>bb[k]).sort((a,b)=>bb[b[0]]-bb[a[0]]).map(([k,l])=>`<div class="bybar"><span class="t">${e(l)}</span><b>${fnM(bb[k])} · ${Math.round(100*bb[k]/bot)}%</b><i><u style="width:${Math.max(2,100*bb[k]/mx)}%"></u></i></div>`).join('')}</div>`;
+    if(m=='month'&&(R.by_day||[]).length){const days=R.by_day,dm=Math.max(1,...days.map(d=>+d[1])),[f,t]=buyRange(),n=+t.slice(8,10),map=Object.fromEntries(days.map(d=>[d[0],d]));
+      h+=`<div class="fncard"><div class="fnh">По дням</div><div class="bych">${Array.from({length:n},(_,i)=>{const ds=F.ym+'-'+String(i+1).padStart(2,'0'),x=map[ds],s=x?+x[1]:0,b=x?+x[2]:0;
+        return `<div title="${i+1}: ${fnM(s)}" onclick="finSet('d','${ds}');finSet('bm','day');finLoad()"><u style="height:${100*(s-b)/dm}%"></u><s style="height:${100*b/dm}%"></s></div>`}).join('')}</div>
+        <div class="bydays"><span>1</span><span>${Math.ceil(n/2)}</span><span>${n}</span></div><div class="byleg"><span><i style="background:var(--ac)"></i>касса, Kaspi, свои</span><span><i style="background:#7aa3dc"></i>деньги ТОО</span></div>
+        <div class="fnhint" style="margin:8px 0 0">Нажмите на столбик, чтобы открыть день.</div></div>`}
+    const biz=(R.list||[]).filter(b=>b.source=='biz');
+    if(biz.length)h+=`<div class="fncard"><div class="fnh">🏢 Деньги ТОО: ${fnM(+by.biz||0)}</div><div class="fnhint">Крупные закупы не из кассы. В остаток наличных не входят.</div>${biz.map(b=>buyChk(b,isAdm())).join('')}</div>`;
+    const rest=(R.list||[]).filter(b=>b.source!='biz');
+    if(rest.length)h+=`<div class="fncard"><div class="fnh">Все чеки (${rest.length})</div>${rest.map(b=>buyChk(b,isAdm())).join('')}</div>`}
+  else h+=`<div class="fncard"><div class="fnh">Через бота закупов не было</div><div class="fnhint">Сотрудники присылают чеки боту @degirmennavoiconsult_bot: фото чека, текст или голосовое. Новый человек нажимает /start, а вам приходит кнопка «Пустить».</div></div>`;
+  return h}
+async function buyVoid(id,b){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Точно убрать?';return}b.disabled=true;const{error}=await sb.rpc('buy_void',{p_id:id});if(error){toast(error.message,1);b.disabled=false;return}toast('Убрано из учёта');finLoad()}
+
+
+// ---------- обучение сотрудников (06.11.2026) ----------
+// Новому кассиру или админу при первом входе предлагаем короткое обучение. Пройти снова: Касса → «Обучение».
+document.head.insertAdjacentHTML('beforeend',`<style>
+.tut{position:fixed;inset:0;z-index:9997;background:rgba(17,12,9,.92);display:flex;align-items:center;justify-content:center;padding:18px;font-family:var(--f)}
+.tut .bx{background:var(--c);color:var(--tx);border-radius:28px;max-width:440px;width:100%;padding:22px 20px 18px;max-height:92vh;overflow:auto}
+.tut .ic{font-size:46px;line-height:1;margin-bottom:10px}.tut h3{font:800 22px/1.2 var(--f);margin:0 0 10px}
+.tut p{margin:0 0 10px;font-size:15.5px;line-height:1.5;color:var(--tx)}.tut ul{margin:0 0 10px;padding-left:18px;font-size:15px;line-height:1.55}
+.tut .why{background:var(--s1);border-radius:14px;padding:10px 12px;font-size:14px;color:var(--mu);line-height:1.45;margin:4px 0 12px}
+.tut .dots{display:flex;gap:5px;justify-content:center;margin:6px 0 14px}.tut .dots i{width:7px;height:7px;border-radius:50%;background:var(--s2)}.tut .dots i.on{background:var(--ac);width:18px;border-radius:4px}
+.tut .nav{display:flex;gap:10px}.tut .nav button{flex:1;height:48px;border:0;border-radius:24px;font:700 15px var(--f);background:var(--s2);color:var(--tx)}.tut .nav button.m{background:var(--ac);color:#fff}
+.tut .skip{display:block;margin:10px auto 0;background:none;border:0;color:var(--mu);font:600 14px var(--f)}
+</style>`);
+const TUT_CASH=[
+ {i:'👋',h:'Добро пожаловать в кассу Degirmen',p:'Это ваш рабочий экран. За 2 минуты покажу, что где лежит и зачем.',why:'Пройти снова можно в любой момент: Касса → кнопка «Обучение» сверху.'},
+ {i:'🧾',h:'Заказы',p:'Заказы из приложения и с киоска появляются во вкладке «Заказы» со звуком.',l:['<b>Принят</b> - заказ пришёл','<b>Готовится</b> - начали делать','<b>Готов</b> - гостю придёт уведомление','<b>Выдан</b> - отдали гостю'],why:'Гость видит статус у себя в телефоне, поэтому меняйте его вовремя: так меньше вопросов «где мой заказ».'},
+ {i:'💳',h:'Оплата: сначала деньги, потом готовим',l:['<b>✓ Оплачен онлайн (Halyk)</b> - деньги уже пришли, можно готовить','<b>Ждёт онлайн-оплаты</b> - гость ещё не оплатил, не готовим. Кнопка «Проверить» спросит банк','<b>Не оплачен</b> (наличные) - гость показывает экран с номером заказа. Примите деньги и нажмите <b>«Оплачен»</b>'],why:'Неоплаченный заказ система не даст отправить на кухню. Кухня видит только оплаченные заказы.'},
+ {i:'📱',h:'Киоск в зале',p:'На планшете гость сам выбирает еду и платит: Halyk QR на экране или наличными у вас.',why:'Заказ с киоска приходит к вам так же, как из приложения. С наличными - то же правило: деньги, потом «Оплачен».'},
+ {i:'⛔',h:'Стоп-лист',p:'Закончилась позиция? Вкладка «Стоп-лист» → отметьте её. Она сразу пропадёт из меню в приложении и на киоске.',why:'Иначе гость оплатит то, чего нет, и придётся делать возврат.'},
+ {i:'📒',h:'Отчёт дня',p:'В конце смены: «Отчёт дня» → суммы Kaspi, Halyk, наличные, остаток в кассе. Можно просто сфотографировать лист кассы - цифры подставятся сами.',why:'Закупы из Telegram-бота уже стоят в отчёте. Второй раз их вписывать не нужно, иначе посчитаются дважды.'},
+ {i:'🤖',h:'Закупы и списания через Telegram',l:['Откройте бота <b>@degirmennavoiconsult_bot</b> и нажмите /start - владелец даст доступ','<b>Закуп</b>: фото чека, или текст «картошка 50 кг 12500», или голосовое. Проверьте и нажмите, откуда деньги','<b>Списание</b>: «списание: баклава 2 шт 1800»','Ошиблись - /отмена'],why:'Так владельцу не нужно собирать бумажные чеки, а отчёт по закупам складывается сам.'},
+ {i:'✅',h:'Готово!',p:'Если что-то забыли - Касса → «Обучение». Хорошей смены!'}];
+const TUT_ADM=[
+ {i:'🍽',h:'Меню и цены (только админ)',p:'Цены главные в Paloma. Поменяли в Paloma - через 5 минут цена в приложении обновится сама. Поменяли в приложении - уйдёт в Paloma.',why:'Не меняйте одну цену сразу в двух местах в одно время: победит Paloma.'},
+ {i:'📊',h:'Финансы',l:['<b>День</b> - отчёт дня и календарь','<b>Месяц</b> - выручка, закуп, прибыль','<b>Закупы</b> - чеки из бота по блокам, «Деньги ТОО» отдельно, график по дням','<b>Остатки</b> и <b>Настройки</b>'],why:'Каждый вечер в 22:30 бот присылает отчёт о закупах, 1-го числа - итоги месяца.'},
+ {i:'↩️',h:'Возврат денег',p:'Только у владельцев: Касса → заказ, оплаченный онлайн → «Возврат» → нажать ещё раз. Деньги вернутся на карту гостя, банк проводит возврат за несколько минут.',why:'Кассиры кнопку возврата не видят - так задумано.'}];
+function tutSteps(){const s=[...TUT_CASH];if(isAdm())s.splice(s.length-1,0,...TUT_ADM);return s}
+const tutKey=()=>'dn_tut_'+(S.me?.id||'x');
+function tutM(start=0){S.tut={i:start,s:tutSteps()};tutPaint()}
+function tutClose(done){$('tut')?.remove();try{localStorage.setItem(tutKey(),done?'done':'later:'+Date.now())}catch{};S.tut=null}
+function tutGo(d){const T=S.tut;if(!T)return;T.i+=d;if(T.i>=T.s.length){tutClose(true);toast('Обучение пройдено 👍');return}if(T.i<0)T.i=0;tutPaint()}
+function tutPaint(){const T=S.tut,x=T.s[T.i],last=T.i==T.s.length-1;let o=$('tut');if(!o){document.body.insertAdjacentHTML('beforeend','<div class="tut" id="tut"></div>');o=$('tut')}
+  o.innerHTML=`<div class="bx"><div class="ic">${x.i}</div><h3>${x.h}</h3>${x.p?`<p>${x.p}</p>`:''}${x.l?`<ul>${x.l.map(l=>`<li>${l}</li>`).join('')}</ul>`:''}${x.why?`<div class="why">💡 ${x.why}</div>`:''}
+  <div class="dots">${T.s.map((_,i)=>`<i class="${i==T.i?'on':''}"></i>`).join('')}</div>
+  <div class="nav">${T.i?`<button onclick="tutGo(-1)">Назад</button>`:''}<button class="m" onclick="tutGo(1)">${last?'Начать работу':T.i?'Дальше':'Начать'}</button></div>${last?'':`<button class="skip" onclick="tutClose(false)">Пропустить, пройду позже</button>`}</div>`}
+// первый вход сотрудника: предложить обучение (если «позже» - напомнить через день)
+function tutOffer(){if(!staff()||$('tut')||S.tut)return;let v=null;try{v=localStorage.getItem(tutKey())}catch{}
+  if(v=='done')return;if(v&&v.startsWith('later:')&&Date.now()-+v.slice(6)<864e5)return;setTimeout(()=>{if(staff()&&!$('tut'))tutM(0)},1200)}
+{const _lp=loadPf;loadPf=async function(){await _lp();tutOffer()}}
 
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
