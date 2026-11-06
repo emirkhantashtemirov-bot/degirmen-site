@@ -13,6 +13,8 @@
 - Деплой: push в `main` → сервер подтягивает изменения раз в минуту. Коммиты с трейлерами Co-Authored-By и Claude-Session.
 
 ## База (Supabase, проект nctmbakzbzzkygndaklr)
+- Оплата: Edge Function `epay` (код в `supabase/functions/epay`), доступы ePay только в закрытой `paloma_config` (epay_*). Заказ: `pay_method` cash|online, `pay_status` none|pending|paid|failed|refunded. Онлайн-оплату отмечает только сервер после проверки статуса в банке. Неоплаченные заказы не идут на кухню. Возврат - `can_refund()` (разработчик + список `refunders`).
+- Цены: Paloma главная. Триггер на `paloma_items` обновляет `menu_items.data.p` и `menu_options.price` (исключения - `price_sync_off`), смена цены в админке уходит в Paloma через `paloma-write` op price. Тестовая позиция `air` (data.test) видна только админам.
 - `menu_items` (цены в `data.p`, `data.pal` - id в Paloma; `data.pack/nf/gi` - пачка Brewsell `bw`, без бесплатного кофе и добавок), `menu_options`, `orders` (триггер `orders_guard` пересчитывает цену на сервере), `profiles`, `account_sanctions`.
 - Функции разработчика защищены `is_dev()` (только владелец). Служебные функции - в схеме `private`.
 - execute_sql: запросы с DELETE/REVOKE/DROP отменяются - проектировать без них. Тесты - DO-блок с `set_config('request.jwt.claims',...)` и `raise exception 'REPORT ...'` (всё откатывается).
@@ -29,4 +31,4 @@
 - Анимированные карточки меню (короткие видео через Gemini, проигрывать только видимые).
 - Идеи из разбора Drinkit: имя на стакане, «повторить прошлый заказ», напиток недели, утренний бонус до 9:00, экран «откроемся в 8:00».
 - Товарный знак Brewsell: проверить госреестр Казпатента, подать (классы 30, 35, 43).
-- Эквайринг Halyk ePay / Freedom, интеграция заказов с Paloma.
+- Автопечать чека и кухонного бегунка из заказов приложения (нужен ответ Paloma).

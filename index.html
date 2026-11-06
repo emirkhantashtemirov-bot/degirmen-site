@@ -1336,7 +1336,7 @@ photo:'Photo',upl:'Upload photo',delph:'Remove photo',uploading:'Uploading photo
 const FL={ch:{ru:'курица',kk:'тауық',en:'chicken'},bf:{ru:'говядина',kk:'сиыр еті',en:'beef'},as:{ru:'ассорти',kk:'ассорти',en:'mixed'},x:{ru:'стандарт',kk:'стандарт',en:'standard'}};
 const G={fr:{ru:'Картошка фри',kk:'Фри картобы',en:'Fries'},ws:{ru:'Белый соус',kk:'Ақ тұздық',en:'White sauce'},rs:{ru:'Красный соус',kk:'Қызыл тұздық',en:'Red sauce'},tm:{ru:'Помидоры',kk:'Қызанақ',en:'Tomatoes'},cu:{ru:'Огурцы',kk:'Қияр',en:'Cucumbers'},cb:{ru:'Капуста',kk:'Қырыққабат',en:'Cabbage'}},BI=['fr','ws','rs','tm','cu','cb'],PLAIN=['fr','tm','cu','cb'],SAUCE=['ws','rs'];
 const GEN={fr:'картошки фри',ws:'белого соуса',rs:'красного соуса',tm:'помидоров',cu:'огурцов',cb:'капусты'},gn=(k,L)=>L=='ru'?GEN[k]:nm(G[k],L).toLowerCase();  // «без …» по-русски — в родительном падеже
-const SY=[{ru:'Ваниль',kk:'Ваниль',en:'Vanilla'},{ru:'Карамель',kk:'Карамель',en:'Caramel'},{ru:'Орех',kk:'Жаңғақ',en:'Hazelnut'},{ru:'Кокос',kk:'Кокос',en:'Coconut'},{ru:'Солёная карамель',kk:'Тұзды карамель',en:'Salted caramel'},{ru:'Клубника',kk:'Құлпынай',en:'Strawberry'},{ru:'Мохито',kk:'Мохито',en:'Mojito'},{ru:'Ягодный микс',kk:'Жидек миксі',en:'Berry mix'}],SYP=400,SYC=['cf','tea','lem'],DBL=200;
+const SY=[{ru:'Ваниль',kk:'Ваниль',en:'Vanilla'},{ru:'Карамель',kk:'Карамель',en:'Caramel'},{ru:'Орех',kk:'Жаңғақ',en:'Hazelnut'},{ru:'Кокос',kk:'Кокос',en:'Coconut'},{ru:'Солёная карамель',kk:'Тұзды карамель',en:'Salted caramel'},{ru:'Клубника',kk:'Құлпынай',en:'Strawberry'},{ru:'Мохито',kk:'Мохито',en:'Mojito'},{ru:'Ягодный микс',kk:'Жидек миксі',en:'Berry mix'}],SYP=400,SYC=['cf','tea','lem'],DBL=300;
 const SZ=['S','M','XL'],SL=['1','1,5','2'],STEPS=['new','cooking','ready','done'],FREE_EVERY=7;
 const SECS={dn:[{k:'w',ids:['lav','bat'],l:'sub_w'},{k:'p',ids:['pl','isk'],l:'sub_p'}]};  // подкатегории донера
 const cached=LS.get('dn_menu',null);
@@ -2575,9 +2575,10 @@ await loadMenu();let ch=false;S.cart=S.cart.filter(l=>{if(!itemOf(l.id)||itemOf(
 await loadPf2();await loadUsed();if(freeIn()>avail()){S.cart.forEach(l=>delete l.free);ch=true}
 if(ch){S.err=t('changed');cart();render();return}
 const items=S.cart.map(l=>({id:l.id,f:l.f,z:l.z,o:l.o,syr:l.syr,sg:l.sg,ing:l.ing,qty:l.qty,free:!!l.free||undefined,gift:l.gift||undefined,name:lineName(l,'ru'),desc:desc(l,'ru'),unit:unitFull(l),sum:lineTot(l)}));
-const{error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,pickup_time:pt});if(error){S.err=ordErr(error);cart();return}
+const{data:_od,error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,pickup_time:pt,pay_method:pmNow()}).select('id,total').single();if(error){S.err=ordErr(error);cart();return}
+if(_od&&pmNow()=='online'){S.cart=[];S.note='';S.pt='';S.v='ord';cl();await loadOrd();render();payStart(_od.id);return}
 try{paidFx()}catch{}  // визуальный финал: мельница + частицы + галочка; сбой анимации не влияет на заказ
-S.cart=[];S.note='';S.pt='';S.v='ord';cl();await loadOrd();await loadUsed();render();window.scrollTo(0,0);toast(t('okord'))}
+S.cart=[];S.note='';S.pt='';S.v='ord';cl();await loadOrd();await loadUsed();render();window.scrollTo(0,0);toast(t('okord'));if(_od)setTimeout(()=>cashScr(_od.id),400)}
 // ---------- вход и профиль ----------
 function authM(from){S.after=from||null;scr(topbar(S.mode=='up'?t('reg'):t('signin'))+`<div class="body w">${tgLoginBtn()}${S.mode=='up'?`<input id="nn" placeholder="${t('name')}" autocomplete="name">`:''}<input id="em" type="email" placeholder="Email" autocomplete="email"><input id="pw" type="password" placeholder="${t('pw')}" autocomplete="${S.mode=='up'?'new-password':'current-password'}"><div class="err">${e(S.err)}</div><button class="main" style="margin-top:10px" onclick="auth()">${S.mode=='up'?t('doreg'):t('signin')}</button>${S.mode=='up'?consentLine():''}<p class="mu" style="cursor:pointer;text-align:center;margin-top:20px" onclick="S.mode=S.mode=='up'?'in':'up';S.err='';authM(S.after)">${S.mode=='up'?t('haveacc'):t('noacc')}</p></div>`,'auth')}
 async function auth(){const em=$('em').value.trim(),pw=$('pw').value;const r=S.mode=='up'?await sb.auth.signUp({email:em,password:pw,options:{data:{name:$('nn').value.trim()}}}):await sb.auth.signInWithPassword({email:em,password:pw});
@@ -2585,7 +2586,7 @@ if(r.error){S.err=r.error.message;authM(S.after);return}if(!r.data.session){S.er
 let dip=null;window.addEventListener('beforeinstallprompt',x=>{x.preventDefault();dip=x});
 const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!matchMedia('(display-mode:standalone)').matches;
 // ---------- касса ----------
-async function ss(id,s){const{error}=await sb.rpc('set_order_status',{p_id:id,p_status:s});if(error)toast(error.message,1);await loadOrd();render()}
+async function ss(id,s){const{error}=await sb.rpc('set_order_status',{p_id:id,p_status:s});if(error)toast(ordErrPay(error.message),1);await loadOrd();render()}
 async function so(id,k,v){const{error}=await sb.rpc(k=='i'?'set_sold_out':'set_option_sold_out',{p_id:id,p_value:v});if(error)toast(error.message,1);await loadMenu();render()}
 const tmx=o=>o.pickup_time?`<div>${t('at','ru')} ${new Date(o.pickup_time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</div>`:'';
 function its(o,L){return o.items.map(i=>{const it=i.f!==undefined&&itemOf(i.id);const n=it?lineName(i,L):i.name,d=it?desc(i,L):i.desc;return `${i.qty}× ${e(n)} <span class="mu">${e(d)}</span>`}).join('<br>')}
@@ -2619,7 +2620,7 @@ const mine=()=>S.ord.filter(o=>o.user_id==S.me?.id),activeMine=()=>mine().filter
 function tracker(o){const i=STEPS.indexOf(o.status),pct=pctOf(o),from=S.pp[o.id]??0,fx=o.status=='ready'&&(S.pp[o.id]===undefined||S.pp[o.id]<pct);
 return `<div class="trk ${o.status=='ready'?'rdy':''}${fx?' fx':''}"><div class="tbar"><i style="--p:${pct};--from:${from}"></i></div>${STEPS.map((s,k)=>`<div class="stp ${k<i?'d':k==i?'cu':''}">${t(s=='ready'?'b_ready':'s_'+s)}</div>`).join('')}</div>`}
 const pctOf=o=>Math.max(0,STEPS.indexOf(o.status))/(STEPS.length-1);
-function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it).replace('class="ph"','class="ph" style="width:56px;height:56px;flex:none;border-radius:14px"'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
+function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it).replace('class="ph"','class="ph" style="width:56px;height:56px;flex:none;border-radius:14px"'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
 const hdr=()=>`<div class="hd"><div class="lg"><span class="lgm" aria-hidden="true"><svg viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><g class="lgbd"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3.5" fill="currentColor"/></g></svg></span>DEGIRMEN</div><div class="hdr-r">${kbBtn()}${bellBtn()}<button class="rb${S.me&&S.pf?' avb':''}" aria-label="${t('profile')}" onclick="profileM()">${S.me&&S.pf?avatar(44):IC.user}</button></div></div>`;
 const secOf=cat=>{const its=S.items.filter(i=>i.category==cat&&!(i.data&&i.data.pack)),def=SECS[cat];if(!def)return [{k:'a',l:null,items:its}];const used=new Set(),out=def.map(s=>({...s,items:s.ids.map(id=>its.find(i=>i.id==id)).filter(Boolean)}));out.forEach(s=>s.items.forEach(i=>used.add(i.id)));const rest=its.filter(i=>!used.has(i.id));if(rest.length)out[out.length-1].items.push(...rest);return out.filter(s=>s.items.length)};
 const price=i=>{const pc=Object.values(i.data.p).flat();return i.sold_out?t('gone'):(pc.length>1?t('from')+' ':'')+mn(Math.min(...pc))};
@@ -3389,8 +3390,9 @@ function kioskIdle(){const n=Date.now();
   if(ch){S.err=t('changed');cart();render();return}
   const items=S.cart.map(l=>({id:l.id,f:l.f,z:l.z,o:l.o,syr:l.syr,sg:l.sg,ing:l.ing,qty:l.qty,name:lineName(l,'ru'),desc:desc(l,'ru'),unit:unitFull(l),sum:lineTot(l)}));
   const nm_=(S.kname||'').trim().slice(0,20);
-  const{data,error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,guest_name:nm_||null}).select('id,total').single();
+  const{data,error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,guest_name:nm_||null,pay_method:pmNow()}).select('id,total').single();
   if(error){S.err=ordErr(error);cart();return}
+  if(pmNow()=='online'){S.cart=[];S.note='';S.kname='';cl(true);S.v='menu';render();payStart(data.id);return}
   AP.done={id:data.id,total:data.total,name:nm_};AP.doneT=Date.now()+30000;S.cart=[];S.note='';S.kname='';cl(true);S.v='menu';render();kioskLayer();try{navigator.vibrate&&navigator.vibrate(30)}catch{}}}
 const apMill=()=>`<svg viewBox="0 0 64 64" class="apmill"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><path d="M28 46h8"/><g class="apbl"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3" fill="currentColor"/></g></svg>`;
 
@@ -3407,7 +3409,7 @@ const preT=o=>o.pickup_time?Date.parse(o.pickup_time)-15*60e3:0;  // предз�
 const isLater=o=>o.status=='new'&&preT(o)>Date.now();
 const kAge=o=>(Date.now()-Math.max(Date.parse(o.created_at),preT(o)))/1000;
 function kLines(o){return o.items.map((i,k)=>{const it=i.f!==undefined&&itemOf(i.id);return{k,st:it?ST_OF(it.category):'bar',qty:i.qty,n:it?lineName(i,'ru'):i.name,d:it?desc(i,'ru'):i.desc}})}
-function kdsList(){const today=almNowD();return S.ord.filter(o=>almD(o.created_at)==today||(o.pickup_time&&almD(o.pickup_time)==today)||!['done','cancelled'].includes(o.status))}
+function kdsList(){const today=almNowD();return S.ord.filter(o=>!(o.pay_method&&!o.paid&&o.status=='new'&&o.pay_status!='refunded')).filter(o=>almD(o.created_at)==today||(o.pickup_time&&almD(o.pickup_time)==today)||!['done','cancelled'].includes(o.status))}
 function kdsStats(L){const today=almNowD(),td=S.ord.filter(o=>almD(o.created_at)==today&&o.status!='cancelled'),rd=td.filter(o=>o.ready_at&&!o.pickup_time).map(o=>(Date.parse(o.ready_at)-Date.parse(o.created_at))/1000).filter(x=>x>0&&x<5400);
   return{n:td.length,avg:rd.length?rd.reduce((a,b)=>a+b,0)/rd.length:0}}
 function kCard(o,col){const ls=kLines(o).filter(l=>AP.kst=='all'||l.st==AP.kst);if(!ls.length)return '';const tk=AP.tick[o.id]||[],age=kAge(o),cls=o.status=='ready'?'':age>600?'late':age>300?'warm':'';
@@ -3467,8 +3469,8 @@ async function apPinSave(){const v=$('apnp').value.trim();if(!/^\d{4,8}$/.test(v
 
 // касса: источник заказа, имя гостя, отметка оплаты
 const kasWho=o=>o.src=='kiosk'?`<span class="apsrc">Киоск</span> ${e(o.guest_name||'')}`:e(S.names[o.user_id]||'');
-const kasPaid=o=>o.paid?`<div class="appd ok">✓ Оплачен</div>`:`<div class="appd"><span>Не оплачен</span><button class="c" onclick="apPaid(${o.id})">Оплачен</button></div>`;
-async function apPaid(id){const o=S.ord.find(x=>x.id==id);if(o)o.paid=true;S._h=null;render();const{error}=await sb.rpc('set_order_paid',{p_id:id,p_paid:true});if(error){toast(error.message,1);if(o)o.paid=false;S._h=null;render()}}
+const kasPaid=o=>o.pay_status=='refunded'?`<div class="appd">↩ Деньги возвращены</div>`:o.pay_method=='online'?(o.paid?`<div class="appd ok">✓ Оплачен онлайн (Halyk)${S.canRefund?` <button class="c rf" onclick="payRefund(${o.id},this)">Возврат</button>`:''}</div>`:`<div class="appd"><span>Ждёт онлайн-оплаты</span><button class="c" onclick="payCheck(${o.id},this)">Проверить</button></div>`):o.paid?`<div class="appd ok">✓ Оплачен${o.pay_method=='cash'?' наличными':''}</div>`:`<div class="appd"><span>Не оплачен</span><button class="c" onclick="apPaid(${o.id})">Оплачен</button></div>`;
+async function apPaid(id){const o=S.ord.find(x=>x.id==id);if(o)o.paid=true;S._h=null;render();const{error}=await sb.rpc('set_order_paid',{p_id:id,p_paid:true});if(error){toast(ordErrPay(error.message),1);if(o)o.paid=false;S._h=null;render()}}
 
 // роль в карточке пользователя (только админ)
 const ROLES=[['guest','Гость'],['cashier','Кассир'],['admin','Админ'],['kiosk','Киоск']];
@@ -4434,6 +4436,93 @@ async function staffInvite(){const F=S.fn;const name=(prompt('Имя касси�
 async function staffOff(id){if(!confirm('Отключить этого сотрудника от бота?'))return;const r=await sb.rpc('staff_off',{p_chat:id});if(r.error){toast(String(r.error.message||r.error),1);return}S.fn.staff=r.data||[];finRender()}
 // ---------- на время прокрутки ставим фоновые анимации на паузу (класс scrl на <html>), через 0,18 с после остановки - снова идут ----------
 (function(){const h=document.documentElement;let t=0,on=0;addEventListener('scroll',()=>{if(!on){on=1;h.classList.add('scrl')}clearTimeout(t);t=setTimeout(()=>{on=0;h.classList.remove('scrl')},180)},{passive:true})})();
+
+// ---------- оплата: Halyk ePay онлайн + наличные на кассе (06.11.2026) ----------
+// Способ выбирается в корзине. Онлайн: заказ создаётся, затем страница банка; оплату подтверждает только сервер (epay).
+// Наличные: экран с номером и составом для кассира; кассир жмёт «Оплачен», только после этого заказ уходит на кухню.
+Object.assign(T.ru,{pm_t:'Как оплатить',pm_on:'Картой, Apple Pay, Google Pay',pm_on_s:'Сразу после оплаты заказ уходит в работу',pm_cash:'Наличными на кассе',pm_cash_s:'Покажете экран кассиру',pay_go:'Оплатить',pay_open:'Открываем оплату…',pay_wait:'Проверяем оплату…',pay_ok:'Оплачено. Заказ уже готовят',pay_fail:'Оплата не прошла. Деньги не списаны',pay_pend:'Ждём подтверждение банка…',pay_need:'Ждёт оплаты',pay_again:'Оплатить',pay_paid:'Оплачено картой',pay_ref:'Деньги возвращены',pay_err:'Не получилось открыть оплату. Попробуйте ещё раз',cash_t:'Покажите этот экран на кассе',cash_s:'Оплатите, и заказ сразу начнут готовить',cash_btn:'Показать на кассе',ord_n:'Заказ №',cash_paid:'Оплата получена'});
+Object.assign(T.kk,{pm_t:'Қалай төлейсіз',pm_on:'Картамен, Apple Pay, Google Pay',pm_on_s:'Төлегеннен кейін тапсырыс бірден дайындалады',pm_cash:'Кассада қолма-қол',pm_cash_s:'Экранды кассирге көрсетесіз',pay_go:'Төлеу',pay_open:'Төлем ашылып жатыр…',pay_wait:'Төлемді тексеріп жатырмыз…',pay_ok:'Төленді. Тапсырыс дайындалуда',pay_fail:'Төлем өтпеді. Ақша алынған жоқ',pay_pend:'Банк растауын күтудеміз…',pay_need:'Төлемді күтуде',pay_again:'Төлеу',pay_paid:'Картамен төленді',pay_ref:'Ақша қайтарылды',pay_err:'Төлемді ашу мүмкін болмады. Қайталап көріңіз',cash_t:'Бұл экранды кассада көрсетіңіз',cash_s:'Төлегеннен кейін тапсырыс бірден дайындалады',cash_btn:'Кассада көрсету',ord_n:'Тапсырыс №',cash_paid:'Төлем қабылданды'});
+Object.assign(T.en,{pm_t:'How to pay',pm_on:'Card, Apple Pay, Google Pay',pm_on_s:'Your order starts right after payment',pm_cash:'Cash at the counter',pm_cash_s:'Show the screen to the cashier',pay_go:'Pay',pay_open:'Opening payment…',pay_wait:'Checking payment…',pay_ok:'Paid. Your order is being prepared',pay_fail:'Payment failed. No money was taken',pay_pend:'Waiting for the bank to confirm…',pay_need:'Awaiting payment',pay_again:'Pay',pay_paid:'Paid by card',pay_ref:'Refunded',pay_err:'Could not open payment. Please try again',cash_t:'Show this screen at the counter',cash_s:'Pay and we start your order right away',cash_btn:'Show at the counter',ord_n:'Order #',cash_paid:'Payment received'});
+document.head.insertAdjacentHTML('beforeend',`<style>
+.pmw{margin:18px 0 6px}.pmw .lab{margin-bottom:8px}
+.pmo{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:14px 16px;margin:8px 0 0;border-radius:20px;border:2px solid transparent;background:var(--s2);color:var(--tx);font:600 15px var(--f);cursor:pointer;transition:border-color .2s var(--e),transform .15s var(--e)}
+.pmo:active{transform:scale(.98)}.pmo.on{border-color:var(--ac);background:var(--warm)}
+.pmo i{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--off);display:grid;place-items:center}.pmo.on i{border-color:var(--ac)}.pmo.on i:after{content:'';width:10px;height:10px;border-radius:50%;background:var(--ac)}
+.pmo small{display:block;font-weight:500;font-size:13px;color:var(--mu);margin-top:2px}
+.pmbadge{display:inline-flex;gap:6px;align-items:center;padding:6px 12px;border-radius:14px;font:600 13px var(--f);margin:8px 0;background:var(--s2)}
+.pmbadge.ok{color:#9fd39f}.pmbadge.wait{color:#f3dfa9}.pmbadge.ref{color:var(--mu)}
+.paybtn{display:block;width:100%;height:48px;border:0;border-radius:24px;background:var(--ac);color:#fff;font:700 15px var(--f);margin:8px 0}
+.cashs{text-align:center;padding:6px 4px 10px}.cashs .num{font:800 64px/1 var(--f);letter-spacing:-1px;margin:6px 0 4px;color:var(--tx)}
+.cashs .ttl{font:700 18px var(--f);margin:2px 0 6px}.cashs .lst{text-align:left;background:var(--s2);border-radius:18px;padding:14px 16px;margin:14px 0;line-height:1.55}
+.cashs .sum{font:800 30px var(--f);margin:6px 0}.cashs .ok{color:#9fd39f;font:700 16px var(--f)}
+.payov{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(17,12,9,.86);color:var(--tx);font:600 16px var(--f);text-align:center;padding:30px}
+.payov .sp{width:42px;height:42px;border-radius:50%;border:4px solid var(--s2);border-top-color:var(--ac);margin:0 auto 14px;animation:pspin 1s linear infinite}@keyframes pspin{to{transform:rotate(360deg)}}
+.appd .rf{background:transparent;border:1px solid var(--off);color:var(--mu)}.appd .rf.sure{border-color:var(--ac);color:#fff;background:var(--ac)}
+</style>`);
+S.pm=(()=>{try{return localStorage.getItem('dn_pm')}catch{return null}})()||'online';
+const pmNow=()=>S.pm=='cash'?'cash':'online';
+function pmSet(v){S.pm=v;try{localStorage.setItem('dn_pm',v)}catch{}pmPaint()}
+function pmHtml(){const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" onclick="pmSet('${v}')"><i></i><span>${a}<small>${b}</small></span></button>`;
+  return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_on'),t('pm_on_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}
+function pmPaint(){const w=$('pmw');if(w)w.outerHTML=pmHtml();const f=[...document.querySelectorAll('.ftr')].pop(),b=f?.querySelector('button.main');
+  if(b&&!b.dataset.t0)b.dataset.t0=b.textContent;if(b)b.textContent=pmNow()=='online'?`${t('pay_go')} ${mn(tot())}`:b.dataset.t0;
+  const kn=document.querySelector('.kpaynote span');if(kn)kn.textContent=pmNow()=='online'?t('pm_on_s'):t('k_pay')}
+{const _c=cart;cart=function(){_c();if(!S.cart.length)return;const f=[...document.querySelectorAll('.ftr')].pop(),body=f?.previousElementSibling;
+  if(body&&!$('pmw')){const er=body.querySelector('.err');if(er)er.insertAdjacentHTML('beforebegin',pmHtml());else body.insertAdjacentHTML('beforeend',pmHtml())}pmPaint()}}
+
+// переход на страницу банка
+let _payJs=null;
+function payJs(src){if(_payJs&&_payJs.src==src)return _payJs.p;const p=new Promise((ok,bad)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)});_payJs={src,p};return p}
+function payOv(msg){let o=$('payov');if(!msg){o&&o.remove();return}if(!o){document.body.insertAdjacentHTML('beforeend',`<div class="payov" id="payov"><div><div class="sp"></div><div id="payovt"></div></div></div>`);o=$('payov')}$('payovt').textContent=msg}
+async function payStart(id){payOv(t('pay_open'));
+  try{const{data,error}=await sb.functions.invoke('epay',{body:{op:'start',order_id:id,lang:S.L}});
+    if(data?.error=='already_paid'){payOv();await loadOrd();render();toast(t('pay_ok'));return}
+    if(error||!data?.pay)throw new Error(data?.error||error?.message||'start');
+    try{localStorage.setItem('dn_payo',String(id))}catch{}
+    await payJs(data.js);if(!window.halyk?.pay)throw new Error('js');
+    halyk.pay(data.pay);setTimeout(()=>payOv(),15000)}
+  catch(e){payOv();toast(t('pay_err'),1);await loadOrd();S.v='ord';render()}}
+
+// возврат со страницы банка: ?pay=ok|fail&o=ID -> сервер перепроверяет у банка
+async function payReturn(){const q=new URLSearchParams(location.search),r=q.get('pay'),id=Number(q.get('o'));if(!r||!(id>0))return;
+  try{history.replaceState(null,'',location.pathname)}catch{}
+  for(let i=0;i<40&&!S.me;i++)await new Promise(z=>setTimeout(z,250));if(!S.me)return;
+  payOv(t('pay_wait'));let res=null;
+  for(let i=0;i<6;i++){const{data}=await sb.functions.invoke('epay',{body:{op:'check',order_id:id}});res=data;if(res?.pay=='paid'||res?.pay=='failed')break;await new Promise(z=>setTimeout(z,2500))}
+  payOv();await loadOrd();S.v='ord';render();window.scrollTo(0,0);
+  if(res?.pay=='paid'){try{paidFx()}catch{}toast(t('pay_ok'))}else if(res?.pay=='failed'||r=='fail')toast(t('pay_fail'),1);else toast(t('pay_pend'))}
+setTimeout(payReturn,300);
+
+// экран для кассира (наличные)
+function cashScr(id){const o=S.ord.find(x=>x.id==id);if(!o)return;
+  shw(`<div class="cashs"><div class="mu">${t('ord_n')}</div><div class="num">${o.id}</div><div class="ttl">${t('cash_t')}</div><div class="mu">${t('cash_s')}</div>
+  <div class="lst">${its(o,S.L)}${o.note?`<div class="mu" style="margin-top:6px">${t('notel')}: ${e(o.note)}</div>`:''}</div><div class="sum">${mn(o.total)}</div>${o.paid?`<div class="ok">✓ ${t('cash_paid')}</div>`:''}</div>`)}
+
+// блок оплаты в карточке заказа гостя
+function payBlk(o){if(o.user_id!=S.me?.id||!o.pay_method||o.status=='cancelled'&&o.pay_status!='refunded')return '';
+  if(o.pay_status=='refunded')return `<div class="pmbadge ref">↩ ${t('pay_ref')}</div>`;
+  if(o.pay_method=='online'){if(o.paid)return `<div class="pmbadge ok">✓ ${t('pay_paid')}</div>`;
+    return o.status=='new'?`<div class="pmbadge wait">${t('pay_need')}</div><button class="paybtn" onclick="payStart(${o.id})">${t('pay_again')} ${mn(o.total)}</button>`:''}
+  if(o.paid)return `<div class="pmbadge ok">✓ ${t('cash_paid')}</div>`;
+  return o.status=='new'?`<button class="paybtn" onclick="cashScr(${o.id})">${t('cash_btn')}</button>`:''}
+
+
+// касса: возврат онлайн-оплаты (только владельцы), ручная перепроверка
+S.canRefund=false;
+async function payCanRefund(){if(!staff()){S.canRefund=false;return}try{const{data}=await sb.rpc('can_refund');S.canRefund=data===true}catch{S.canRefund=false}}
+{const _lo=loadOrd;loadOrd=async function(){await _lo();if(staff()&&S._crf!==S.me?.id){S._crf=S.me?.id;await payCanRefund()}}}
+async function payCheck(id,b){if(b)b.disabled=true;const{data}=await sb.functions.invoke('epay',{body:{op:'check',order_id:id}});await loadOrd();S._h=null;render();
+  toast(data?.pay=='paid'?'Оплата подтверждена банком':data?.pay=='failed'?'Банк: оплата не прошла':'Банк ещё не подтвердил оплату',data?.pay!='paid')}
+async function payRefund(id,b){if(!b.dataset.sure){b.dataset.sure=1;b.classList.add('sure');b.textContent='Точно вернуть деньги?';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.classList.remove('sure');b.textContent='Возврат'}},4000);return}
+  b.disabled=true;b.textContent='Возвращаем…';const{data,error}=await sb.functions.invoke('epay',{body:{op:'refund',order_id:id}});
+  if(data?.ok)toast('Деньги возвращены, заказ отменён');else toast(data?.error=='min_10'?'Банк не возвращает суммы меньше 10 ₸':data?.error=='forbidden'?'Возврат могут делать только владельцы':'Банк не выполнил возврат: '+(data?.err||data?.bank||error?.message||''),1);
+  await loadOrd();S._h=null;render()}
+const ordErrPay=m=>/order:unpaid/.test(m)?'Сначала заказ должен быть оплачен':/order:paid_online/.test(m)?'Заказ оплачен онлайн: отменить можно только через «Возврат»':/order:online/.test(m)?'Онлайн-оплату отмечает только банк':m;
+
+// тестовая позиция «Воздух»: только для админов
+{const _lm=loadMenu;loadMenu=async function(){await _lm();if(!isAdm())S.items=S.items.filter(i=>!i.data?.test)}}
+{const _lp=loadPf;loadPf=async function(){await _lp();if(isAdm()&&!S.items.some(i=>i.data?.test)){await loadMenu();render()}}}
+
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
