@@ -3392,7 +3392,7 @@ function kioskIdle(){const n=Date.now();
   const nm_=(S.kname||'').trim().slice(0,20);
   const{data,error}=await sb.from('orders').insert({user_id:S.me.id,items,total:tot(),note:(S.note||'').trim()||null,guest_name:nm_||null,pay_method:pmNow()}).select('id,total').single();
   if(error){S.err=ordErr(error);cart();return}
-  if(pmNow()=='online'){S.cart=[];S.note='';S.kname='';cl(true);S.v='menu';render();payStart(data.id);return}
+  if(pmNow()=='online'){S.cart=[];S.note='';S.kname='';cl(true);S.v='menu';render();qrStart(data.id,data.total);return}
   AP.done={id:data.id,total:data.total,name:nm_};AP.doneT=Date.now()+30000;S.cart=[];S.note='';S.kname='';cl(true);S.v='menu';render();kioskLayer();try{navigator.vibrate&&navigator.vibrate(30)}catch{}}}
 const apMill=()=>`<svg viewBox="0 0 64 64" class="apmill"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><path d="M28 46h8"/><g class="apbl"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3" fill="currentColor"/></g></svg>`;
 
@@ -4466,7 +4466,7 @@ function pmHtml(){const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" on
   return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_on'),t('pm_on_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}
 function pmPaint(){const w=$('pmw');if(w)w.outerHTML=pmHtml();const f=[...document.querySelectorAll('.ftr')].pop(),b=f?.querySelector('button.main');
   if(b&&!b.dataset.t0)b.dataset.t0=b.textContent;if(b)b.textContent=pmNow()=='online'?`${t('pay_go')} ${mn(tot())}`:b.dataset.t0;
-  const kn=document.querySelector('.kpaynote span');if(kn)kn.textContent=pmNow()=='online'?t('pm_on_s'):t('k_pay')}
+  const kn=document.querySelector('.kpaynote span');if(kn)kn.textContent=pmNow()=='online'?((typeof isKiosk=='function'&&isKiosk())?t('pm_qr_s'):t('pm_on_s')):t('k_pay')}
 {const _c=cart;cart=function(){_c();if(!S.cart.length)return;const f=[...document.querySelectorAll('.ftr')].pop(),body=f?.previousElementSibling;
   if(body&&!$('pmw')){const er=body.querySelector('.err');if(er)er.insertAdjacentHTML('beforebegin',pmHtml());else body.insertAdjacentHTML('beforeend',pmHtml())}pmPaint()}}
 
@@ -4523,6 +4523,54 @@ const ordErrPay=m=>/order:unpaid/.test(m)?'Сначала заказ долже�
 if(!isAdm())S.items=S.items.filter(i=>!i.data?.test);  // сохранённое меню тоже без тестовой позиции
 {const _lm=loadMenu;loadMenu=async function(){await _lm();if(!isAdm())S.items=S.items.filter(i=>!i.data?.test)}}
 {const _lp=loadPf;loadPf=async function(){await _lp();if(isAdm()&&!S.items.some(i=>i.data?.test)){await loadMenu();render()}}}
+
+
+// ---------- киоск: оплата Halyk QR (06.11.2026) ----------
+// На планшете вместо страницы банка - крупный QR. Гость сканирует в Halyk SuperApp / Homebank, планшет сам опрашивает сервер.
+Object.assign(T.ru,{pm_qr:'Halyk QR',pm_qr_s:'Отсканируйте QR телефоном в Halyk SuperApp',qr_t:'Отсканируйте QR',qr_s:'Откройте Halyk SuperApp или Homebank → Сканер QR',qr_wait:'Ждём оплату…',qr_scan:'Подтвердите оплату в телефоне',qr_ok:'Оплачено!',qr_ok_s:'Заказ уже готовят. Номер загорится на табло',qr_exp:'QR устарел или оплата отменена',qr_new:'Показать новый QR',qr_cancel:'Отменить заказ',qr_err:'Не получилось показать QR. Попробуйте ещё раз или оплатите на кассе'});
+Object.assign(T.kk,{pm_qr:'Halyk QR',pm_qr_s:'QR-ды Halyk SuperApp арқылы телефонмен сканерлеңіз',qr_t:'QR-ды сканерлеңіз',qr_s:'Halyk SuperApp немесе Homebank → QR сканер',qr_wait:'Төлемді күтудеміз…',qr_scan:'Телефонда төлемді растаңыз',qr_ok:'Төленді!',qr_ok_s:'Тапсырыс дайындалуда. Нөмір таблода жанады',qr_exp:'QR ескірді немесе төлем тоқтатылды',qr_new:'Жаңа QR көрсету',qr_cancel:'Тапсырысты болдырмау',qr_err:'QR көрсету мүмкін болмады. Қайталап көріңіз немесе кассада төлеңіз'});
+Object.assign(T.en,{pm_qr:'Halyk QR',pm_qr_s:'Scan the QR with Halyk SuperApp on your phone',qr_t:'Scan the QR',qr_s:'Open Halyk SuperApp or Homebank → QR scanner',qr_wait:'Waiting for payment…',qr_scan:'Confirm the payment on your phone',qr_ok:'Paid!',qr_ok_s:'Your order is being prepared. Watch for your number on the board',qr_exp:'QR expired or payment was cancelled',qr_new:'Show a new QR',qr_cancel:'Cancel order',qr_err:'Could not show the QR. Try again or pay at the counter'});
+document.head.insertAdjacentHTML('beforeend',`<style>
+.qrov{position:fixed;inset:0;z-index:9998;background:var(--c);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:var(--f)}
+.qrov h2{font:800 30px/1.15 var(--f);margin:0 0 6px}.qrov .sub{color:var(--mu);font-size:16px;margin:0 0 18px}
+.qrov .qbox{background:#fff;padding:18px;border-radius:26px;width:min(72vw,340px);aspect-ratio:1;display:grid;place-items:center}
+.qrov .qbox svg{width:100%;height:100%}.qrov .sum{font:800 34px var(--f);margin:16px 0 2px}.qrov .no{color:var(--mu);font-size:15px}
+.qrov .st{margin-top:14px;font:600 16px var(--f);color:#f3dfa9;min-height:22px}.qrov .st.ok{color:#9fd39f}
+.qrov .bt{display:flex;gap:10px;margin-top:18px;width:min(86vw,380px);flex-direction:column}
+.qrov .bt button{height:52px;border:0;border-radius:26px;font:700 16px var(--f);background:var(--s2);color:var(--tx)}.qrov .bt button.m{background:var(--ac);color:#fff}
+.qrov .big{font-size:72px;line-height:1;margin-bottom:8px}
+</style>`);
+let _qrLib=null;
+function qrLib(){return _qrLib||(_qrLib=new Promise((ok,bad)=>{if(window.qrcode)return ok();const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';s.onload=ok;s.onerror=()=>{_qrLib=null;bad()};document.head.appendChild(s)}))}
+const QRS={id:null,t:null,end:0};
+function qrClose(){clearTimeout(QRS.t);QRS.id=null;$('qrov')?.remove()}
+function qrView(h){let o=$('qrov');if(!o){document.body.insertAdjacentHTML('beforeend','<div class="qrov" id="qrov"></div>');o=$('qrov')}o.innerHTML=h}
+async function qrStart(id,total){qrClose();QRS.id=id;qrView(`<div class="sp" style="width:42px;height:42px;border-radius:50%;border:4px solid var(--s2);border-top-color:var(--ac);animation:pspin 1s linear infinite"></div>`);
+  try{await qrLib();const{data,error}=await sb.functions.invoke('epay',{body:{op:'qr',order_id:id}});
+    if(data?.error=='already_paid'){qrDone(id);return}
+    if(error||!data?.qrcode)throw new Error(data?.error||error?.message||'qr');
+    const q=qrcode(0,'M');q.addData(data.qrcode);q.make();
+    QRS.end=Date.now()+(data.ttl||1200)*1000;
+    qrView(`<h2>${t('qr_t')}</h2><p class="sub">${t('qr_s')}</p><div class="qbox">${q.createSvgTag({cellSize:8,margin:0,scalable:true})}</div>
+      <div class="sum">${mn(data.amount||total||0)}</div><div class="no">${t('ord_n')} ${id}</div><div class="st" id="qrst">${t('qr_wait')}</div>
+      <div class="bt"><button onclick="qrCancel(${id})">${t('qr_cancel')}</button></div>`);
+    qrPoll(id)}
+  catch(e){qrView(`<div class="big">⚠️</div><h2>${t('qr_err')}</h2><div class="bt"><button class="m" onclick="qrStart(${id})">${t('qr_new')}</button><button onclick="qrCancel(${id})">${t('qr_cancel')}</button></div>`)}}
+async function qrPoll(id){if(QRS.id!=id)return;
+  try{const{data}=await sb.functions.invoke('epay',{body:{op:'qrstatus',order_id:id}});if(QRS.id!=id)return;
+    if(data?.pay=='paid'){qrDone(id);return}
+    const st=$('qrst');if(st)st.textContent=data?.qr=='SCANNED'||data?.qr=='BLOCKED'?t('qr_scan'):t('qr_wait');
+    if(data?.expired||Date.now()>QRS.end){qrView(`<div class="big">⌛</div><h2>${t('qr_exp')}</h2><div class="bt"><button class="m" onclick="qrStart(${id})">${t('qr_new')}</button><button onclick="qrCancel(${id})">${t('qr_cancel')}</button></div>`);return}}
+  catch{}
+  QRS.t=setTimeout(()=>qrPoll(id),3000)}
+function qrDone(id){clearTimeout(QRS.t);QRS.id=null;try{navigator.vibrate&&navigator.vibrate([30,60,30])}catch{}
+  qrView(`<div class="big">✅</div><h2>${t('qr_ok')}</h2><p class="sub">${t('qr_ok_s')}</p><div class="sum">${t('ord_n')} ${id}</div>`);
+  setTimeout(()=>{qrClose();loadOrd().then(()=>render())},7000)}
+async function qrCancel(id){qrClose();try{await sb.rpc('cancel_my_order',{p_id:id})}catch{}await loadOrd();render()}
+// в киоске онлайн-оплата = Halyk QR
+{const _ph=pmHtml;pmHtml=function(){if(!(typeof isKiosk=='function'&&isKiosk()))return _ph();
+  const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" onclick="pmSet('${v}')"><i></i><span>${a}<small>${b}</small></span></button>`;
+  return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_qr'),t('pm_qr_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}}
 
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
