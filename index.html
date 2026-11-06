@@ -4572,6 +4572,15 @@ async function qrCancel(id){qrClose();try{await sb.rpc('cancel_my_order',{p_id:i
   const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" onclick="pmSet('${v}')"><i></i><span>${a}<small>${b}</small></span></button>`;
   return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_qr'),t('pm_qr_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}}
 
+
+// ---------- автообновление: планшеты и открытые телефоны сами подтягивают новую версию (06.11.2026) ----------
+// Раз в 2 минуты сверяем ETag страницы. Новая версия -> перезагрузка, но только когда никто ничего не оформляет.
+{let base=null;const top=window.top!==window.self?null:location;
+  const busy=()=>(S.cart&&S.cart.length)||S.scr||$('qrov')||$('payov')||document.querySelector('#m2 .shw:not(.out)')||document.activeElement?.matches?.('input,textarea');
+  async function upd(){try{const r=await fetch(location.pathname+'?vchk='+Date.now(),{method:'HEAD',cache:'no-store'});const et=r.headers.get('etag')||r.headers.get('last-modified');if(!et)return;
+    if(base===null){base=et;return}if(et!==base&&!busy()){location.reload()}}catch{}}
+  upd();setInterval(upd,120000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)upd()})}
+
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
