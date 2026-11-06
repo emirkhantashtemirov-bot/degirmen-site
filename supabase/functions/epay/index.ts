@@ -135,10 +135,13 @@ Deno.serve(async (req) => {
       const { data: last } = await pdb.from("epay_tx").select("invoice").eq("order_id", oid).order("created_at", { ascending: false }).limit(1);
       if (last?.length) { const v = await verify(last[0].invoice); if (v.pay === "paid") return json({ error: "already_paid", pay: "paid" }); }
       const c = await cfg();
-      const { data: n } = await pdb.rpc("epay_next_invoice");
+      const { data: n, error: ne } = await pdb.rpc("epay_next_invoice");
+      if (ne || !(Number(n) > 0)) throw new Error("invoice: " + (ne?.message ?? "empty"));
       const invoice = String(n);
       const secret = crypto.randomUUID().replace(/-/g, "");
-      await pdb.from("epay_tx").insert({ invoice, order_id: oid, amount: o.total, secret_hash: secret });
+      // без записи в журнале в банк не отправляем: иначе оплату нельзя будет подтвердить
+      const ins = await pdb.from("epay_tx").insert({ invoice, order_id: oid, amount: o.total, secret_hash: secret });
+      if (ins.error) throw new Error("tx: " + ins.error.message);
       if (o.pay_status === "failed") await db.from("orders").update({ pay_status: "pending" }).eq("id", oid);
       const post = `${SELF}?op=post`;
       const auth = await token(c, { invoiceID: invoice, secret_hash: secret, amount: String(o.total), currency: "KZT", postLink: post, failurePostLink: post });
