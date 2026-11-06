@@ -114,7 +114,37 @@ function draftText(d: string, x: any, existing: boolean) {
   return t + `\n\nВсё верно?`;
 }
 
-export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string) {
+// ---------- кнопка «Загрузить отчёт»: выбор даты -> ждём фото 15 минут ----------
+export async function reportAsk(c: Ctx, chat: number) {
+  const today = c.iso(c.almNow());
+  const add = (n: number) => new Date(Date.parse(today + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+  const days = [0, -1, -2, -3].map(add);
+  const lbl = ["Сегодня", "Вчера", "Позавчера"];
+  return c.tg("sendMessage", { chat_id: chat, parse_mode: "HTML", text: "📒 <b>Загрузить отчёт дня</b>\nЗа какой день отчёт?\n\n<i>Другая дата - пришлите фото с подписью, например «отчёт 25 октября».</i>",
+    reply_markup: { inline_keyboard: [
+      [{ text: `${lbl[0]}, ${DM(days[0])}`, callback_data: `repd:${days[0]}` }, { text: `${lbl[1]}, ${DM(days[1])}`, callback_data: `repd:${days[1]}` }],
+      [{ text: `${lbl[2]}, ${DM(days[2])}`, callback_data: `repd:${days[2]}` }, { text: DM(days[3]), callback_data: `repd:${days[3]}` }],
+    ] } });
+}
+export async function reportDayPicked(c: Ctx, q: any) {
+  const chat = q.message?.chat?.id, d = String(q.data).slice(5);
+  const uid = await ownerUid(c, chat);
+  if (!uid || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { await c.tg("answerCallbackQuery", { callback_query_id: q.id, text: "Только владелец" }); return; }
+  await c.db.from("bot_day_drafts").update({ status: "void" }).eq("chat_id", chat).eq("status", "wait");
+  await c.db.from("bot_day_drafts").insert({ chat_id: chat, user_id: uid, d, data: {}, status: "wait" });
+  await c.tg("editMessageText", { chat_id: chat, message_id: q.message.message_id, parse_mode: "HTML", text: `📒 Отчёт за <b>${DM(d)}</b>.\n\n📷 Теперь пришлите фото листа кассы - целиком, ровно, при хорошем свете. Жду 15 минут.` });
+  await c.tg("answerCallbackQuery", { callback_query_id: q.id, text: DM(d) });
+}
+// фото без подписи «отчёт»: если владелец недавно выбрал дату - это отчёт
+export async function reportWaiting(c: Ctx, chat: number): Promise<string | null> {
+  const since = new Date(Date.now() - 15 * 60e3).toISOString();
+  const { data } = await c.db.from("bot_day_drafts").select("id,d").eq("chat_id", chat).eq("status", "wait").gte("created_at", since).order("id", { ascending: false }).limit(1).maybeSingle();
+  if (!data) return null;
+  await c.db.from("bot_day_drafts").update({ status: "used" }).eq("id", data.id);
+  return data.d;
+}
+
+export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string, day?: string) {
   const send = (text: string, extra: any = {}) => c.tg("sendMessage", { chat_id: chat, text, parse_mode: "HTML", ...extra });
   const uid = await ownerUid(c, chat);
   if (!uid) return send("Отчёт дня через бота могут отправлять только владельцы.");
@@ -136,7 +166,7 @@ export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string)
   if (!x || ![x.buy, x.exp, x.pay].some((a) => a?.length) && [x.kaspi, x.halyk, x.cash_sales, x.cash_left].every((v) => nn(v) == null)) {
     return send("Не смог прочитать лист. Сфотографируйте ровнее и целиком, при хорошем свете, и отправьте ещё раз с подписью «отчёт» и датой.");
   }
-  const d = parseDay(caption, today) ?? parseDay(String(x.date ?? ""), today) ?? (/^\d{4}-\d{2}-\d{2}$/.test(String(x.date)) && x.date <= today && Date.parse(today) - Date.parse(x.date) <= 62 * 864e5 ? x.date : today);
+  const d = parseDay(caption, today) ?? day ?? parseDay(String(x.date ?? ""), today) ?? (/^\d{4}-\d{2}-\d{2}$/.test(String(x.date)) && x.date <= today && Date.parse(today) - Date.parse(x.date) <= 62 * 864e5 ? x.date : today);
   const cur = await finAs(c, uid, "day", d);
   const existing = !!cur?.day?.d && ((cur.lines || []).length > 0 || [cur.day.kaspi, cur.day.halyk, cur.day.cash_sales, cur.day.cash_left].some((v: any) => v != null));
   const { data: dr, error } = await c.db.from("bot_day_drafts").insert({ chat_id: chat, user_id: uid, d, data: x }).select("id").single();
@@ -190,4 +220,4 @@ export async function reportText(c: Ctx, chat: number, txt: string) {
   return c.tg("sendMessage", { chat_id: chat, parse_mode: "HTML", text: await dayReportText(c, uid, d) });
 }
 
-export const REPORT_HELP = "📒 <b>Отчёт дня</b> (только владельцы)\n• Фото листа кассы с подписью <i>отчёт 5 ноября</i> (или <i>отчёт вчера</i>) - распознаю и после «Записать» внесу в «Отчёт дня» за эту дату.\n• Текст <i>отчёт вчера</i> - пришлю общий отчёт дня по разделам: выручка, закуп, расходы, зарплаты, касса.";
+export const REPORT_HELP = "📒 <b>Отчёт дня</b> (только владельцы)\n• Меню → /otchet «Загрузить отчёт дня»: выберите день и пришлите фото листа.\n• Или фото листа кассы с подписью <i>отчёт 5 ноября</i> (или <i>отчёт вчера</i>) - распознаю и после «Записать» внесу в «Отчёт дня» за эту дату.\n• Текст <i>отчёт вчера</i> - пришлю общий отчёт дня по разделам: выручка, закуп, расходы, зарплаты, касса.";

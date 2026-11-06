@@ -3,7 +3,7 @@
 // Вебхук проверяется тем же секретом, что и в nexus. Задачи (отчёты, настройка) - только с trigger_token.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buyIncoming, buyCallback, buyUndo, joinRequest, joinCallback, buyDaily, buyMonth, BUY_HELP } from "./purchases.ts";
-import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, REPORT_HELP } from "./report.ts";
+import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, REPORT_HELP } from "./report.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const TG = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
@@ -52,6 +52,7 @@ async function onUpdate(u: any, secret: string) {
     const q = u.callback_query, chat = q.message?.chat?.id;
     const { who, owner } = await whoIs(chat);
     if (String(q.data).startsWith("buy:")) return buyCallback(ctx, q, who);
+    if (String(q.data).startsWith("repd:")) return reportDayPicked(ctx, q);
     if (String(q.data).startsWith("rep:")) return reportCallback(ctx, q);
     if (String(q.data).startsWith("join:")) return joinCallback(ctx, q, owner, STAFF_HELP);
     return tg("answerCallbackQuery", { callback_query_id: q.id });
@@ -63,7 +64,7 @@ async function onUpdate(u: any, secret: string) {
   // команды и вход - в nexus как раньше
   if (txt.startsWith("/start ") || ["/report", "/order", "/stop"].includes(txt) || (txt && isWo(txt))) return forward(u, secret);
   if (txt === "/start" || txt === "/help") {
-    if (who) return tg("sendMessage", { chat_id: chat, parse_mode: "HTML", text: `${BUY_HELP}\n\n${STAFF_HELP}${owner ? `\n\n${REPORT_HELP}\n\n/report - утренний отчёт за вчера\n/order - заявка в Degirmen\n/zakup - закуп за сегодня` : ""}` });
+    if (who) return tg("sendMessage", { chat_id: chat, parse_mode: "HTML", text: `${BUY_HELP}\n\n${STAFF_HELP}${owner ? `\n\n${REPORT_HELP}\n\n/otchet - загрузить отчёт дня\n/report - утренний отчёт за вчера\n/order - заявка в Degirmen\n/zakup - закуп за сегодня` : ""}` });
     return joinRequest(ctx, m.from, chat, await owners());
   }
   if (!who) {
@@ -71,10 +72,12 @@ async function onUpdate(u: any, secret: string) {
     return;
   }
   if (isCancel(txt)) { if (await buyUndo(ctx, chat)) return; return forward(u, secret); }
+  if (txt === "/otchet") return owner ? reportAsk(ctx, chat) : tg("sendMessage", { chat_id: chat, text: "Отчёт дня отправляют владельцы. Вы можете присылать закупы и списания." });
   if (txt === "/zakup" && owner) { const r = await buyDaily(ctx, parseDay(txt, iso(almNow())) ?? undefined); return tg("sendMessage", { chat_id: chat, text: r.text, parse_mode: "HTML" }); }
   const isImg = !!(m.photo?.length || m.document?.mime_type?.startsWith?.("image/"));
   // отчёт дня (владельцы): фото листа с подписью «отчёт ...» или текст «отчёт вчера»
   if (owner && isImg && isReport(cap)) return reportPhoto(ctx, chat, m, cap);
+  if (owner && isImg) { const wd = await reportWaiting(ctx, chat); if (wd) return reportPhoto(ctx, chat, m, cap, wd); }
   if (owner && !isImg && txt && isReport(txt)) return reportText(ctx, chat, txt);
   if (!owner && (isReport(cap) || isReport(txt))) return tg("sendMessage", { chat_id: chat, text: "Отчёт дня отправляют владельцы. Вы можете присылать закупы и списания." });
   if (txt.startsWith("/")) return forward(u, secret);
@@ -105,7 +108,7 @@ Deno.serve(async (req) => {
       case "setup": {
         const url = Deno.env.get("SUPABASE_URL") + "/functions/v1/tg-hook";
         res = { webhook: await tg("setWebhook", { url, secret_token: hook, allowed_updates: ["message", "callback_query"] }),
-          cmds: await tg("setMyCommands", { commands: [{ command: "start", description: "Как отправить закуп и отчёт" }, { command: "zakup", description: "Закуп за сегодня (владельцы)" }, { command: "report", description: "Утренний отчёт за вчера (владельцы)" }, { command: "order", description: "Заявка в Degirmen (владельцы)" }] }),
+          cmds: await tg("setMyCommands", { commands: [{ command: "otchet", description: "📒 Загрузить отчёт дня (владельцы)" }, { command: "start", description: "Как отправить закуп и отчёт" }, { command: "zakup", description: "Закуп за сегодня (владельцы)" }, { command: "report", description: "Утренний отчёт за вчера (владельцы)" }, { command: "order", description: "Заявка в Degirmen (владельцы)" }] }),
           info: await tg("getWebhookInfo", {}) };
         break;
       }
