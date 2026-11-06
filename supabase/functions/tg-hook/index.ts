@@ -3,7 +3,7 @@
 // Вебхук проверяется тем же секретом, что и в nexus. Задачи (отчёты, настройка) - только с trigger_token.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buyIncoming, buyCallback, buyUndo, joinRequest, joinCallback, buyDaily, buyMonth, BUY_HELP } from "./purchases.ts";
-import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, findDups, reportAskPick, REPORT_HELP } from "./report.ts";
+import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, findDups, reportAskPick, reportTextIn, looksLikeDay, REPORT_HELP } from "./report.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const TG = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
@@ -79,6 +79,11 @@ async function onUpdate(u: any, secret: string) {
   // отчёт дня (владельцы): фото листа с подписью «отчёт ...» или текст «отчёт вчера»
   if (owner && isImg && isReport(cap)) return reportPhoto(ctx, chat, m, cap);
   if (owner && isImg) { const wd = await reportWaiting(ctx, chat); if (wd) return reportPhoto(ctx, chat, m, cap, wd); }
+  // отчёт дня текстом: после кнопки «Загрузить отчёт» или если сообщение похоже на лист (несколько разделов)
+  if (owner && !isImg && txt && !txt.startsWith("/")) {
+    if (looksLikeDay(txt)) { const wd = await reportWaiting(ctx, chat); return reportTextIn(ctx, chat, txt, wd ?? undefined); }
+    const wd = await reportWaiting(ctx, chat); if (wd) return reportTextIn(ctx, chat, txt, wd);
+  }
   if (owner && !isImg && txt && isReport(txt)) return reportText(ctx, chat, txt);
   if (!owner && (isReport(cap) || isReport(txt))) return tg("sendMessage", { chat_id: chat, text: "Отчёт дня отправляют владельцы. Вы можете присылать закупы и списания." });
   if (txt.startsWith("/")) return forward(u, secret);

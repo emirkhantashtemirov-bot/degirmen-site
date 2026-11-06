@@ -156,7 +156,7 @@ function draftText(d: string, x: any, existing: boolean, dups: Record<number, an
   const sum = (a: any[]) => (a || []).reduce((s, l) => s + (+l.total || 0), 0);
   const buy = x.buy || [], exp = x.exp || [], pay = x.pay || [];
   let t = `📋 <b>Распознал отчёт за ${DM(d)}</b>\n`;
-  const rv = [["Kaspi", x.kaspi], ["Halyk", x.halyk], ["Glovo", x.glovo], ["Наличные", x.cash_sales], ["Остаток в кассе", x.cash_left]].filter(([, v]) => nn(v) != null);
+  const rv = [["Kaspi", x.kaspi], ["Halyk", x.halyk], ["Glovo", x.glovo], ["Наличные", x.cash_sales], ["Остаток в кассе", x.cash_left], ["Забрал владелец", x.owner_out]].filter(([, v]) => nn(v) != null);
   if (rv.length) t += `\n💰 <b>Продажи и касса</b>\n${rv.map(([k, v]) => `${k}: ${money(+v)}`).join("\n")}\n`;
   for (const k of ["doner", "kitchen", "bar", "bazar", "degirmen"]) {
     const ls = buy.filter((l: any) => l.grp === k); if (!ls.length) continue;
@@ -205,6 +205,34 @@ export async function reportWaiting(c: Ctx, chat: number): Promise<string | null
   return data.d;
 }
 
+async function ocr(c: Ctx, payload: any) {
+  const { data: tt } = await c.db.from("paloma_config").select("v").eq("k", "trigger_token").maybeSingle();
+  const r = await fetch(Deno.env.get("SUPABASE_URL") + "/functions/v1/fin-ocr", {
+    method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` },
+    body: JSON.stringify({ test: 1, token: tt?.v, ...payload }), signal: AbortSignal.timeout(80000),
+  });
+  const j = await r.json();
+  return j?.ok ? j.data : null;
+}
+const empty = (x: any) => !x || (![x.buy, x.exp, x.pay, x.ask].some((a) => a?.length) && [x.kaspi, x.halyk, x.cash_sales, x.cash_left].every((v) => nn(v) == null));
+
+// похоже ли сообщение на отчёт дня (несколько разделов листа)
+export const looksLikeDay = (t: string) => String(t ?? "").split("\n").length >= 3 &&
+  [/закуп\s*кухн/i, /бар|раздач/i, /расходн/i, /аванс/i, /продаж|каспи|халык/i, /остат/i, /время\s*работ/i, /дегирмен/i].filter((r) => r.test(t)).length >= 3;
+
+// отчёт дня текстом (как лист кассы, только словами)
+export async function reportTextIn(c: Ctx, chat: number, txt: string, day?: string) {
+  const send = (text: string, extra: any = {}) => c.tg("sendMessage", { chat_id: chat, text, parse_mode: "HTML", ...extra });
+  const uid = await ownerUid(c, chat);
+  if (!uid) return send("Отчёт дня через бота могут отправлять только владельцы.");
+  await c.tg("sendChatAction", { chat_id: chat, action: "typing" });
+  let x: any = null;
+  try { x = await ocr(c, { text: txt }); } catch { x = null; }
+  if (empty(x)) return send("Не смог разобрать отчёт. Напишите по разделам, как на листе: «Закуп кухня: 11052», «Расходная часть: ...», «Авансы: ...», «Продажи каспи - ...», «Остаток нал в кассе ...».");
+  const today = c.iso(c.almNow());
+  return makeDraft(c, chat, uid, x, parseDay(txt.split("\n")[0], today) ?? day ?? today);
+}
+
 export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string, day?: string) {
   const send = (text: string, extra: any = {}) => c.tg("sendMessage", { chat_id: chat, text, parse_mode: "HTML", ...extra });
   const uid = await ownerUid(c, chat);
@@ -216,24 +244,23 @@ export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string,
     const p = m.photo?.length ? m.photo[m.photo.length - 1] : m.document;
     const f = await tgFile(c, p.file_id);
     const mime = f.path.endsWith(".png") ? "image/png" : "image/jpeg";
-    const { data: tt } = await c.db.from("paloma_config").select("v").eq("k", "trigger_token").maybeSingle();
-    const r = await fetch(Deno.env.get("SUPABASE_URL") + "/functions/v1/fin-ocr", {
-      method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` },
-      body: JSON.stringify({ test: 1, token: tt?.v, image: `data:${mime};base64,${b64(f.bytes)}`, hint: caption.slice(0, 150) }), signal: AbortSignal.timeout(80000),
-    });
-    const j = await r.json();
-    if (j?.ok) x = j.data;
+    x = await ocr(c, { image: `data:${mime};base64,${b64(f.bytes)}`, hint: caption.slice(0, 150) });
   } catch { x = null; }
-  if (!x || ![x.buy, x.exp, x.pay].some((a) => a?.length) && [x.kaspi, x.halyk, x.cash_sales, x.cash_left].every((v) => nn(v) == null)) {
+  if (empty(x)) {
     return send("Не смог прочитать лист. Сфотографируйте ровнее и целиком, при хорошем свете, и отправьте ещё раз с подписью «отчёт» и датой.");
   }
   const d = parseDay(caption, today) ?? day ?? parseDay(String(x.date ?? ""), today) ?? (/^\d{4}-\d{2}-\d{2}$/.test(String(x.date)) && x.date <= today && Date.parse(today) - Date.parse(x.date) <= 62 * 864e5 ? x.date : today);
+  return makeDraft(c, chat, uid, x, d);
+}
+
+async function makeDraft(c: Ctx, chat: number, uid: string, x: any, d: string) {
+  const send = (text: string, extra: any = {}) => c.tg("sendMessage", { chat_id: chat, text, parse_mode: "HTML", ...extra });
   const cur = await finAs(c, uid, "day", d);
   const existing = !!cur?.day?.d && ((cur.lines || []).length > 0 || [cur.day.kaspi, cur.day.halyk, cur.day.cash_sales, cur.day.cash_left].some((v: any) => v != null));
   const buyL = (x.buy || []).map((l: any) => ({ ...l, kind: "buy" }));
   const dups = findDups(buyL, cur?.bot || []);
   x._dup = Object.keys(dups).map(Number); x._dupd = dups; x._ex = existing;
-  x.ask = (x.ask || []).map((a: any) => ({ ...a, src: null }));
+  x.ask = (x.ask || []).map((a: any) => ({ ...a, src: ["biz", "own", "cash"].includes(a.src) ? a.src : null }));
   const { data: dr, error } = await c.db.from("bot_day_drafts").insert({ chat_id: chat, user_id: uid, d, data: x }).select("id").single();
   if (error) return send("Не получилось сохранить черновик, попробуйте ещё раз.");
   const id = dr.id;
@@ -265,7 +292,7 @@ export async function reportCallback(c: Ctx, q: any) {
     ...(x.exp || []).map((l: any) => ({ kind: "exp", grp: l.grp, name: l.name, total: l.total })),
     ...(x.pay || []).map((l: any) => ({ kind: "pay", grp: l.grp, name: l.name, total: l.total })),
   ];
-  const p = { kaspi: x.kaspi, halyk: x.halyk, glovo: x.glovo, cash_sales: x.cash_sales, cash_left: x.cash_left, owner_out: dd.owner_out ?? 0, note: dd.note || "из Telegram", src: "photo", lines, ask: (x.ask || []).filter((a: any) => a.src === "biz" || a.src === "own"), arrivals: x.arrivals || [] };
+  const p = { kaspi: x.kaspi, halyk: x.halyk, glovo: x.glovo, cash_sales: x.cash_sales, cash_left: x.cash_left, owner_out: nn(x.owner_out) ?? dd.owner_out ?? 0, note: dd.note || "из Telegram", src: "photo", lines, ask: (x.ask || []).filter((a: any) => a.src === "biz" || a.src === "own"), arrivals: x.arrivals || [] };
   try {
     await finAs(c, uid, "save", dr.d, p);
     if (act === "close") await finAs(c, uid, "close", dr.d);

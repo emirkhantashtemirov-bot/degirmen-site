@@ -7,6 +7,7 @@ const URL_ = Deno.env.get("SUPABASE_URL")!;
 const db = createClient(URL_, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const GROQ = Deno.env.get("GROQ_API_KEY") ?? "";
 const MODELS = ["qwen/qwen3.8-27b"]; // модель с поддержкой картинок
+const TEXT_MODELS = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b"]; // для отчёта текстом
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...CORS, "Content-Type": "application/json" } });
 
@@ -28,11 +29,14 @@ const SYS = `Ты читаешь фото кассового отчёта каф
 7. Пометки "Донер ост.", остатки мяса и лаваша - не деньги, пропускай.
 8. Итоговые строки ("Итого закуп кухня", "Итого Расходная часть", "ИТОГО ОБЩИЙ РАСХОД") не переноси как позиции, а запиши их числа в "sheet_totals" для сверки.
 9. Дату в шапке (например 05.11.26) верни как "date" в виде YYYY-MM-DD.
+10. Аванс или деньги, взятые ВЛАДЕЛЬЦЕМ (рядом слово "владелец", "хозяин", "папа"), - не зарплата сотрудника: сложи такие суммы в "owner_out".
+11. Если рядом с суммой прямо написано "деньги ТОО", "ТОО", "без нал" - это не касса: положи строку в "ask" с "src":"biz"; если "свои", "личные" - "src":"own". Сумма "Тара" не считается никогда.
+12. Отчёт может прийти ТЕКСТОМ вместо фото, разделы те же: "Закуп кухня: 11052" - одна строка закупа kitchen на эту сумму с названием "Закуп кухня"; "Расходная часть" - exp; "Авансы" - pay; "Время работы: Имя 09:00-22:00" - arrivals (in 09:00, out 22:00), роль по слову уста/донерщик/касса/кухня; "Продажи каспи/халык" - kaspi/halyk; "Остаток нал в кассе" - cash_left; "Закуп дегирмен: закуп X" - buy degirmen.
 Если это чек поставщика (не лист), все его позиции - закуп; группу угадай по товару (мясо, лаваш, овощи, соусы для донера -> "doner"; напитки, выпечка, кофе, молоко -> "bar"; остальное -> "kitchen").
 Верни ТОЛЬКО JSON без пояснений:
 {"date":"YYYY-MM-DD или null","kind":"sheet|receipt","buy":[{"grp":"kitchen|bar|doner|bazar|degirmen","name":"","unit":"кг|шт|л|уп","qty":null,"price":null,"total":0}],
 "exp":[{"grp":"usta|kassa|kitchen|tech|other","name":"","total":0}],"pay":[{"grp":"usta|kassa|kitchen|tech","name":"","total":0}],
-"ask":[{"name":"","total":0,"near":"kitchen"}],"arrivals":[{"role":"kassa","name":"","in":"07:30","out":null}],
+"ask":[{"name":"","total":0,"near":"kitchen","src":"biz|own|null"}],"owner_out":null,"arrivals":[{"role":"kassa","name":"","in":"07:30","out":null}],
 "kaspi":null,"halyk":null,"glovo":null,"cash_sales":null,"rev_total":null,"cash_left":null,
 "sheet_totals":{"kitchen":null,"bar":null,"doner":null,"exp":null,"all":null},"unsure":["что прочиталось неуверенно, коротко"]}
 Числа - без пробелов и знака ₸; пустые строки пропускай; если цифра не читается - не выдумывай, поставь null и упомяни в unsure.`;
@@ -50,7 +54,10 @@ function post(o: any) {
   o.pay = o.pay.filter((l: any) => { const s = String(l?.total ?? "").trim(); if (TIME.test(s)) { o.arrivals.push({ role: l.grp, name: l.name, in: s, out: null }); return false; } return true; });
   o.arrivals = o.arrivals.map((a: any) => ({ role: ["usta", "kassa", "kitchen", "tech"].includes(a?.role) ? a.role : "other", name: String(a?.name ?? "").trim().slice(0, 40), in: TIME.test(String(a?.in ?? "").trim()) ? String(a.in).trim() : null, out: TIME.test(String(a?.out ?? "").trim()) ? String(a.out).trim() : null }))
     .filter((a: any) => a.name || a.in);
-  o.ask = o.ask.map((a: any) => ({ name: String(a?.name ?? "").trim().slice(0, 80), total: Math.round(num(a?.total) || 0), near: ["kitchen", "bar", "doner"].includes(a?.near) ? a.near : "kitchen" })).filter((a: any) => a.name && a.total > 0);
+  o.ask = o.ask.map((a: any) => ({ name: String(a?.name ?? "").trim().slice(0, 80), total: Math.round(num(a?.total) || 0), near: ["kitchen", "bar", "doner"].includes(a?.near) ? a.near : "kitchen", src: ["biz", "own"].includes(a?.src) ? a.src : null })).filter((a: any) => a.name && a.total > 0);
+  // тара не считается никогда
+  o.buy = o.buy.filter((l: any) => !/^\s*тар/i.test(String(l?.name ?? "")));
+  o.owner_out = num(o.owner_out);
   // наличные продажи не вписаны, а общая выручка есть: наличные = выручка - терминалы - Глово
   const rev = num(o.rev_total), cards = (num(o.kaspi) || 0) + (num(o.halyk) || 0) + (num(o.glovo) || 0);
   if (num(o.cash_sales) == null && rev != null && rev - cards >= 0 && cards > 0) {
@@ -88,16 +95,19 @@ Deno.serve(async (req) => {
     }
     if (!ok) return json({ error: "forbidden" }, 403);
     if (body.post_test) return json({ ok: true, data: post(body.post_test) });
+    const text = String(body.text || "").trim().slice(0, 4000);
     const img = String(body.image || "");
-    if (!/^data:image\/(jpeg|png|webp);base64,/.test(img) || img.length > 4_000_000) return json({ error: "bad_image" }, 400);
+    if (!text && (!/^data:image\/(jpeg|png|webp);base64,/.test(img) || img.length > 4_000_000)) return json({ error: "bad_image" }, 400);
     if (!GROQ) return json({ error: "no_key" }, 500);
     let lastErr = "";
-    for (const model of MODELS) {
+    const userMsg = text ? "Отчёт дня прислан текстом (не фото). Перенеси данные в JSON по тем же правилам:\n" + text
+      : [{ type: "text", text: "Перенеси данные с фото в JSON." + (body.hint ? " Подсказка: " + String(body.hint).slice(0, 200) : "") }, { type: "image_url", image_url: { url: img } }];
+    for (const model of text ? TEXT_MODELS : MODELS) {
       try {
         const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST", headers: { Authorization: `Bearer ${GROQ}`, "Content-Type": "application/json" },
           body: JSON.stringify({ model, temperature: 0.1, max_tokens: 5000, response_format: { type: "json_object" },
-            messages: [{ role: "system", content: SYS }, { role: "user", content: [{ type: "text", text: "Перенеси данные с фото в JSON." + (body.hint ? " Подсказка: " + String(body.hint).slice(0, 200) : "") }, { type: "image_url", image_url: { url: img } }] }] }),
+            ...(model.startsWith("openai/") ? { reasoning_effort: "low" } : {}), messages: [{ role: "system", content: SYS }, { role: "user", content: userMsg }] }),
           signal: AbortSignal.timeout(55000),
         });
         if (!r.ok) { lastErr += ` ${model}:${r.status}:${(await r.text()).slice(0, 300)}`; continue; }
