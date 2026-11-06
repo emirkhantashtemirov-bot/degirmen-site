@@ -734,6 +734,7 @@ a.tgb{text-decoration:none;-webkit-tap-highlight-color:transparent}
 .fngrp{padding:10px 0;border-top:1px solid rgba(243,235,225,.06)}.fngrp:first-of-type{border-top:0}
 .fngh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}.fngh b{font-size:15px}.fngh span{color:var(--mu);font-size:14px}
 .fnl{padding:8px;border-radius:16px;background:var(--s1);margin:6px 0;transition:background .3s}
+.fndup{margin:8px 2px 2px;padding:10px 12px;border-radius:12px;background:rgba(233,196,106,.13);color:#f3dfa9;font-size:13.5px;line-height:1.4}.fndup b{color:#fff}.fndup .fndb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.fndup button{flex:1;min-width:120px;padding:9px 10px;border-radius:10px;border:0;font:inherit;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);color:#fff;cursor:pointer}.fndup button.y{background:#e9c46a;color:#2a2112}.fndupok{margin:6px 2px 0;font-size:12px;color:var(--mu,#9aa)}.fnl.dup{box-shadow:inset 0 0 0 1px rgba(233,196,106,.7)}
 .fnl.new{box-shadow:inset 0 0 0 1px rgba(233,196,106,.55);background:rgba(233,196,106,.07)}
 .fnl input,.fnl select{margin:0;padding:10px 12px;border-radius:12px;font-size:15px;background:var(--s2)}
 .fnl .fnn{width:100%}
@@ -3129,7 +3130,7 @@ async function finLoad(){const F=S.fn,k=F.seq=(F.seq||0)+1;F.ld=1;F.err=null;fin
 // форма из ответа сервера (+ несохранённый черновик, если есть)
 function finForm(){const F=S.fn,D=F.data,dd=D.day||{};
  F.f={kaspi:dd.kaspi??'',halyk:dd.halyk??'',glovo:dd.glovo??'',cash_sales:dd.cash_sales??'',cash_left:dd.cash_left??'',owner_out:dd.owner_out||'',note:dd.note||'',src:dd.src||'manual',
-  lines:(D.lines||[]).map(l=>({kind:l.kind,grp:l.grp,name:l.name,unit:l.unit||'',qty:l.qty??'',price:l.price??'',total:l.total??''}))};
+  lines:(D.lines||[]).map(l=>({kind:l.kind,grp:l.grp,name:l.name,unit:l.unit||'',qty:l.qty??'',price:l.price??'',total:l.total??'',dup_ok:!!l.dup_ok}))};
  F.dirty=0;F.unsure=null;F.newIdx=null;
  try{const dr=JSON.parse(localStorage.getItem(fnDraftK(F.d))||'null');if(dr&&D.can_edit&&(!dd.updated_at||dr.at>Date.parse(dd.updated_at))){F.f=dr.f;F.dirty=1;F.restored=1}else F.restored=0}catch{}}
 let fnDT=0;const fnDirty=()=>{const F=S.fn;F.dirty=1;clearTimeout(fnDT);fnDT=setTimeout(()=>{try{localStorage.setItem(fnDraftK(F.d),JSON.stringify({at:Date.now(),f:F.f}))}catch{}},400)};
@@ -3163,7 +3164,7 @@ function finDel(i){S.fn.f.lines.splice(i,1);fnDirty();finRender()}
 
 // ---------- сохранение и закрытие ----------
 async function finSave(close){const F=S.fn;if(F.busy)return;F.busy=1;finRender();
- try{const f=F.f,p={...f,lines:f.lines.map(l=>({kind:l.kind,grp:l.grp,name:l.name,unit:l.unit,qty:fnN(l.qty),price:fnN(l.price),total:fnN(l.total)})).filter(l=>(l.total||0)!==0||((l.qty||0)*(l.price||0))!==0)};
+ try{const f=F.f,p={...f,lines:f.lines.map(l=>({kind:l.kind,grp:l.grp,name:l.name,unit:l.unit,qty:fnN(l.qty),price:fnN(l.price),total:fnN(l.total),dup_ok:!!l.dup_ok})).filter(l=>(l.total||0)!==0||((l.qty||0)*(l.price||0))!==0)};
   ['kaspi','halyk','glovo','cash_sales','cash_left','owner_out'].forEach(k=>p[k]=fnN(f[k]));
   let r=await sb.rpc('fin_save',{p_d:F.d,p});if(r.error)throw r.error;
   if(close){r=await sb.rpc('fin_close',{p_d:F.d,p_open:false});if(r.error)throw r.error}
@@ -3228,7 +3229,7 @@ function finDayH(){const F=S.fn,D=F.data,A=isAdm(),today=almDay(0);
  h+=`<div class="fncard">${prods}<div class="fnh">Закуп</div>`+FGB.map(([g,l,hint])=>{const rows=f.lines.map((x,i)=>[x,i]).filter(([x])=>x.kind=='buy'&&x.grp==g);
   return `<div class="fngrp"><div class="fngh"><b>${l}</b><span id="fns_${g}">${fnM(c.g[g])}</span></div>${hint?`<div class="fnhint">${hint}</div>`:''}${rows.map(([x,i])=>`<div class="fnl buy${F.newIdx!=null&&i>=F.newIdx?' new':''}" data-k="buy" data-g="${g}">
    <input class="fnn" list="fnprods" placeholder="Наименование" value="${e(x.name)}" oninput="finL(${i},'name',this)" ${dis}>
-   <div class="fnl2"><select onchange="finL(${i},'unit',this)" ${dis}>${FUN.map(u=>`<option ${x.unit==u?'selected':''}>${u}</option>`).join('')}</select>${fnInp(x.qty,`finL(${i},'qty',this)`,'fnq','кол-во')}${fnInp(x.price,`finL(${i},'price',this)`,'fnp','цена')}${fnInp(x.total,`finL(${i},'total',this)`,'fnt','итого')}${can?`<button class="fnx" onclick="finDel(${i})" aria-label="удалить">×</button>`:''}</div></div>`).join('')}
+   <div class="fnl2"><select onchange="finL(${i},'unit',this)" ${dis}>${FUN.map(u=>`<option ${x.unit==u?'selected':''}>${u}</option>`).join('')}</select>${fnInp(x.qty,`finL(${i},'qty',this)`,'fnq','кол-во')}${fnInp(x.price,`finL(${i},'price',this)`,'fnp','цена')}${fnInp(x.total,`finL(${i},'total',this)`,'fnt','итого')}${can?`<button class="fnx" onclick="finDel(${i})" aria-label="удалить">×</button>`:''}</div><div class="fndupw" id="fndup_${i}">${finDupH(i)}</div></div>`).join('')}
    ${can?`<button class="fnadd" onclick="finAdd('buy','${g}')">+ строка</button>`:''}</div>`}).join('')+`<div class="fntot"><span>Весь закуп за день</span><b id="fns_buy">${fnM(c.buyAll)}</b></div></div>`;
  // расходы и выплаты
  const sec=(kind,title,hint,roles,sid,sum)=>{const rows=f.lines.map((x,i)=>[x,i]).filter(([x])=>x.kind==kind);
@@ -4685,6 +4686,41 @@ function tutOffer(){if(!staff()||$('tut')||S.tut)return;let v=null;try{v=localSt
   if(v=='done')return;if(v&&v.startsWith('later:')&&Date.now()-+v.slice(6)<864e5)return;setTimeout(()=>{if(staff()&&!$('tut'))tutM(0)},1200)}
 {const _lp=loadPf;loadPf=async function(){await _lp();tutOffer()}}
 
+
+// Двойной учёт: закуп пришёл в бота и его же кассир вписал в «Отчёт дня» - предупреждаем под строкой
+const dupW=s=>String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]+/g,' ').split(' ').filter(w=>w.length>=3&&!/^\d+$/.test(w));
+const dupSim=(a,b)=>{const A=dupW(a),B=dupW(b);return A.some(x=>B.some(y=>x.slice(0,4)==y.slice(0,4)))};
+const dupNear=(a,b,p)=>a>0&&b>0&&Math.abs(a-b)<=Math.max(p?0:20,(p||.02)*Math.max(a,b));
+function finDups(){const F=S.fn,B=F?.data?.bot||[],L=F?.f?.lines||[],res={},used=new Set();if(!B.length)return res;
+ const cand=[];B.forEach(b=>{const its=b.items||[];its.forEach((it,k)=>cand.push({b,it,key:b.id+':'+k,name:it.name,total:+it.total||0}));if(its.length>1)cand.push({b,it:null,key:b.id+':all',name:(b.vendor||'')+' '+its.map(i=>i.name).join(' '),total:+b.total||0})});
+ const tot=l=>fnN(l.total)||Math.round((fnN(l.qty)||0)*(fnN(l.price)||0));
+ // 1) похожее название и сумма рядом, 2) та же сумма (название другое или пустое)
+ for(const pass of [1,2])L.forEach((l,i)=>{if(l.kind!='buy'||l.dup_ok||res[i])return;const t=tot(l);if(!t)return;
+  const c=cand.find(c=>!used.has(c.key)&&!used.has(c.b.id+':all')&&(pass==1?dupSim(l.name,c.name)&&dupNear(t,c.total,.2):dupNear(t,c.total)));
+  if(c){res[i]=c;used.add(c.key);if(!c.it)(c.b.items||[]).forEach((_,k)=>used.add(c.b.id+':'+k))}});
+ return res}
+function finDupH(i){const F=S.fn,l=F?.f?.lines?.[i];if(!l||l.kind!='buy')return '';
+ if(l.dup_ok)return `<div class="fndupok">Отмечено: это другой закуп, не тот, что в боте.${F.data?.can_edit?` <button class="lnk" onclick="finDupUndo(${i})">вернуть проверку</button>`:''}</div>`;
+ const c=(F._dups||finDups())[i];if(!c)return '';
+ const at=c.b.at?new Date(c.b.at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'';
+ const what=c.it?`${e(c.it.name)}${c.it.qty?` ${+c.it.qty} ${e(c.it.unit||'')}`:''} - ${fnM(c.total)}`:`${e(c.b.vendor||'закуп')} - ${fnM(c.total)}`;
+ return `<div class="fndup">⚠️ Возможно, это уже записано через бота: <b>${what}</b> (${e(c.b.by||'сотрудник')}${at?', '+at:''}). Если это тот же закуп, он посчитается два раза.${F.data?.can_edit?`<div class="fndb"><button class="y" onclick="finDupSame(${i})">Тот же - убрать строку</button><button onclick="finDupDiff(${i})">Это другой закуп</button></div>`:''}</div>`}
+function finDupPaint(){const F=S.fn;if(!F?.f)return;F._dups=finDups();
+ F.f.lines.forEach((l,i)=>{const w=document.getElementById('fndup_'+i);if(!w)return;const h=finDupH(i);if(w.innerHTML!==h)w.innerHTML=h;w.closest('.fnl')?.classList.toggle('dup',!!F._dups[i])});
+ const n=Object.keys(F._dups).length,bx=document.getElementById('fndupsum');if(bx){bx.style.display=n?'':'none';bx.innerHTML=n?finDupSumH(n):''}}
+const finDupSumH=n=>`<b>Проверьте повторы: ${n}</b><br>Эти закупы уже пришли через Telegram-бота, а в отчёте вписаны ещё раз. Ниже под каждой такой строкой выберите: тот же закуп или другой.`;
+function finDupSame(i){finDel(i);toast('Строка убрана - закуп уже учтён из бота')}
+function finDupDiff(i){const l=S.fn.f.lines[i];if(!l)return;l.dup_ok=true;fnDirty();finRender()}
+function finDupUndo(i){const l=S.fn.f.lines[i];if(!l)return;l.dup_ok=false;fnDirty();finRender()}
+{const _u=finUpd;finUpd=function(){_u();finDupPaint()}}
+{const _r=finRender;finRender=function(){const F=S.fn;if(F?.f)F._dups=finDups();_r();if(S.scr=='fin'&&F?.tab=='day')finDupPaint()}}
+{const _dh=finDayH;finDayH=function(){let h=_dh();const F=S.fn;if(!F?.data||!F.f)return h;const n=Object.keys(F._dups||finDups()).length;
+  const box=`<div class="fnwarn" id="fndupsum" style="${n?'':'display:none'}">${n?finDupSumH(n):''}</div>`;
+  const i=h.indexOf('<div class="fnst');if(i<0)return box+h;const j=h.indexOf('</div>',i)+6;return h.slice(0,j)+box+h.slice(j)}}
+{const _s=finSave;finSave=function(close){const F=S.fn,n=Object.keys(finDups()).length;
+  if(n&&!F.dupSure){F.dupSure=1;setTimeout(()=>{F.dupSure=0},8000);toast(`Есть ${n} возможных повтора с ботом. Проверьте строки с ⚠️ или нажмите ещё раз, чтобы сохранить как есть`,1);
+   document.querySelector('.fnl.dup')?.scrollIntoView({behavior:'smooth',block:'center'});return}
+  F.dupSure=0;return _s(close)}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>

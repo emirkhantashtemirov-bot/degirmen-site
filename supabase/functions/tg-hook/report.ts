@@ -44,6 +44,26 @@ async function finAs(c: Ctx, uid: string, op: string, d: string, p: any = null) 
   return data;
 }
 
+// ---------- двойной учёт: закуп из бота и та же строка в отчёте дня ----------
+const dupW = (s: string) => String(s ?? "").toLowerCase().replace(/ё/g, "е").replace(/[^a-zа-я0-9]+/g, " ").split(" ").filter((w) => w.length >= 3 && !/^\d+$/.test(w));
+const dupSim = (a: string, b: string) => { const A = dupW(a), B = dupW(b); return A.some((x) => B.some((y) => x.slice(0, 4) === y.slice(0, 4))); };
+const dupNear = (a: number, b: number, p = 0) => a > 0 && b > 0 && Math.abs(a - b) <= Math.max(p ? 0 : 20, (p || 0.02) * Math.max(a, b));
+// lines - строки закупа (kind buy), bot - закупы из бота за день. Ответ: индекс строки -> что в боте
+export function findDups(lines: any[], bot: any[]) {
+  const res: Record<number, { by: string; what: string; total: number }> = {}, used = new Set<string>();
+  const cand: any[] = [];
+  for (const b of bot || []) { const its = b.items || []; its.forEach((it: any, k: number) => cand.push({ b, key: `${b.id}:${k}`, name: it.name, total: +it.total || 0 })); if (its.length > 1) cand.push({ b, all: 1, key: `${b.id}:all`, name: `${b.vendor || ""} ${its.map((i: any) => i.name).join(" ")}`, total: +b.total || 0 }); }
+  for (const pass of [1, 2]) lines.forEach((l, i) => {
+    if (l.kind !== "buy" || l.dup_ok || res[i]) return;
+    const t = +l.total || Math.round((+l.qty || 0) * (+l.price || 0)); if (!t) return;
+    const c = cand.find((c) => !used.has(c.key) && !used.has(`${c.b.id}:all`) && (pass === 1 ? dupSim(l.name, c.name) && dupNear(t, c.total, 0.2) : dupNear(t, c.total)));
+    if (!c) return;
+    res[i] = { by: c.b.by || "сотрудник", what: c.all ? (c.b.vendor || "закуп") : c.name, total: c.total }; used.add(c.key);
+    if (c.all) (c.b.items || []).forEach((_: any, k: number) => used.add(`${c.b.id}:${k}`));
+  });
+  return res;
+}
+
 // ---------- общий отчёт дня по разделам ----------
 export async function dayReportText(c: Ctx, uid: string, d: string) {
   const D = await finAs(c, uid, "day", d);
@@ -83,6 +103,8 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
   const exp = sum((l) => l.kind === "exp"), pay = sum((l) => l.kind === "pay");
   if (exp) { t += `\n🧾 <b>Расходы: ${money(exp)}</b>\n`; for (const l of L.filter((l) => l.kind === "exp")) t += `• ${esc(l.name || GS[l.grp] || "Расход")}: ${money(+l.total)}\n`; }
   if (pay) { t += `\n👥 <b>Зарплаты и авансы: ${money(pay)}</b>\n`; for (const l of L.filter((l) => l.kind === "pay")) t += `• ${esc(l.name || GS[l.grp] || "")}: ${money(+l.total)}\n`; }
+  const dups = findDups(L, bot), dk = Object.keys(dups);
+  if (dk.length) t += `\n⚠️ <b>Возможный двойной учёт: ${dk.length}</b>\n${dk.map((i) => `• ${esc(L[+i].name || "закуп")} ${money(+L[+i].total)} - есть и в отчёте, и в боте (${esc(dups[+i].by)})`).join("\n")}\nПроверьте в приложении: Финансы → День.\n`;
   // 6. Касса
   const prev = nn(D.prev_cash), out = nn(dd.owner_out) || 0, left = nn(dd.cash_left);
   const expect = (prev || 0) + cashS - buyCash - exp - pay - out;
@@ -97,7 +119,7 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
 }
 
 // ---------- фото листа кассы -> черновик ----------
-function draftText(d: string, x: any, existing: boolean) {
+function draftText(d: string, x: any, existing: boolean, dups: Record<number, any> = {}) {
   const sum = (a: any[]) => (a || []).reduce((s, l) => s + (+l.total || 0), 0);
   const buy = x.buy || [], exp = x.exp || [], pay = x.pay || [];
   let t = `📋 <b>Распознал отчёт за ${DM(d)}</b>\n`;
@@ -110,6 +132,8 @@ function draftText(d: string, x: any, existing: boolean) {
   if (exp.length) t += `\n🧾 <b>Расходы: ${money(sum(exp))}</b>\n${exp.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
   if (pay.length) t += `\n👥 <b>Зарплаты и авансы: ${money(sum(pay))}</b>\n${pay.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
   if ((x.unsure || []).length) t += `\n⚠️ <i>Проверьте: ${esc(x.unsure.slice(0, 5).join("; "))}</i>\n`;
+  const dk = Object.keys(dups);
+  if (dk.length) t += `\n⚠️ <b>Похоже на двойной учёт: ${dk.length}</b>\nЭти закупы уже пришли через бота:\n${dk.map((i) => `• ${esc(buy[+i].name || "закуп")} ${money(+buy[+i].total)} - в боте: ${esc(dups[+i].what)} ${money(dups[+i].total)} (${esc(dups[+i].by)})`).join("\n")}\nЕсли это те же покупки, нажмите «Записать без повторов».\n`;
   if (existing) t += `\n❗️ За ${DM(d)} уже есть отчёт в приложении. «Записать» <b>заменит</b> его этими цифрами.`;
   return t + `\n\nВсё верно?`;
 }
@@ -169,10 +193,14 @@ export async function reportPhoto(c: Ctx, chat: number, m: any, caption: string,
   const d = parseDay(caption, today) ?? day ?? parseDay(String(x.date ?? ""), today) ?? (/^\d{4}-\d{2}-\d{2}$/.test(String(x.date)) && x.date <= today && Date.parse(today) - Date.parse(x.date) <= 62 * 864e5 ? x.date : today);
   const cur = await finAs(c, uid, "day", d);
   const existing = !!cur?.day?.d && ((cur.lines || []).length > 0 || [cur.day.kaspi, cur.day.halyk, cur.day.cash_sales, cur.day.cash_left].some((v: any) => v != null));
+  const buyL = (x.buy || []).map((l: any) => ({ ...l, kind: "buy" }));
+  const dups = findDups(buyL, cur?.bot || []);
+  x._dup = Object.keys(dups).map(Number);
   const { data: dr, error } = await c.db.from("bot_day_drafts").insert({ chat_id: chat, user_id: uid, d, data: x }).select("id").single();
   if (error) return send("Не получилось сохранить черновик, попробуйте ещё раз.");
   const id = dr.id;
-  return send(draftText(d, x, existing), { reply_markup: { inline_keyboard: [
+  return send(draftText(d, x, existing, dups), { reply_markup: { inline_keyboard: [
+    ...(x._dup.length ? [[{ text: "✅ Записать без повторов", callback_data: `rep:${id}:nodup` }]] : []),
     [{ text: "✅ Записать", callback_data: `rep:${id}:save` }, { text: "✅ Записать и закрыть день", callback_data: `rep:${id}:close` }],
     [{ text: "❌ Отмена", callback_data: `rep:${id}:void` }],
   ] } });
@@ -196,7 +224,7 @@ export async function reportCallback(c: Ctx, q: any) {
   if (!lock?.length) { await ans("Уже записано"); return; }
   const x = dr.data, cur = await finAs(c, uid, "day", dr.d), dd = cur?.day || {};
   const lines = [
-    ...(x.buy || []).map((l: any) => ({ kind: "buy", grp: l.grp, name: l.name, unit: l.unit, qty: l.qty, price: l.price, total: l.total })),
+    ...(x.buy || []).filter((_: any, i: number) => !(act === "nodup" && (x._dup || []).includes(i))).map((l: any) => ({ kind: "buy", grp: l.grp, name: l.name, unit: l.unit, qty: l.qty, price: l.price, total: l.total })),
     ...(x.exp || []).map((l: any) => ({ kind: "exp", grp: l.grp, name: l.name, total: l.total })),
     ...(x.pay || []).map((l: any) => ({ kind: "pay", grp: l.grp, name: l.name, total: l.total })),
   ];
@@ -208,7 +236,7 @@ export async function reportCallback(c: Ctx, q: any) {
     await c.db.from("bot_day_drafts").update({ status: "draft" }).eq("id", dr.id);
     await ans("Ошибка"); await c.tg("sendMessage", { chat_id: chat, text: `Не получилось записать: ${String((e as Error).message).slice(0, 150)}` }); return;
   }
-  await c.tg("editMessageText", { chat_id: chat, message_id: q.message.message_id, text: `${base}\n✅ Записал в «Отчёт дня»${act === "close" ? " и закрыл день" : ""}.` });
+  await c.tg("editMessageText", { chat_id: chat, message_id: q.message.message_id, text: `${base}\n✅ Записал в «Отчёт дня»${act === "close" ? " и закрыл день" : ""}${act === "nodup" ? `, без ${(x._dup || []).length} повторов с ботом` : ""}.` });
   await ans("Записано ✅");
   await c.tg("sendMessage", { chat_id: chat, parse_mode: "HTML", text: await dayReportText(c, uid, dr.d) });
 }

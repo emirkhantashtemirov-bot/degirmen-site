@@ -3,7 +3,7 @@
 // Вебхук проверяется тем же секретом, что и в nexus. Задачи (отчёты, настройка) - только с trigger_token.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { buyIncoming, buyCallback, buyUndo, joinRequest, joinCallback, buyDaily, buyMonth, BUY_HELP } from "./purchases.ts";
-import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, REPORT_HELP } from "./report.ts";
+import { isReport, parseDay, reportPhoto, reportCallback, reportText, dayReportText, reportAsk, reportDayPicked, reportWaiting, findDups, REPORT_HELP } from "./report.ts";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 const TG = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
@@ -117,6 +117,7 @@ Deno.serve(async (req) => {
       case "buy_month": { const r = await buyMonth(ctx, body.ym); res = { ...r, sent: body.preview ? 0 : await broadcast(r.text) }; break; }
       case "day_report": { const { data: o } = await db.from("tg_chats").select("user_id").eq("active", true).limit(1).maybeSingle(); res = { text: await dayReportText(ctx, body.user ?? o?.user_id, body.day ?? iso(almNow())) }; break; }
       case "date_test": res = (body.texts || []).map((t: string) => [t, parseDay(t, body.today ?? iso(almNow())), isReport(t)]); break;
+      case "dup_test": res = findDups(body.lines || [], body.bot || []); break;
       case "parse_test": {
         // проверка разбора текста без записи (ИИ + защита от выдуманных цифр)
         const fake: any[] = [];
