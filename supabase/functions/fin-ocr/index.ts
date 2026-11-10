@@ -29,13 +29,13 @@ const SYS = `Ты читаешь фото кассового отчёта каф
 7. Пометки "Донер ост.", остатки мяса и лаваша - не деньги, пропускай.
 8. Итоговые строки ("Итого закуп кухня", "Итого Расходная часть", "ИТОГО ОБЩИЙ РАСХОД") не переноси как позиции, а запиши их числа в "sheet_totals" для сверки.
 9. Дату в шапке (например 05.11.26) верни как "date" в виде YYYY-MM-DD.
-10. Аванс владельца (рядом слово "владелец", "хозяин", "папа") - это еда или покупки владельца в долг, которые он оплатит в конце месяца: клади в "exp" {"grp":"other","name":"Имя (владелец, в долг)","total":число}, а НЕ в pay и НЕ в owner_out. В "owner_out" клади только если прямо написано, что владелец забрал / изъял / взял деньги из кассы.
+10. Аванс владельца (рядом слово "владелец", "хозяин", "папа", или имя владельца из списка ниже в разделе авансов) - это ДОЛГ владельца: он взял еду или деньги и вернёт в конце месяца. Клади в "pay" {"grp":"owner","name":"Имя","total":число}. Это не расход. Но "<имя> стафф", еда сотрудника или владельца в разделе "Расходная часть" - это расход за счёт компании (exp). В "owner_out" клади только если прямо написано, что владелец забрал / изъял деньги из кассы.
 11. Если рядом с суммой прямо написано "деньги ТОО", "ТОО", "без нал" - это не касса: положи строку в "ask" с "src":"biz"; если "свои", "личные" - "src":"own". Сумма "Тара" не считается никогда.
 12. Отчёт может прийти ТЕКСТОМ вместо фото, разделы те же: "Закуп кухня: 11052" - одна строка закупа kitchen на эту сумму с названием "Закуп кухня"; "Расходная часть" - exp; "Авансы" - pay; "Время работы: Имя 09:00-22:00" - arrivals (in 09:00, out 22:00), роль по слову уста/донерщик/касса/кухня; "Продажи каспи/халык" - kaspi/halyk; "Остаток нал в кассе" - cash_left; "Закуп дегирмен: закуп X" - buy degirmen.
 Если это чек поставщика (не лист), все его позиции - закуп; группу угадай по товару (мясо, лаваш, овощи, соусы для донера -> "doner"; напитки, выпечка, кофе, молоко -> "bar"; остальное -> "kitchen").
 Верни ТОЛЬКО JSON без пояснений:
 {"date":"YYYY-MM-DD или null","kind":"sheet|receipt","buy":[{"grp":"kitchen|bar|doner|bazar|degirmen","name":"","unit":"кг|шт|л|уп","qty":null,"price":null,"total":0}],
-"exp":[{"grp":"usta|kassa|kitchen|tech|other","name":"","total":0}],"pay":[{"grp":"usta|kassa|kitchen|tech","name":"","total":0}],
+"exp":[{"grp":"usta|kassa|kitchen|tech|other","name":"","total":0}],"pay":[{"grp":"usta|kassa|kitchen|tech|owner","name":"","total":0}],
 "ask":[{"name":"","total":0,"near":"kitchen","src":"biz|own|null"}],"owner_out":null,"arrivals":[{"role":"kassa","name":"","in":"07:30","out":null}],
 "kaspi":null,"halyk":null,"glovo":null,"cash_sales":null,"rev_total":null,"cash_left":null,
 "sheet_totals":{"kitchen":null,"bar":null,"doner":null,"exp":null,"all":null},"unsure":["что прочиталось неуверенно, коротко"]}
@@ -100,6 +100,8 @@ Deno.serve(async (req) => {
     if (!text && (!/^data:image\/(jpeg|png|webp);base64,/.test(img) || img.length > 4_000_000)) return json({ error: "bad_image" }, 400);
     if (!GROQ) return json({ error: "no_key" }, 500);
     let lastErr = "";
+    const { data: ow } = await db.from("paloma_config").select("v").eq("k", "owners").maybeSingle();
+    const owners = ow?.v ? `\nИмена владельцев: ${JSON.parse(ow.v).join(", ")}.` : "";
     const userMsg = text ? "Отчёт дня прислан текстом (не фото). Перенеси данные в JSON по тем же правилам:\n" + text
       : [{ type: "text", text: "Перенеси данные с фото в JSON." + (body.hint ? " Подсказка: " + String(body.hint).slice(0, 200) : "") }, { type: "image_url", image_url: { url: img } }];
     for (const model of text ? TEXT_MODELS : MODELS) {
@@ -107,7 +109,7 @@ Deno.serve(async (req) => {
         const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST", headers: { Authorization: `Bearer ${GROQ}`, "Content-Type": "application/json" },
           body: JSON.stringify({ model, temperature: 0.1, max_tokens: 5000, response_format: { type: "json_object" },
-            ...(model.startsWith("openai/") ? { reasoning_effort: "low" } : {}), messages: [{ role: "system", content: SYS }, { role: "user", content: userMsg }] }),
+            ...(model.startsWith("openai/") ? { reasoning_effort: "low" } : {}), messages: [{ role: "system", content: SYS + owners }, { role: "user", content: userMsg }] }),
           signal: AbortSignal.timeout(55000),
         });
         if (!r.ok) { lastErr += ` ${model}:${r.status}:${(await r.text()).slice(0, 300)}`; continue; }

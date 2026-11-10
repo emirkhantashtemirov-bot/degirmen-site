@@ -10,7 +10,10 @@ const nn = (v: any) => (v == null || v === "" || !isFinite(+v) ? null : +v);
 const DM = (s: string) => `${+s.slice(8, 10)} ${["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"][+s.slice(5, 7) - 1]}`;
 const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
 const GB: Record<string, string> = { doner: "Донер", kitchen: "Кухня", bar: "Бар/раздача", bazar: "Базар (без нала)", degirmen: "Дегирмен (без нала)" };
-const GS: Record<string, string> = { usta: "Уста донер", kassa: "Касса", kitchen: "Кухня", tech: "Техперсонал", other: "Прочее" };
+const GS: Record<string, string> = { usta: "Уста донер", kassa: "Касса", kitchen: "Кухня", tech: "Техперсонал", other: "Прочее", owner: "Владелец" };
+// долг владельца: аванс на имя владельца из списка paloma_config.owners или группа owner
+async function ownerNames(c: Ctx): Promise<string[]> { const { data } = await c.db.from("paloma_config").select("v").eq("k", "owners").maybeSingle(); try { return JSON.parse(data?.v || "[]"); } catch { return []; } }
+const isOwnerPay = (l: any, O: string[]) => l.kind === "pay" && (l.grp === "owner" || O.some((o) => String(l.name ?? "").trim().toLowerCase().startsWith(o.toLowerCase().slice(0, 4))));
 const MON = ["январ", "феврал", "март", "апрел", "ма", "июн", "июл", "август", "сентябр", "октябр", "ноябр", "декабр"];
 
 export const isReport = (t: string) => /^\/?(отч[её]т|otchet|report)(?=[\s:,.]|$)/i.test(String(t ?? "").trim());
@@ -100,9 +103,11 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
   // 4. Закуп из бота по блокам
   if (bot.length) { const { P: BP, B } = await buyPeriod(c, d, d); if (BP.total) t += `\n📦 <b>Закуп из бота по блокам</b>\n${blockLines(BP, B)}\n`; }
   // 5. Расходы и зарплаты
-  const exp = sum((l) => l.kind === "exp"), pay = sum((l) => l.kind === "pay");
+  const O = await ownerNames(c);
+  const exp = sum((l) => l.kind === "exp"), payAll = sum((l) => l.kind === "pay"), debt = sum((l) => isOwnerPay(l, O)), pay = payAll - debt;
   if (exp) { t += `\n🧾 <b>Расходы: ${money(exp)}</b>\n`; for (const l of L.filter((l) => l.kind === "exp")) t += `• ${esc(l.name || GS[l.grp] || "Расход")}: ${money(+l.total)}\n`; }
-  if (pay) { t += `\n👥 <b>Зарплаты и авансы: ${money(pay)}</b>\n`; for (const l of L.filter((l) => l.kind === "pay")) t += `• ${esc(l.name || GS[l.grp] || "")}: ${money(+l.total)}\n`; }
+  if (pay) { t += `\n👥 <b>Зарплаты и авансы: ${money(pay)}</b>\n`; for (const l of L.filter((l) => l.kind === "pay" && !isOwnerPay(l, O))) t += `• ${esc(l.name || GS[l.grp] || "")}: ${money(+l.total)}\n`; }
+  if (debt) { t += `\n🧑‍💼 <b>Долг владельцев: ${money(debt)}</b> <i>(не расход, вернут в конце месяца)</i>\n`; for (const l of L.filter((l) => isOwnerPay(l, O))) t += `• ${esc(l.name || "Владелец")}: ${money(+l.total)}\n`; }
   const dups = findDups(L, bot), dk = Object.keys(dups);
   if (dk.length) t += `\n⚠️ <b>Возможный двойной учёт: ${dk.length}</b>\n${dk.map((i) => `• ${esc(L[+i].name || "закуп")} ${money(+L[+i].total)} - есть и в отчёте, и в боте (${esc(dups[+i].by)})`).join("\n")}\nПроверьте в приложении: Финансы → День.\n`;
   const ar = (D.arrivals || []).filter((a: any) => a.in);
@@ -114,10 +119,10 @@ export async function dayReportText(c: Ctx, uid: string, d: string) {
   }
   // 6. Касса
   const prev = nn(D.prev_cash), out = nn(dd.owner_out) || 0, left = nn(dd.cash_left);
-  const expect = (prev || 0) + cashS - buyCash - exp - pay - out;
+  const expect = (prev || 0) + cashS - buyCash - exp - payAll - out;
   t += `\n💵 <b>Касса (наличные)</b>\n`;
   if (prev != null) t += `На начало дня: ${money(prev)}\n`;
-  t += `+ продажи наличными ${money(cashS)}\n− закуп из кассы ${money(buyCash)}${exp ? `\n− расходы ${money(exp)}` : ""}${pay ? `\n− зарплаты ${money(pay)}` : ""}${out ? `\n− забрал владелец ${money(out)}` : ""}\n`;
+  t += `+ продажи наличными ${money(cashS)}\n− закуп из кассы ${money(buyCash)}${exp ? `\n− расходы ${money(exp)}` : ""}${pay ? `\n− авансы ${money(pay)}` : ""}${debt ? `\n− долг владельцев ${money(debt)}` : ""}${out ? `\n− забрал владелец ${money(out)}` : ""}\n`;
   t += `Должно остаться: <b>${money(expect)}</b>\n`;
   if (left != null) { const df = left - expect; t += `Фактически: <b>${money(left)}</b> ${Math.abs(df) <= 500 ? "✅ сходится" : df < 0 ? `❗️ недостача ${money(-df)}` : `➕ излишек ${money(df)}`}\n`; }
   // 7. Итог
@@ -163,7 +168,7 @@ function draftText(d: string, x: any, existing: boolean, dups: Record<number, an
     t += `\n🧺 <b>Закуп ${GB[k]}: ${money(sum(ls))}</b>\n${ls.map((l: any) => `• ${esc(l.name)}${l.qty ? ` - ${l.qty} ${esc(l.unit || "")}` : ""}: ${money(+l.total || (+l.qty || 0) * (+l.price || 0))}`).join("\n")}\n`;
   }
   if (exp.length) t += `\n🧾 <b>Расходы: ${money(sum(exp))}</b>\n${exp.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
-  if (pay.length) t += `\n👥 <b>Зарплаты и авансы: ${money(sum(pay))}</b>\n${pay.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}`).join("\n")}\n`;
+  if (pay.length) t += `\n👥 <b>Зарплаты и авансы: ${money(sum(pay))}</b>\n${pay.map((l: any) => `• ${esc(l.name || GS[l.grp])}: ${money(+l.total)}${l.grp === "owner" ? " - долг владельца" : ""}`).join("\n")}\n`;
   const ask = x.ask || [];
   if (ask.length) t += `\n❓ <b>Откуда были деньги?</b> Сумма записана в названии, а не в «цена Итого». Выберите кнопками ниже:\n${ask.map((a: any, i: number) => `${i + 1}. ${esc(a.name)} - ${money(a.total)}${a.src ? ` → ${ASK[a.src]}` : " → ?"}`).join("\n")}\n`;
   const ar = (x.arrivals || []).filter((a: any) => a.in);

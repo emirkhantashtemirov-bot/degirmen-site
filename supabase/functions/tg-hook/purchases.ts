@@ -258,6 +258,8 @@ export async function buyMonth(c: Ctx, ym?: string) {
   const { data: AS } = await c.db.rpc("arrivals_stats", { p_from: from, p_to: to });
   const late = (AS?.people || []).filter((p: any) => p.late > 0);
   if ((AS?.people || []).length) t += `\n\n⏰ <b>Опоздания</b> (позже начала смены больше чем на 10 мин)\n${late.length ? late.map((p: any) => `• ${esc(p.name)}: ${p.late} из ${p.days} дн.${p.late_avg ? `, в среднем на ${p.late_avg} мин` : ""}`).join("\n") : "Никто не опаздывал 👍"}`;
+  const { data: OD } = await c.db.rpc("owner_debts", { p_from: from, p_to: to });
+  if ((OD || []).length) t += `\n\n🧑‍💼 <b>Долг владельцев за месяц</b> (авансы, вернуть)\n${OD.map((o: any) => `• ${esc(o.name)}: ${money(o.total)}`).join("\n")}`;
   t += `\n\nПодробно с графиками: приложение → «Закупы».`;
   return { text: t };
 }
