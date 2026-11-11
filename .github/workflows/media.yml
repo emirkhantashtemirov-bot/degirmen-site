@@ -28,8 +28,8 @@ jobs:
               *.mp4)
                 [ -f "media/v/$id.mp4" ] && continue
                 curl -fsSL -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
-                ffmpeg -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2,fps=24" -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
-                ffmpeg -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -vf "scale=720:-2" "tmp/$id.png"
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2,fps=24" -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -vf "scale=720:-2" "tmp/$id.png"
                 cwebp -quiet -q 75 "tmp/$id.png" -o "media/v/$id.webp"
                 ;;
             esac
