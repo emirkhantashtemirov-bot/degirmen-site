@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "kz.jelpos.app",
+    "sha256_cert_fingerprints": ["AA:0F:B0:D0:47:13:D7:95:FB:E5:C7:D7:7D:2C:CE:92:B9:67:24:78:71:FE:51:EC:D3:A0:C7:B1:16:83:C0:E6"]
+  }
+}]
