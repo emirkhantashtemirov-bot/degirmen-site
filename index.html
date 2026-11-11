@@ -1,5 +1,6 @@
 <!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Degirmen Navoi - донер, кофе и выпечка на Навои 310А, Алматы</title>
 <meta name="theme-color" content="#1a130f"><meta name="description" content="Degirmen Navoi в Алматы, ул. Навои 310А: донер, турецкий чай, кофе, лимонады, сэндвичи и выпечка. Закажите онлайн и заберите без очереди. Ежедневно 08:00-22:00."><link rel="canonical" href="https://degirmen-navoi.kz/"><meta property="og:type" content="website"><meta property="og:site_name" content="Degirmen Navoi"><meta property="og:title" content="Degirmen Navoi - донер, кофе и выпечка, Алматы"><meta property="og:description" content="Закажите онлайн и заберите без очереди. Навои 310А, ежедневно 08:00-22:00."><meta property="og:url" content="https://degirmen-navoi.kz/"><meta property="og:locale" content="ru_RU"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Restaurant", "name": "Degirmen Navoi", "url": "https://degirmen-navoi.kz/", "telephone": "+77005550027", "email": "bloomberg.kz@mail.ru", "servesCuisine": ["Турецкая кухня", "Донер", "Кофе", "Выпечка"], "address": {"@type": "PostalAddress", "streetAddress": "ул. Навои, 310А", "addressLocality": "Алматы", "addressCountry": "KZ"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "08:00", "closes": "22:00"}], "hasMenu": "https://degirmen-navoi.kz/?doc=menu", "acceptsReservations": false, "parentOrganization": {"@type": "Organization", "name": "ТОО «Halal Trade Company»", "taxID": "211040003991"}}</script>
+<script>(function(){var d=document.documentElement,c;try{c=JSON.parse(localStorage.getItem('dn_theme'))}catch(e){}var t=c=='light'||c=='dark'?c:(window.matchMedia&&matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');d.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t=='light'?'#f3eadc':'#1a130f'})()</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Degirmen">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1316,6 +1317,111 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
 .circ.hv img{object-fit:cover;z-index:1}
 .circ.hv .hvv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:2;background:transparent}
 .circ.hv.noimg{background:var(--s1)}
+/* ============================================================
+   СВЕТЛАЯ ТЕМА (html[data-theme=light]): кремовый фон, кофейный текст, терракота.
+   Только экраны гостя: меню, карточка товара, корзина, заказы, профиль, вход, ИИ-помощник.
+   Касса, кухня, табло, киоск, финансы и админ-экраны принудительно тёмные (thEff в коде).
+   ============================================================ */
+html[data-theme=light]{--bg:#f3eadc;--c:#fffaf2;--s1:#efe4d3;--s2:#e7dac6;--tx:#2a1d15;--mu:#6e5848;--off:#968170;--ac:#b8432c;--warm:#f1e6d5;--lt:#2a1d15;--dk:#fffaf2;
+--gold:#b07c2c;--gold2:#a8762a;--gold-t:#94621a;--line:rgba(42,29,21,.08);--line-g:rgba(168,118,42,.28);
+--sh-1:0 2px 10px rgba(92,60,30,.08);--sh-2:0 10px 28px rgba(92,60,30,.12);--sh-3:0 24px 60px rgba(92,60,30,.18);color-scheme:light}
+html[data-theme=light] body{background:var(--bg)}
+/* живой фон: пятна света мягче, зёрна почти незаметны */
+html[data-theme=light] #amb .g1{background:radial-gradient(circle,rgba(184,67,44,.07),rgba(184,67,44,0) 62%)}
+html[data-theme=light] #amb .g2{background:radial-gradient(circle,rgba(176,122,69,.12),rgba(176,122,69,0) 62%)}
+html[data-theme=light] #amb .g3{background:radial-gradient(circle,rgba(233,196,106,.14),rgba(233,196,106,0) 60%)}
+html[data-theme=light] #amb .bn{opacity:.07}
+html[data-theme=light] #amb::after{opacity:.035}
+/* шапка, баннер, вкладки */
+html[data-theme=light] .rb{background:rgba(255,250,242,.9);box-shadow:0 0 0 1px var(--line),0 4px 12px rgba(92,60,30,.08)}
+html[data-theme=light] .rb.dk{background:rgba(42,29,21,.07);box-shadow:none}
+html[data-theme=light] .hero{background:linear-gradient(120deg,#fffaf2,#f7eddf 62%);box-shadow:0 0 0 1px var(--line),var(--sh-2)}
+html[data-theme=light] .cats{background:rgba(243,234,220,.94)!important}
+html[data-theme=light] .cats .ind{background:linear-gradient(90deg,var(--gold2),var(--gold))}
+/* карточки меню: белые, фото уходит в край карточки */
+html[data-theme=light] .wide,html[data-theme=light] .sm{box-shadow:0 0 0 1px var(--line),0 8px 22px rgba(92,60,30,.08)}
+html[data-theme=light] .wide .ph.mp{margin:-20px 0 -20px -20px;border-radius:28px 0 0 28px}
+html[data-theme=light] .sm .ph.mp{margin:-16px -16px 0;height:126px;border-radius:28px 28px 0 0}
+html[data-theme=light] .ph.mp.hasimg{box-shadow:none}
+/* нижняя панель, кнопка ИИ */
+html[data-theme=light] .pill{background:rgba(255,250,242,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-theme=light] .aifab{box-shadow:0 8px 22px rgba(184,67,44,.3),0 0 0 1px rgba(255,255,255,.18) inset}
+/* карточка товара */
+html[data-theme=light] .circ{background:rgba(42,29,21,.05)}
+html[data-theme=light] .circ.hv{background:#e3cfb2;box-shadow:0 26px 50px -22px rgba(92,60,30,.45),0 8px 20px -10px rgba(92,60,30,.2)}
+html[data-theme=light] .circ.hv::before{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+html[data-theme=light] .circ .phe svg{color:rgba(42,29,21,.3)}
+html[data-theme=light] .pl:not(.on){background:rgba(42,29,21,.07)}
+html[data-theme=light] .tile{background:#fffaf2;box-shadow:0 0 0 1px var(--line),0 6px 16px rgba(92,60,30,.07)}
+html[data-theme=light] .tile.on{background:#fff;box-shadow:0 0 0 1.5px var(--gold2),0 6px 16px rgba(92,60,30,.1)}
+html[data-theme=light] .tile .ic{background:var(--s1)}
+html[data-theme=light] .tile.on .ic{color:#fff}
+html[data-theme=light] .pbar{background:rgba(255,250,242,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html[data-theme=light] .szs{background:rgba(42,29,21,.07)}
+html[data-theme=light] .szi>span{box-shadow:0 6px 14px rgba(42,29,21,.25)}
+/* нижние листы и затемнение */
+html[data-theme=light] .shw::before{background:rgba(42,29,21,.38)}
+html[data-theme=light] .shin{box-shadow:0 -20px 50px rgba(92,60,30,.18)}
+/* Brewsell: тёмная фирменная плашка остаётся тёмной, текст на ней светлый */
+html[data-theme=light] .bwcard{--tx:#f3ebe1;--mu:#b9a796;color:#f3ebe1;box-shadow:0 10px 26px rgba(42,29,21,.18)}
+/* вход: Telegram */
+html[data-theme=light] .tgor::before,html[data-theme=light] .tgor::after{background:rgba(42,29,21,.12)}
+html[data-theme=light] .tgb.wait{color:#1677b3}
+html[data-theme=light] .tgh{background:rgba(42,29,21,.05)}
+html[data-theme=light] .tgh summary,html[data-theme=light] .tghb button,html[data-theme=light] .tghb a{color:#1677b3}
+html[data-theme=light] .tgh code{background:rgba(42,29,21,.06)}
+/* «О приложении» */
+html[data-theme=light] .ab-ic{color:#9a6a1e}
+html[data-theme=light] .ab-f a,html[data-theme=light] .doc a,html[data-theme=light] .dq a,html[data-theme=light] .ab-cons a{color:#9a5a12}
+html[data-theme=light] .ab-logo{box-shadow:0 14px 34px rgba(42,29,21,.25),inset 0 0 0 1px rgba(255,255,255,.06)}
+html[data-theme=light] .mach path[stroke="rgba(246,241,234,.55)"]{stroke:rgba(42,29,21,.5)}
+html[data-theme=light] .mach path[fill="rgba(255,255,255,.06)"]{fill:rgba(255,255,255,.7)}
+html[data-theme=light] .mach .hst path{stroke:rgba(42,29,21,.28)}
+html[data-theme=light] .abc .kbpct{color:var(--tx)}
+html[data-theme=light] .cats{background:rgba(243,234,220,.985)!important}
+html[data-theme=light] .ftr{background:rgba(255,250,242,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* оценка заказа, уровни, мини-игра, дневник питания - светлые версии */
+html[data-theme=light] .rtc{background:linear-gradient(160deg,#fff8ec,#f9eedd 70%);border-color:rgba(168,118,42,.3);box-shadow:var(--sh-1)}
+html[data-theme=light] .rtst{color:rgba(42,29,21,.22)}
+html[data-theme=light] .rtc.rtdone .rtst{color:#c48a22}
+html[data-theme=light] .rtc textarea{background:#fff;border-color:rgba(42,29,21,.14)}
+html[data-theme=light] .rttg button{border-color:rgba(42,29,21,.16);background:rgba(42,29,21,.03)}
+html[data-theme=light] .rttg button.on{background:rgba(168,118,42,.14);border-color:#a8762a;color:#704a0e}
+html[data-theme=light] .gmcard{background:linear-gradient(135deg,#fff8ec,#f6ead8);border-color:rgba(168,118,42,.28);box-shadow:var(--sh-1)}
+html[data-theme=light] .gmcard .gmi{background:rgba(168,118,42,.14);color:#9a6a1e}
+html[data-theme=light] .gmplay{background:rgba(168,118,42,.12);border-color:rgba(168,118,42,.32);color:#7a4f12}
+html[data-theme=light] .kbpc .kbpct{color:var(--tx)}
+html[data-theme=light] .kbpci{background:rgba(63,138,76,.14);color:#3f8a4c}
+html[data-theme=light] .lvc{background:linear-gradient(150deg,#fff8ec,#f8ecd9 65%);border-color:rgba(168,118,42,.26);box-shadow:var(--sh-1)}
+html[data-theme=light] .lvc.lv3{background:linear-gradient(150deg,#fbe9c6,#f6ead8 70%);border-color:rgba(168,118,42,.5)}
+html[data-theme=light] .lvl>div{background:rgba(42,29,21,.035)}
+html[data-theme=light] .lvl>div.cur{background:rgba(168,118,42,.1);box-shadow:inset 0 0 0 1px rgba(168,118,42,.42)}
+html[data-theme=light] .lvl span{background:rgba(42,29,21,.07)}
+html[data-theme=light] .lvl .got span{background:#d9a53a;color:#2a1d15}
+html[data-theme=light] .lvi{background:rgba(168,118,42,.14)}
+html[data-theme=light] .lvi{background:linear-gradient(160deg,#4a3424,#2c1f17)}
+/* документы, оплата, КБЖУ, отмена заказа, праздник уровня */
+html[data-theme=light] .doc-b{color:#3b2c22}
+html[data-theme=light] .dq-r{border-top-color:rgba(42,29,21,.08)}
+html[data-theme=light] .dpl>span,html[data-theme=light] .dpl-h{box-shadow:0 0 0 1px rgba(42,29,21,.1)}
+html[data-theme=light] .dm-y{background:rgba(196,72,40,.1);color:#a5381c}
+html[data-theme=light] .dm-m{background:rgba(168,118,42,.12);color:#7a4f12}
+html[data-theme=light] .dm-n{background:rgba(63,138,76,.12);color:#2f6e3b}
+html[data-theme=light] .err{color:#b23a22}
+html[data-theme=light] .kct{background:rgba(168,118,42,.13);color:#7a4f12}
+html[data-theme=light] .cnl{border-color:rgba(42,29,21,.16)}
+html[data-theme=light] .cnl.sure{background:rgba(184,67,44,.1);border-color:rgba(184,67,44,.5);color:#a5381c}
+html[data-theme=light] .pmbadge.ok{color:#2f6e3b}
+html[data-theme=light] .pmbadge.wait{color:#7a4f12}
+html[data-theme=light] .qrov .st{color:#7a4f12}
+html[data-theme=light] .qrov .st.ok{color:#2f6e3b}
+html[data-theme=light] .qrov .qbox{box-shadow:0 0 0 1px rgba(42,29,21,.1),var(--sh-2)}
+html[data-theme=light] .payov{background:rgba(243,234,220,.92)}
+html[data-theme=light] .lvbox{background:linear-gradient(160deg,#fbe9c6,#fff8ec 70%);border-color:rgba(168,118,42,.5)}
+html[data-theme=light] .lvbox small{color:#9a6a1e}
+html[data-theme=light] .nxpop{--tx:#f3ebe1;--mu:#c2b2a2;color:#f3ebe1}
+html[data-theme=light] .pn[class*="tn-"]{filter:saturate(1.3) brightness(.7)}
+html[data-theme=light] .nxbell i{box-shadow:0 0 0 2px var(--c)}
 </style></head><body><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div class="tst" id="tst"></div>
 <script id="appjs" type="text/x-app">
 // запрос без ответа не вешает приложение: 25 с на обычные запросы, дольше на ИИ и загрузку фото
@@ -2056,7 +2162,7 @@ scr(topbar(t('profile'))+`<div class="body w">${me?`<div class="pcard${pf?.cover
 <div class="pr" style="justify-content:center;margin-top:12px">${pf?.avatar_url?`<button class="c" onclick="delAv()">${t('p_del')}</button>`:''}</div>${myWall()}${kbCard()}
 <div class="lab">${t('p_color')}</div><div class="thm">${Object.entries(THEMES).map(([k,c])=>`<button class="${(pf?.theme||'coffee')==k?'on':''}" style="--c:${c}" aria-label="${k}" onclick="setTheme('${k}')"></button>`).join('')}</div>
 <div class="lab">${t('p_name')}</div><div style="display:flex;gap:8px;align-items:center"><input id="pnm" maxlength="40" value="${e(pf?.name||'')}" style="flex:1"><button class="c" style="height:50px" onclick="saveName()">${t('save')}</button></div>
-${prog()}${role()=='admin'?`<button class="main" style="margin-top:20px" onclick="statsM()">${t('stt')}</button>`:''}`:''}<div class="lab">${t('lng')}</div><div class="pr" style="justify-content:flex-start">${LANGS.map(l=>cc(S.L==l,`setL('${l}')`,l=='kk'?'ҚАЗ':l.toUpperCase())).join('')}</div><div class="lab">${t('p_anim')}</div><div class="pr" style="justify-content:flex-start">${cc(!MOTION_OFF,'setMotion(1)',t('an_on'))}${cc(MOTION_OFF,'setMotion(0)',t('an_off'))}</div>${dip?`<button class="sec2" style="margin-top:24px" onclick="dip.prompt();dip=null;cl()">${t('inst')}</button>`:isIos?`<p class="mu" style="margin:24px 4px 0;font-size:14px">${t('instIos')}</p>`:''}${aboutCard()}${me?`<button class="sec2" style="margin-top:24px" onclick="cl();sb.auth.signOut()">${t('logout')}</button>`:`<button class="main" style="margin-top:24px" onclick="authM()">${t('login')}</button>`}</div>`,'prof')}
+${prog()}${role()=='admin'?`<button class="main" style="margin-top:20px" onclick="statsM()">${t('stt')}</button>`:''}`:''}<div class="lab">${t('lng')}</div><div class="pr" style="justify-content:flex-start">${LANGS.map(l=>cc(S.L==l,`setL('${l}')`,l=='kk'?'ҚАЗ':l.toUpperCase())).join('')}</div><div class="lab">${t('p_anim')}</div><div class="pr" style="justify-content:flex-start">${cc(!MOTION_OFF,'setMotion(1)',t('an_on'))}${cc(MOTION_OFF,'setMotion(0)',t('an_off'))}</div>${thRow()}${dip?`<button class="sec2" style="margin-top:24px" onclick="dip.prompt();dip=null;cl()">${t('inst')}</button>`:isIos?`<p class="mu" style="margin:24px 4px 0;font-size:14px">${t('instIos')}</p>`:''}${aboutCard()}${me?`<button class="sec2" style="margin-top:24px" onclick="cl();sb.auth.signOut()">${t('logout')}</button>`:`<button class="main" style="margin-top:24px" onclick="authM()">${t('login')}</button>`}</div>`,'prof')}
 async function pfUpd(v){const{error}=await sb.from('profiles').update(v).eq('id',S.me.id);if(error){toast(error.message,1);await loadPf2()}else Object.assign(S.pf,v);S._h=null;profileM();render();return !error}
 function setTheme(k){if(!S.pf)return;S.pf.theme=k;S._h=null;profileM();render();sb.from('profiles').update({theme:k}).eq('id',S.me.id).then(({error})=>{if(error)toast(error.message,1)})}
 async function saveName(){const v=$('pnm').value.trim().slice(0,40);if(!v)return;if(await pfUpd({name:v}))toast(t('p_ok'))}
@@ -4785,6 +4891,19 @@ function hvStop(){hvAll().forEach(v=>{try{v.pause()}catch{}})}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);hvPlay();return r}}
 {const _x=cl;cl=function(){hvStop();return _x.apply(this,arguments)}}
 document.addEventListener('visibilitychange',()=>{document.hidden?hvStop():hvPlay()});
+// ---------- тема: как в системе / светлая / тёмная (dn_theme); экраны персонала, кухни, табло и киоска всегда тёмные ----------
+Object.assign(T.ru,{th_l:'Тема',th_sys:'Как в системе',th_lt:'Светлая',th_dk:'Тёмная'});
+Object.assign(T.kk,{th_l:'Көрініс',th_sys:'Жүйедегідей',th_lt:'Ашық',th_dk:'Қараңғы'});
+Object.assign(T.en,{th_l:'Theme',th_sys:'System',th_lt:'Light',th_dk:'Dark'});
+const TH_CUST=new Set(['prod','cart','auth','prof','about','doc','ai']),TH_MQ=matchMedia('(prefers-color-scheme:light)');
+const thPick=()=>{const c=LS.get('dn_theme','system');return c=='light'||c=='dark'?c:'system'};
+function thEff(){if((typeof apMode=='function'&&apMode())||S.v=='kas'||(S.scr&&!TH_CUST.has(S.scr)))return 'dark';const c=thPick();return c=='system'?(TH_MQ.matches?'light':'dark'):c}
+function thApply(){const R=document.documentElement,v=thEff();if(R.getAttribute('data-theme')!=v)R.setAttribute('data-theme',v);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=v=='light'?'#f3eadc':'#1a130f'}
+function setAppTheme(k){LS.set('dn_theme',k);thApply();if(S.scr=='prof')profileM()}
+const thRow=()=>`<div class="lab">${t('th_l')}</div><div class="pr" style="justify-content:flex-start">${[['system','th_sys'],['light','th_lt'],['dark','th_dk']].map(([k,l])=>cc(thPick()==k,`setAppTheme('${k}')`,t(l))).join('')}</div>`;
+{const _x=render;render=function(){const r=_x.apply(this,arguments);thApply();return r}}
+{const _x=scr;scr=function(){const r=_x.apply(this,arguments);thApply();return r}}
+try{TH_MQ.addEventListener('change',thApply)}catch{TH_MQ.addListener&&TH_MQ.addListener(thApply)}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
@@ -4792,7 +4911,7 @@ addEventListener('load',()=>swInit());
 if(!wide||emb){const sc=document.createElement('script');sc.textContent=document.getElementById('appjs').textContent;document.body.appendChild(sc);return}
 let l='ru';try{l=JSON.parse(localStorage.getItem('dn_l'))||'ru'}catch{}
 const X={ru:['Заказывай с телефона','Приложение сделано для телефона. Наведи камеру на код — откроется меню. Или закажи прямо здесь.','открыть на весь экран'],kk:['Телефоннан тапсырыс бер','Қосымша телефонға арналған. Кодқа камераны бағытта — мәзір ашылады. Немесе осы жерден тапсырыс бер.','толық экранда ашу'],en:['Order from your phone','The app is made for phones. Point your camera at the code to open the menu, or order right here.','open full screen']}[l]||[];
-const q=location.search?location.search+'&m=1':'?m=1',url=location.origin+location.pathname;
+document.documentElement.setAttribute('data-theme','dark');const q=location.search?location.search+'&m=1':'?m=1',url=location.origin+location.pathname;
 document.body.innerHTML=`<div class="dsk"><div class="side"><div class="lg">DEGIRMEN</div><h1>${X[0]}</h1><p>${X[1]}</p><div class="qr" id="qr"></div><a href="${q}">${X[2]} →</a></div><iframe src="${q}" title="Degirmen Navoi" allow="vibrate; microphone"></iframe></div>`;
 const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.onload=()=>{try{new QRCode(document.getElementById('qr'),{text:url,width:264,height:264,colorDark:'#1a130f',colorLight:'#f6f1ea'})}catch{}};document.head.appendChild(s)})();</script></body></html>
 
