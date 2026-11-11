@@ -22,15 +22,15 @@ jobs:
               *.png|*.jpg|*.jpeg|*.webp)
                 [ -f "media/p/$id.webp" ] && continue
                 curl -fsSL -o "tmp/$id.src" "$BASE/$f" || { echo "FAIL $id"; continue; }
-                cwebp -quiet -q 80 -resize 800 800 "tmp/$id.src" -o "media/p/$id.webp"
-                cwebp -quiet -q 60 -resize 256 256 "tmp/$id.src" -o "media/p/$id.s.webp"
+                cwebp -quiet -q 90 -sharp_yuv -resize 1200 1200 "tmp/$id.src" -o "media/p/$id.webp"
+                cwebp -quiet -q 84 -resize 420 420 "tmp/$id.src" -o "media/p/$id.s.webp"
                 ;;
               *.mp4)
                 [ -f "media/v/$id.mp4" ] && continue
                 curl -fsSL -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
-                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2,fps=24" -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2:flags=lanczos" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
                 ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -vf "scale=720:-2" "tmp/$id.png"
-                cwebp -quiet -q 75 "tmp/$id.png" -o "media/v/$id.webp"
+                cwebp -quiet -q 88 "tmp/$id.png" -o "media/v/$id.webp"
                 ;;
             esac
           done < media/src.tsv
