@@ -1,0 +1,44 @@
+name: media
+on:
+  push:
+    branches: [media]
+    paths: ['media/src.tsv', '.github/workflows/media.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg webp
+      - name: fetch and compress
+        env:
+          BASE: https://d8j0ntlcm91z4.cloudfront.net/user_3LvXW9MOuZrwO6YjV6Tj7iCTolv
+        run: |
+          mkdir -p media/p media/v tmp
+          while IFS=$'\t' read -r id f; do
+            [ -z "$id" ] && continue
+            case "$f" in
+              *.png|*.jpg|*.jpeg|*.webp)
+                [ -f "media/p/$id.webp" ] && continue
+                curl -fsSL -o "tmp/$id.src" "$BASE/$f" || { echo "FAIL $id"; continue; }
+                cwebp -quiet -q 80 -resize 800 800 "tmp/$id.src" -o "media/p/$id.webp"
+                cwebp -quiet -q 60 -resize 256 256 "tmp/$id.src" -o "media/p/$id.s.webp"
+                ;;
+              *.mp4)
+                [ -f "media/v/$id.mp4" ] && continue
+                curl -fsSL -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
+                ffmpeg -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2,fps=24" -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
+                ffmpeg -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -vf "scale=720:-2" "tmp/$id.png"
+                cwebp -quiet -q 75 "tmp/$id.png" -o "media/v/$id.webp"
+                ;;
+            esac
+          done < media/src.tsv
+          ls -la media/p media/v
+      - name: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add media
+          git diff --cached --quiet || git commit -q -m "media: сжатые фото и видео меню"
+          git push
