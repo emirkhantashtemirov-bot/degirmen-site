@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Degirmen Navoi - донер, кофе и выпечка на Навои 310А, Алматы</title>
 <meta name="theme-color" content="#1a130f"><meta name="description" content="Degirmen Navoi в Алматы, ул. Навои 310А: донер, турецкий чай, кофе, лимонады, сэндвичи и выпечка. Закажите онлайн и заберите без очереди. Ежедневно 08:00-22:00."><link rel="canonical" href="https://degirmen-navoi.kz/"><meta property="og:type" content="website"><meta property="og:site_name" content="Degirmen Navoi"><meta property="og:title" content="Degirmen Navoi - донер, кофе и выпечка, Алматы"><meta property="og:description" content="Закажите онлайн и заберите без очереди. Навои 310А, ежедневно 08:00-22:00."><meta property="og:url" content="https://degirmen-navoi.kz/"><meta property="og:locale" content="ru_RU"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Restaurant", "name": "Degirmen Navoi", "url": "https://degirmen-navoi.kz/", "telephone": "+77005550027", "email": "bloomberg.kz@mail.ru", "servesCuisine": ["Турецкая кухня", "Донер", "Кофе", "Выпечка"], "address": {"@type": "PostalAddress", "streetAddress": "ул. Навои, 310А", "addressLocality": "Алматы", "addressCountry": "KZ"}, "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "08:00", "closes": "22:00"}], "hasMenu": "https://degirmen-navoi.kz/?doc=menu", "acceptsReservations": false, "parentOrganization": {"@type": "Organization", "name": "ТОО «Halal Trade Company»", "taxID": "211040003991"}}</script>
-<script>(function(){var d=document.documentElement,c;try{c=JSON.parse(localStorage.getItem('dn_theme'))}catch(e){}var t=c=='light'||c=='dark'?c:(window.matchMedia&&matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');try{var q=/[?&]mode=([^&]*)/.exec(location.search),k=JSON.parse(localStorage.getItem('dn_mode')||'""');if(q?q[1]!='off':k)t='dark'}catch(e){}d.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t=='light'?'#f3eadc':'#1a130f'})()</script>
+<script>(function(){var d=document.documentElement,c;try{c=JSON.parse(localStorage.getItem('dn_theme'))}catch(e){}var t=c=='dark'?'dark':c=='system'&&window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';try{var q=/[?&]mode=([^&]*)/.exec(location.search),k=JSON.parse(localStorage.getItem('dn_mode')||'""');if(q?q[1]!='off':k)t='dark'}catch(e){}d.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.content=t=='light'?'#f3eadc':'#1a130f'})()</script>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Degirmen">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1421,6 +1421,124 @@ html[data-theme=light] .lvbox small{color:#9a6a1e}
 html[data-theme=light] .nxpop{--tx:#f3ebe1;--mu:#c2b2a2;color:#f3ebe1}
 html[data-theme=light] .pn[class*="tn-"]{filter:saturate(1.3) brightness(.7)}
 html[data-theme=light] .nxbell i{box-shadow:0 0 0 2px var(--c)}
+/* ============================================================
+   ВИТРИНА v2: светлая тема главная, фото блюд «стоят» прямо в экране.
+   Песочный цвет фона снят с самих фото (SAND в коде): карточки меню и карточка товара
+   окрашены в цвет студийного фона, края фото уходят в него мягким градиентом - без рамок и швов.
+   Тёмная тема: эспрессо вместо почти чёрного, фото плавно растворяется в цвет карточки.
+   ============================================================ */
+:root{--es0:#1c1410;--es1:#2a1f18;--es2:#33261d;--ink:#2a1d15;--pr-l:#7a4a0c}
+/* --- карточки меню со своими фото (класс mc, цвет --cs) --- */
+.wide.mc,.sm.mc{overflow:hidden;isolation:isolate;background:var(--cs,#dfc29f)}
+.wide.mc .ph.mp,.sm.mc .ph.mp{position:absolute;margin:0;border-radius:0;background:transparent;box-shadow:none;flex:none;z-index:0}
+.wide.mc .ph.mp img,.sm.mc .ph.mp img{transform:scale(1.1);transform-origin:50% 46%}
+.wide.mc .ph.mp .phe>svg,.sm.mc .ph.mp .phe>svg{color:rgba(42,29,21,.32)}
+.wide.mc{padding:0}
+.wide.mc .ph.mp{top:0;right:0;bottom:0;left:auto;width:auto;height:100%;aspect-ratio:1/1;
+ -webkit-mask-image:linear-gradient(to right,transparent 0,rgba(0,0,0,.18) 9%,rgba(0,0,0,.55) 18%,rgba(0,0,0,.86) 27%,#000 36%);
+ mask-image:linear-gradient(to right,transparent 0,rgba(0,0,0,.18) 9%,rgba(0,0,0,.55) 18%,rgba(0,0,0,.86) 27%,#000 36%)}
+.wide.mc .wt{position:relative;z-index:1;flex:none;width:52%;padding:22px 0 20px 22px}
+.wide.mc .wn{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.16}
+.wide.mc .wp{justify-content:flex-start;gap:6px}
+.wide.mc .wp svg{opacity:.55}
+.sm.mc{padding:0;height:252px;gap:4px;justify-content:flex-end}
+.sm.mc .ph.mp{left:0;right:0;top:-8px;width:100%;height:auto;aspect-ratio:1/1;
+ -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 56%,rgba(0,0,0,.82) 64%,rgba(0,0,0,.5) 73%,rgba(0,0,0,.2) 82%,transparent 92%);
+ mask-image:linear-gradient(to bottom,#000 0,#000 56%,rgba(0,0,0,.82) 64%,rgba(0,0,0,.5) 73%,rgba(0,0,0,.2) 82%,transparent 92%)}
+.sm.mc .wn,.sm.mc .wp{position:relative;z-index:1;padding:0 16px}
+.sm.mc .wn{flex:none;font-weight:700;font-size:17px;letter-spacing:-.2px}
+.sm.mc .wp{padding-bottom:15px}
+.wide.mc.off,.sm.mc.off{filter:saturate(.4)}
+/* светлая: текст на песке - кофейный, цена темнее золота (контраст AA) */
+html[data-theme=light] .wide.mc,html[data-theme=light] .sm.mc{color:var(--ink);box-shadow:0 1px 2px rgba(92,60,30,.08),0 12px 26px -12px rgba(92,60,30,.32),inset 0 1px 0 rgba(255,255,255,.35)}
+html[data-theme=light] .wide.mc .wp span,html[data-theme=light] .sm.mc .wp span{color:var(--pr-l)}
+html[data-theme=light] .wide .ph.mp,html[data-theme=light] .sm .ph.mp{border-radius:0}
+html[data-theme=light] .wide.mc .ph.mp{margin:0}
+html[data-theme=light] .sm.mc .ph.mp{margin:0;height:auto}
+/* тёмная: карточка цвета эспрессо с оттенком фона фото, фото растворяется в ней */
+html[data-theme=dark] .wide,html[data-theme=dark] .sm{background:var(--es1);box-shadow:0 14px 30px -14px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,214,.05),0 0 0 1px rgba(255,236,214,.04)}
+html[data-theme=dark] .wide.mc,html[data-theme=dark] .sm.mc{background:var(--es1);background:color-mix(in srgb,var(--cs,#dfc29f) 9%,#241a14)}
+html[data-theme=dark] .wide.mc .ph.mp{-webkit-mask-image:radial-gradient(ellipse 62% 74% at 57% 50%,#000 0,#000 52%,rgba(0,0,0,.86) 62%,rgba(0,0,0,.6) 71%,rgba(0,0,0,.32) 79%,rgba(0,0,0,.11) 86%,transparent 93%);mask-image:radial-gradient(ellipse 62% 74% at 57% 50%,#000 0,#000 52%,rgba(0,0,0,.86) 62%,rgba(0,0,0,.6) 71%,rgba(0,0,0,.32) 79%,rgba(0,0,0,.11) 86%,transparent 93%)}
+html[data-theme=dark] .sm.mc .ph.mp{-webkit-mask-image:radial-gradient(ellipse 68% 56% at 50% 45%,#000 0,#000 52%,rgba(0,0,0,.86) 62%,rgba(0,0,0,.6) 71%,rgba(0,0,0,.32) 80%,rgba(0,0,0,.11) 88%,transparent 96%);mask-image:radial-gradient(ellipse 68% 56% at 50% 45%,#000 0,#000 52%,rgba(0,0,0,.86) 62%,rgba(0,0,0,.6) 71%,rgba(0,0,0,.32) 80%,rgba(0,0,0,.11) 88%,transparent 96%)}
+html[data-theme=dark] .wide.mc .ph.mp img,html[data-theme=dark] .sm.mc .ph.mp img{filter:brightness(.93) saturate(1.04)}
+html[data-theme=dark] .wide.mc .ph.mp .phe>svg,html[data-theme=dark] .sm.mc .ph.mp .phe>svg{color:rgba(246,241,234,.3)}
+html[data-theme=dark] .wide.mc .wp span,html[data-theme=dark] .sm.mc .wp span{color:#e3b866}
+/* --- лента в светлой теме: одна система --- */
+/* вкладки: без полосы - фон вкладок мягко уходит в прозрачность снизу */
+html[data-theme=light] .pg .cats{background:transparent!important;transition:background-color .2s}
+html[data-theme=light] .pg .cats.stk{background:linear-gradient(to bottom,rgba(243,234,220,.97) 0,rgba(243,234,220,.93) 62%,rgba(243,234,220,0) 100%)!important}
+html[data-theme=dark] .pg .cats{background:transparent!important;transition:background-color .2s}
+html[data-theme=dark] .pg .cats.stk{background:linear-gradient(to bottom,rgba(26,19,15,.97) 0,rgba(26,19,15,.92) 62%,rgba(26,19,15,0) 100%)!important}
+html[data-theme=light] .ctit{color:var(--ink)}
+html[data-theme=light] .sec{color:#5a4536}
+
+/* --- карточка товара: общий стиль для всех позиций (p2) --- */
+.scr.p2{--gl:rgba(255,252,246,.5);--gl2:rgba(255,255,255,.62);--glb:inset 0 0 0 1px rgba(255,255,255,.55);--gls:0 8px 20px -10px rgba(92,60,30,.28)}
+html[data-theme=light] .scr.p2{background:#f1e6d5}
+html[data-theme=light] .scr.p2 .tile,html[data-theme=light] .scr.p2 .gt{background:var(--gl);box-shadow:var(--glb),var(--gls)}
+html[data-theme=light] .scr.p2 .tile .ic{background:var(--gl2)}
+html[data-theme=light] .scr.p2 .tile.on,html[data-theme=light] .scr.p2 .gt.on{background:#fffaf2;color:var(--ink);box-shadow:0 0 0 1.5px #a8762a,0 10px 22px -10px rgba(92,60,30,.35)}
+html[data-theme=light] .scr.p2 .tile.on .ic{background:#a8762a;color:#fff}
+html[data-theme=light] .scr.p2 .pl:not(.on){background:var(--gl);box-shadow:var(--glb)}
+html[data-theme=light] .scr.p2 .pbar{background:rgba(255,250,242,.66);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 14px 34px -12px rgba(92,60,30,.4)}
+html[data-theme=light] .scr.p2 .szs{background:rgba(42,29,21,.06)}
+html[data-theme=light] .scr.p2 .prow{background:var(--gl);border-color:transparent;box-shadow:var(--glb)}
+html[data-theme=light] .scr.p2 .morb{background:var(--gl);border-color:transparent;box-shadow:var(--glb)}
+html[data-theme=light] .scr.p2 .kct{background:rgba(255,252,246,.5);color:#6b4410;box-shadow:var(--glb)}
+html[data-theme=light] .scr.p2 .lab{color:#5a4536}
+html[data-theme=dark] .scr.p2{--gl:rgba(255,236,214,.07);--gl2:rgba(255,236,214,.1);--glb:inset 0 0 0 1px rgba(255,236,214,.07);--gls:0 10px 24px -14px rgba(0,0,0,.6);
+ background:radial-gradient(120% 52% at 50% 26%,rgba(214,170,122,.15),rgba(214,170,122,0) 70%),var(--es0);background-attachment:local}
+html[data-theme=dark] .scr.p2 .tile,html[data-theme=dark] .scr.p2 .gt{background:var(--gl);box-shadow:var(--glb),var(--gls)}
+html[data-theme=dark] .scr.p2 .tile .ic{background:var(--gl2)}
+html[data-theme=dark] .scr.p2 .tile.on{background:rgba(255,236,214,.14);box-shadow:inset 0 0 0 1.5px rgba(227,184,102,.7),var(--gls)}
+html[data-theme=dark] .scr.p2 .tile.on .ic{background:#e3b866;color:#2a1d15}
+html[data-theme=dark] .scr.p2 .pl:not(.on){background:var(--gl);box-shadow:var(--glb)}
+html[data-theme=dark] .scr.p2 .pbar{background:rgba(32,23,18,.7);-webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,236,214,.08),0 16px 36px -12px rgba(0,0,0,.7)}
+html[data-theme=dark] .scr.p2 .szs{background:rgba(255,236,214,.08)}
+html[data-theme=dark] .scr.p2 .prow{background:var(--gl);border-color:transparent;box-shadow:var(--glb)}
+html[data-theme=dark] .scr.p2 .morb{background:var(--gl);border-color:transparent;box-shadow:var(--glb)}
+
+/* --- полноэкранная витрина (свои фото и видео) --- */
+.scr.pm{--sand:#dcbf9d;transition:background-color .45s var(--e)}
+html[data-theme=light] .scr.pm{background:var(--sand)}
+.scr.pm .top{display:contents}
+.scr.pm .top>.sp{display:none}
+.scr.pm .circ.hv{order:-3;width:100%;height:auto;aspect-ratio:1/1;max-height:70vh;margin:0;border-radius:0;box-shadow:none;background:transparent;overflow:hidden;isolation:isolate;
+ -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 52%,rgba(0,0,0,.93) 58%,rgba(0,0,0,.8) 64%,rgba(0,0,0,.62) 70%,rgba(0,0,0,.42) 76%,rgba(0,0,0,.24) 82%,rgba(0,0,0,.1) 88%,rgba(0,0,0,.025) 94%,transparent 99%);
+ mask-image:linear-gradient(to bottom,#000 0,#000 52%,rgba(0,0,0,.93) 58%,rgba(0,0,0,.8) 64%,rgba(0,0,0,.62) 70%,rgba(0,0,0,.42) 76%,rgba(0,0,0,.24) 82%,rgba(0,0,0,.1) 88%,rgba(0,0,0,.025) 94%,transparent 99%)}
+.scr.pm .circ.hv::before{display:none}
+.scr.pm .circ.hv .phe{background:transparent}
+.scr.pm .circ.hv .phe>svg{width:70%;height:70%}
+html[data-theme=light] .scr.pm .circ.hv .phe>svg{color:rgba(42,29,21,.3)}
+.scr.pm .circ.hv.noimg{background:transparent}
+.scr.pm .pt{order:-2;position:relative;z-index:2;margin:-58px 22px 0;text-align:left;font:700 31px/1.1 var(--f);letter-spacing:-.6px;flex:none}
+.scr.p2 .pds{margin:8px 22px 0;font-size:15px;line-height:1.45;opacity:.8;max-width:520px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:none}
+.scr.pm .pds{order:-2;position:relative;z-index:2;text-align:left}
+.scr.p2:not(.pm) .pds{text-align:center;margin:10px auto 0;padding:0 24px}
+.scr.pm #pf{order:-1;justify-content:flex-start;padding:14px 20px 0}
+.scr.pm .morw{justify-content:flex-start;padding:0 20px;margin-top:12px}
+.scr.pm .tiles{padding-top:20px}
+.scr.pm .rb.dk{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:8;width:44px;height:44px;-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3)}
+html[data-theme=light] .scr.pm .rb.dk{background:rgba(255,250,242,.55);color:var(--ink);box-shadow:inset 0 0 0 1px rgba(255,255,255,.6),0 6px 16px -6px rgba(92,60,30,.35)}
+html[data-theme=light] .scr.pm .pt{color:var(--ink)}
+html[data-theme=dark] .scr.pm{background:radial-gradient(110% 46% at 50% 30%,rgba(214,170,122,.2),rgba(214,170,122,0) 72%),var(--es0);background-attachment:local}
+html[data-theme=dark] .scr.pm .circ.hv{-webkit-mask-image:linear-gradient(to bottom,#000 0,#000 40%,rgba(0,0,0,.94) 46%,rgba(0,0,0,.84) 52%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.54) 64%,rgba(0,0,0,.38) 70%,rgba(0,0,0,.24) 76%,rgba(0,0,0,.13) 82%,rgba(0,0,0,.05) 89%,transparent 97%);
+ mask-image:linear-gradient(to bottom,#000 0,#000 40%,rgba(0,0,0,.94) 46%,rgba(0,0,0,.84) 52%,rgba(0,0,0,.7) 58%,rgba(0,0,0,.54) 64%,rgba(0,0,0,.38) 70%,rgba(0,0,0,.24) 76%,rgba(0,0,0,.13) 82%,rgba(0,0,0,.05) 89%,transparent 97%)}
+html[data-theme=dark] .scr.pm .circ.hv::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(to bottom,rgba(28,20,16,.5),rgba(28,20,16,0) 20%);animation:none;transform:none}
+html[data-theme=dark] .scr.pm .rb.dk{background:rgba(28,20,16,.45);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.12)}
+@media (prefers-reduced-motion:reduce){.scr.pm{transition:none}}
+/* дневник питания и оповещения в светлой теме (раньше были только тёмными) */
+html[data-theme=light] :is(.kbleft,.kbgo,.kbstk,.kbordh button,.kbst,.kbmsg,.kbcf.mid span,.kbpct){color:#7a4f12}
+html[data-theme=light] :is(.kbcf.low span,.kbdel){color:#a5381c}
+html[data-theme=light] .kbdel{box-shadow:inset 0 0 0 1px rgba(165,56,28,.3)}
+html[data-theme=light] .kbdel.sure{background:#b8432c;color:#fff}
+html[data-theme=light] .kbrv{stroke:#c48a22}
+html[data-theme=light] .kbic.mill,html[data-theme=light] .kbsh .kbopt svg{color:#a8762a}
+html[data-theme=light] .kbdays button.on small{color:rgba(255,250,242,.7)}
+html[data-theme=light] .kbdays i.has,html[data-theme=light] .kbdot{background:#c48a22}
+html[data-theme=light] .kbbar{background:rgba(255,250,242,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line),0 12px 30px rgba(92,60,30,.2)}
+html[data-theme=light] .kb{background:#5a4536}
+
 </style></head><body><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div class="tst" id="tst"></div>
 <script id="appjs" type="text/x-app">
 // запрос без ответа не вешает приложение: 25 с на обычные запросы, дольше на ИИ и загрузку фото
@@ -1486,7 +1604,7 @@ const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb 
 const imgSrc=it=>it.image_url||(hasMed(it)?'/media/p/'+it.id+'.webp':'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
-const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?'/media/p/'+it.id+'.s.webp':imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async" class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
+const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?'/media/p/'+it.id+'.s.webp':imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
 function imgOk(im){im.classList.add('ld');im.parentNode.classList.add('hasimg');LOADED.add(im.getAttribute('src'))}
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
@@ -2739,13 +2857,13 @@ const mine=()=>S.ord.filter(o=>o.user_id==S.me?.id),activeMine=()=>mine().filter
 function tracker(o){const i=STEPS.indexOf(o.status),pct=pctOf(o),from=S.pp[o.id]??0,fx=o.status=='ready'&&(S.pp[o.id]===undefined||S.pp[o.id]<pct);
 return `<div class="trk ${o.status=='ready'?'rdy':''}${fx?' fx':''}"><div class="tbar"><i style="--p:${pct};--from:${from}"></i></div>${STEPS.map((s,k)=>`<div class="stp ${k<i?'d':k==i?'cu':''}">${t(s=='ready'?'b_ready':'s_'+s)}</div>`).join('')}</div>`}
 const pctOf=o=>Math.max(0,STEPS.indexOf(o.status))/(STEPS.length-1);
-function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it).replace('class="ph"','class="ph" style="width:56px;height:56px;flex:none;border-radius:14px"'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
+function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it,'ph phs').replace('<div class="ph phs','<div style="width:56px;height:56px;flex:none;border-radius:14px" class="ph phs'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
 const hdr=()=>`<div class="hd"><div class="lg"><span class="lgm" aria-hidden="true"><svg viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><g class="lgbd"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3.5" fill="currentColor"/></g></svg></span>DEGIRMEN</div><div class="hdr-r">${kbBtn()}${bellBtn()}<button class="rb${S.me&&S.pf?' avb':''}" aria-label="${t('profile')}" onclick="profileM()">${S.me&&S.pf?avatar(44):IC.user}</button></div></div>`;
 const secOf=cat=>{const its=S.items.filter(i=>i.category==cat&&!(i.data&&i.data.pack)),def=SECS[cat];if(!def)return [{k:'a',l:null,items:its}];const used=new Set(),out=def.map(s=>({...s,items:s.ids.map(id=>its.find(i=>i.id==id)).filter(Boolean)}));out.forEach(s=>s.items.forEach(i=>used.add(i.id)));const rest=its.filter(i=>!used.has(i.id));if(rest.length)out[out.length-1].items.push(...rest);return out.filter(s=>s.items.length)};
 const price=i=>{const pc=Object.values(i.data.p).flat();return i.sold_out?t('gone'):(pc.length>1?t('from')+' ':'')+mn(Math.min(...pc))};
 const hotCat=i=>['cf','tea','tk'].includes(i.category),stmw=i=>hotCat(i)?'<span class="stmw" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></span>':'';
-const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
-const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent?' ent':''}" style="--i:${n}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
+const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
+const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
 function goSec(k){const el=document.getElementById('sec-'+k);el&&el.scrollIntoView({behavior:'smooth',block:'start'})}
 function render(){let h='',bar='';document.body.style.overflow=S.scr?'hidden':'';
 	if(S.loading)h=hdr()+`<div class="cats"><span class="skc on"></span><span class="skc"></span><span class="skc"></span><span class="skc"></span></div><div class="list" style="padding-top:24px"><div class="skw"><div class="skph"></div><div class="sktx"><i class="skl w1"></i><i class="skl w2"></i></div></div><div class="grid"><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div></div></div>`;
@@ -4882,7 +5000,7 @@ function vidOk(){const c=navigator.connection,R=document.documentElement;
  if(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||'')))return false;
  return !((navigator.deviceMemory&&navigator.deviceMemory<=2)||MOTION_OFF)}
 function heroMed(it){const src=imgSrc(it),ld=LOADED.has(src),id=e(it.id);
- return `<div class="circ hv${ld?' hasimg':''}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${vidOk()?`<video class="hvv" muted playsinline loop autoplay preload="metadata" poster="/media/v/${id}.webp" src="/media/v/${id}.mp4" onerror="hvErr(this)"></video>`:''}</div>`}
+ return `<div class="circ hv${ld?' hasimg':''}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${vidOk()?`<video class="hvv" muted playsinline loop autoplay preload="metadata" poster="/media/v/${id}.webp" src="/media/v/${id}.mp4" onerror="hvErr(this)"></video>`:''}</div>`}
 function hvErr(v){try{v.pause()}catch{}v.remove()}  // видео не загрузилось - под ним уже лежит фото (а под фото - рисунок)
 const hvAll=()=>document.querySelectorAll('#m video.hvv');
 function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(()=>{})})}
@@ -4894,15 +5012,37 @@ document.addEventListener('visibilitychange',()=>{document.hidden?hvStop():hvPla
 Object.assign(T.ru,{th_l:'Тема',th_sys:'Как в системе',th_lt:'Светлая',th_dk:'Тёмная'});
 Object.assign(T.kk,{th_l:'Көрініс',th_sys:'Жүйедегідей',th_lt:'Ашық',th_dk:'Қараңғы'});
 Object.assign(T.en,{th_l:'Theme',th_sys:'System',th_lt:'Light',th_dk:'Dark'});
-const TH_CUST=new Set(['prod','cart','auth','prof','about','doc','ai']),TH_MQ=matchMedia('(prefers-color-scheme:light)');
-const thPick=()=>{const c=LS.get('dn_theme','system');return c=='light'||c=='dark'?c:'system'};
-function thEff(){if((typeof apMode=='function'&&apMode())||AP.want||S.v=='kas'||(S.scr&&!TH_CUST.has(S.scr)))return 'dark';const c=thPick();return c=='system'?(TH_MQ.matches?'light':'dark'):c}
-function thApply(){const R=document.documentElement,v=thEff();if(R.getAttribute('data-theme')!=v)R.setAttribute('data-theme',v);const m=document.querySelector('meta[name=theme-color]');if(m)m.content=v=='light'?'#f3eadc':'#1a130f'}
+const TH_CUST=new Set(['prod','cart','auth','prof','about','doc','ai','kb','notif']),TH_MQ=matchMedia('(prefers-color-scheme:dark)');
+const thPick=()=>{const c=LS.get('dn_theme','light');return c=='dark'||c=='system'?c:'light'};  // по умолчанию светлая
+function thEff(){if((typeof apMode=='function'&&apMode())||AP.want||S.v=='kas'||(S.scr&&!TH_CUST.has(S.scr)))return 'dark';const c=thPick();return c=='system'?(TH_MQ.matches?'dark':'light'):c}
+function thApply(){const R=document.documentElement,v=thEff();if(R.getAttribute('data-theme')!=v)R.setAttribute('data-theme',v);const m=document.querySelector('meta[name=theme-color]'),pm=document.querySelector('#m .scr.pm:not(.out)');if(m)m.content=pm?(v=='light'?pm.style.getPropertyValue('--sand')||'#dcbf9d':'#1c1410'):v=='light'?'#f3eadc':'#1a130f'}
 function setAppTheme(k){LS.set('dn_theme',k);thApply();if(S.scr=='prof')profileM()}
-const thRow=()=>`<div class="lab">${t('th_l')}</div><div class="pr" style="justify-content:flex-start">${[['system','th_sys'],['light','th_lt'],['dark','th_dk']].map(([k,l])=>cc(thPick()==k,`setAppTheme('${k}')`,t(l))).join('')}</div>`;
+const thRow=()=>`<div class="lab">${t('th_l')}</div><div class="pr" style="justify-content:flex-start">${[['light','th_lt'],['dark','th_dk'],['system','th_sys']].map(([k,l])=>cc(thPick()==k,`setAppTheme('${k}')`,t(l))).join('')}</div>`;
 {const _x=render;render=function(){const r=_x.apply(this,arguments);thApply();return r}}
 {const _x=scr;scr=function(){const r=_x.apply(this,arguments);thApply();return r}}
 try{TH_MQ.addEventListener('change',thApply)}catch{TH_MQ.addListener&&TH_MQ.addListener(thApply)}
+// ---------- витрина v2: карточка товара на весь экран, фото «растворяется» в фоне; карточки меню в цвет студийного фона ----------
+// Цвет фона снят с самих файлов (низ кадра, 6% высоты): первые 6 знаков - фото media/p, вторые - первый кадр видео media/v.
+const SAND={am:'e4c39dd9b997',bat:'e3c198d3b591',cp:'dec19fd1b597',es:'e2c8aad5bca2',fw:'ddc1a3ceb399',gl:'e0c09cd0b291',isk:'ddbe9ed0b397',krc:'e1c09bd3b492',krs:'e5c39fd7b896',la:'d7ba99c9ad8f',lav:'ecceaadec2a1',lbz:'ecd3b7dfc6ad',llb:'ecdabee3d1b9',lmm:'efd0abe1c3a2',lmo:'ebd1afdec3a5',lpe:'e8cfafd9c0a3',pl:'d6ba9cc6ac92',pn:'e0c2a0cfb396',ra:'e5c7a3d7ba9a',ta:'e6cdb1d9c1a9',tb:'c7a280bd9a7b',tc:'e3c6a1d5ba9a',tg:'e8d0b1dbc4a9',tk1:'e6c8a4d7bc9b',tk2:'e6cca9d9c0a1',to:'e8c7a1d9ba99'};
+function sandOf(it,v){const c=it&&SAND[it.id];return c?'#'+(v?c.slice(6):c.slice(0,6)):''}
+function mcC(i){return hasMed(i)?' mc':''}
+function mcS(i){const c=hasMed(i)&&sandOf(i,0);return c?';--cs:'+c:''}
+// карточка товара: свои фото/видео - полноэкранная витрина (класс pm), остальные - прежний круг, но в том же стиле (p2)
+function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m .scr[data-n=prod]:not(.out)');if(!sc||!it)return;
+ sc.classList.add('p2');const on=hasMed(it)&&!!sc.querySelector('.circ.hv');sc.classList.toggle('pm',on);
+ const ds=it.data&&it.data.ds,tx=ds?(typeof ds=='string'?ds:ds[S.L]||ds.ru||''):'';let pd=sc.querySelector('.pds');
+ if(tx&&!(it.data&&it.data.pack)){if(!pd){pd=document.createElement('p');pd.className='pds';const tp=sc.querySelector('.top');on?tp.after(pd):(sc.querySelector('.circ')||tp).after(pd)}if(pd.textContent!=tx)pd.textContent=tx}else if(pd)pd.remove();
+ if(on&&!sc.style.getPropertyValue('--sand'))sc.style.setProperty('--sand',sandOf(it,!!sc.querySelector('video.hvv'))||'#dcbf9d');thApply()}
+{const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDeco();return r}}
+// видео не загрузилось - под ним фото, а оно чуть светлее первого кадра: фон подстраивается под фото
+{const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it){const c=sandOf(it,0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
+// закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
+// вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
+{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
+let TH_T=0;
+{const _x=cl;cl=function(now){const R=document.documentElement,was=R.getAttribute('data-theme'),o=document.querySelector('#m .scr:not(.out)');clearTimeout(TH_T);const r=_x.apply(this,arguments);
+ if(!now&&!RM&&o&&o.classList.contains('out')&&was&&thEff()!=was){R.setAttribute('data-theme',was);TH_T=setTimeout(()=>{TH_T=0;thApply()},390)}return r}}
+{const _x=thApply;thApply=function(){if(TH_T&&!S.scr)return;clearTimeout(TH_T);TH_T=0;return _x.apply(this,arguments)}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
