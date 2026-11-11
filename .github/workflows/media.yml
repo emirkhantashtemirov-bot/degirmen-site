@@ -8,9 +8,10 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg webp
+      - run: npm i --no-save --silent ffmpeg-static@5 && echo "$PWD/node_modules/ffmpeg-static" >> $GITHUB_PATH
       - name: fetch and compress
         env:
           BASE: https://d8j0ntlcm91z4.cloudfront.net/user_3LvXW9MOuZrwO6YjV6Tj7iCTolv
@@ -21,16 +22,15 @@ jobs:
             case "$f" in
               *.png|*.jpg|*.jpeg|*.webp)
                 [ -f "media/p/$id.webp" ] && continue
-                curl -fsSL -o "tmp/$id.src" "$BASE/$f" || { echo "FAIL $id"; continue; }
-                cwebp -quiet -q 90 -sharp_yuv -resize 1200 1200 "tmp/$id.src" -o "media/p/$id.webp"
-                cwebp -quiet -q 84 -resize 420 420 "tmp/$id.src" -o "media/p/$id.s.webp"
+                curl -fsSL -m 120 -o "tmp/$id.src" "$BASE/$f" || { echo "FAIL $id"; continue; }
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=1200:1200:flags=lanczos" -c:v libwebp -quality 90 -compression_level 6 "media/p/$id.webp"
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=420:420:flags=lanczos" -c:v libwebp -quality 84 "media/p/$id.s.webp"
                 ;;
               *.mp4)
                 [ -f "media/v/$id.mp4" ] && continue
-                curl -fsSL -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
+                curl -fsSL -m 120 -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
                 ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2:flags=lanczos" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
-                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -vf "scale=720:-2" "tmp/$id.png"
-                cwebp -quiet -q 88 "tmp/$id.png" -o "media/v/$id.webp"
+                                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -c:v libwebp -quality 88 "media/v/$id.webp"
                 ;;
             esac
           done < media/src.tsv
