@@ -1595,6 +1595,39 @@ html[data-theme=light] .kb{background:#5a4536}
 @keyframes iospulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 @keyframes iosarr{0%,100%{transform:translateY(-4px);opacity:.5}50%{transform:translateY(3px);opacity:1}}
 html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
+
+/* ---------- карточка товара: прокрутка вниз как у флагманов (свой вариант) ----------
+   герой (фото/видео) медленнее уезжает, чуть увеличивается и бледнеет; крупное название сжимается в верхнюю панель;
+   секции выбора наплывают на героя. Только transform/opacity, расчёт в requestAnimationFrame. */
+.scr.pm{--py:0px;--ps:1;--po:1;--tp:0}
+.scr.pm .circ.hv{aspect-ratio:4/5;max-height:74vh;position:relative}
+.scr.pm .circ.hv>img,.scr.pm .circ.hv>video,.scr.pm .circ.hv>.phe{transform:translate3d(0,var(--py),0) scale(var(--ps));opacity:var(--po);transform-origin:50% 40%;will-change:transform,opacity}
+.scr.pm .tiles{margin-top:0;margin-bottom:0;padding-top:22px}
+.scr.pm #ppair:empty{display:none}
+.scr.pm #ppair{padding-bottom:0}
+.scr.pm::after{content:'';display:block;flex:none;height:calc(124px + env(safe-area-inset-bottom))}
+.scr.pm .pt{transform:translate3d(0,calc(var(--tp)*-10px),0);opacity:calc(1 - var(--tp));transform-origin:0 100%}
+/* лист с выбором наплывает на героя: светлая панель со скруглением, при полной прокрутке закрывает экран под панелью с названием */
+.scr.pm{position:fixed}
+.scr.pm::before{content:'';position:absolute;left:0;right:0;top:var(--pnt,60vh);height:var(--pnh,100vh);z-index:1;border-radius:30px 30px 0 0;background:color-mix(in srgb,var(--sand,#dcbf9d) 30%,#fbf5ec);box-shadow:0 -14px 30px -18px rgba(92,60,30,.45),inset 0 1px 0 rgba(255,255,255,.7);pointer-events:none}
+.scr.pm>:not(.circ):not(.pbar):not(.pmbar):not(.rb){position:relative;z-index:2}
+.scr.pm .top>.pt{position:relative;z-index:2}
+.scr.pm .pt{margin-top:-6px!important;padding-top:0}
+.scr.pm::after{height:var(--sp,124px)!important}
+.scr.pm .circ.hv{-webkit-mask-image:none!important;mask-image:none!important}
+.scr.pm .circ.hv::after{content:'';position:absolute;left:0;right:0;bottom:0;height:34%;z-index:3;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0),color-mix(in srgb,var(--sand,#dcbf9d) 70%,transparent));animation:none;transform:none}
+.pmbar{position:fixed;left:0;right:0;top:0;z-index:7;display:flex;align-items:center;min-height:calc(68px + env(safe-area-inset-top));box-sizing:border-box;padding:env(safe-area-inset-top) 72px 0 22px;background:color-mix(in srgb,color-mix(in srgb,var(--sand,#dcbf9d) 30%,#fbf5ec) 88%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 rgba(92,60,30,.1),0 12px 26px -20px rgba(92,60,30,.6);opacity:var(--tp);pointer-events:none;color:#2a1d15}
+.pmbar b{font-size:18px;font-weight:700;letter-spacing:-.2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate3d(0,calc((1 - var(--tp))*12px),0)}
+.scr.pm .rb.dk{z-index:9}.scr.pm .pbar{z-index:8}
+/* пищевая ценность выбранного размера - строка поверх героя */
+.pmnut{position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));z-index:4;display:flex;align-items:stretch;gap:0;padding:6px 4px;border-radius:18px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;opacity:calc(1 - var(--tp)*1.6);transform:translate3d(0,calc(var(--py)*-.4),0);pointer-events:none;max-width:calc(100% - 92px)}
+.pmnut span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:46px;padding:0 8px;line-height:1.1}
+.pmnut span+span{box-shadow:-1px 0 0 rgba(92,60,30,.14)}
+.pmnut b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+.pmnut small{font-size:10.5px;font-weight:600;color:#5c4636;margin-top:2px;white-space:nowrap}
+.pmnut span:first-child b{color:#9a3a22}
+.scr.pm.hasnut .morw .kct{display:none}
+@media (max-width:370px){.pmnut span{min-width:40px;padding:0 6px}.pmnut b{font-size:14px}}
 </style><style id="splcss">
 /* ---------- заставка (#spl) и экран «нет интернета» (#off): работают без приложения и без сети ---------- */
 #spl{position:fixed;inset:0;z-index:2147483000;background:#efe2cd;background:radial-gradient(120% 70% at 50% 28%,#f8efe2 0,#ecdcc4 62%,#e2cdb0 100%);overflow:hidden;contain:strict;transition:opacity .62s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);color:#2a1d15;font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
@@ -5244,6 +5277,27 @@ if(insStand()&&!LS.get('dn_ins_ty',0)){LS.set('dn_ins_ty',1);setTimeout(()=>toas
 if(window.DNSPL&&!DNSPL.gone)addEventListener('dnsplash',insArm,{once:true});else setTimeout(insArm,800);
 // заказ без связи: не отправляем «в никуда», а показываем экран «нет интернета» (корзина остаётся)
 {const _x=place;place=async function(){if(window.DNOFF&&(navigator.onLine===false||DNOFF.isDown())){DNOFF.show();return}return _x.apply(this,arguments)}}
+// ---------- карточка товара: переход при прокрутке (герой, компактная панель с названием) и строка КБЖУ ----------
+Object.assign(T.ru,{pn_p:'белки',pn_f:'жиры',pn_c:'углев.'});Object.assign(T.kk,{pn_p:'ақуыз',pn_f:'май',pn_c:'көмірс.'});Object.assign(T.en,{pn_p:'protein',pn_f:'fat',pn_c:'carbs'});
+function pmNutHtml(it){const N=it&&it.data&&it.data.nut;if(!N||!S.sel||S.sel.id!=it.id)return '';try{const f=Object.keys(N).includes(S.sel.f)?S.sel.f:Object.keys(N)[0],n=nutCalc(it,f,S.sel.z||0,S.sel),g=t('nu_g'),r=x=>String(Math.round(x));
+ return `<span><b>${n.k}</b><small>${t('nu_k')}</small></span><span><b>${r(n.p)}</b><small>${g} ${t('pn_p')}</small></span><span><b>${r(n.f)}</b><small>${g} ${t('pn_f')}</small></span><span><b>${r(n.c)}</b><small>${g} ${t('pn_c')}</small></span>`}catch{return ''}}
+function pmDress(){const sc=document.querySelector('#m .scr.pm:not(.out)');if(!sc)return;const it=S.sel&&itemOf(S.sel.id);if(!it)return;const hero=sc.querySelector('.circ.hv');
+ let bar=sc.querySelector('.pmbar');if(!bar){bar=document.createElement('div');bar.className='pmbar';bar.setAttribute('aria-hidden','true');bar.innerHTML='<b></b>';sc.prepend(bar)}const nmx=nm(it.name);if(bar.firstChild.textContent!=nmx)bar.firstChild.textContent=nmx;
+ const nh=pmNutHtml(it);let nr=hero&&hero.querySelector('.pmnut');sc.classList.toggle('hasnut',!!nh);
+ if(nh&&hero){if(!nr){nr=document.createElement('div');nr.className='pmnut';hero.appendChild(nr)}if(nr.innerHTML!=nh)nr.innerHTML=nh}else if(nr)nr.remove();
+ pmLay(sc);if(!sc._pmf){sc._pmf=1;pmBind(sc)}else pmFrame(sc)}
+function pmBind(sc){let q=0;const run=()=>{q=0;pmFrame(sc)};sc.addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(run)}},{passive:true});pmFrame(sc)}
+function pmLay(sc){const hero=sc.querySelector('.circ.hv');if(!hero)return;const hh=hero.offsetHeight,top=hero.offsetTop+hh-30;sc.style.setProperty('--pnt',top+'px');
+ sc.style.setProperty('--sp','124px');const kids=[...sc.children].filter(x=>!x.matches('.pbar,.pmbar,.rb,.circ')&&x.offsetHeight);let bot=0;kids.forEach(x=>{bot=Math.max(bot,x.offsetTop+x.offsetHeight)});
+ const pt=sc.querySelector('.pt'),tt=pt?pt.offsetTop+pt.offsetHeight:top+60,need=Math.round(innerHeight-68-(bot-top)+(tt-top)+8),sp=Math.max(124,need);sc.style.setProperty('--sp',sp+'px');sc.style.setProperty('--pnh',(bot+sp-top+40)+'px');sc._hh=0}
+function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.circ.hv'),pt=sc.querySelector('.pt');if(!hero)return;
+ if(!sc._hh||sc._hw!=innerWidth){sc._hw=innerWidth;sc._hh=hero.offsetHeight||1;sc._tt=pt?pt.offsetTop+pt.offsetHeight:sc._hh}
+ const y=Math.max(0,sc.scrollTop),calm=MOTION_OFF||RM,p=Math.min(1,y/sc._hh),bh=(window.visualViewport?0:0)+68,
+  tp=Math.min(1,Math.max(0,(y-(sc._tt-bh-64))/52)),st=sc.style;
+ st.setProperty('--py',calm?'0px':(y*.42).toFixed(1)+'px');st.setProperty('--ps',calm?'1':(1+.07*p).toFixed(4));st.setProperty('--po',calm?'1':(1-.5*p).toFixed(3));
+ st.setProperty('--tp',calm?(tp>.5?'1':'0'):tp.toFixed(3))}
+{const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDress();return r}}
+addEventListener('resize',()=>{const sc=document.querySelector('#m .scr.pm:not(.out)');if(sc){pmLay(sc);pmFrame(sc)}},{passive:true});
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
