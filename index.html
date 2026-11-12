@@ -1365,7 +1365,21 @@ html[data-theme=light] .szi>span{box-shadow:0 6px 14px rgba(42,29,21,.25)}
 html[data-theme=light] .shw::before{background:rgba(42,29,21,.38)}
 html[data-theme=light] .shin{box-shadow:0 -20px 50px rgba(92,60,30,.18)}
 /* Brewsell: тёмная фирменная плашка остаётся тёмной, текст на ней светлый */
-html[data-theme=light] .bwcard{--tx:#f3ebe1;--mu:#b9a796;color:#f3ebe1;box-shadow:0 10px 26px rgba(42,29,21,.18)}
+/* Brewsell в светлой ленте: кремовая карточка в стиле меню, марка - фирменный красный, флаг - тонкий акцент */
+html[data-theme=light] .bwcard{--tx:#2a1d15;--mu:#6e5848;color:#2a1d15;gap:6px;padding:16px 16px 16px 4px;border:0;border-radius:28px;background:radial-gradient(70% 90% at 22% 50%,#fffaf2 0,rgba(255,250,242,0) 70%),linear-gradient(135deg,#f8eddc,#f1e2cb);box-shadow:0 1px 2px rgba(92,60,30,.08),0 12px 26px -12px rgba(92,60,30,.32),inset 0 1px 0 rgba(255,255,255,.6),inset 0 0 0 1px rgba(92,60,30,.07)}
+html[data-theme=light] .bwcard::before{left:auto;right:24px;top:0;width:36px;height:4px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,#2F5E3A 33.3%,#fffaf2 33.3% 66.6%,#B5302A 66.6%);box-shadow:0 1px 2px rgba(92,60,30,.15)}
+html[data-theme=light] .bws{color:#b5302a;text-shadow:none;font-size:31px}
+html[data-theme=light] .bwn{color:#2a1d15;font-size:14px;line-height:1.3;margin-top:6px}
+html[data-theme=light] .bwd{color:#6e5848;font-size:13px;line-height:1.4}
+html[data-theme=light] .bwmore{color:#8a5414;font-weight:600;font-size:13px;min-height:28px;display:inline-flex;align-items:center}
+html[data-theme=light] .bwpr{margin-top:6px;flex-wrap:nowrap}
+html[data-theme=light] .bwpr b{color:#2a1d15;font-size:20px;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+html[data-theme=light] .bwbtn{min-height:44px;box-sizing:border-box;padding:0 20px;font-size:14px;background:#b8432c;box-shadow:0 8px 18px -8px rgba(184,67,44,.7);white-space:nowrap;flex:none}
+html[data-theme=light] .bwbtn::after{box-shadow:0 0 0 2px rgba(184,67,44,.45)}
+html[data-theme=light] .bwp::before{content:'';position:absolute;left:50%;top:50%;width:122px;height:122px;margin:-61px 0 0 -61px;border-radius:50%;background:radial-gradient(closest-side,rgba(214,170,122,.38),rgba(214,170,122,0))}
+html[data-theme=light] .bwp-sh{background:radial-gradient(rgba(92,60,30,.35),transparent 70%)}
+html[data-theme=light] .bwo i{background:radial-gradient(circle at 35% 30%,#9a6038,#3a1f10 70%)}
+@media (max-width:370px){html[data-theme=light] .bwcard .bwp{width:118px;--w:64px;--h:122px;--d:26px}html[data-theme=light] .bwpr b{font-size:18px}html[data-theme=light] .bwbtn{padding:0 16px}}
 /* вход: Telegram */
 html[data-theme=light] .tgor::before,html[data-theme=light] .tgor::after{background:rgba(42,29,21,.12)}
 html[data-theme=light] .tgb.wait{color:#1677b3}
@@ -1468,7 +1482,7 @@ html[data-theme=dark] .wide.mc .wp span,html[data-theme=dark] .sm.mc .wp span{co
 /* --- лента в светлой теме: одна система --- */
 /* вкладки: без полосы - фон вкладок мягко уходит в прозрачность снизу */
 html[data-theme=light] .pg .cats{background:transparent!important;transition:background-color .2s}
-html[data-theme=light] .pg .cats.stk{background:linear-gradient(to bottom,rgba(243,234,220,.97) 0,rgba(243,234,220,.93) 62%,rgba(243,234,220,0) 100%)!important}
+html[data-theme=light] .pg .cats.stk{background:rgba(243,234,220,.88)!important;-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 rgba(92,60,30,.08),0 10px 24px -18px rgba(92,60,30,.45)}
 html[data-theme=dark] .pg .cats{background:transparent!important;transition:background-color .2s}
 html[data-theme=dark] .pg .cats.stk{background:linear-gradient(to bottom,rgba(26,19,15,.97) 0,rgba(26,19,15,.92) 62%,rgba(26,19,15,0) 100%)!important}
 html[data-theme=light] .ctit{color:var(--ink)}
@@ -1635,7 +1649,7 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 #off .of1{background:#b8432c;color:#fff;box-shadow:0 10px 22px -10px rgba(184,67,44,.7)}
 #off .of2{background:rgba(42,29,21,.06);color:#2a1d15}
 #off button:focus-visible{outline:2px solid #b8432c;outline-offset:2px}
-#offp{position:fixed;z-index:2147481000;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translate(-50%,-80px);display:flex;align-items:center;gap:8px;padding:0 16px 0 12px;min-height:40px;border-radius:999px;background:#2a1d15;color:#fbf5ec;font:600 13px/1 Manrope,-apple-system,Arial,sans-serif;box-shadow:0 10px 26px rgba(42,29,21,.3);transition:transform .45s cubic-bezier(.2,.8,.2,1);cursor:pointer;border:0;white-space:nowrap}
+#offp{position:fixed;z-index:2147481000;left:50%;bottom:calc(94px + env(safe-area-inset-bottom));transform:translate(-50%,160px);display:flex;align-items:center;gap:8px;padding:0 16px 0 12px;min-height:40px;border-radius:999px;background:#2a1d15;color:#fbf5ec;font:600 13px/1 Manrope,-apple-system,Arial,sans-serif;box-shadow:0 10px 26px rgba(42,29,21,.3);transition:transform .45s cubic-bezier(.2,.8,.2,1);cursor:pointer;border:0;white-space:nowrap}
 #offp.spon{transform:translate(-50%,0)}
 #offp b{width:8px;height:8px;border-radius:50%;background:#e0a24a;animation:offdot 1.4s ease-in-out infinite}
 #offp.ofok{background:#3f7a4c}#offp.ofok b{background:#bfe6c4;animation:none}
@@ -1673,7 +1687,7 @@ d.getElementById('offh').textContent=x[0];d.getElementById('offt').textContent=x
 function ping(){var u='/robots.txt?ping='+Date.now();return (of||fetch).call(window,u,{method:'HEAD',cache:'no-store'}).then(function(r){return true},function(){return false})}
 function stat(s){d.getElementById('ofs').textContent=s}
 function show(){if(!st.down){st.down=1;st.n=0}if(st.min){pill.classList.remove('ofok');pill.classList.add('spon');schedule();return}
- if(!st.open){st.open=1;el.classList.add('spon');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('ofvis')})});try{d.getElementById('ofr').focus({preventScroll:true})}catch(e){}}schedule()}
+ if(!st.open){st.open=1;el.classList.add('spon');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('ofvis')})});}schedule()}
 function close(){el.classList.remove('ofvis');setTimeout(function(){if(!el.classList.contains('ofvis'))el.classList.remove('spon')},360);st.open=0}
 function schedule(){clearTimeout(st.tm);clearInterval(st.cd);var w=Math.min(4000*Math.pow(1.5,st.n),15000),end=Date.now()+w;el.classList.remove('oftry');
  var f=function(){stat(x[3].replace('{s}',Math.max(1,Math.ceil((end-Date.now())/1000))))};f();st.cd=setInterval(f,500);st.tm=setTimeout(attempt,w)}
@@ -5202,7 +5216,7 @@ if(S.items.length&&window.DNSPL)DNSPL.ready();
 // Адресная строка пропадает только у установленного приложения (открытого с экрана «Домой»). Не навязываемся: после заставки и пары секунд
 // или первой прокрутки, один раз за сессию, «Не сейчас» - тишина 14 дней; в установленном приложении не показываем.
 Object.assign(T.ru,{in_t:'Degirmen на экране «Домой»',in_d:'Открывается за секунду, без адресной строки, и сообщит, когда заказ готов.',in_go:'Установить',in_no:'Не сейчас',in_ty:'Готово! Degirmen теперь на экране «Домой»',
- io_t:'Добавьте Degirmen на экран «Домой»',io_d:'Так меню откроется как приложение - на весь экран, без адресной строки.',io_1:'Нажмите «Поделиться» внизу Safari',io_2:'Выберите «На экран «Домой»»',io_3:'Нажмите «Добавить» - готово',io_ok:'Понятно'});
+ io_t:'Добавьте Degirmen на экран «Домой»',io_d:'Так меню откроется как приложение - на весь экран, без адресной строки.',io_1:'Нажмите «Поделиться» внизу Safari',io_2:'Выберите «На экран „Домой“»',io_3:'Нажмите «Добавить» - готово',io_ok:'Понятно'});
 Object.assign(T.kk,{in_t:'Degirmen басты экранда',in_d:'Бір секундта ашылады, мекенжай жолынсыз, тапсырыс дайын болғанда хабарлайды.',in_go:'Орнату',in_no:'Қазір емес',in_ty:'Дайын! Degirmen енді басты экранда',
  io_t:'Degirmen-ді басты экранға қосыңыз',io_d:'Сонда мәзір қосымша сияқты ашылады - толық экранда, мекенжай жолынсыз.',io_1:'Safari төменгі жағындағы «Бөлісу» түймесін басыңыз',io_2:'«Басты экранға» тармағын таңдаңыз',io_3:'«Қосу» түймесін басыңыз - дайын',io_ok:'Түсінікті'});
 Object.assign(T.en,{in_t:'Put Degirmen on your home screen',in_d:'Opens in a second, without the address bar, and tells you when your order is ready.',in_go:'Install',in_no:'Not now',in_ty:'Done! Degirmen is now on your home screen',
