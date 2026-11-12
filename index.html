@@ -469,7 +469,7 @@ html[data-vtdir=back]::view-transition-new(root){animation-name:vtInL}
 .cv{min-height:100vh;min-height:100lvh}
 
 /* Анимации сдвигают ленту и экраны вбок за край экрана. На Android/мобильных это расширяло страницу,
-   браузер перемасштабировал её — и нижняя панель «Заказы / Касса / Корзина» с кнопкой ИИ прыгала. Обрезаем всё по ширине экрана. */
+   браузер перемасштабировал её - и нижняя панель «Заказы / Касса / Корзина» с кнопкой ИИ прыгала. Обрезаем всё по ширине экрана. */
 html,body{overflow-x:hidden;overflow-x:clip}
 #app,#m{overflow-x:clip}
 
@@ -483,7 +483,7 @@ html[data-vtdir=prodin]::view-transition-old(root){animation:none}
 html[data-vtdir=prodin]::view-transition-new(root){animation:vtqi .2s ease-out both}
 @keyframes vtq{to{opacity:0}}
 @keyframes vtqi{from{opacity:0}}
-/* для холодных напитков температура видна, но неактивна — блоки ниже не прыгают */
+/* для холодных напитков температура видна, но неактивна - блоки ниже не прыгают */
 .gsec.off{opacity:.35;pointer-events:none;transition:opacity .25s}
 
 /* --- живой фон: тёплые пятна света, медленно летящие зёрна, зерно плёнки --- */
@@ -611,7 +611,7 @@ html.nomotion .rtc,html.nomotion .rts.on,html.nomotion .rttg{animation:none}
 .lvi{width:48px;height:48px;flex:none;border-radius:15px;display:grid;place-items:center;background:rgba(217,165,74,.14)}
 .lvh small{display:block;color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
 .lvh b{font-size:20px}
-.lvbl{transform-origin:24px 20px;animation:gmspin 8s linear infinite}
+.lvbl{transform-origin:24px 20px;animation:gmspin 8s linear infinite}.dnmill .lvbl{transform-box:view-box;transform-origin:32px 23px}.mlw{line-height:0;vertical-align:middle}
 html.nomotion .lvbl{animation:none}
 .lvbar{height:8px;border-radius:4px;background:rgba(243,235,225,.08);margin:14px 0 8px;overflow:hidden}
 .lvbar i{display:block;height:100%;width:calc(var(--p)*100%);border-radius:4px;background:linear-gradient(90deg,#b8432c,#e9b949);animation:lvgrow 1s var(--e) both}
@@ -1149,9 +1149,9 @@ textarea#kbtx{width:100%;min-height:96px;padding:14px 16px;border:0;border-radiu
 .hd .lg{display:flex;align-items:center;gap:9px}
 .lgm{width:22px;height:22px;flex:none;display:block;color:var(--gold)}
 .lgm svg{width:100%;height:100%;display:block}
-.lgm .lgbd,.mill .lgbd{transform-box:view-box;transform-origin:32px 23px}
-.mill{display:block;width:100%;height:100%;overflow:visible}.mill .mlh{fill:var(--mill-acc,#b8432c)}
-.lgm{width:24px;height:24px}html[data-theme=light] .lgm{color:var(--ink)}html[data-theme=dark] .mill{--mill-acc:#e0a24a}
+.lgm .lgbd,.dnmill .lgbd{transform-box:view-box;transform-origin:32px 23px}
+.dnmill{display:block;width:100%;height:100%;overflow:visible}.dnmill .mlh{fill:var(--mill-acc,#b8432c)}
+.lgm{width:24px;height:24px}html[data-theme=light] .lgm{color:var(--ink)}html[data-theme=dark] .dnmill{--mill-acc:#e0a24a}
 html.busy .lgm .lgbd{animation:lgspin 1.15s linear infinite}
 html.busy .lgm{color:var(--gold-t)}
 @keyframes lgspin{to{transform:rotate(360deg)}}
@@ -1561,7 +1561,7 @@ html[data-theme=light] .kb{background:#5a4536}
 .insw.on{transform:none;opacity:1;pointer-events:auto}
 .insc{position:relative;display:grid;grid-template-columns:52px 1fr;gap:12px 14px;align-items:center;padding:16px 16px 14px;border-radius:24px;background:#fffaf2;color:#2a1d15;box-shadow:0 0 0 1px rgba(92,60,30,.1),0 18px 40px -12px rgba(92,60,30,.35)}
 .insi{width:52px;height:52px;border-radius:15px;background:radial-gradient(80% 70% at 50% 30%,#fbf4e8,#efe2cd);display:flex;align-items:center;justify-content:center;color:#2a1d15;box-shadow:inset 0 0 0 1px rgba(92,60,30,.08)}
-.insi .mill{width:38px;height:38px}
+.insi .dnmill{width:38px;height:38px}
 .inst{display:flex;flex-direction:column;gap:3px;padding-right:30px;min-width:0}
 .inst b{font-size:16px;line-height:1.25}
 .inst span{font-size:13.5px;line-height:1.4;color:#6e5848}
@@ -1579,7 +1579,7 @@ html[data-theme=light] .kb{background:#5a4536}
 .iosa{display:flex;justify-content:center;margin-bottom:14px}
 .iosph{position:relative;width:200px;height:118px;border-radius:24px 24px 0 0;background:linear-gradient(#efe2cd,#e7d6bc);box-shadow:inset 0 0 0 1px rgba(92,60,30,.12);overflow:hidden}
 .iosic{position:absolute;left:50%;top:16px;width:46px;height:46px;margin-left:-23px;border-radius:13px;background:#fbf5ec;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -6px rgba(92,60,30,.4)}
-.iosic .mill{width:34px;height:34px}
+.iosic .dnmill{width:34px;height:34px}
 .iosbar{position:absolute;left:0;right:0;bottom:0;height:40px;background:rgba(255,250,242,.92);display:flex;align-items:center;justify-content:space-around;box-shadow:0 -1px 0 rgba(92,60,30,.1)}
 .iosbar i{width:14px;height:3px;border-radius:2px;background:rgba(42,29,21,.18)}
 .iosbar b{display:flex;color:#1677b3;animation:iospulse 1.6s ease-in-out infinite}
@@ -1628,6 +1628,31 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 .pmnut span:first-child b{color:#9a3a22}
 .scr.pm.hasnut .morw .kct{display:none}
 @media (max-width:370px){.pmnut span{min-width:40px;padding:0 6px}.pmnut b{font-size:14px}}
+
+/* ---------- светлая тема: полировка экранов гостя (v3) ---------- */
+html[data-theme=light] :is(.id,.rpt b,.ftr .tt b,.sbig,.cashs .num){font-family:var(--f);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+html[data-theme=light] .card .id{font-weight:800;font-size:20px}
+html[data-theme=light] .pushb{background:rgba(42,29,21,.05);border:1px solid rgba(42,29,21,.1);font-size:15px;min-height:46px;color:#2a1d15}
+html[data-theme=light] .rtst{color:rgba(122,84,42,.45)}
+html[data-theme=light] .rtst button,html[data-theme=light] .rtst span{min-width:44px;min-height:44px}
+html[data-theme=light] .st{background:rgba(42,29,21,.07);color:#5c4636}
+html[data-theme=light] .mu{color:#6b5444}
+html[data-theme=light] .lab{color:#5c4636}
+html[data-theme=light] .rb{min-width:44px;min-height:44px}
+html[data-theme=light] .tst{background:#2a1d15;color:#fbf5ec;border:0;box-shadow:0 12px 30px -10px rgba(42,29,21,.5);font-weight:600}
+html[data-theme=light] .tst.bad{background:#a5381c;color:#fff}
+html[data-theme=light] .payov{background:rgba(243,234,220,.86);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#2a1d15}
+
+/* мини-игра в светлом приложении: рамка, меню и кнопки светлые; сама сцена на холсте прежняя */
+html[data-theme=light] .gmst{box-shadow:0 0 0 1px rgba(92,60,30,.12),0 22px 44px -18px rgba(92,60,30,.45)}
+html[data-theme=light] .gmm{background:rgba(251,245,236,.95);color:#2a1d15;border:0;box-shadow:0 18px 40px -14px rgba(42,29,21,.55),inset 0 0 0 1px rgba(255,255,255,.7);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+html[data-theme=light] .gmhb{background:#fffaf2;border:0;color:#2a1d15;box-shadow:0 0 0 1px rgba(92,60,30,.1),0 8px 18px -10px rgba(92,60,30,.35);min-height:44px}
+html[data-theme=light] .gmsc div{background:#f3e8d8}
+html[data-theme=light] .gmsc span{color:#6b5444}
+html[data-theme=light] .gmsec{border-color:rgba(42,29,21,.16);color:#2a1d15;min-height:46px}
+html[data-theme=light] .gmnew{color:#b8432c}
+html[data-theme=light] .gmrow.me{background:rgba(184,67,44,.12)}
+html[data-theme=light] .gmtap{background:rgba(251,245,236,.92);color:#2a1d15;box-shadow:0 8px 20px -8px rgba(42,29,21,.5)}
 </style><style id="splcss">
 /* ---------- заставка (#spl) и экран «нет интернета» (#off): работают без приложения и без сети ---------- */
 #spl{position:fixed;inset:0;z-index:2147483000;background:#efe2cd;background:radial-gradient(120% 70% at 50% 28%,#f8efe2 0,#ecdcc4 62%,#e2cdb0 100%);overflow:hidden;contain:strict;transition:opacity .62s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);color:#2a1d15;font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
@@ -1660,10 +1685,10 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 #off .ofb{position:relative;width:100%;max-width:520px;box-sizing:border-box;margin:0 auto;background:#fbf5ec;border-radius:30px 30px 0 0;padding:26px 24px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -18px 50px rgba(42,29,21,.22);text-align:center;transform:translateY(40px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 #off.ofvis .ofb{transform:none}
 #off .ofi{position:relative;width:150px;height:130px;margin:2px auto 8px}
-#off .ofi .mill{position:absolute;left:39px;top:10px;width:72px;height:72px;color:#2a1d15}
-#off .ofi .mill .mlh{fill:#b8432c}
-#off .ofi .mill .lgbd{transform-box:view-box;transform-origin:32px 23px;animation:offsway 3.2s ease-in-out infinite}
-#off.oftry .ofi .mill .lgbd{animation:offspin 1.6s cubic-bezier(.5,0,.5,1) infinite}
+#off .ofi .dnmill{position:absolute;left:39px;top:10px;width:72px;height:72px;color:#2a1d15}
+#off .ofi .dnmill .mlh{fill:#b8432c}
+#off .ofi .dnmill .lgbd{transform-box:view-box;transform-origin:32px 23px;animation:offsway 3.2s ease-in-out infinite}
+#off.oftry .ofi .dnmill .lgbd{animation:offspin 1.6s cubic-bezier(.5,0,.5,1) infinite}
 #off .ofi .ofg{position:absolute;left:8px;right:8px;bottom:36px;height:10px;border-radius:50%;background:radial-gradient(closest-side,rgba(92,60,30,.2),rgba(92,60,30,0))}
 #off .ofi .ofw{position:absolute;top:26px;height:2px;border-radius:2px;background:#c9ab86;opacity:.0}
 #off .ofi .ofw.ofa{left:0;width:30px;animation:offwind 3.2s ease-in-out infinite}
@@ -1692,7 +1717,7 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 @keyframes offzz{0%,100%{opacity:0;transform:translateY(4px)}40%,70%{opacity:1;transform:none}}
 @keyframes offdot{50%{opacity:.35}}
 html.nomotion #off *,html.nomotion #offp *{animation:none!important}
-</style></head><body><div id="spl" aria-hidden="true"><img class="spm splo" alt="" decoding="async"><img class="spm" alt="" decoding="async"><video class="spm" muted playsinline preload="none" disablepictureinpicture></video><div class="spb"><svg viewBox="0 0 64 64" class="mill spk" aria-hidden="true"><defs><mask id="splk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#splk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><div class="spw"><i style="--i:0">D</i><i style="--i:1">E</i><i style="--i:2">G</i><i style="--i:3">I</i><i style="--i:4">R</i><i style="--i:5">M</i><i style="--i:6">E</i><i style="--i:7">N</i></div><div class="spt">Navoi 310A</div></div><div class="spp"></div></div>
+</style></head><body><div id="spl" aria-hidden="true"><img class="spm splo" alt="" decoding="async"><img class="spm" alt="" decoding="async"><video class="spm" muted playsinline preload="none" disablepictureinpicture></video><div class="spb"><svg viewBox="0 0 64 64" class="dnmill spk" aria-hidden="true"><defs><mask id="splk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#splk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><div class="spw"><i style="--i:0">D</i><i style="--i:1">E</i><i style="--i:2">G</i><i style="--i:3">I</i><i style="--i:4">R</i><i style="--i:5">M</i><i style="--i:6">E</i><i style="--i:7">N</i></div><div class="spt">Navoi 310A</div></div><div class="spp"></div></div>
 <script>/* заставка: один раз за сессию, мин. 1.2 с, до готовности данных (не дольше 6 с); работает без сети */
 addEventListener('beforeinstallprompt',function(x){x.preventDefault();window.__bip=x});
 (function(){var d=document,R=d.documentElement,el=d.getElementById('spl'),q=location.search,ls=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
@@ -1709,7 +1734,7 @@ function hide(){if(done)return;done=1;el.classList.add('spout');R.classList.remo
 function tick(){var w=Date.now()-t0;if(rdy&&w>=1500)hide();else if(w>=6000)hide();else setTimeout(tick,rdy?1500-w:120)}
 R.classList.add('splon');window.DNSPL={ready:function(){rdy=1},gone:false,hide:hide};setTimeout(tick,120);
 })();</script>
-<div id="off" role="dialog" aria-modal="true" aria-labelledby="offh"><div class="ofb"><div class="ofi" aria-hidden="true"><span class="ofw ofa"></span><span class="ofw ofb2"></span><svg viewBox="0 0 64 64" class="mill" aria-hidden="true"><defs><mask id="offk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#offk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><span class="ofz">z</span><span class="ofz">z</span><span class="ofg"></span></div><h2 id="offh"></h2><p id="offt"></p><div class="ofs2" aria-live="polite"><i></i><span id="ofs"></span></div><div class="ofbt"><button class="of1" id="ofr" type="button"></button><button class="of2" id="ofm" type="button"></button></div></div></div><button id="offp" type="button" aria-live="polite"><b></b><span></span></button>
+<div id="off" role="dialog" aria-modal="true" aria-labelledby="offh"><div class="ofb"><div class="ofi" aria-hidden="true"><span class="ofw ofa"></span><span class="ofw ofb2"></span><svg viewBox="0 0 64 64" class="dnmill" aria-hidden="true"><defs><mask id="offk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#offk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><span class="ofz">z</span><span class="ofz">z</span><span class="ofg"></span></div><h2 id="offh"></h2><p id="offt"></p><div class="ofs2" aria-live="polite"><i></i><span id="ofs"></span></div><div class="ofbt"><button class="of1" id="ofr" type="button"></button><button class="of2" id="ofm" type="button"></button></div></div></div><button id="offp" type="button" aria-live="polite"><b></b><span></span></button>
 <script>/* нет интернета: экран с мельницей, автоповтор, продолжение само при возврате связи */
 (function(){var d=document,el=d.getElementById('off'),pill=d.getElementById('offp'),L='ru';try{L=JSON.parse(localStorage.getItem('dn_l'))||'ru'}catch(e){}
 var X={ru:['Ветер стих','Нет интернета, и мельница остановилась. Меню можно смотреть, а заказ отправим, когда связь вернётся - всё продолжится само.','Пробуем подключиться…','Проверим ещё раз через {s} с','Повторить сейчас','Смотреть меню','Нет связи · ждём','Связь вернулась'],
@@ -1745,33 +1770,33 @@ if(navigator.onLine===false)(document.readyState=='loading'?addEventListener('DO
 const tFetch=(u,o={})=>{const url=String(u?.url||u),ms=/\/storage\//.test(url)?120000:/\/functions\//.test(url)?90000:25000,ac=new AbortController(),tm=setTimeout(()=>ac.abort(),ms);if(o.signal){if(o.signal.aborted)ac.abort();else o.signal.addEventListener('abort',()=>ac.abort())}return fetch(u,{...o,signal:ac.signal}).finally(()=>clearTimeout(tm))};
 const sb=supabase.createClient('https://nctmbakzbzzkygndaklr.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig',{global:{fetch:tFetch}});
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-const LANGS=['ru','kk','en'],CATS=['dn','cf','sw','tea','lem','tk'],CE={sw:'🥐',dn:'🌯',cf:'☕',tea:'🫖',lem:'🍹',tk:'🍵'};  // эмодзи — только заглушка, если нет фото
+const LANGS=['ru','kk','en'],CATS=['dn','cf','sw','tea','lem','tk'],CE={sw:'🥐',dn:'🌯',cf:'☕',tea:'🫖',lem:'🍹',tk:'🍵'};  // эмодзи - только заглушка, если нет фото
 const IC={user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',x:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>',plus:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',chk:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',chv:'<svg class="chv" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>',back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>'};
 const T={
-ru:{menu:'Меню',orders:'Заказы',kas:'Касса',login:'Войти',logout:'Выйти',profile:'Профиль',cart:'Корзина',add:'В корзину',ingr:'Состав',sauces:'Соусы',extras:'Добавки',syr:'Сироп',sugl:'Сахар',no:'без',nm:'обычно',x2:'двойной',nosyr:'без сиропа',nosug:'без сахара',sug:'сахар',wo:'без',spoon:'ложки',tot:'Итого',empty:'Корзина пуста',emptyH:'Добавьте что-нибудь из меню',notePh:'Пожелание повару (до 20 символов)',timeL:'Время самовывоза (необязательно)',timeN:'Оплата на кассе при получении.',place:'Оформить',ups:'Добавьте напиток',from:'от',gone:'закончилось',loadfail:'Не удалось загрузить меню',stop:'Стоп-лист',back:'Вернуть',endd:'Закончилось',reg:'Регистрация',signin:'Вход',name:'Имя',pw:'Пароль (мин. 6 символов)',doreg:'Зарегистрироваться',haveacc:'Уже есть аккаунт? Войти',noacc:'Нет аккаунта? Зарегистрироваться',mail:'Проверь почту: отправили письмо для подтверждения',okord:'Заказ принят. Оплата на кассе при получении.',err:'Ошибка',myord:'Заказы',loginSee:'Войдите, чтобы видеть заказы.',noord:'Заказов пока нет',pasttime:'Выберите время позже, чем сейчас.',changed:'Меню изменилось: часть позиций убрана или изменена. Проверьте корзину.',added:'Добавлено в корзину',offline:'Нет связи — показано сохранённое меню',hist:'История',done:'Готово',por1:'1 порция',por15:'1,5 порции',por2:'2 порции',freeW:'бесплатно',notel:'Пожелание',at:'к',retry:'Повторить',
-s_new:'Принят',s_cooking:'Готовится',s_ready:'Готов — забирайте',s_done:'Выдан',s_cancelled:'Отменён',b_cooking:'Готовится',b_ready:'Готов',b_done:'Выдан',b_cancelled:'Отмена',
+ru:{menu:'Меню',orders:'Заказы',kas:'Касса',login:'Войти',logout:'Выйти',profile:'Профиль',cart:'Корзина',add:'В корзину',ingr:'Состав',sauces:'Соусы',extras:'Добавки',syr:'Сироп',sugl:'Сахар',no:'без',nm:'обычно',x2:'двойной',nosyr:'без сиропа',nosug:'без сахара',sug:'сахар',wo:'без',spoon:'ложки',tot:'Итого',empty:'Корзина пуста',emptyH:'Добавьте что-нибудь из меню',notePh:'Пожелание повару (до 20 символов)',timeL:'Время самовывоза (необязательно)',timeN:'Оплата на кассе при получении.',place:'Оформить',ups:'Добавьте напиток',from:'от',gone:'закончилось',loadfail:'Не удалось загрузить меню',stop:'Стоп-лист',back:'Вернуть',endd:'Закончилось',reg:'Регистрация',signin:'Вход',name:'Имя',pw:'Пароль (мин. 6 символов)',doreg:'Зарегистрироваться',haveacc:'Уже есть аккаунт? Войти',noacc:'Нет аккаунта? Зарегистрироваться',mail:'Проверь почту: отправили письмо для подтверждения',okord:'Заказ принят. Оплата на кассе при получении.',err:'Ошибка',myord:'Заказы',loginSee:'Войдите, чтобы видеть заказы.',noord:'Заказов пока нет',pasttime:'Выберите время позже, чем сейчас.',changed:'Меню изменилось: часть позиций убрана или изменена. Проверьте корзину.',added:'Добавлено в корзину',offline:'Нет связи - показано сохранённое меню',hist:'История',done:'Готово',por1:'1 порция',por15:'1,5 порции',por2:'2 порции',freeW:'бесплатно',notel:'Пожелание',at:'к',retry:'Повторить',
+s_new:'Принят',s_cooking:'Готовится',s_ready:'Готов - забирайте',s_done:'Выдан',s_cancelled:'Отменён',b_cooking:'Готовится',b_ready:'Готов',b_done:'Выдан',b_cancelled:'Отмена',
 c_dn:'донер',c_cf:'кофе',c_tea:'чай',c_lem:'лимонады',c_tk:'чайники',sub_w:'в лаваше и батоне',sub_p:'на тарелке',
-ban_ready:'Заказ №{n} готов — забирайте',
-fc_rule:'После 7 выданных заказов — кофе бесплатно. Войдите, чтобы копить.',fc_prog:'Выдано заказов: {n} · до бесплатного кофе: {k}',fc_have:'У вас бесплатный кофе: {n}. Выберите его в корзине.',fc_use:'Бесплатный кофе',fc_on:'Бесплатный кофе применён — отменить',
+ban_ready:'Заказ №{n} готов - забирайте',
+fc_rule:'После 7 выданных заказов - кофе бесплатно. Войдите, чтобы копить.',fc_prog:'Выдано заказов: {n} · до бесплатного кофе: {k}',fc_have:'У вас бесплатный кофе: {n}. Выберите его в корзине.',fc_use:'Бесплатный кофе',fc_on:'Бесплатный кофе применён - отменить',
 tabOrd:'Заказы',tabStop:'Стоп-лист',tabMenu:'Меню и цены',save:'Сохранить',saved:'Сохранено',price:'Цена, ₸',opts:'Добавки',nameL:'Название',noRights:'Не сохранено: нет прав (нужна роль admin).',badNum:'Цены должны быть целыми числами от 0.',badName:'Названия на всех трёх языках обязательны.',medit:'Редактирование меню. Цены, названия и фото меняются сразу для всех гостей.',
 photo:'Фото',upl:'Загрузить фото',delph:'Убрать фото',uploading:'Загружаю фото…',uplFail:'Фото не загружено',photoSaved:'Фото обновлено',lng:'Язык',inst:'Установить на телефон',instIos:'Чтобы поставить на экран: «Поделиться» → «На экран Домой».',acct:'Аккаунт'},
-kk:{menu:'Мәзір',orders:'Тапсырыстар',kas:'Касса',login:'Кіру',logout:'Шығу',profile:'Профиль',cart:'Себет',add:'Себетке',ingr:'Құрамы',sauces:'Тұздықтар',extras:'Қосымша',syr:'Сироп',sugl:'Қант',no:'жоқ',nm:'қалыпты',x2:'қос',nosyr:'сиропсыз',nosug:'қантсыз',sug:'қант',wo:'жоқ',spoon:'қасық',tot:'Барлығы',empty:'Себет бос',emptyH:'Мәзірден бірдеңе қосыңыз',notePh:'Аспазға тілек (20 таңбаға дейін)',timeL:'Алып кету уақыты (міндетті емес)',timeN:'Төлем кассада алғанда.',place:'Рәсімдеу',ups:'Сусын қосыңыз',from:'бастап',gone:'таусылды',loadfail:'Мәзірді жүктеу мүмкін болмады',stop:'Стоп-тізім',back:'Қайтару',endd:'Таусылды',reg:'Тіркелу',signin:'Кіру',name:'Аты',pw:'Құпиясөз (кемінде 6 таңба)',doreg:'Тіркелу',haveacc:'Аккаунт бар ма? Кіру',noacc:'Аккаунт жоқ па? Тіркелу',mail:'Поштаңызды тексеріңіз: растау хаты жіберілді',okord:'Тапсырыс қабылданды. Төлем кассада алғанда.',err:'Қате',myord:'Тапсырыстар',loginSee:'Тапсырыстарды көру үшін кіріңіз.',noord:'Әзірге тапсырыс жоқ',pasttime:'Қазіргіден кейінгі уақытты таңдаңыз.',changed:'Мәзір өзгерді: кейбір позициялар өшірілді немесе өзгерді. Себетті тексеріңіз.',added:'Себетке қосылды',offline:'Байланыс жоқ — сақталған мәзір көрсетілді',hist:'Тарих',done:'Дайын',por1:'1 порция',por15:'1,5 порция',por2:'2 порция',freeW:'тегін',notel:'Тілек',at:'сағ.',retry:'Қайталау',
-s_new:'Қабылданды',s_cooking:'Дайындалуда',s_ready:'Дайын — алыңыз',s_done:'Берілді',s_cancelled:'Бас тартылды',b_cooking:'Дайындалуда',b_ready:'Дайын',b_done:'Берілді',b_cancelled:'Бас тарту',
+kk:{menu:'Мәзір',orders:'Тапсырыстар',kas:'Касса',login:'Кіру',logout:'Шығу',profile:'Профиль',cart:'Себет',add:'Себетке',ingr:'Құрамы',sauces:'Тұздықтар',extras:'Қосымша',syr:'Сироп',sugl:'Қант',no:'жоқ',nm:'қалыпты',x2:'қос',nosyr:'сиропсыз',nosug:'қантсыз',sug:'қант',wo:'жоқ',spoon:'қасық',tot:'Барлығы',empty:'Себет бос',emptyH:'Мәзірден бірдеңе қосыңыз',notePh:'Аспазға тілек (20 таңбаға дейін)',timeL:'Алып кету уақыты (міндетті емес)',timeN:'Төлем кассада алғанда.',place:'Рәсімдеу',ups:'Сусын қосыңыз',from:'бастап',gone:'таусылды',loadfail:'Мәзірді жүктеу мүмкін болмады',stop:'Стоп-тізім',back:'Қайтару',endd:'Таусылды',reg:'Тіркелу',signin:'Кіру',name:'Аты',pw:'Құпиясөз (кемінде 6 таңба)',doreg:'Тіркелу',haveacc:'Аккаунт бар ма? Кіру',noacc:'Аккаунт жоқ па? Тіркелу',mail:'Поштаңызды тексеріңіз: растау хаты жіберілді',okord:'Тапсырыс қабылданды. Төлем кассада алғанда.',err:'Қате',myord:'Тапсырыстар',loginSee:'Тапсырыстарды көру үшін кіріңіз.',noord:'Әзірге тапсырыс жоқ',pasttime:'Қазіргіден кейінгі уақытты таңдаңыз.',changed:'Мәзір өзгерді: кейбір позициялар өшірілді немесе өзгерді. Себетті тексеріңіз.',added:'Себетке қосылды',offline:'Байланыс жоқ - сақталған мәзір көрсетілді',hist:'Тарих',done:'Дайын',por1:'1 порция',por15:'1,5 порция',por2:'2 порция',freeW:'тегін',notel:'Тілек',at:'сағ.',retry:'Қайталау',
+s_new:'Қабылданды',s_cooking:'Дайындалуда',s_ready:'Дайын - алыңыз',s_done:'Берілді',s_cancelled:'Бас тартылды',b_cooking:'Дайындалуда',b_ready:'Дайын',b_done:'Берілді',b_cancelled:'Бас тарту',
 c_dn:'донер',c_cf:'кофе',c_tea:'шай',c_lem:'лимонадтар',c_tk:'шәйнектер',sub_w:'лаваш пен батонда',sub_p:'тәрелкеде',
-ban_ready:'№{n} тапсырыс дайын — алыңыз',
-fc_rule:'7 берілген тапсырыстан кейін — кофе тегін. Жинау үшін кіріңіз.',fc_prog:'Берілген тапсырыс: {n} · тегін кофеге дейін: {k}',fc_have:'Сізде тегін кофе бар: {n}. Оны себеттен таңдаңыз.',fc_use:'Тегін кофе',fc_on:'Тегін кофе қолданылды — болдырмау',
+ban_ready:'№{n} тапсырыс дайын - алыңыз',
+fc_rule:'7 берілген тапсырыстан кейін - кофе тегін. Жинау үшін кіріңіз.',fc_prog:'Берілген тапсырыс: {n} · тегін кофеге дейін: {k}',fc_have:'Сізде тегін кофе бар: {n}. Оны себеттен таңдаңыз.',fc_use:'Тегін кофе',fc_on:'Тегін кофе қолданылды - болдырмау',
 tabOrd:'Тапсырыстар',tabStop:'Стоп-тізім',tabMenu:'Мәзір және бағалар',save:'Сақтау',saved:'Сақталды',price:'Бағасы, ₸',opts:'Қосымшалар',nameL:'Атауы',noRights:'Сақталмады: құқық жоқ (admin рөлі керек).',badNum:'Бағалар 0-ден бастап бүтін сан болуы керек.',badName:'Үш тілдегі атаулар міндетті.',medit:'Мәзірді өңдеу. Бағалар, атаулар мен суреттер барлық қонаққа бірден өзгереді.',
 photo:'Сурет',upl:'Сурет жүктеу',delph:'Суретті алып тастау',uploading:'Сурет жүктелуде…',uplFail:'Сурет жүктелмеді',photoSaved:'Сурет жаңартылды',lng:'Тіл',inst:'Телефонға орнату',instIos:'Экранға қою үшін: «Бөлісу» → «Басты экранға».',acct:'Аккаунт'},
-en:{menu:'Menu',orders:'Orders',kas:'Till',login:'Log in',logout:'Log out',profile:'Profile',cart:'Cart',add:'Add to cart',ingr:'Ingredients',sauces:'Sauces',extras:'Extras',syr:'Syrup',sugl:'Sugar',no:'no',nm:'regular',x2:'double',nosyr:'no syrup',nosug:'no sugar',sug:'sugar',wo:'no',spoon:'spoons',tot:'Total',empty:'Cart is empty',emptyH:'Add something from the menu',notePh:'Note for the cook (max 20 chars)',timeL:'Pickup time (optional)',timeN:'Pay at the till on pickup.',place:'Place order',ups:'Add a drink',from:'from',gone:'sold out',loadfail:'Could not load the menu',stop:'Stop list',back:'Restore',endd:'Sold out',reg:'Sign up',signin:'Log in',name:'Name',pw:'Password (min 6 characters)',doreg:'Sign up',haveacc:'Have an account? Log in',noacc:'No account? Sign up',mail:'Check your email: we sent a confirmation link',okord:'Order placed. Pay at the till on pickup.',err:'Error',myord:'Orders',loginSee:'Log in to see your orders.',noord:'No orders yet',pasttime:'Pick a time later than now.',changed:'The menu changed: some items were removed or updated. Please check your cart.',added:'Added to cart',offline:'Offline — showing the saved menu',hist:'History',done:'Done',por1:'1 portion',por15:'1.5 portions',por2:'2 portions',freeW:'free',notel:'Note',at:'at',retry:'Retry',
-s_new:'Received',s_cooking:'Preparing',s_ready:'Ready — come pick it up',s_done:'Picked up',s_cancelled:'Cancelled',b_cooking:'Preparing',b_ready:'Ready',b_done:'Picked up',b_cancelled:'Cancel',
+en:{menu:'Menu',orders:'Orders',kas:'Till',login:'Log in',logout:'Log out',profile:'Profile',cart:'Cart',add:'Add to cart',ingr:'Ingredients',sauces:'Sauces',extras:'Extras',syr:'Syrup',sugl:'Sugar',no:'no',nm:'regular',x2:'double',nosyr:'no syrup',nosug:'no sugar',sug:'sugar',wo:'no',spoon:'spoons',tot:'Total',empty:'Cart is empty',emptyH:'Add something from the menu',notePh:'Note for the cook (max 20 chars)',timeL:'Pickup time (optional)',timeN:'Pay at the till on pickup.',place:'Place order',ups:'Add a drink',from:'from',gone:'sold out',loadfail:'Could not load the menu',stop:'Stop list',back:'Restore',endd:'Sold out',reg:'Sign up',signin:'Log in',name:'Name',pw:'Password (min 6 characters)',doreg:'Sign up',haveacc:'Have an account? Log in',noacc:'No account? Sign up',mail:'Check your email: we sent a confirmation link',okord:'Order placed. Pay at the till on pickup.',err:'Error',myord:'Orders',loginSee:'Log in to see your orders.',noord:'No orders yet',pasttime:'Pick a time later than now.',changed:'The menu changed: some items were removed or updated. Please check your cart.',added:'Added to cart',offline:'Offline - showing the saved menu',hist:'History',done:'Done',por1:'1 portion',por15:'1.5 portions',por2:'2 portions',freeW:'free',notel:'Note',at:'at',retry:'Retry',
+s_new:'Received',s_cooking:'Preparing',s_ready:'Ready - come pick it up',s_done:'Picked up',s_cancelled:'Cancelled',b_cooking:'Preparing',b_ready:'Ready',b_done:'Picked up',b_cancelled:'Cancel',
 c_dn:'doner',c_cf:'coffee',c_tea:'tea',c_lem:'lemonades',c_tk:'teapots',sub_w:'wraps & baguettes',sub_p:'on a plate',
-ban_ready:'Order #{n} is ready — come pick it up',
-fc_rule:'A free coffee after 7 picked-up orders. Log in to collect.',fc_prog:'Picked-up orders: {n} · until a free coffee: {k}',fc_have:'You have a free coffee: {n}. Pick it in your cart.',fc_use:'Free coffee',fc_on:'Free coffee applied — remove',
+ban_ready:'Order #{n} is ready - come pick it up',
+fc_rule:'A free coffee after 7 picked-up orders. Log in to collect.',fc_prog:'Picked-up orders: {n} · until a free coffee: {k}',fc_have:'You have a free coffee: {n}. Pick it in your cart.',fc_use:'Free coffee',fc_on:'Free coffee applied - remove',
 tabOrd:'Orders',tabStop:'Stop list',tabMenu:'Menu & prices',save:'Save',saved:'Saved',price:'Price, ₸',opts:'Extras',nameL:'Name',noRights:'Not saved: no permission (admin role required).',badNum:'Prices must be whole numbers from 0.',badName:'Names in all three languages are required.',medit:'Menu editing. Prices, names and photos change for all guests immediately.',
 photo:'Photo',upl:'Upload photo',delph:'Remove photo',uploading:'Uploading photo…',uplFail:'Photo not uploaded',photoSaved:'Photo updated',lng:'Language',inst:'Install on your phone',instIos:'To add to the home screen: Share → Add to Home Screen.',acct:'Account'}};
 const FL={ch:{ru:'курица',kk:'тауық',en:'chicken'},bf:{ru:'говядина',kk:'сиыр еті',en:'beef'},as:{ru:'ассорти',kk:'ассорти',en:'mixed'},x:{ru:'стандарт',kk:'стандарт',en:'standard'}};
 const G={fr:{ru:'Картошка фри',kk:'Фри картобы',en:'Fries'},ws:{ru:'Белый соус',kk:'Ақ тұздық',en:'White sauce'},rs:{ru:'Красный соус',kk:'Қызыл тұздық',en:'Red sauce'},tm:{ru:'Помидоры',kk:'Қызанақ',en:'Tomatoes'},cu:{ru:'Огурцы',kk:'Қияр',en:'Cucumbers'},cb:{ru:'Капуста',kk:'Қырыққабат',en:'Cabbage'}},BI=['fr','ws','rs','tm','cu','cb'],PLAIN=['fr','tm','cu','cb'],SAUCE=['ws','rs'];
-const GEN={fr:'картошки фри',ws:'белого соуса',rs:'красного соуса',tm:'помидоров',cu:'огурцов',cb:'капусты'},gn=(k,L)=>L=='ru'?GEN[k]:nm(G[k],L).toLowerCase();  // «без …» по-русски — в родительном падеже
+const GEN={fr:'картошки фри',ws:'белого соуса',rs:'красного соуса',tm:'помидоров',cu:'огурцов',cb:'капусты'},gn=(k,L)=>L=='ru'?GEN[k]:nm(G[k],L).toLowerCase();  // «без …» по-русски - в родительном падеже
 const SY=[{ru:'Ваниль',kk:'Ваниль',en:'Vanilla'},{ru:'Карамель',kk:'Карамель',en:'Caramel'},{ru:'Орех',kk:'Жаңғақ',en:'Hazelnut'},{ru:'Кокос',kk:'Кокос',en:'Coconut'},{ru:'Солёная карамель',kk:'Тұзды карамель',en:'Salted caramel'},{ru:'Клубника',kk:'Құлпынай',en:'Strawberry'},{ru:'Мохито',kk:'Мохито',en:'Mojito'},{ru:'Ягодный микс',kk:'Жидек миксі',en:'Berry mix'}],SYP=400,SYC=['cf','tea','lem'],DBL=300;
 const SZ=['S','M','XL'],SL=['1','1,5','2'],STEPS=['new','cooking','ready','done'],FREE_EVERY=7;
 const SECS={dn:[{k:'w',ids:['lav','bat'],l:'sub_w'},{k:'p',ids:['pl','isk'],l:'sub_p'}]};  // подкатегории донера
@@ -1809,8 +1834,8 @@ function imgOk(im){im.classList.add('ld');im.parentNode.classList.add('hasimg');
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
 const GRPS=['spc','tmp','milk','cup'],MGRPS=['hlth','top'];
-Object.assign(T.ru,{c_kt:'вторые блюда',g_spc:'Острота',g_tmp:'Температура',g_milk:'Молоко',g_cup:'Стакан',g_hlth:'Полезные добавки',g_top:'Посыпки',maxN:'макс. {n}',hero_t:'кофе без очереди',hero_s:'закажи в приложении — заберёшь готовым',hero_b:'выбрать кофе',dsk_t:'Degirmen Navoi',dsk_s:'Приложение сделано для телефона. Наведи камеру на код — и заказывай с телефона.',dsk_f:'открыть на весь экран'});
-Object.assign(T.kk,{c_kt:'екінші тағамдар',g_spc:'Ащылығы',g_tmp:'Температура',g_milk:'Сүт',g_cup:'Ыдыс',g_hlth:'Пайдалы қоспалар',g_top:'Себпелер',maxN:'макс. {n}',hero_t:'кезексіз кофе',hero_s:'қосымшада тапсырыс бер — дайын күйінде алып кет',hero_b:'кофе таңдау',dsk_t:'Degirmen Navoi',dsk_s:'Қосымша телефонға арналған. Кодқа камераны бағыттап, телефоннан тапсырыс бер.',dsk_f:'толық экранда ашу'});
+Object.assign(T.ru,{c_kt:'вторые блюда',g_spc:'Острота',g_tmp:'Температура',g_milk:'Молоко',g_cup:'Стакан',g_hlth:'Полезные добавки',g_top:'Посыпки',maxN:'макс. {n}',hero_t:'кофе без очереди',hero_s:'закажи в приложении - заберёшь готовым',hero_b:'выбрать кофе',dsk_t:'Degirmen Navoi',dsk_s:'Приложение сделано для телефона. Наведи камеру на код - и заказывай с телефона.',dsk_f:'открыть на весь экран'});
+Object.assign(T.kk,{c_kt:'екінші тағамдар',g_spc:'Ащылығы',g_tmp:'Температура',g_milk:'Сүт',g_cup:'Ыдыс',g_hlth:'Пайдалы қоспалар',g_top:'Себпелер',maxN:'макс. {n}',hero_t:'кезексіз кофе',hero_s:'қосымшада тапсырыс бер - дайын күйінде алып кет',hero_b:'кофе таңдау',dsk_t:'Degirmen Navoi',dsk_s:'Қосымша телефонға арналған. Кодқа камераны бағыттап, телефоннан тапсырыс бер.',dsk_f:'толық экранда ашу'});
 Object.assign(T.en,{c_kt:'mains',g_spc:'Spiciness',g_tmp:'Temperature',g_milk:'Milk',g_cup:'Cup',g_hlth:'Healthy add-ons',g_top:'Toppings',maxN:'max {n}',hero_t:'coffee, no queue',hero_s:'order in the app, pick it up ready',hero_b:'choose coffee',dsk_t:'Degirmen Navoi',dsk_s:'The app is made for phones. Point your camera at the code and order from your phone.',dsk_f:'open full screen'});
 Object.assign(FL,{h:{ru:'горячий',kk:'ыстық',en:'hot'},ic:{ru:'айс',kk:'айс',en:'iced'}});
 const grpOps=(it,g,s)=>ops(it).filter(o=>o.grp==g);
@@ -1838,7 +1863,7 @@ return `<div class="gsec"><div class="gh">${t('g_'+g)}</div><div class="grw">${o
 return sg+mg}
 
 // ---------- иллюстрации с анимацией приготовления ----------
-// d(x) — задержка анимации; элементы с классом tr — «инструменты» (холдер, питчер, струи): в статике не видны
+// d(x) - задержка анимации; элементы с классом tr - «инструменты» (холдер, питчер, струи): в статике не видны
 const hasArt=it=>it&&!it.image_url&&!(it.data&&it.data.pack)&&['cf','lem','dn','tea','sw'].includes(it.category);
 const artKey=(it,s)=>JSON.stringify([s.f,[...s.o].sort(),s.syr,s.ing,['lem','tea'].includes(it.category)?zi(it,s.f,s.z):0,it.category=='cf'?s.sg||0:0]);
 const artScale=(it,s)=>{const z=zi(it,s.f,s.z);return it.category=='sw'?(it.id=='pn'?1:1.1):it.category=='dn'?[.86,.95,1.04][z]||1:it.category=='tea'?1:it.category=='lem'?(z==1?1.06:1):(it.id=='es'?.82:1+.07*z)};
@@ -1997,7 +2022,7 @@ if(on('rs'))o+=`<path class="draw" style="--d:${(t+.5).toFixed(2)}s" pathLength=
 if(grpSel(it,s,'spc')=='s1')for(let i=0;i<26;i++){const[x,y]=pt();o+=`<rect class="drop" style="--d:${(t+.85+i*.015).toFixed(2)}s" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="2.8" height="1.8" rx=".5" fill="${i%3?'#d32f2f':'#ff7043'}"/>`}
 return{o,t:t+1.1}}
 const chili=(x,y,dl)=>`<g transform="translate(${x} ${y}) rotate(-20)"><g class="pop" ${d(dl)}><path d="M-18 2c7-11 25-13 34-4-9 0-20 7-34 4z" fill="#d32f2f"/><path d="M-13 0c7-6 16-7 22-4" stroke="#ff8a80" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M16-2c3-2 5-7 4-10" stroke="#2e7d32" stroke-width="3.2" fill="none" stroke-linecap="round"/></g></g>`;
-// вертел: мясо крутится у жара, нож срезает стружку — заставка 1.3 с
+// вертел: мясо крутится у жара, нож срезает стружку - заставка 1.3 с
 function spit(s,rnd){const mc=MEAT[s.f]||MEAT.ch,c2=s.f=='as'?MEAT.bf[0]:mc[0];
 return `<g class="tr spit" ${d(0)}><defs><linearGradient id="gSp" x1="0" x2="1"><stop offset="0" stop-color="${mc[1]}"/><stop offset=".35" stop-color="${mc[0]}"/><stop offset=".6" stop-color="${c2}"/><stop offset="1" stop-color="${mc[1]}"/></linearGradient><linearGradient id="gHt" x1="0" x2="1"><stop offset="0" stop-color="#ff5a1f" stop-opacity="0"/><stop offset="1" stop-color="#ff8a3a" stop-opacity=".75"/></linearGradient><clipPath id="cSp"><path d="M86 14h68l-12 136h-44z"/></clipPath></defs>
 <rect class="glow" x="40" y="10" width="44" height="146" rx="10" fill="url(#gHt)"/><rect x="36" y="10" width="10" height="146" rx="4" fill="#3a2a1f"/>
@@ -2123,7 +2148,7 @@ const heroCf=()=>`<div class="hero${S.ent?' ent':''}" onclick="setCat('cf')"><di
 <rect x="40" y="134" width="80" height="6" rx="3" fill="#3a2a1f"/><g class="hst"><path d="M74 86c-4-5 4-8 0-13s4-8 0-13"/><path d="M86 86c-4-5 4-8 0-13s4-8 0-13"/></g></svg></div>`;
 
 // ---------- кофе 2.0: крафтовый стакан «с собой», посуда для зала, весь процесс бариста, каждая добавка со своей анимацией ----------
-// AQ — режим перерисовки: shift сдвигает все задержки назад (уже приготовлено), keys — добавки, которые надо проиграть заново (помечены --k:1)
+// AQ - режим перерисовки: shift сдвигает все задержки назад (уже приготовлено), keys - добавки, которые надо проиграть заново (помечены --k:1)
 const AQ={on:0,keys:null,shift:0,end:5};
 const LA={v:0};// рисунок латте-арта: 0 сердце, 1 тюльпан, 2 розетта
 const sD=(t,M='',x='')=>`style="--d:${(+t).toFixed(2)}s${x}${M}"`;
@@ -2138,7 +2163,7 @@ salt:'<path d="M0-7c4 5 6 8 6 10a6 6 0 0 1-12 0c0-2 2-5 6-10z" fill="#7d430f"/><
 straw:'<g transform="scale(.6)">'+TI.straw+'</g>',mint:'<path d="M0 6C-7 2-6-6 0-8c6 2 7 10 0 14z" fill="#3f8a2a"/><path d="M0-7v12" stroke="#a7dc8a" stroke-width="1"/>',berry:'<g transform="scale(.6)">'+TI.rasp+'</g>'};
 
 // ---------- посуда ----------
-// возвращает: back (под напитком), front (поверх), surf — эллипс поверхности, clip — форма жидкости, glass — видно жидкость сквозь стенки
+// возвращает: back (под напитком), front (поверх), surf - эллипс поверхности, clip - форма жидкости, glass - видно жидкость сквозь стенки
 function cfVes(V,take,still){const cx=120,k=.22;
  if(V=='li'){const P=take?'M74 54L88 202Q89 210 97 210H143Q151 210 152 202L166 54Z':'M78 56h84l-8 146q-1 8-9 8h-50q-8 0-9-8z',top=take?54:56,Rr=take?46:42;
   const back=`<ellipse cx="120" cy="${take?213:212}" rx="58" ry="7" fill="url(#gSh2)"/>`;
@@ -2184,12 +2209,12 @@ function cfVes(V,take,still){const cx=120,k=.22;
   return {back:`<ellipse cx="120" cy="211" rx="74" ry="13" fill="url(#gSh2)"/><ellipse cx="120" cy="207" rx="70" ry="12" fill="#cbbca8"/><ellipse cx="120" cy="205" rx="70" ry="11" fill="url(#gSau)"/><ellipse cx="120" cy="204" rx="40" ry="6" fill="#ddd0bf"/><path d="M152 206l40-12" stroke="url(#gMet)" stroke-width="3.4" stroke-linecap="round"/><ellipse cx="196" cy="193" rx="7.5" ry="3.2" fill="url(#gMet)"/>`,
    front:`<path d="${P}" fill="url(#gGl)" stroke="rgba(255,255,255,.6)" stroke-width="2.4"/><path d="M92 64l6 126" stroke="rgba(255,255,255,.32)" stroke-width="4" stroke-linecap="round"/><path d="M148 70l-4 110" stroke="rgba(255,255,255,.14)" stroke-width="2" stroke-linecap="round"/><ellipse cx="120" cy="52" rx="38" ry="5" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.4"/>`,
    P,glass:1,lt:62,lb:206,surf:[120,62,35,4.6],gl:P,sY:44}}
- // раф — стеклянная кружка
+ // раф - стеклянная кружка
  const P='M80 96l4 96q1 8 9 8h54q8 0 9-8l4-96z';
  return {back:`<ellipse cx="120" cy="207" rx="64" ry="9" fill="url(#gSh2)"/><path d="M158 112c28 0 28 54 0 54" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="7"/><path d="M160 116c20 0 20 44 0 44" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/>`,
   front:`<path d="${P}" fill="url(#gGl)" stroke="rgba(255,255,255,.6)" stroke-width="2.4"/><path d="M90 106l4 84" stroke="rgba(255,255,255,.32)" stroke-width="4" stroke-linecap="round"/><ellipse cx="120" cy="96" rx="40" ry="6" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.4"/>`,
   P,glass:1,lt:100,lb:200,surf:[120,100,37,5.4],gl:P,sY:86}}
-// мельница — знак Degirmen
+// мельница - знак Degirmen
 const mill=(c,k=1)=>`<g transform="scale(${k})" stroke="${c}" fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M-4.4 11l1.6-11h5.6l1.6 11z" stroke-width="1.3"/><path d="M-3.6 0l3.6-4 3.6 4" stroke-width="1.3"/><path d="M-1.3 11v-3.4h2.6V11" stroke-width="1"/><g transform="translate(0 -3.4)" stroke-width=".9">${[45,135,225,315].map(a=>`<g transform="rotate(${a})"><path d="M0-1.6V-11"/><path d="M0-3.4h2.6V-11H0M0-6h2.6M0-8.6h2.6"/></g>`).join('')}</g><circle cy="-3.4" r="1.3" fill="${c}" stroke="none"/></g>`;
 
 // ---------- латте-арт: сердце, тюльпан, розетта (в координатах ±22, потом сжимаем по поверхности) ----------
@@ -2306,7 +2331,7 @@ const artSeen=()=>{try{return JSON.parse(localStorage.getItem('dn_art_seen')||'[
 function artOpen(it,s){LA.v=Math.floor(Math.random()*3);const seen=artSeen(),sk=ART_SKIP[it.category]||0,was=seen.includes(it.id)&&sk;
  if(was){AQ.on=1;AQ.shift=sk;AQ.keys=null}else if(!seen.includes(it.id)){seen.push(it.id);try{localStorage.setItem('dn_art_seen',JSON.stringify(seen.slice(-60)))}catch{}}
  const h=artSVG(it,s);AQ.on=0;AQ.shift=0;S._art0=Date.now();S._artEnd=(it.category=='cf'?AQ.end+.6:5)-(was?sk:0);return h}
-// что изменилось: новые добавки проигрываем, остальное — короткая смена
+// что изменилось: новые добавки проигрываем, остальное - короткая смена
 function artUpd(it,s,ok){let keys=new Set(),swap=1;
  if(it.category=='cf'){try{const a=JSON.parse(ok),b=JSON.parse(artKey(it,s)),c=x=>id=>x[1].filter(y=>y==id).length;
   for(const k of ['sh','pr','wc','tp','kc','ko','mm'])if(c(b)(k)>c(a)(k))keys.add(k);
@@ -2315,7 +2340,7 @@ function artUpd(it,s,ok){let keys=new Set(),swap=1;
  AQ.on=1;AQ.shift=60;AQ.keys=keys;let h=artSVG(it,s);AQ.on=0;AQ.keys=null;AQ.shift=0;
  S._art0=Date.now();S._artEnd=keys.size?AQ.end+.6:.5;
  return swap?h.replace('class="artv ','class="artv qsw '):h}
-// нажатие на картинку: во время приготовления — сразу готово, потом — приготовить заново
+// нажатие на картинку: во время приготовления - сразу готово, потом - приготовить заново
 function artTap(){const aw=$('artw'),s=S.sel,it=s&&itemOf(s.id);if(!aw||!it)return;
  if(Date.now()-(S._art0||0)<(S._artEnd||5)*1000){AQ.on=1;AQ.shift=60;AQ.keys=null;aw.innerHTML=artSVG(it,s);AQ.on=0;AQ.shift=0;S._artEnd=0}
  else{LA.v=(LA.v+1)%3;aw.innerHTML=artSVG(it,s);S._art0=Date.now();S._artEnd=it.category=='cf'?AQ.end+.6:5}vib()}
@@ -2446,7 +2471,7 @@ const clipL='<clipPath id="cHL"><path d="M0 0H134L112 240H0z"/></clipPath>',clip
 const halves=still?body:`<g class="shf" ${d(tS)}>${body}</g>${clipL}${clipR}<g class="shn" ${d(tS)}><g class="spL" ${d(tS)}><g clip-path="url(#cHL)">${body}${glintG('pnL','M32 130c0-26 22-38 88-38s88 12 88 38q0 8-10 8H42q-10 0-10-8z',tS+1+(0))}</g></g><g class="spR" ${d(tS)}><g clip-path="url(#cHR)">${body}${glintG('pnR','M32 130c0-26 22-38 88-38s88 12 88 38q0 8-10 8H42q-10 0-10-8z',tS+1+(0.15))}</g></g></g>`;
 const b=SWDEF+`<ellipse class="fade" ${d(.1)} cx="120" cy="178" rx="104" ry="11" fill="rgba(0,0,0,.28)"/><g class="pop" ${d(.1)}><rect x="16" y="150" width="208" height="24" rx="12" fill="url(#gWood)"/><path d="M30 158h180" stroke="rgba(255,220,180,.18)" stroke-width="2"/></g><g class="pop" ${d(.35)}>${halves}</g>${press}${knife}`;
 return wrapSVG(b,still,sc,still||!warm?'':steamG(120,88,3,tP+2))}
-// круассан: нож разрезает → верх приподнимается → начинка → закрывается; тёплый — прогрев и пар
+// круассан: нож разрезает → верх приподнимается → начинка → закрывается; тёплый - прогрев и пар
 const CRO=[[120,120,40,32],[84,128,28,24],[156,128,28,24],[58,140,18,14],[182,140,18,14]];
 const croShape=fill=>CRO.map(([x,y,rx,ry])=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}"/>`).join('');
 const croLines=()=>CRO.map(([x,y,rx,ry],i)=>`<path d="M${x-rx*.75} ${y-ry*.2}q${rx*.75} ${-ry*.7} ${rx*1.5} 0" stroke="#a9611f" stroke-width="2.2" fill="none" opacity=".55" stroke-linecap="round"/><path d="M${x-rx*.5} ${y-ry*.55}q${rx*.5} ${-ry*.35} ${rx} 0" stroke="#ffe0a3" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/>`).join('');
@@ -2495,7 +2520,7 @@ function setMotion(on){LS.set('dn_motion',on?'on':'off');location.reload()}
 // ---------- Nexus: прогноз, остатки, заявка Degirmen, гости, оповещения, статусы ----------
 Object.assign(T.ru,{nx_tg_more:'+ Ещё',nx_fc:'Прогноз',nx_stock:'Остатки',nx_users:'Гости',nx_kit:'Кухня',nx_ord:'Заявка',nx_acc:'Точность',nx_today:'Сегодня',nx_tom:'Завтра',
 nx_cook:'Сколько готовить',nx_exp:'ожидаем ~{n}',nx_rng:'обычно {a}–{b}',nx_ifm:'если в меню',nx_ban:'банкет {d} не учтён',nx_last:'прошлые {w}',nx_adv:'Совет дня',nx_noadv:'Совет появится в 7:30 вместе с утренним отчётом',
-nx_ordfor:'Заявка на {d}',nx_made:'сформирована {t}',nx_nocnt:'Вчера остатки не отмечены — заявка посчитана только по прогнозу продаж.',nx_left:'останется ~{n}',nx_copy:'Скопировать',nx_copied:'Скопировано — можно вставить в заявку',
+nx_ordfor:'Заявка на {d}',nx_made:'сформирована {t}',nx_nocnt:'Вчера остатки не отмечены - заявка посчитана только по прогнозу продаж.',nx_left:'останется ~{n}',nx_copy:'Скопировать',nx_copied:'Скопировано - можно вставить в заявку',
 nx_save:'Подтвердить',nx_saved:'Заявка сохранена',nx_noord:'Заявка формируется каждый день в 16:00. Можно собрать её прямо сейчас.',nx_mk:'Собрать заявку сейчас',nx_mking:'Считаю…',
 nx_acc_t:'Точность прогноза',nx_acc_s:'рекомендации хватило в {p}% позиций · всего {n}',nx_acc_k:'Кухня и донеры (когда было в продаже)',nx_acc_s2:'Поставки Degirmen по группам',nx_rare:'Редкие позиции',nx_rare_b:'Показать ещё {n} редких позиций',nx_fcv:'прогноз',nx_act:'продано',nx_tg:'Telegram-отчёты',nx_tg_on:'Подключено: {n}',nx_tg_off:'Утренний отчёт в 7:30 и заявка в 16:00 прямо в Telegram',nx_tg_b:'Подключить Telegram',nx_tg_wait:'Бот ещё не настроен',
 nx_st_t:'Остатки на конец дня',nx_st_s:'Отметьте, сколько осталось. Это делает прогноз и заявку точнее.',nx_st_save:'Сохранить остатки',nx_st_ok:'Остатки сохранены',nx_st_at:'Отмечено в {t}',nx_search:'Поиск',nx_empty:'Пока пусто',
@@ -2504,7 +2529,7 @@ nx_send:'Оповещение',nx_status:'Статус',nx_wall:'Стена',nx_
 nx_n_t:'Заголовок',nx_n_b:'Текст (необязательно)',nx_n_go:'Отправить оповещение',nx_n_ok:'Оповещение отправлено',nx_s_cust:'Свой текст статуса',nx_s_cov:'Обложка',nx_s_go:'Выдать статус',nx_s_off:'Снять статус',nx_s_ok:'Статус выдан',
 nx_bell:'Оповещения',nx_nonot:'Оповещений пока нет',nx_from:'от Degirmen',nx_mywall:'Моя стена'});
 const NXP=[{k:'princess',t:'Принцесса'},{k:'regular',t:'Постоянный гость'},{k:'legend',t:'Легенда Дегирмена'},{k:'vip',t:'VIP'},{k:'coffee',t:'Кофеман'},{k:'doner',t:'Донер-мастер'},{k:'family',t:'Семья'},{k:'star',t:'Звезда'}];
-const NXT=[{t:'Ваш заказ готов',b:'Заберите, пока горячий 🔥'},{t:'Подарок от Degirmen 🎁',b:'Следующий кофе за наш счёт — покажите это сообщение на кассе'},{t:'Спасибо, что вы с нами!',b:''},{t:'Новинка в меню',b:'Попробуйте — думаем, вам понравится'}];
+const NXT=[{t:'Ваш заказ готов',b:'Заберите, пока горячий 🔥'},{t:'Подарок от Degirmen 🎁',b:'Следующий кофе за наш счёт - покажите это сообщение на кассе'},{t:'Спасибо, что вы с нами!',b:''},{t:'Новинка в меню',b:'Попробуйте - думаем, вам понравится'}];
 const nxYmd=d=>new Date(d.getTime()+5*3600e3).toISOString().slice(0,10);  // день по Алматы (UTC+5), где бы ни был телефон
 const almDay=(n=0)=>nxYmd(new Date(Date.now()+n*864e5));
 const dmw=s=>new Date(s+'T00:00').toLocaleDateString(S.L=='kk'?'kk':S.L,{weekday:'short',day:'numeric',month:'short'});
@@ -2597,13 +2622,13 @@ async function fcSave(){const F=S.fc;const ups=F.ord.map(r=>({u:r.item_uid,v:F.e
 const{error}=await sb.rpc('save_supply_order',{p_d:F.od,p_rows:ups});if(error){toast(error.message,1);return}
 toast(t('nx_saved'));fcLoad()}
 function fcCopy(){const F=S.fc,I=S.fcItems||{},forD=F.run?.payload?.for||F.od;let txt=`Заявка Degirmen Navoi на ${dmw(forD)}:\n`;const groups={};
-F.ord.forEach(r=>{const v=F.edit[r.item_uid]??r.ordered??r.rec;if(v>0){const g=sgrp(r.info?.grp||I[r.item_uid]?.grp);(groups[g]=groups[g]||[]).push(`${snm(r.info?.name||I[r.item_uid]?.name)} — ${v}`)}});
+F.ord.forEach(r=>{const v=F.edit[r.item_uid]??r.ordered??r.rec;if(v>0){const g=sgrp(r.info?.grp||I[r.item_uid]?.grp);(groups[g]=groups[g]||[]).push(`${snm(r.info?.name||I[r.item_uid]?.name)} - ${v}`)}});
 for(const[g,l]of Object.entries(groups))txt+=`\n${g}:\n`+l.map(x=>'• '+x).join('\n')+'\n';
 (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast(t('nx_copied')),()=>{shw(`<textarea class="nxta" rows="12">${e(txt)}</textarea><button class="lite" onclick="cp()">${t('done')}</button>`)})}
 async function fcMake(){const F=S.fc;F.mk=1;fcRender();const{error}=await sb.rpc('nexus_order_now');F.mk=0;if(error){toast(error.message,1);fcRender();return}setTimeout(fcLoad,9000);setTimeout(fcLoad,20000)}
 function fcAcc(){const F=S.fc;let h=`<div class="nxdays">${Array.from({length:10},(_,i)=>almDay(-1-i)).map(d=>`<button class="${F.ad==d?'on':''}" onclick="fcSet('ad','${d}')"><small>${new Date(d+'T00:00').toLocaleDateString('ru',{weekday:'short'})}</small><b>${+d.slice(8)}</b></button>`).join('')}</div>`;
 if(!F.acc)return h+nxSk();
-// кухня и донеры: сравниваем только то, что было в продаже; поставки — суммой по группе
+// кухня и донеры: сравниваем только то, что было в продаже; поставки - суммой по группе
 const K=F.acc.filter(r=>['kitchen','doner','lavash'].includes(r[2])&&r[5]>0),G={};
 F.acc.filter(r=>r[2]=='supply').forEach(r=>{const g=sgrp(r[6]);G[g]=G[g]||[0,0];G[g][0]+= +r[7];G[g][1]+= +r[5]});
 const GL=Object.entries(G).filter(([,v])=>v[0]>=1||v[1]>=1);
@@ -2630,7 +2655,7 @@ function skList(){const w=$('sklist');if(w)w.innerHTML=skListHtml()}
 function skListHtml(){const K=S.sk;if(K.ld||!K.items)return nxSk();const q=K.q.trim().toLowerCase();const L=K.items.filter(x=>!q||x.name.toLowerCase().includes(q));
 const groups={};L.forEach(x=>{const g=x.kind=='lavash'?'Лаваш':x.kind=='kitchen'?'Кухня · '+sgrp(x.grp):sgrp(x.grp);(groups[g]=groups[g]||[]).push(x)});
 return Object.entries(groups).map(([g,xs])=>`<div class="nxg">${e(g)}</div><div class="scard nxol">`+xs.map(x=>{const v=K.v[x.item_uid]??K.saved[x.item_uid];
-return `<div class="nxor"><div><b>${e(snm(x.name))}</b></div><div class="nxstep${v!=null?' ch':''}"><button onclick="skEd('${x.item_uid}',-1)">−</button><input inputmode="decimal" value="${v??''}" placeholder="—" onchange="skSet('${x.item_uid}',this.value)"><button onclick="skEd('${x.item_uid}',1)">+</button></div></div>`}).join('')+`</div>`).join('')||`<div class="empty">${t('nx_empty')}</div>`}
+return `<div class="nxor"><div><b>${e(snm(x.name))}</b></div><div class="nxstep${v!=null?' ch':''}"><button onclick="skEd('${x.item_uid}',-1)">−</button><input inputmode="decimal" value="${v??''}" placeholder="-" onchange="skSet('${x.item_uid}',this.value)"><button onclick="skEd('${x.item_uid}',1)">+</button></div></div>`}).join('')+`</div>`).join('')||`<div class="empty">${t('nx_empty')}</div>`}
 function skEd(u,d){const K=S.sk;K.v[u]=Math.max(0,(K.v[u]??K.saved[u]??0)+d);try{navigator.vibrate&&navigator.vibrate(8)}catch{}skList()}
 function skSet(u,v){const n=parseFloat(String(v).replace(',','.'));if(isNaN(n))delete S.sk.v[u];else S.sk.v[u]=Math.max(0,n)}
 async function skSave(){const K=S.sk,d=almDay(0);const rows=Object.entries(K.v).map(([item_uid,qty])=>({d,item_uid,qty,by_id:S.me.id,at:new Date().toISOString()}));if(!rows.length){toast(t('nx_st_ok'));return}
@@ -2643,12 +2668,12 @@ function usRender(){const U=S.us;let h=`<input class="nxq" placeholder="${t('nx_
 h+=`<div id="uslist">${usListHtml()}</div>`;scr(topbar(t('nx_u_t'))+`<div class="body w nxw">${U.list?`<div class="mu" style="margin:2px 4px 12px;font-size:14px">${t('nx_u_n',S.L,{n:U.list.length})}</div>`:''}${h}</div>`,'users')}
 function usList(){const w=$('uslist');if(w)w.innerHTML=usListHtml()}
 function usListHtml(){const U=S.us;if(!U.list)return nxSk();const q=U.q.trim().toLowerCase();const L=U.list.filter(u=>!q||(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
-return L.map((u,i)=>`<button class="nxu ent" style="--i:${Math.min(i,14)}" onclick="usrM('${u.id}')">${avOf(u,48)}<div class="nxun"><b>${e(u.name||'—')}${u.role=='admin'?' 👑':u.role=='cashier'?' 🧾':''}</b><span class="nxe">${e(u.email||'')}</span>${u.title?nxBadge(u.title,u.cover):''}</div><div class="nxus"><b>${u.orders}</b><small>${t('nx_orders')}</small></div></button>`).join('')||`<div class="empty">${t('nx_empty')}</div>`}
+return L.map((u,i)=>`<button class="nxu ent" style="--i:${Math.min(i,14)}" onclick="usrM('${u.id}')">${avOf(u,48)}<div class="nxun"><b>${e(u.name||'-')}${u.role=='admin'?' 👑':u.role=='cashier'?' 🧾':''}</b><span class="nxe">${e(u.email||'')}</span>${u.title?nxBadge(u.title,u.cover):''}</div><div class="nxus"><b>${u.orders}</b><small>${t('nx_orders')}</small></div></button>`).join('')||`<div class="empty">${t('nx_empty')}</div>`}
 async function usrM(id){S.ur={id,cm:null};urRender();const{data}=await sb.from('profile_comments').select('*').eq('user_id',id).eq('deleted',false).order('created_at',{ascending:false}).limit(50);S.ur.cm=data||[];if(S.scr=='user'&&S.ur.id==id)urRender()}
 function urRender(){const R=S.ur,u=(S.us?.list||[]).find(x=>x.id==R.id);if(!u)return usersM();
 const joined=new Date(u.created_at).toLocaleDateString('ru',{day:'numeric',month:'long',year:'numeric'});
-let h=`<div class="pcard${u.cover?' hascov':''}" style="--avc:${THEMES[u.theme]||THEMES.coffee}">${nxCover(u.cover)}<div class="avw" style="cursor:default">${avOf(u,96)}</div><div class="pn ${u.title?'tn tn-'+(u.cover||'princess'):''}">${e(u.name||'—')}</div>${nxBadge(u.title,u.cover)}<div class="mu" style="font-size:14px;margin-top:8px">${e(u.email||'')}</div><div class="mu" style="font-size:13px;margin-top:2px">${t('nx_joined',S.L,{d:joined})}</div></div>
-<div class="nxtiles"><div><b>${u.orders}</b><small>${t('nx_orders')}</small></div><div><b>${mn(Math.round(+u.spent))}</b><small>${t('nx_spent')}</small></div><div><b>${u.last_order?new Date(u.last_order).toLocaleDateString('ru',{day:'numeric',month:'short'}):'—'}</b><small>${u.last_order?t('nx_lastord'):t('nx_never')}</small></div></div>
+let h=`<div class="pcard${u.cover?' hascov':''}" style="--avc:${THEMES[u.theme]||THEMES.coffee}">${nxCover(u.cover)}<div class="avw" style="cursor:default">${avOf(u,96)}</div><div class="pn ${u.title?'tn tn-'+(u.cover||'princess'):''}">${e(u.name||'-')}</div>${nxBadge(u.title,u.cover)}<div class="mu" style="font-size:14px;margin-top:8px">${e(u.email||'')}</div><div class="mu" style="font-size:13px;margin-top:2px">${t('nx_joined',S.L,{d:joined})}</div></div>
+<div class="nxtiles"><div><b>${u.orders}</b><small>${t('nx_orders')}</small></div><div><b>${mn(Math.round(+u.spent))}</b><small>${t('nx_spent')}</small></div><div><b>${u.last_order?new Date(u.last_order).toLocaleDateString('ru',{day:'numeric',month:'short'}):'-'}</b><small>${u.last_order?t('nx_lastord'):t('nx_never')}</small></div></div>
 <div class="nxbtns"><button onclick="ntCompose('${u.id}')">${nxIco.bell}<span>${t('nx_send')}</span></button><button onclick="stCompose('${u.id}')">${nxIco.crown}<span>${t('nx_status')}</span></button></div>
 <div class="lab">${t('nx_wall')}</div>${wallComposer(u.id)}${wallList(R.cm,true)}`;
 scr(topbar(e(u.name||t('nx_u_t')),'usersM()')+`<div class="body w nxw">${h}</div>`,'user')}
@@ -2690,7 +2715,7 @@ function myWall(){if(!S.wall||!S.wall.length)return '';const who=id=>S.authors?.
 return `<div class="lab">${t('nx_mywall')}</div>`+S.wall.map((c,i)=>{const a=who(c.author_id);return `<div class="nxcm ent" style="--i:${i}">${a.id?avOf(a,38):`<span class="av" style="--avc:#b8432c;width:38px;height:38px;font-size:14px"><b>D</b></span>`}<div><div class="nxcmh"><b>${e(a.name)}</b><small>${new Date(c.created_at).toLocaleDateString('ru',{day:'numeric',month:'short'})}</small></div><p>${e(c.body)}</p></div></div>`}).join('')}
 
 // ---------- отрисовка без лишних перерисовок ----------
-// Сравниваем разметку без классов «появления»: если изменились только они, DOM не трогаем — анимации не проигрываются повторно, картинки не мигают.
+// Сравниваем разметку без классов «появления»: если изменились только они, DOM не трогаем - анимации не проигрываются повторно, картинки не мигают.
 function paint(h){const hn=h.replace(/ (ent|pgin)(?=[ "])/g,'');
 if(S._h!==null&&S._h!==undefined&&S._hn===hn){S._h=h;return}
 const cs=document.querySelector('.cats'),sl=cs?cs.scrollLeft:0,io=cs&&cs.querySelector('.ind'),old=io?{x:+io.dataset.x,w:+io.dataset.w}:null;
@@ -2797,8 +2822,8 @@ if(W.mode=='new'&&g)rows.push(['','Да','',g,'','','']);rows.push(['','Нет',
 const blob=new Blob(['﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='paloma-import.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function nxKcal(it){const el=document.querySelector('#m .kct');if(!el)return;const tp=document.createElement('template');tp.innerHTML=kcalTag(it);const n=tp.content.firstElementChild;if(n&&n.textContent!=el.textContent){el.replaceWith(n);n.animate&&n.animate([{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:260,easing:'cubic-bezier(.34,1.45,.64,1)'})}}
 // ---------- «Подробнее», советы «к этому берут», повтор заказа ----------
-Object.assign(T.ru,{more:'Подробнее',cmp:'Состав',pair_t:'К этому часто берут',pair_c:'Добавить к заказу?',rep:'Повторить',rep_ok:'Заказ снова в корзине',rep_part:'Часть позиций сейчас нет — добавили остальное',rep_none:'Этих позиций сейчас нет'});
-Object.assign(T.kk,{more:'Толығырақ',cmp:'Құрамы',pair_t:'Бұған жиі алады',pair_c:'Тапсырысқа қосасыз ба?',rep:'Қайталау',rep_ok:'Тапсырыс қайта себетте',rep_part:'Кейбір позициялар қазір жоқ — қалғанын қостық',rep_none:'Бұл позициялар қазір жоқ'});
+Object.assign(T.ru,{more:'Подробнее',cmp:'Состав',pair_t:'К этому часто берут',pair_c:'Добавить к заказу?',rep:'Повторить',rep_ok:'Заказ снова в корзине',rep_part:'Часть позиций сейчас нет - добавили остальное',rep_none:'Этих позиций сейчас нет'});
+Object.assign(T.kk,{more:'Толығырақ',cmp:'Құрамы',pair_t:'Бұған жиі алады',pair_c:'Тапсырысқа қосасыз ба?',rep:'Қайталау',rep_ok:'Тапсырыс қайта себетте',rep_part:'Кейбір позициялар қазір жоқ - қалғанын қостық',rep_none:'Бұл позициялар қазір жоқ'});
 Object.assign(T.en,{more:'Details',cmp:'Ingredients',pair_t:'Often taken with this',pair_c:'Add to your order?',rep:'Reorder',rep_ok:'Order is back in your cart',rep_part:'Some items are unavailable, added the rest',rep_none:'These items are unavailable right now'});
 const INFOIC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg>';
 const moreBtn=it=>it.data.ds?`<div class="morw"><button class="morb" onclick="infoM('${it.id}')">${INFOIC}<span>${t('more')}</span></button>${kcalTag(it)}</div>`:'';
@@ -2842,7 +2867,7 @@ if(error){st.err=error.message;st.data=null}else{st.err='';st.data=data;st.days=
 function stSet(k,v){S.st[k]=v;if(k!='top')stLoad();else stRender()}
 async function stSync(){if(S.st.sync)return;S.st.sync=1;stRender();const{error}=await sb.rpc('admin_sync');if(error){S.st.sync=0;toast(error.message,1);stRender();return}
 setTimeout(async()=>{S.st.sync=0;await stLoad()},7000)}
-function ago(ts){if(!ts)return '—';const m=Math.round((Date.now()-Date.parse(ts))/6e4);return m<2?t('st_just'):m<60?t('st_ago',S.L,{n:m}):Math.floor(m/60)+' '+t('st_h')}
+function ago(ts){if(!ts)return '-';const m=Math.round((Date.now()-Date.parse(ts))/6e4);return m<2?t('st_just'):m<60?t('st_ago',S.L,{n:m}):Math.floor(m/60)+' '+t('st_h')}
 function stRender(){const st=S.st,D=st.data;
 const seg=`<div class="sseg">${['all','app'].map(k=>`<button class="${st.src==k?'on':''}" onclick="stSet('src','${k}')">${t('st_'+k)}</button>`).join('')}</div>`;
 const pds=`<div class="spd">${['t','y','7','30','m','pm'].map(k=>`<button class="${st.pd==k?'on':''}" onclick="stSet('pd','${k}')">${t('pd_'+k)}</button>`).join('')}</div>`;
@@ -2869,14 +2894,14 @@ ${TL.map((x,i)=>{const v=st.top=='q'?+x[1]:+x[2];return `<div class="stop${i<3?"
 if(st.src=='all')body+=`<div class="ssync"><span>${t('st_upd',S.L,{t:ago(D.synced)})}</span><button class="c" onclick="stSync()"${st.sync?' disabled':''}>${st.sync?t('st_sync'):t('st_now')}</button></div>`}
 scr(topbar(t('stt'))+`<div class="body w stw">${seg}${pds}${body}</div>`,'stats')}
 // ---------- ИИ-помощник ----------
-Object.assign(T.ru,{ai_hia:'Привет, {n}! Спросите про выручку, наличные и карту, пик продаж или топ позиций. Заказ тоже соберу 🙂',ai_a1:'Выручка сегодня',ai_a2:'Нал или карта сегодня?',ai_a3:'Когда был пик?',ai_a4:'Топ за неделю',ai_u1:'Как обычно',ai_u2:'Где мой заказ?',ai_st:'Открыть статистику',ai_mic:'Слушаю… нажмите 🎤, чтобы отправить',ai_micerr:'Не получилось распознать, попробуйте ещё раз',ai_micno:'Нет доступа к микрофону — разрешите его в настройках браузера',ai_rec:'Распознаю голос…',ai_t:'Degirmen AI',ai_hi:'Привет! Я помогу выбрать донер, кофе или лимонад и соберу заказ. Что хочется? 🙂',ai_ph:'Спросите что-нибудь…',ai_add:'Добавить в корзину',ai_added:'Добавлено в корзину',ai_err:'Не получилось ответить, попробуйте ещё раз',ai_c1:'Что посоветуешь?',ai_c2:'Сытное до 3000 ₸',ai_c3:'Что освежающее?',ai_c4:'Кофе без молока',ai_clr:'Новый диалог',ai_note:'Ответы даёт ИИ и могут быть неточными. Цены — как в меню.',ai_go:'К корзине'});
-Object.assign(T.kk,{ai_hia:'Сәлем, {n}! Түсім, қолма-қол мен карта, сатылым шыңы немесе үздік позициялар туралы сұраңыз. Тапсырысты да жинап беремін 🙂',ai_a1:'Бүгінгі түсім',ai_a2:'Бүгін қолма-қол ма, карта ма?',ai_a3:'Шың қашан болды?',ai_a4:'Апталық топ',ai_u1:'Әдеттегідей',ai_u2:'Тапсырысым қайда?',ai_st:'Статистиканы ашу',ai_mic:'Тыңдап тұрмын… жіберу: 🎤',ai_micerr:'Тану мүмкін болмады, қайталап көріңіз',ai_micno:'Микрофонға рұқсат жоқ — браузер баптауларында рұқсат беріңіз',ai_rec:'Дауысты танып жатырмын…',ai_t:'Degirmen AI',ai_hi:'Сәлем! Донер, кофе не лимонад таңдауға көмектесіп, тапсырысты жинап беремін. Не қалайсыз? 🙂',ai_ph:'Сұрақ қойыңыз…',ai_add:'Себетке қосу',ai_added:'Себетке қосылды',ai_err:'Жауап бере алмадым, қайталап көріңіз',ai_c1:'Не ұсынасың?',ai_c2:'3000 ₸-ге дейін тойымды',ai_c3:'Сергітетін не бар?',ai_c4:'Сүтсіз кофе',ai_clr:'Жаңа диалог',ai_note:'Жауаптарды ЖИ береді, қате болуы мүмкін. Бағалар — мәзірдегідей.',ai_go:'Себетке'});
-Object.assign(T.en,{ai_hia:'Hi, {n}! Ask me about revenue, cash vs card, peak hours or best sellers. I can also put an order together 🙂',ai_a1:'Revenue today',ai_a2:'Cash or card today?',ai_a3:'When was the peak?',ai_a4:'Top of the week',ai_u1:'The usual',ai_u2:'Where is my order?',ai_st:'Open statistics',ai_mic:'Listening… tap 🎤 to send',ai_micerr:'Could not recognise that, please try again',ai_micno:'No microphone access — allow it in your browser settings',ai_rec:'Recognising…',ai_t:'Degirmen AI',ai_hi:'Hi! I can help you pick a doner, coffee or lemonade and put the order together. What would you like? 🙂',ai_ph:'Ask anything…',ai_add:'Add to cart',ai_added:'Added to cart',ai_err:'Couldn’t answer, please try again',ai_c1:'What do you recommend?',ai_c2:'Filling under 3000 ₸',ai_c3:'Something refreshing?',ai_c4:'Coffee without milk',ai_clr:'New chat',ai_note:'Answers are AI-generated and may be inaccurate. Prices are as in the menu.',ai_go:'Go to cart'});
+Object.assign(T.ru,{ai_hia:'Привет, {n}! Спросите про выручку, наличные и карту, пик продаж или топ позиций. Заказ тоже соберу 🙂',ai_a1:'Выручка сегодня',ai_a2:'Нал или карта сегодня?',ai_a3:'Когда был пик?',ai_a4:'Топ за неделю',ai_u1:'Как обычно',ai_u2:'Где мой заказ?',ai_st:'Открыть статистику',ai_mic:'Слушаю… нажмите 🎤, чтобы отправить',ai_micerr:'Не получилось распознать, попробуйте ещё раз',ai_micno:'Нет доступа к микрофону - разрешите его в настройках браузера',ai_rec:'Распознаю голос…',ai_t:'Degirmen AI',ai_hi:'Привет! Я помогу выбрать донер, кофе или лимонад и соберу заказ. Что хочется? 🙂',ai_ph:'Спросите что-нибудь…',ai_add:'Добавить в корзину',ai_added:'Добавлено в корзину',ai_err:'Не получилось ответить, попробуйте ещё раз',ai_c1:'Что посоветуешь?',ai_c2:'Сытное до 3000 ₸',ai_c3:'Что освежающее?',ai_c4:'Кофе без молока',ai_clr:'Новый диалог',ai_note:'Ответы даёт ИИ и могут быть неточными. Цены - как в меню.',ai_go:'К корзине'});
+Object.assign(T.kk,{ai_hia:'Сәлем, {n}! Түсім, қолма-қол мен карта, сатылым шыңы немесе үздік позициялар туралы сұраңыз. Тапсырысты да жинап беремін 🙂',ai_a1:'Бүгінгі түсім',ai_a2:'Бүгін қолма-қол ма, карта ма?',ai_a3:'Шың қашан болды?',ai_a4:'Апталық топ',ai_u1:'Әдеттегідей',ai_u2:'Тапсырысым қайда?',ai_st:'Статистиканы ашу',ai_mic:'Тыңдап тұрмын… жіберу: 🎤',ai_micerr:'Тану мүмкін болмады, қайталап көріңіз',ai_micno:'Микрофонға рұқсат жоқ - браузер баптауларында рұқсат беріңіз',ai_rec:'Дауысты танып жатырмын…',ai_t:'Degirmen AI',ai_hi:'Сәлем! Донер, кофе не лимонад таңдауға көмектесіп, тапсырысты жинап беремін. Не қалайсыз? 🙂',ai_ph:'Сұрақ қойыңыз…',ai_add:'Себетке қосу',ai_added:'Себетке қосылды',ai_err:'Жауап бере алмадым, қайталап көріңіз',ai_c1:'Не ұсынасың?',ai_c2:'3000 ₸-ге дейін тойымды',ai_c3:'Сергітетін не бар?',ai_c4:'Сүтсіз кофе',ai_clr:'Жаңа диалог',ai_note:'Жауаптарды ЖИ береді, қате болуы мүмкін. Бағалар - мәзірдегідей.',ai_go:'Себетке'});
+Object.assign(T.en,{ai_hia:'Hi, {n}! Ask me about revenue, cash vs card, peak hours or best sellers. I can also put an order together 🙂',ai_a1:'Revenue today',ai_a2:'Cash or card today?',ai_a3:'When was the peak?',ai_a4:'Top of the week',ai_u1:'The usual',ai_u2:'Where is my order?',ai_st:'Open statistics',ai_mic:'Listening… tap 🎤 to send',ai_micerr:'Could not recognise that, please try again',ai_micno:'No microphone access - allow it in your browser settings',ai_rec:'Recognising…',ai_t:'Degirmen AI',ai_hi:'Hi! I can help you pick a doner, coffee or lemonade and put the order together. What would you like? 🙂',ai_ph:'Ask anything…',ai_add:'Add to cart',ai_added:'Added to cart',ai_err:'Couldn’t answer, please try again',ai_c1:'What do you recommend?',ai_c2:'Filling under 3000 ₸',ai_c3:'Something refreshing?',ai_c4:'Coffee without milk',ai_clr:'New chat',ai_note:'Answers are AI-generated and may be inaccurate. Prices are as in the menu.',ai_go:'Go to cart'});
 const AIIC='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M18.5 14.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/><path d="M5 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>';
 const SENDIC='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
 S.ai=[];S.aiBusy=false;
 const aiFab=()=>`<button class="aifab" aria-label="${t('ai_t')}" onclick="aiOpen()">${AIIC}</button>`;
-// собрать строку корзины из ответа ИИ и проверить её по меню (группы — одна опция, макс. количество, айс без температуры)
+// собрать строку корзины из ответа ИИ и проверить её по меню (группы - одна опция, макс. количество, айс без температуры)
 function aiLine(c){const it=itemOf(c.id);if(!it||it.sold_out)return null;const l=defLine(it,Math.max(1,Math.min(5,c.qty|0||1)),0);
 if(fills(it).includes(c.f))l.f=c.f;l.z=zi(it,l.f,Math.max(0,c.z|0));const seen={},cnt={};
 (Array.isArray(c.o)?c.o:[]).slice().reverse().forEach(id=>{const o=optOf(id);if(!o||o.sold_out||!o.categories.includes(it.category))return;if(o.grp=='tmp'&&l.f=='ic')return;
@@ -2903,7 +2928,7 @@ const SR=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.
 const MICIC='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
 S.aiRec=null;S.aiStt=0;
 function aiMicUI(){const b=document.querySelector('.aimic');if(b){b.classList.toggle('on',!!S.aiRec);b.classList.toggle('wt',!!S.aiStt)}const i=$('aii');if(i)i.placeholder=S.aiRec?t('ai_mic'):S.aiStt?t('ai_rec'):t('ai_ph')}
-// голос: пишем звук с микрофона и отдаём на распознавание (Whisper через ai-chat) — работает и в iPhone-приложении с экрана «Домой»
+// голос: пишем звук с микрофона и отдаём на распознавание (Whisper через ai-chat) - работает и в iPhone-приложении с экрана «Домой»
 async function aiMic(){if(S.aiBusy||S.aiStt)return;if(S.aiRec){if(S.aiRec.state=='recording')S.aiRec.stop();return}
 let st;try{st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(err){toast(t('ai_micno'),1);return}
 const mt=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'].find(x=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(x))||'';
@@ -3060,7 +3085,7 @@ const pctOf=o=>Math.max(0,STEPS.indexOf(o.status))/(STEPS.length-1);
 function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it,'ph phs').replace('<div class="ph phs','<div style="width:56px;height:56px;flex:none;border-radius:14px" class="ph phs'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
 // ---------- знак мельницы (свой, media/logo-mill.svg): башня + 4 крыла; крылья в группе .lgbd (крутятся при загрузке) ----------
 const MILL_S='M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z',MILL_K='M38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z';let MILL_N=0;
-function MILL(cls=''){const k='mlk'+(++MILL_N);return `<svg viewBox="0 0 64 64" class="mill ${cls}" aria-hidden="true" focusable="false"><defs><mask id="${k}" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="${MILL_S}" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path class="mlt" fill="currentColor" mask="url(#${k})" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="${MILL_S}${MILL_K}"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg>`}
+function MILL(cls=''){const k='mlk'+(++MILL_N);return `<svg viewBox="0 0 64 64" class="dnmill ${cls}" aria-hidden="true" focusable="false"><defs><mask id="${k}" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="${MILL_S}" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path class="mlt" fill="currentColor" mask="url(#${k})" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="${MILL_S}${MILL_K}"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg>`}
 const hdr=()=>`<div class="hd"><div class="lg"><span class="lgm" aria-hidden="true">${MILL()}</span>DEGIRMEN</div><div class="hdr-r">${kbBtn()}${bellBtn()}<button class="rb${S.me&&S.pf?' avb':''}" aria-label="${t('profile')}" onclick="profileM()">${S.me&&S.pf?avatar(44):IC.user}</button></div></div>`;
 const secOf=cat=>{const its=S.items.filter(i=>i.category==cat&&!(i.data&&i.data.pack)),def=SECS[cat];if(!def)return [{k:'a',l:null,items:its}];const used=new Set(),out=def.map(s=>({...s,items:s.ids.map(id=>its.find(i=>i.id==id)).filter(Boolean)}));out.forEach(s=>s.items.forEach(i=>used.add(i.id)));const rest=its.filter(i=>!used.has(i.id));if(rest.length)out[out.length-1].items.push(...rest);return out.filter(s=>s.items.length)};
 const price=i=>{const pc=Object.values(i.data.p).flat();return i.sold_out?t('gone'):(pc.length>1?t('from')+' ':'')+mn(Math.min(...pc))};
@@ -3106,8 +3131,8 @@ new MutationObserver(sync).observe(M,{childList:true,subtree:true,attributes:tru
 // при закрытии карточки с «перелётом» картинки главный экран встаёт на место сразу, чтобы картинка прилетела точно в свою карточку
 const still=on=>AB().forEach(a=>a.style.transition=on?'none':'');
 const _closeProd=closeProd;closeProd=function(){if(document.startViewTransition&&!RM){still(1);setTimeout(()=>still(0),800)}return _closeProd.apply(this,arguments)};
-// «Заказы» и «Касса» — это страницы, а не экраны поверх: раньше меню просто исчезало и новая страница собиралась кусками.
-// Теперь переход целиком: новая страница заезжает справа, меню уходит влево и темнеет; назад — наоборот.
+// «Заказы» и «Касса» - это страницы, а не экраны поверх: раньше меню просто исчезало и новая страница собиралась кусками.
+// Теперь переход целиком: новая страница заезжает справа, меню уходит влево и темнеет; назад - наоборот.
 const pageVT=(fn,dir)=>function(){const args=arguments;
  if(!document.startViewTransition||!nxMotion()||S.scr)return fn.apply(this,args);
  const R=document.documentElement;R.dataset.vtdir=dir;
@@ -3134,7 +3159,7 @@ addEventListener('popstate',()=>{if(skipPop){skipPop--;if(open)try{history.pushS
  if(!open&&history.state&&history.state.dn){skipPop++;history.back();return}
  if(M2.querySelector('.shw:not(.out)')){cp();if(open)try{history.pushState({dn:1},'')}catch{}return}
  if(!open)return;fromPop=true;if(S.scr=='prod'&&typeof closeProd=='function')closeProd();else cl()});
-// в приложении, добавленном на экран «Домой», системного жеста нет — делаем свой: тянем экран от левого края
+// в приложении, добавленном на экран «Домой», системного жеста нет - делаем свой: тянем экран от левого края
 if(!STANDALONE)return;
 let sx=0,sy=0,dx=0,on=0,lock=0,t0=0,el=null;const W=()=>innerWidth||390;
 const app=()=>[$('app'),$('bar')];
@@ -3153,12 +3178,12 @@ addEventListener('touchend',end);addEventListener('touchcancel',end);
 // ---------- исправления по внешнему разбору (11.10) ----------
 // Цены и бесплатный кофе теперь проверяет база (orders_guard). Здесь: понятные ошибки, защита от двойного нажатия,
 // время самовывоза по Алматы, отмена заказа гостем, касса видит все активные заказы, обновление после сна телефона.
-Object.assign(T.ru,{e_too_many:'Слишком много заказов подряд. Подождите пару минут.',e_bad_time:'Время самовывоза — сегодня и не в прошлом.',e_free:'Бесплатный кофе сейчас недоступен — убрали его из корзины.',e_bad_qty:'Не больше 20 шт. одной позиции - остальное оформите вторым заказом.',e_qmax:'Максимум 20 шт. одной позиции в заказе',e_too_big:'Слишком большой заказ — разделите на два.',e_net:'Сервер не ответил. Проверьте интернет и нажмите «Оформить» ещё раз - мы сначала проверим, не принят ли заказ.',e_empty:'Корзина пуста.',e_closed:'Сейчас мы закрыты. Выберите время самовывоза с 8:00 до 21:45.',e_closed_time:'Мы работаем с 8:00 до 22:00 — выберите время с 8:00 до 21:45.',
-cnl:'Отменить заказ',cnl_sure:'Точно отменить? Нажмите ещё раз',cnl_ok:'Заказ отменён',cnl_no:'Заказ уже готовят — отменить можно только на кассе'});
-Object.assign(T.kk,{e_too_many:'Тапсырыс тым көп. Бірнеше минут күтіңіз.',e_bad_time:'Алып кету уақыты — бүгін және өткен уақыт емес.',e_free:'Тегін кофе қазір қолжетімсіз — себеттен алынды.',e_bad_qty:'Бір позициядан 20 данадан артық емес - қалғанын екінші тапсырыспен рәсімдеңіз.',e_qmax:'Бір позициядан ең көбі 20 дана',e_too_big:'Тапсырыс тым үлкен — екіге бөліңіз.',e_net:'Сервер жауап бермеді. Интернетті тексеріп, «Рәсімдеу» батырмасын қайта басыңыз - алдымен тапсырыс қабылданғанын тексереміз.',e_empty:'Себет бос.',e_closed:'Қазір жабықпыз. Алып кету уақытын 8:00–21:45 аралығынан таңдаңыз.',e_closed_time:'Біз 8:00–22:00 жұмыс істейміз — 8:00–21:45 аралығын таңдаңыз.',
-cnl:'Тапсырысты болдырмау',cnl_sure:'Растайсыз ба? Тағы басыңыз',cnl_ok:'Тапсырыс болдырылмады',cnl_no:'Тапсырыс дайындалып жатыр — тек кассада болдырмауға болады'});
-Object.assign(T.en,{e_too_many:'Too many orders in a row. Please wait a couple of minutes.',e_bad_time:'Pickup time must be today and not in the past.',e_free:'Free coffee is not available right now — removed it from the cart.',e_bad_qty:'No more than 20 of one item - place the rest as a second order.',e_qmax:'Maximum 20 of one item per order',e_too_big:'The order is too big — split it in two.',e_net:'The server did not respond. Check your connection and tap the button again - we will first check whether the order went through.',e_empty:'The cart is empty.',e_closed:'We are closed now. Pick a pickup time between 8:00 and 21:45.',e_closed_time:'We are open 8:00–22:00 — pick a time between 8:00 and 21:45.',
-cnl:'Cancel order',cnl_sure:'Sure? Tap again',cnl_ok:'Order cancelled',cnl_no:'Already being prepared — cancel at the counter'});
+Object.assign(T.ru,{e_too_many:'Слишком много заказов подряд. Подождите пару минут.',e_bad_time:'Время самовывоза - сегодня и не в прошлом.',e_free:'Бесплатный кофе сейчас недоступен - убрали его из корзины.',e_bad_qty:'Не больше 20 шт. одной позиции - остальное оформите вторым заказом.',e_qmax:'Максимум 20 шт. одной позиции в заказе',e_too_big:'Слишком большой заказ - разделите на два.',e_net:'Сервер не ответил. Проверьте интернет и нажмите «Оформить» ещё раз - мы сначала проверим, не принят ли заказ.',e_empty:'Корзина пуста.',e_closed:'Сейчас мы закрыты. Выберите время самовывоза с 8:00 до 21:45.',e_closed_time:'Мы работаем с 8:00 до 22:00 - выберите время с 8:00 до 21:45.',
+cnl:'Отменить заказ',cnl_sure:'Точно отменить? Нажмите ещё раз',cnl_ok:'Заказ отменён',cnl_no:'Заказ уже готовят - отменить можно только на кассе'});
+Object.assign(T.kk,{e_too_many:'Тапсырыс тым көп. Бірнеше минут күтіңіз.',e_bad_time:'Алып кету уақыты - бүгін және өткен уақыт емес.',e_free:'Тегін кофе қазір қолжетімсіз - себеттен алынды.',e_bad_qty:'Бір позициядан 20 данадан артық емес - қалғанын екінші тапсырыспен рәсімдеңіз.',e_qmax:'Бір позициядан ең көбі 20 дана',e_too_big:'Тапсырыс тым үлкен - екіге бөліңіз.',e_net:'Сервер жауап бермеді. Интернетті тексеріп, «Рәсімдеу» батырмасын қайта басыңыз - алдымен тапсырыс қабылданғанын тексереміз.',e_empty:'Себет бос.',e_closed:'Қазір жабықпыз. Алып кету уақытын 8:00–21:45 аралығынан таңдаңыз.',e_closed_time:'Біз 8:00–22:00 жұмыс істейміз - 8:00–21:45 аралығын таңдаңыз.',
+cnl:'Тапсырысты болдырмау',cnl_sure:'Растайсыз ба? Тағы басыңыз',cnl_ok:'Тапсырыс болдырылмады',cnl_no:'Тапсырыс дайындалып жатыр - тек кассада болдырмауға болады'});
+Object.assign(T.en,{e_too_many:'Too many orders in a row. Please wait a couple of minutes.',e_bad_time:'Pickup time must be today and not in the past.',e_free:'Free coffee is not available right now - removed it from the cart.',e_bad_qty:'No more than 20 of one item - place the rest as a second order.',e_qmax:'Maximum 20 of one item per order',e_too_big:'The order is too big - split it in two.',e_net:'The server did not respond. Check your connection and tap the button again - we will first check whether the order went through.',e_empty:'The cart is empty.',e_closed:'We are closed now. Pick a pickup time between 8:00 and 21:45.',e_closed_time:'We are open 8:00–22:00 - pick a time between 8:00 and 21:45.',
+cnl:'Cancel order',cnl_sure:'Sure? Tap again',cnl_ok:'Order cancelled',cnl_no:'Already being prepared - cancel at the counter'});
 ['ru','kk','en'].forEach(l=>{if(T[l].notePh)T[l].notePh=T[l].notePh.replace('20','80')});
 
 // время «к 14:30» всегда по Алматы (UTC+5), даже если на телефоне другой часовой пояс
@@ -3228,10 +3253,10 @@ const pushBtn=o=>{if(!['new','cooking'].includes(o.status)||o.user_id!=S.me?.id|
 {const _nb=nxBoot;nxBoot=async function(){await _nb();pushSync()}}
 // ---------- мини-игра «Мельницы» (Degirmen = мельница) ----------
 // Пока гость ждёт заказ: донер или стаканчик кофе пролетает между вращающимися мельницами.
-// Касание — взмах. Лопасти крутятся и задевают, так что важен момент. Рекорд — у себя и в общей таблице.
-Object.assign(T.ru,{g_title:'Мельницы',g_play:'Сыграть, пока ждёте',g_game:'Мини-игра «Мельницы»',g_gsub:'Проведите донер или кофе между мельницами',g_pick:'Выберите героя',g_doner:'Донер',g_coffee:'Кофе',g_tap:'Нажмите, чтобы взлететь',g_score:'Счёт',g_best:'Рекорд',g_again:'Ещё раз',g_hero:'Сменить героя',g_top:'Лучшие гости',g_new:'Новый рекорд!',g_ready:'Заказ №{n} готов — забирайте!',g_you:'вы',g_login:'Войдите, чтобы попасть в таблицу рекордов',g_nosave:'Рекорд не сохранился — проверьте интернет'});
-Object.assign(T.kk,{g_title:'Диірмендер',g_play:'Күткенде ойнаңыз',g_game:'«Диірмендер» ойыны',g_gsub:'Донерді немесе кофені диірмендер арасынан өткізіңіз',g_pick:'Кейіпкерді таңдаңыз',g_doner:'Донер',g_coffee:'Кофе',g_tap:'Ұшу үшін басыңыз',g_score:'Ұпай',g_best:'Рекорд',g_again:'Тағы',g_hero:'Кейіпкерді ауыстыру',g_top:'Үздік қонақтар',g_new:'Жаңа рекорд!',g_ready:'№{n} тапсырыс дайын — алыңыз!',g_you:'сіз',g_login:'Рекордтар кестесіне кіру үшін жүйеге кіріңіз',g_nosave:'Рекорд сақталмады — интернетті тексеріңіз'});
-Object.assign(T.en,{g_title:'Windmills',g_play:'Play while you wait',g_game:'Mini-game “Windmills”',g_gsub:'Fly a doner or a coffee between the windmills',g_pick:'Pick your hero',g_doner:'Doner',g_coffee:'Coffee',g_tap:'Tap to fly',g_score:'Score',g_best:'Best',g_again:'Play again',g_hero:'Change hero',g_top:'Top guests',g_new:'New record!',g_ready:'Order #{n} is ready — pick it up!',g_you:'you',g_login:'Sign in to get on the leaderboard',g_nosave:'Score not saved — check your connection'});
+// Касание - взмах. Лопасти крутятся и задевают, так что важен момент. Рекорд - у себя и в общей таблице.
+Object.assign(T.ru,{g_title:'Мельницы',g_play:'Сыграть, пока ждёте',g_game:'Мини-игра «Мельницы»',g_gsub:'Проведите донер или кофе между мельницами',g_pick:'Выберите героя',g_doner:'Донер',g_coffee:'Кофе',g_tap:'Нажмите, чтобы взлететь',g_score:'Счёт',g_best:'Рекорд',g_again:'Ещё раз',g_hero:'Сменить героя',g_top:'Лучшие гости',g_new:'Новый рекорд!',g_ready:'Заказ №{n} готов - забирайте!',g_you:'вы',g_login:'Войдите, чтобы попасть в таблицу рекордов',g_nosave:'Рекорд не сохранился - проверьте интернет'});
+Object.assign(T.kk,{g_title:'Диірмендер',g_play:'Күткенде ойнаңыз',g_game:'«Диірмендер» ойыны',g_gsub:'Донерді немесе кофені диірмендер арасынан өткізіңіз',g_pick:'Кейіпкерді таңдаңыз',g_doner:'Донер',g_coffee:'Кофе',g_tap:'Ұшу үшін басыңыз',g_score:'Ұпай',g_best:'Рекорд',g_again:'Тағы',g_hero:'Кейіпкерді ауыстыру',g_top:'Үздік қонақтар',g_new:'Жаңа рекорд!',g_ready:'№{n} тапсырыс дайын - алыңыз!',g_you:'сіз',g_login:'Рекордтар кестесіне кіру үшін жүйеге кіріңіз',g_nosave:'Рекорд сақталмады - интернетті тексеріңіз'});
+Object.assign(T.en,{g_title:'Windmills',g_play:'Play while you wait',g_game:'Mini-game “Windmills”',g_gsub:'Fly a doner or a coffee between the windmills',g_pick:'Pick your hero',g_doner:'Doner',g_coffee:'Coffee',g_tap:'Tap to fly',g_score:'Score',g_best:'Best',g_again:'Play again',g_hero:'Change hero',g_top:'Top guests',g_new:'New record!',g_ready:'Order #{n} is ready - pick it up!',g_you:'you',g_login:'Sign in to get on the leaderboard',g_nosave:'Score not saved - check your connection'});
 
 const GM={};
 const millIcon=`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22l1.5-10h3L15 22"/><path d="M12 9L5 4M12 9l7-5M12 9L7 16M12 9l5 7"/><circle cx="12" cy="9" r="1.4" fill="currentColor"/></svg>`;
@@ -3295,7 +3320,7 @@ function gmStep(dt){const sp=gmSpeed()*dt;GM.dist+=sp;
 function gmOver(){if(GM.state=='over')return;GM.state='over';GM.shake=10;GM.vy=-3;gmSnd(160,.35,.07);try{navigator.vibrate&&navigator.vibrate(60)}catch{}
   if(GM.score>GM.best){GM.best=GM.score;GM.newBest=GM.score>0;LS.set('dn_gbest',GM.best)}setTimeout(gmMenu,450)}
 
-// мельница: башня + колпак + 4 лопасти, сверху — перевёрнутая. Столкновение: корпус как прямоугольник, лопасти как отрезки.
+// мельница: башня + колпак + 4 лопасти, сверху - перевёрнутая. Столкновение: корпус как прямоугольник, лопасти как отрезки.
 const BL=31;
 function gmMillParts(m){const hb=m.cy+m.g/2,ht=m.cy-m.g/2;return{hb,ht}}
 function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy,u=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l));return Math.hypot(px-ax-u*dx,py-ay-u*dy)}
@@ -3359,7 +3384,7 @@ function gmBlades(x,cx,cy,rot){x.save();x.translate(cx,cy);x.rotate(rot);
     x.restore()}
   x.fillStyle='#3b2117';x.beginPath();x.arc(0,0,6,0,7);x.fill();x.fillStyle='#d9a54a';x.beginPath();x.arc(0,0,2.5,0,7);x.fill();x.restore()}
 
-// герои: (0,0) — центр. f — взмах (0..1)
+// герои: (0,0) - центр. f - взмах (0..1)
 function gmEyes(x,ex,ey){x.fillStyle='#fff';x.beginPath();x.arc(ex,ey,4.2,0,7);x.arc(ex+9,ey,4.2,0,7);x.fill();x.fillStyle='#1a120c';x.beginPath();x.arc(ex+1.4,ey+.6,2,0,7);x.arc(ex+10.4,ey+.6,2,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(ex+2,ey-.4,.7,0,7);x.arc(ex+11,ey-.4,.7,0,7);x.fill()}
 function gmWing(x,wx,wy,f){x.save();x.translate(wx,wy);x.rotate(-.5-f*1.1);x.fillStyle='rgba(255,248,236,.95)';x.beginPath();x.ellipse(-7,0,9,5,0,0,7);x.fill();x.strokeStyle='rgba(120,80,50,.35)';x.lineWidth=1;x.stroke();x.restore()}
 function gmHero(x,h,X,Y,f){x.save();x.translate(X,Y);
@@ -3381,11 +3406,11 @@ function gmHero(x,h,X,Y,f){x.save();x.translate(X,Y);
     x.strokeStyle='rgba(255,240,220,.55)';x.lineWidth=1.6;x.lineCap='round';const s=GM.t||0;for(let i=0;i<2;i++){x.beginPath();x.moveTo(-3+i*6,-21);x.quadraticCurveTo(-6+i*6+Math.sin(s/9+i)*3,-27,-2+i*6,-32);x.stroke()}
     gmEyes(x,-5,-6);gmWing(x,-12,4,f)}
   x.restore()}
-// на компьютере — пробел или стрелка вверх
+// на компьютере - пробел или стрелка вверх
 document.addEventListener('keydown',ev=>{if(S.scr=='game'&&(ev.code=='Space'||ev.code=='ArrowUp')){ev.preventDefault();gmTap()}});
 // ---------- оценка заказа ----------
 // После выдачи гость видит «Как вам заказ №…?»: звёзды, метки, комментарий. Оценку проверяет сервер (rate_order),
-// плохие (1–3) сразу уходят владельцам в Telegram. В статистике админа — блок с оценками.
+// плохие (1–3) сразу уходят владельцам в Telegram. В статистике админа - блок с оценками.
 Object.assign(T.ru,{rt_q:'Как вам заказ №{n}?',rt_sub:'Оценка займёт пару секунд и поможет нам стать лучше',rt_send:'Отправить',rt_later:'Не сейчас',rt_c:'Что можно улучшить? (необязательно)',rt_c2:'Комментарий (необязательно)',rt_ok:'Спасибо за оценку!',rt_ok_bad:'Спасибо, что сказали. Мы уже передали это владельцу и разберёмся.',rt_err:'Не получилось отправить оценку',
  rtg_tasty:'Вкусно',rtg_fast:'Быстро',rtg_hot:'Горячее',rtg_friendly:'Вежливо',rtg_slow:'Долго ждал',rtg_cold:'Холодное',rtg_wrong:'Не то положили',rtg_small:'Маленькая порция',
  rs_t:'Оценки гостей',rs_avg:'Средняя оценка',rs_n:'оценок',rs_low:'Плохих (1–3★)',rs_bad:'Чаще всего в плохих оценках',rs_last:'Последние отзывы',rs_none:'За этот период оценок нет'});
@@ -3446,13 +3471,13 @@ function rsInject(){const R=S.st?.rs,m=document.querySelector('#m .scr[data-n="s
 
 // ---------- уровни лояльности «Мельница» ----------
 // Зерно → Помол (сироп бесплатно) → Мельник (чайник турецкого чая в подарок) → Хозяин мельницы (донер в подарок).
-// Пороги и подарки — в настройке tiers (paloma_config), проверку делает сервер (orders_guard).
-Object.assign(T.ru,{lv_t:'Ваш уровень',lv_grain:'Зерно',lv_grind:'Помол',lv_miller:'Мельник',lv_master:'Хозяин мельницы',lv_p_grain:'Кофе в подарок за каждые 7 заказов',lv_p_grind:'Сироп к напиткам — бесплатно',lv_p_miller:'Чайник турецкого чая в подарок',lv_p_master:'Донер в подарок и значок мастера',lv_next:'Ещё {n} {w} до уровня «{l}»',lv_max:'Высший уровень — спасибо, что вы с нами!',lv_ord1:'заказ',lv_ord2:'заказа',lv_ord5:'заказов',lv_free:'бесплатно',
- lv_up:'Новый уровень!',lv_upsub:'Теперь вам доступно:',lv_ok:'Отлично',gift_use:'Подарок «{l}»',gift_on:'Подарок применён ✕',e_gift:'Подарок уровня сейчас недоступен — убрали его из корзины.',lv_from:'от {n}'});
-Object.assign(T.kk,{lv_t:'Сіздің деңгейіңіз',lv_grain:'Дән',lv_grind:'Тартылым',lv_miller:'Диірменші',lv_master:'Диірмен иесі',lv_p_grain:'Әр 7 тапсырысқа кофе сыйға',lv_p_grind:'Сусынға сироп — тегін',lv_p_miller:'Түрік шайы шәйнегі сыйға',lv_p_master:'Донер сыйға және шебер белгісі',lv_next:'«{l}» деңгейіне дейін тағы {n} {w}',lv_max:'Ең жоғары деңгей — бізбен біргесіз, рахмет!',lv_ord1:'тапсырыс',lv_ord2:'тапсырыс',lv_ord5:'тапсырыс',lv_free:'тегін',
- lv_up:'Жаңа деңгей!',lv_upsub:'Енді сізге қолжетімді:',lv_ok:'Керемет',gift_use:'«{l}» сыйы',gift_on:'Сый қолданылды ✕',e_gift:'Деңгей сыйы қазір қолжетімсіз — себеттен алынды.',lv_from:'{n} бастап'});
-Object.assign(T.en,{lv_t:'Your level',lv_grain:'Grain',lv_grind:'Grind',lv_miller:'Miller',lv_master:'Mill master',lv_p_grain:'A free coffee for every 7 orders',lv_p_grind:'Free syrup in drinks',lv_p_miller:'A pot of Turkish tea on us',lv_p_master:'A free doner and a master badge',lv_next:'{n} more {w} to “{l}”',lv_max:'Top level — thank you for being with us!',lv_ord1:'order',lv_ord2:'orders',lv_ord5:'orders',lv_free:'free',
- lv_up:'New level!',lv_upsub:'Now you get:',lv_ok:'Great',gift_use:'“{l}” gift',gift_on:'Gift applied ✕',e_gift:'The level gift is not available now — removed it from the cart.',lv_from:'from {n}'});
+// Пороги и подарки - в настройке tiers (paloma_config), проверку делает сервер (orders_guard).
+Object.assign(T.ru,{lv_t:'Ваш уровень',lv_grain:'Зерно',lv_grind:'Помол',lv_miller:'Мельник',lv_master:'Хозяин мельницы',lv_p_grain:'Кофе в подарок за каждые 7 заказов',lv_p_grind:'Сироп к напиткам - бесплатно',lv_p_miller:'Чайник турецкого чая в подарок',lv_p_master:'Донер в подарок и значок мастера',lv_next:'Ещё {n} {w} до уровня «{l}»',lv_max:'Высший уровень - спасибо, что вы с нами!',lv_ord1:'заказ',lv_ord2:'заказа',lv_ord5:'заказов',lv_free:'бесплатно',
+ lv_up:'Новый уровень!',lv_upsub:'Теперь вам доступно:',lv_ok:'Отлично',gift_use:'Подарок «{l}»',gift_on:'Подарок применён ✕',e_gift:'Подарок уровня сейчас недоступен - убрали его из корзины.',lv_from:'от {n}'});
+Object.assign(T.kk,{lv_t:'Сіздің деңгейіңіз',lv_grain:'Дән',lv_grind:'Тартылым',lv_miller:'Диірменші',lv_master:'Диірмен иесі',lv_p_grain:'Әр 7 тапсырысқа кофе сыйға',lv_p_grind:'Сусынға сироп - тегін',lv_p_miller:'Түрік шайы шәйнегі сыйға',lv_p_master:'Донер сыйға және шебер белгісі',lv_next:'«{l}» деңгейіне дейін тағы {n} {w}',lv_max:'Ең жоғары деңгей - бізбен біргесіз, рахмет!',lv_ord1:'тапсырыс',lv_ord2:'тапсырыс',lv_ord5:'тапсырыс',lv_free:'тегін',
+ lv_up:'Жаңа деңгей!',lv_upsub:'Енді сізге қолжетімді:',lv_ok:'Керемет',gift_use:'«{l}» сыйы',gift_on:'Сый қолданылды ✕',e_gift:'Деңгей сыйы қазір қолжетімсіз - себеттен алынды.',lv_from:'{n} бастап'});
+Object.assign(T.en,{lv_t:'Your level',lv_grain:'Grain',lv_grind:'Grind',lv_miller:'Miller',lv_master:'Mill master',lv_p_grain:'A free coffee for every 7 orders',lv_p_grind:'Free syrup in drinks',lv_p_miller:'A pot of Turkish tea on us',lv_p_master:'A free doner and a master badge',lv_next:'{n} more {w} to “{l}”',lv_max:'Top level - thank you for being with us!',lv_ord1:'order',lv_ord2:'orders',lv_ord5:'orders',lv_free:'free',
+ lv_up:'New level!',lv_upsub:'Now you get:',lv_ok:'Great',gift_use:'“{l}” gift',gift_on:'Gift applied ✕',e_gift:'The level gift is not available now - removed it from the cart.',lv_from:'from {n}'});
 S.tiers={syrup:10,tea:25,tea_item:'tk1',doner:50};S.giftsUsed=new Set();
 sb.rpc('tiers_cfg').then(r=>{if(r&&r.data&&typeof r.data=='object')Object.assign(S.tiers,r.data)}).catch(()=>{});
 const LVK=['grain','grind','miller','master'];
@@ -3461,7 +3486,7 @@ const ordN=()=>S.pf?.orders_count||0;
 const lvOf=n=>{const m=lvMins();let i=0;for(let k=0;k<m.length;k++)if(n>=m[k])i=k;return i};
 const plur=(n,L=S.L)=>{if(L!='ru')return t(n==1?'lv_ord1':'lv_ord5');const a=n%10,b=n%100;return t(a==1&&b!=11?'lv_ord1':a>=2&&a<=4&&(b<12||b>14)?'lv_ord2':'lv_ord5')};
 function syrP(){return S.me&&ordN()>=S.tiers.syrup?0:SYP}
-const millSvg=(sz=30)=>`<svg viewBox="0 0 48 48" width="${sz}" height="${sz}"><path d="M19 44l2.5-20h5L29 44z" fill="#d8b48a"/><path d="M17.5 25h13l-2-6.5h-9z" fill="#8f3a25"/><g class="lvbl"><path d="M24 20L24 4l5 2-1 12z" fill="#f3ebe1"/><path d="M24 20l16 0-2 5-12-1z" fill="#f3ebe1"/><path d="M24 20l0 16-5-2 1-12z" fill="#f3ebe1"/><path d="M24 20l-16 0 2-5 12 1z" fill="#f3ebe1"/></g><circle cx="24" cy="20" r="2.4" fill="#3b2117"/></svg>`;
+const millSvg=(sz=30)=>`<span class="mlw" style="display:inline-block;width:${sz}px;height:${sz}px;color:#f6ecdf;--mill-acc:#e0a24a">${MILL().replace(/class="lgbd"/g,'class="lgbd lvbl"')}</span>`;  // знак мельницы (новый) на тёмной плашке уровня и «О приложении»
 function tierCard(){if(!S.me||!S.pf||staff())return '';const n=ordN(),i=lvOf(n),m=lvMins(),nx=i<3?m[i+1]:null;
   const pct=nx==null?1:(n-m[i])/(nx-m[i]);
   return `<div class="lvc lv${i}"><div class="lvh"><span class="lvi">${millSvg(34)}</span><div><small>${t('lv_t')}</small><b>${t('lv_'+LVK[i])}</b></div></div>
@@ -3503,10 +3528,11 @@ Object.assign(T.kk,{tg_help:'Telegram ашылмады ма?',tg_copy:'Кома�
 Object.assign(T.en,{tg_help:'Telegram did not open?',tg_copy:'Copy command',tg_copied:'Copied. Paste and send it to the bot',tg_send:'Send this command to @{b}:',tg_web:'Open the bot in the browser'});
 const tgFresh=()=>S.tgl&&Date.now()<S.tgl.until-20e3;
 const tgWeb=L=>`https://t.me/${L.bot}?start=login_${L.code}`,tgApp=L=>`tg://resolve?domain=${L.bot}&start=login_${L.code}`;
-async function tgPrep(){if(tgFresh()||S.tgPrep)return;S.tgPrep=1;
+async function tgPrep(){if(tgFresh()||S.tgPrep||Date.now()<(S.tgWait||0))return;S.tgPrep=1;
   try{const origin=location.protocol=='https:'?location.origin+location.pathname:null;const{data}=await sb.rpc('tg_login_start',{p_origin:origin});
     if(data?.code&&data?.bot)S.tgl={code:data.code,bot:data.bot,until:Date.now()+5*60e3,go:0}}catch{}
-  S.tgPrep=0;const w=document.getElementById('tgw');if(w)w.outerHTML=tgLoginBtn()}
+  S.tgPrep=0;if(!tgFresh()){const d=Math.min(30000,2000*2**Math.min(4,S.tgN=(S.tgN||0)+1));S.tgWait=Date.now()+d;setTimeout(()=>{if(document.getElementById('tgw'))tgPrep()},d+50);return}  // сбой: повтор с паузой, без бесконечного цикла запросов и перерисовки
+  S.tgN=0;const w=document.getElementById('tgw');if(w)w.outerHTML=tgLoginBtn()}
 function tgLoginBtn(){const L=tgFresh()?S.tgl:null;if(!L)setTimeout(tgPrep,0);const go=L&&L.go;
   return `<div id="tgw"><a class="tgb${go?' wait':''}${L?'':' prep'}" href="${L?tgWeb(L):'#'}" onclick="return tgGo(event)">${tgSvg}<span>${t(go?'tg_wait':'tg_in')}</span></a>${go?`<details class="tgh"><summary>${t('tg_help')}</summary><p>${t('tg_send',S.L,{b:L.bot})}</p><code>/start login_${L.code}</code><div class="tghb"><button onclick="tgCopy(this)">${t('tg_copy')}</button><a href="${tgWeb(L)}" target="_blank" rel="noopener">${t('tg_web')}</a></div></details>`:''}<div class="tgor"><span>${t('tg_or')}</span></div></div>`}
 function tgGo(ev){const L=tgFresh()?S.tgl:null;
@@ -3529,10 +3555,10 @@ async function tgPoll(){const L=S.tgl;if(!L)return;
   if(r.error||!r.data?.session){toast(t('tg_fail'),1);const w=document.getElementById('tgw');if(w)w.outerHTML=tgLoginBtn();return}
   const a=S.after;if(S.scr=='auth')cl();toast(t('tg_ok'));if(a=='cart')setTimeout(cart,400)}
 // ---------- визуал: баннер по времени суток, пустые экраны, отклик на нажатия ----------
-Object.assign(T.ru,{hd_t:'донер к обеду',hd_s:'мясо с вертела — закажи к нужному времени',hd_b:'выбрать донер',ht_t:'чай на вечер',ht_s:'турецкий чай в чайнике — один на двоих',ht_b:'выбрать чай',kas_empty:'Активных заказов нет. Новые появятся здесь со звуком.'});
-Object.assign(T.kk,{hd_t:'түскі асқа донер',hd_s:'шампур еті — керек уақытқа тапсырыс бер',hd_b:'донер таңдау',ht_t:'кешке шай',ht_s:'шәйнектегі түрік шайы — екеуге бір',ht_b:'шай таңдау',kas_empty:'Белсенді тапсырыс жоқ. Жаңалары осында дыбыспен шығады.'});
-Object.assign(T.en,{hd_t:'doner for lunch',hd_s:'meat off the spit — order for the time you need',hd_b:'choose a doner',ht_t:'tea for the evening',ht_s:'Turkish tea in a pot — one for two',ht_b:'choose tea',kas_empty:'No active orders. New ones will appear here with a sound.'});
-// утро (до 11) — кофе, день (11–16) — донер, вечер — чай. Время по Алматы.
+Object.assign(T.ru,{hd_t:'донер к обеду',hd_s:'мясо с вертела - закажи к нужному времени',hd_b:'выбрать донер',ht_t:'чай на вечер',ht_s:'турецкий чай в чайнике - один на двоих',ht_b:'выбрать чай',kas_empty:'Активных заказов нет. Новые появятся здесь со звуком.'});
+Object.assign(T.kk,{hd_t:'түскі асқа донер',hd_s:'шампур еті - керек уақытқа тапсырыс бер',hd_b:'донер таңдау',ht_t:'кешке шай',ht_s:'шәйнектегі түрік шайы - екеуге бір',ht_b:'шай таңдау',kas_empty:'Белсенді тапсырыс жоқ. Жаңалары осында дыбыспен шығады.'});
+Object.assign(T.en,{hd_t:'doner for lunch',hd_s:'meat off the spit - order for the time you need',hd_b:'choose a doner',ht_t:'tea for the evening',ht_s:'Turkish tea in a pot - one for two',ht_b:'choose tea',kas_empty:'No active orders. New ones will appear here with a sound.'});
+// утро (до 11) - кофе, день (11–16) - донер, вечер - чай. Время по Алматы.
 function heroSlot(){const h=new Date(Date.now()+5*3600e3).getUTCHours();return h<11?'cf':h<16?'dn':'tea'}
 const heroHtml=()=>{const sl=heroSlot();if(sl=='cf')return heroCf();
   const id=sl=='dn'?'lav':(S.tiers?.tea_item||'tk1'),it=itemOf(id),k=sl=='dn'?'hd':'ht';
@@ -3546,13 +3572,13 @@ const vibr=(ms=7)=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch{}};  // (
 {const _cq=cq;cq=function(...a){vibr(5);return _cq(...a)}}
 
 // ---------- Финансы: отчёт дня (вручную или по фото), калькуляция, месяц ----------
-// Кассир заполняет только сегодняшний день, пока он не закрыт. Владельцы (admin) — любой прошедший день, могут открыть закрытый.
-// Продажи по позициям и способам оплаты берутся из Паломы на сервере; здесь — закуп, расходы, выплаты, банки/Glovo и наличные.
+// Кассир заполняет только сегодняшний день, пока он не закрыт. Владельцы (admin) - любой прошедший день, могут открыть закрытый.
+// Продажи по позициям и способам оплаты берутся из Паломы на сервере; здесь - закуп, расходы, выплаты, банки/Glovo и наличные.
 const FGB=[['doner','Закуп Донер','овощи, лаваш, соусы, мясо для донера'],['kitchen','Закуп кухня',''],['bar','Закуп Бар/Раздача',''],['bazar','Закуп Базар без/нал','деньги не из кассы'],['degirmen','Закуп Дегирмен без/нал','деньги не из кассы']];
 const FGR=[['usta','Уста донер'],['kassa','Касса'],['kitchen','Кухня'],['tech','Техперсонал']];
 const FUN=['кг','шт','л','уп','г'];
 const fnN=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(String(v).replace(/\s/g,'').replace(',','.'));return isFinite(n)?n:null};
-const fnM=n=>n==null||!isFinite(n)?'—':Math.round(n).toLocaleString('ru')+' ₸';
+const fnM=n=>n==null||!isFinite(n)?'-':Math.round(n).toLocaleString('ru')+' ₸';
 const fnD=s=>new Date(s+'T00:00').toLocaleDateString('ru',{weekday:'short',day:'numeric',month:'long'});
 const fnMon=ym=>new Date(ym+'-01T00:00').toLocaleDateString('ru',{month:'long',year:'numeric'});
 const fnDraftK=d=>'dn_fin_'+d;
@@ -3591,7 +3617,7 @@ function finUpd(){const c=finCalc(),$t=(id,v)=>{const x=document.getElementById(
  FGB.forEach(([k])=>$t('fns_'+k,fnM(c.g[k])));$t('fns_exp',fnM(c.exp));$t('fns_pay',fnM(c.pay));$t('fns_buy',fnM(c.buyAll));$t('fns_rev',fnM(c.rev));$t('fns_exp2',fnM(c.expect));
  const dx=document.getElementById('fns_diff');if(dx){dx.textContent=c.diff==null?'впишите фактический остаток':(c.diff>=0?'+':'')+fnM(c.diff);dx.className='fnd '+(c.diff==null?'':Math.abs(c.diff)<=500?'ok':'bad')}
  const cc=document.getElementById('fns_card');if(cc)cc.innerHTML=finCardChk(c)}
-const finCardChk=c=>!c.hasCard?'':Math.abs(c.card-c.palCard)<=1000?`<span class="fnok">Kaspi + Halyk сходится с Паломой (${fnM(c.palCard)})</span>`:`<span class="fnbad">Kaspi + Halyk = ${fnM(c.card)}, в Паломе картой ${fnM(c.palCard)} — разница ${fnM(c.card-c.palCard)}</span>`;
+const finCardChk=c=>!c.hasCard?'':Math.abs(c.card-c.palCard)<=1000?`<span class="fnok">Kaspi + Halyk сходится с Паломой (${fnM(c.palCard)})</span>`:`<span class="fnbad">Kaspi + Halyk = ${fnM(c.card)}, в Паломе картой ${fnM(c.palCard)} - разница ${fnM(c.card-c.palCard)}</span>`;
 function finF(k,el){S.fn.f[k]=el.value;fnDirty();finUpd()}
 function finL(i,k,el){const l=S.fn.f.lines[i];l[k]=el.value;if(k=='unit')l._ud=0;
  if((k=='qty'||k=='price')&&!l._tm){const q=fnN(l.qty),p=fnN(l.price);if(q!=null&&p!=null){l.total=String(Math.round(q*p));const t=el.closest('.fnl')?.querySelector('.fnt');if(t)t.value=l.total}}
@@ -3610,7 +3636,7 @@ async function finSave(close){const F=S.fn;if(F.busy)return;F.busy=1;finRender()
   if(close){r=await sb.rpc('fin_close',{p_d:F.d,p_open:false});if(r.error)throw r.error}
   try{localStorage.removeItem(fnDraftK(F.d))}catch{}
   F.data=r.data;finForm();toast(close?'День закрыт':'Сохранено');if(isAdm()){const l=await sb.rpc('fin_days_list',{p_from:F.d.slice(0,7)+'-01',p_to:almDay(0)});F.list=l.data||F.list}}
- catch(er){const m=String(er.message||er);toast(/locked/.test(m)?'День уже закрыт — исправить может только владелец':/future/.test(m)?'Нельзя заполнять будущий день':'Не сохранилось: '+m,1)}
+ catch(er){const m=String(er.message||er);toast(/locked/.test(m)?'День уже закрыт - исправить может только владелец':/future/.test(m)?'Нельзя заполнять будущий день':'Не сохранилось: '+m,1)}
  F.busy=0;F.sure=0;if(S.scr=='fin')finRender()}
 function finClose(b){const F=S.fn;if(!F.sure){F.sure=1;b.textContent='Точно закрыть день? Нажмите ещё раз';b.classList.add('sure');setTimeout(()=>{if(F.sure&&b.isConnected){F.sure=0;b.textContent='Закрыть день';b.classList.remove('sure')}},3500);return}finSave(true)}
 async function finReopen(){const r=await sb.rpc('fin_close',{p_d:S.fn.d,p_open:true});if(r.error){toast(r.error.message,1);return}S.fn.data=r.data;finForm();toast('День снова открыт');finRender()}
@@ -3647,15 +3673,15 @@ function finDayH(){const F=S.fn,D=F.data,A=isAdm(),today=almDay(0);
   h+=`<div class="fncal">${Array.from({length:last},(_,i)=>{const ds=`${F.d.slice(0,7)}-${String(i+1).padStart(2,'0')}`,x=mp[ds];return `<button class="${ds==F.d?'on ':''}${x?x.status:''}${ds>today?' fut':''}" ${ds>today?'disabled':''} onclick="finSet('d','${ds}')">${i+1}</button>`}).join('')}</div><div class="fnleg"><i class="closed"></i>закрыт<i class="open"></i>заполняется<i></i>пусто</div>`}
  if(F.ld&&!D)return h+`<div class="fnld">Загрузка…</div>`;if(!D)return h;
  const dd=D.day||{},can=D.can_edit,P=D.pal||{},c=finCalc(),f=F.f,dis=can?'':'disabled';
- h+=`<div class="fnst ${dd.status||'none'}">${dd.status=='closed'?'День закрыт':dd.d?'День открыт — можно править':'Отчёт за этот день ещё не начат'}${dd.src=='photo'?' · по фото':''}${!can&&!A?' · только просмотр':''}</div>`;
+ h+=`<div class="fnst ${dd.status||'none'}">${dd.status=='closed'?'День закрыт':dd.d?'День открыт - можно править':'Отчёт за этот день ещё не начат'}${dd.src=='photo'?' · по фото':''}${!can&&!A?' · только просмотр':''}</div>`;
  if(F.restored)h+=`<div class="fnnote">Восстановлен несохранённый черновик. <button class="lnk" onclick="localStorage.removeItem('${fnDraftK(F.d)}');finForm();finRender()">Сбросить</button></div>`;
  if(can){h+=`<div class="sseg mini fnmode"><button class="${F.mode!='photo'?'on':''}" onclick="finSet('mode','manual')">Вручную</button><button class="${F.mode=='photo'?'on':''}" onclick="finSet('mode','photo')">По фото</button></div>`;
-  if(F.mode=='photo')h+=`<div class="fnph"><div class="fnphi">${finCam}</div><b>Сфотографируйте заполненный лист или чек</b><p>Приложение само разберёт строки и цифры и подставит их в форму. Потом проверьте и сохраните. Можно добавить несколько фото подряд — строки допишутся.</p>
+  if(F.mode=='photo')h+=`<div class="fnph"><div class="fnphi">${finCam}</div><b>Сфотографируйте заполненный лист или чек</b><p>Приложение само разберёт строки и цифры и подставит их в форму. Потом проверьте и сохраните. Можно добавить несколько фото подряд - строки допишутся.</p>
    <label class="main fnpb${F.ocr?' busy':''}">${F.ocr?'Распознаю… до 30 секунд':'Сделать фото или выбрать'}<input type="file" accept="image/*" onchange="finPhoto(this)" ${F.ocr?'disabled':''}></label>
    <p class="mu">Совет: лист целиком, ровно, без бликов. Рукописные цифры пишите разборчиво.</p></div>`;
   else h+=`<label class="fnpsm${F.ocr?' busy':''}">${finCam}<span>${F.ocr?'Распознаю…':'Добавить по фото'}</span><input type="file" accept="image/*" onchange="finPhoto(this)" ${F.ocr?'disabled':''}></label>`}
- if(F.unsure&&F.unsure.length)h+=`<div class="fnwarn"><b>Проверьте — с фото читалось неуверенно:</b><ul>${F.unsure.map(x=>`<li>${e(x)}</li>`).join('')}</ul></div>`;
- if(F.photoDate)h+=`<div class="fnwarn">На фото дата ${e(F.photoDate)}, а открыт ${e(F.d)}. ${A?'Если это другой день — перейдите на него и сфотографируйте там.':'Кассир заполняет только сегодняшний день.'}</div>`;
+ if(F.unsure&&F.unsure.length)h+=`<div class="fnwarn"><b>Проверьте - с фото читалось неуверенно:</b><ul>${F.unsure.map(x=>`<li>${e(x)}</li>`).join('')}</ul></div>`;
+ if(F.photoDate)h+=`<div class="fnwarn">На фото дата ${e(F.photoDate)}, а открыт ${e(F.d)}. ${A?'Если это другой день - перейдите на него и сфотографируйте там.':'Кассир заполняет только сегодняшний день.'}</div>`;
  if(F.mode=='photo'&&can)return h+finFoot(can);
  h+=`<fieldset class="fnfs" ${dis}>`;
  // продажи
@@ -3677,10 +3703,10 @@ function finDayH(){const F=S.fn,D=F.data,A=isAdm(),today=almDay(0);
    <input class="fnn" placeholder="${kind=='pay'?'имя / за что':'на что'}" value="${e(x.name)}" oninput="finL(${i},'name',this)" ${dis}>${fnInp(x.total,`finL(${i},'total',this)`,'fnt','сумма')}${can?`<button class="fnx" onclick="finDel(${i})" aria-label="удалить">×</button>`:''}</div>`).join('')}
    ${can?`<button class="fnadd" onclick="finAdd('${kind}','${roles[0][0]}')">+ строка</button>`:''}<div class="fntot"><span>Итого</span><b id="${sid}">${fnM(sum)}</b></div></div>`};
  h+=sec('exp','Расходная часть','За счёт бизнеса (стафф)',[...FGR,['other','Другое']],'fns_exp',c.exp);
- h+=sec('pay','З/П, авансы, покупки сотрудников','За счёт сотрудников — вычитается из их зарплаты. Владелец - это долг, вернёт в конце месяца',[...FGR,['owner','Владелец (долг)']],'fns_pay',c.pay);
+ h+=sec('pay','З/П, авансы, покупки сотрудников','За счёт сотрудников - вычитается из их зарплаты. Владелец - это долг, вернёт в конце месяца',[...FGR,['owner','Владелец (долг)']],'fns_pay',c.pay);
  // касса
  h+=`<div class="fncard"><div class="fnh">Наличные в кассе</div>
-  <div class="fnrow"><span>Остаток на начало дня</span><b>${c.prev==null?'—':fnM(c.prev)}</b></div>
+  <div class="fnrow"><span>Остаток на начало дня</span><b>${c.prev==null?'-':fnM(c.prev)}</b></div>
   <div class="fnrow"><span>Изъято владельцем</span>${fnInp(f.owner_out,`finF('owner_out',this)`,'','0')}</div>
   <div class="fnrow"><span>Должно быть в кассе</span><b id="fns_exp2">${fnM(c.expect)}</b></div>
   <div class="fnrow"><span>Остаток нал по факту</span>${fnInp(f.cash_left,`finF('cash_left',this)`,'','пересчитайте')}</div>
@@ -3694,7 +3720,7 @@ const finCam=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke
 // ---------- месяц ----------
 function finMonH(){const F=S.fn,M=F.mon;let h=`<div class="fnday"><button class="rb" onclick="finMon(-1)">‹</button><label class="fndl"><b>${fnMon(F.ym)}</b></label><button class="rb" onclick="finMon(1)" ${F.ym>=almDay(0).slice(0,7)?'disabled':''}>›</button></div>`;
  if(F.ld&&!M)return h+`<div class="fnld">Считаю…</div>`;if(!M)return h;const T=M.tot,cfg=M.cfg||{},lim=+cfg.fc_limit||35;
- if(T.filled<T.worked)h+=`<div class="fnwarn">Отчёты дня есть за ${T.filled} из ${T.worked} рабочих дней. Без них закуп и расходы неполные — прибыль пока <b>завышена</b>. Заполнить можно задним числом во вкладке «День».</div>`;
+ if(T.filled<T.worked)h+=`<div class="fnwarn">Отчёты дня есть за ${T.filled} из ${T.worked} рабочих дней. Без них закуп и расходы неполные - прибыль пока <b>завышена</b>. Заполнить можно задним числом во вкладке «День».</div>`;
  const fc=T.revenue?100*T.buy/T.revenue:0;
  h+=`<div class="fnkpi"><div><span>Выручка</span><b>${fnM(T.revenue)}</b></div><div class="${T.profit<0?'neg':'pos'}"><span>Чистая прибыль</span><b>${fnM(T.profit)}</b></div><div><span>Закуп / выручка</span><b>${fc.toFixed(1)}%</b></div><div><span>Прибыль в день</span><b>${fnM(T.worked?T.profit/T.worked:0)}</b></div></div>`;
  const row=(l,v,s='',cls='')=>`<div class="fnpl ${cls}"><span>${l}${s?`<small>${s}</small>`:''}</span><b>${v}</b></div>`,bg=T.buy_grp||{};
@@ -3711,7 +3737,7 @@ function finMonH(){const F=S.fn,M=F.mon;let h=`<div class="fnday"><button class=
  const G=M.grps||{};h+=`<div class="fncard"><div class="fnh">Группы</div>${[['doner','Донер'],['kitchen','Кухня'],['bar','Бар / раздача']].map(([k,l])=>{const g=G[k]||{};return `<div class="fnpl"><span>${l}<small>выручка ${fnM(g.rev)}</small></span><b class="${g.fc>lim?'fnbad':''}">${g.fc==null?'нет закупа':'фуд-кост '+g.fc+'%'}</b></div>`}).join('')}</div>`;
  const mt=M.meat||{};if(mt.ch_need_kg||mt.bf_need_kg)h+=`<div class="fncard"><div class="fnh">Мясо: по техкартам и куплено</div>
   ${[['ch','Курица'],['bf','Говядина']].map(([k,l])=>{const need=mt[k+'_need_kg'],got=mt[k+'_bought_kg'];const d=got?100*(got-need)/need:null;return `<div class="fnpl"><span>${l}<small>по проданным порциям нужно ${need??0} кг сырого</small></span><b class="${d!=null&&d>5?'fnbad':''}">${got==null?'закуп не внесён':`куплено ${got} кг${d!=null?` (${d>0?'+':''}${d.toFixed(0)}%)`:''}`}</b></div>`}).join('')}
-  <div class="fnhint">Больше 5% сверху — повод проверить: обрезки, порции, списания. Точнее станет с недельными остатками.</div></div>`;
+  <div class="fnhint">Больше 5% сверху - повод проверить: обрезки, порции, списания. Точнее станет с недельными остатками.</div></div>`;
  // дни
  const mx=Math.max(1,...(M.days||[]).map(x=>x.rev));h+=`<div class="fncard"><div class="fnh">По дням</div><div class="fnbars">${(M.days||[]).map(x=>`<button class="fnbar ${x.status||(x.filled?'open':'')}" onclick="S.fn.d='${x.d}';finSet('tab','day')" title="${x.d}: ${fnM(x.rev)}"><i style="height:${Math.round(100*x.rev/mx)}%"></i><span>${+x.d.slice(8)}</span></button>`).join('')}</div><div class="fnleg"><i class="closed"></i>закрыт<i class="open"></i>есть отчёт<i></i>только Палома</div></div>`;
  // позиции
@@ -3719,20 +3745,20 @@ function finMonH(){const F=S.fn,M=F.mon;let h=`<div class="fnday"><button class=
  h+=`<div class="fncard"><div class="fnh">Позиции: себестоимость и прибыль</div><div class="sseg mini">${[['all','Все'],['doner','Донер'],['kitchen','Кухня'],['bar','Бар']].map(([k,l])=>`<button class="${gs==k?'on':''}" onclick="finSet('ig','${k}')">${l}</button>`).join('')}</div>
   <input class="fnsrch" placeholder="Поиск позиции" value="${e(F.iq||'')}" oninput="S.fn.iq=this.value;clearTimeout(S.fn._iqt);S.fn._iqt=setTimeout(()=>{const p=this.selectionStart;finRender();const x=document.querySelector('.fnsrch');if(x){x.focus();x.setSelectionRange(p,p)}},250)">
   <div class="fnit hd"><span>Позиция</span><span>шт</span><span>себест.</span><span>ФК</span><span>прибыль</span></div>
-  ${its.filter(x=>!q||x.name.toLowerCase().includes(q)).slice(0,F.iall?999:40).map(x=>`<div class="fnit${x.fc>lim?' hi':''}"><span>${e(x.name)}<small>${x.how=='recipe'?'по техкарте'+(x.est?' · примерные цены':''):x.how=='group'?'по группе':'нет закупа'} · ${fnM(x.price)}</small></span><span>${Math.round(x.qty)}</span><span>${x.unit_cost==null?'—':fnM(x.unit_cost)}</span><span>${x.fc==null?'—':x.fc+'%'}</span><span>${fnM(x.profit)}</span></div>`).join('')}
+  ${its.filter(x=>!q||x.name.toLowerCase().includes(q)).slice(0,F.iall?999:40).map(x=>`<div class="fnit${x.fc>lim?' hi':''}"><span>${e(x.name)}<small>${x.how=='recipe'?'по техкарте'+(x.est?' · примерные цены':''):x.how=='group'?'по группе':'нет закупа'} · ${fnM(x.price)}</small></span><span>${Math.round(x.qty)}</span><span>${x.unit_cost==null?'-':fnM(x.unit_cost)}</span><span>${x.fc==null?'-':x.fc+'%'}</span><span>${fnM(x.profit)}</span></div>`).join('')}
   ${!F.iall&&its.length>40?`<button class="fnadd" onclick="finSet('iall',1)">Показать все (${its.length})</button>`:''}
-  <div class="fnhint">ФК — фуд-кост: доля себестоимости в цене. Выше ${lim}% подсвечено. «Примерные цены» — закуп этих продуктов ещё не вносился, стоит цена из настроек.</div></div>
+  <div class="fnhint">ФК - фуд-кост: доля себестоимости в цене. Выше ${lim}% подсвечено. «Примерные цены» - закуп этих продуктов ещё не вносился, стоит цена из настроек.</div></div>
   <div class="fnfoot"><button class="sec2" onclick="finCsv()">Скачать для Excel</button></div>`;
  return h}
 function finCsv(){const M=S.fn.mon;if(!M)return;const T=M.tot,r=[['Отчёт',fnMon(S.fn.ym)],[],['Выручка',T.revenue],['Закуп',T.buy],['Комиссия банков',T.bank],['Комиссия Glovo',T.glovo_fee],['Расходы (стафф)',T.exp],['Зарплаты',T.wages],['Аренда, коммуналка, Палома',T.fixed],['Налог',T.tax],['Чистая прибыль',T.profit],[],['Позиция','Группа','Продано, шт','Выручка','Себестоимость шт','Себестоимость всего','Фуд-кост %','Прибыль']];
- (M.items||[]).forEach(x=>r.push([x.name,x.grp,x.qty,x.rev,x.unit_cost,x.cost,x.fc,x.profit]));r.push([],['День','Выручка','Закуп','Статус']);(M.days||[]).forEach(x=>r.push([x.d,x.rev,x.buy,x.status||(x.filled?'есть':'—')]));
+ (M.items||[]).forEach(x=>r.push([x.name,x.grp,x.qty,x.rev,x.unit_cost,x.cost,x.fc,x.profit]));r.push([],['День','Выручка','Закуп','Статус']);(M.days||[]).forEach(x=>r.push([x.d,x.rev,x.buy,x.status||(x.filled?'есть':'-')]));
  const csv='﻿'+r.map(a=>a.map(v=>{const s=v==null?'':String(v);return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(';')).join('\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`degirmen-${S.fn.ym}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 
 // ---------- остатки ----------
 function finStockH(){const F=S.fn,st=F.st,d=F.sd||almDay(0);let h=`<div class="fnday"><label class="fndl"><b>Остатки на ${fnD(d)}</b><input type="date" value="${d}" max="${almDay(0)}" onchange="this.value&&finSet('sd',this.value)"></label></div>`;
  if(F.ld&&!st)return h+`<div class="fnld">Загрузка…</div>`;if(!st)return h;
- h+=`<div class="fnhint" style="margin:6px 4px 10px">Раз в неделю, лучше в воскресенье вечером: сколько осталось. Сырое мясо — в кг до насадки на вертел.${st.last?` Прошлый пересчёт: ${fnD(st.last)}.`:''}</div><div class="fncard">`+
+ h+=`<div class="fnhint" style="margin:6px 4px 10px">Раз в неделю, лучше в воскресенье вечером: сколько осталось. Сырое мясо - в кг до насадки на вертел.${st.last?` Прошлый пересчёт: ${fnD(st.last)}.`:''}</div><div class="fncard">`+
   (st.ingr||[]).map(x=>`<div class="fnrow"><span>${e(x.name)}</span>${fnInp((F.stEd||{})[x.key]??'',`S.fn.stEd['${x.key}']=this.value`,'',x.unit=='pcs'?'шт':'кг')}</div>`).join('')+
   `</div><div class="fnfoot"><button class="main" onclick="finStockSave()">Сохранить остатки</button></div>`;return h}
 async function finStockSave(){const F=S.fn,p={};for(const k in F.stEd){const n=fnN(F.stEd[k]);if(n!=null)p[k]=n}const r=await sb.rpc('fin_stock_save',{p_d:F.sd||almDay(0),p});if(r.error){toast(r.error.message,1);return}toast('Остатки сохранены')}
@@ -3743,14 +3769,14 @@ function finSetH(){const F=S.fn,R=F.ref;if(F.ld&&!R)return `<div class="fnld">З
  let h=`<div class="fncard"><div class="fnh">Постоянные расходы в месяц</div>${[['rent','Аренда'],['util','Коммунальные'],['paloma','Палома']].map(([k,l])=>`<div class="fnrow"><span>${l}</span>${inp('cfg.'+k,c[k])}</div>`).join('')}
   <div class="fnh" style="margin-top:14px">Ставки за смену (в день)</div>${FGR.map(([k,l])=>`<div class="fnrow"><span>${l}</span>${inp('cfg.wages.'+k,w[k])}</div>`).join('')}
   <div class="fnh" style="margin-top:14px">Проценты</div>${[['bank_pct','Банки, %'],['glovo_pct','Glovo, %'],['tax_pct','Налог с выручки, %'],['fc_limit','Порог фуд-коста, %']].map(([k,l])=>`<div class="fnrow"><span>${l}</span>${inp('cfg.'+k,c[k])}</div>`).join('')}</div>`;
- h+=`<div class="fncard"><div class="fnh">Продукты для техкарт</div><div class="fnhint">Цена берётся из закупа за последние 45 дней. Цена здесь — запасная, пока закупа нет. Выход — сколько готового мяса получается из сырого.</div>${(R.ingr||[]).map(x=>`<div class="fning"><b>${e(x.name)}</b><div class="fnl2"><label>цена ${x.piece_g?'за шт':'за кг'}${inp('ingr.'+x.key+'.price',x.price)}</label>${['ch','bf'].includes(x.key)?`<label>выход${inp('ingr.'+x.key+'.yield',x.yield)}</label>`:''}${x.key=='lav'?`<label>вес шт, г${inp('ingr.'+x.key+'.piece_g',x.piece_g)}</label>`:''}</div></div>`).join('')}</div>`;
+ h+=`<div class="fncard"><div class="fnh">Продукты для техкарт</div><div class="fnhint">Цена берётся из закупа за последние 45 дней. Цена здесь - запасная, пока закупа нет. Выход - сколько готового мяса получается из сырого.</div>${(R.ingr||[]).map(x=>`<div class="fning"><b>${e(x.name)}</b><div class="fnl2"><label>цена ${x.piece_g?'за шт':'за кг'}${inp('ingr.'+x.key+'.price',x.price)}</label>${['ch','bf'].includes(x.key)?`<label>выход${inp('ingr.'+x.key+'.yield',x.yield)}</label>`:''}${x.key=='lav'?`<label>вес шт, г${inp('ingr.'+x.key+'.piece_g',x.piece_g)}</label>`:''}</div></div>`).join('')}</div>`;
  const ing=Object.fromEntries((R.ingr||[]).map(x=>[x.key,x.name]));ing.meat='Мясо готовое';
  h+=`<div class="fncard"><div class="fnh">Техкарты, граммы на порцию</div>${Object.entries(R.recipes||{}).map(([r,g])=>`<details class="fnrc"><summary>${RCN[r]||r}</summary>${Object.entries(g).map(([k,v])=>`<div class="fnrow"><span>${e(ing[k]||k)}${['baton','cola'].includes(k)?' (шт)':''}</span>${inp('recipe.'+r+'.'+k,v)}</div>`).join('')}</details>`).join('')}</div>`;
  const q=(F.sq||'').toLowerCase(),its=(R.items||[]).filter(x=>!q||x.name.toLowerCase().includes(q));
  h+=`<div class="fncard"><div class="fnh">Позиции Паломы: группа и техкарта</div><input class="fnsrch" placeholder="Поиск" value="${e(F.sq||'')}" oninput="S.fn.sq=this.value;clearTimeout(S.fn._sqt);S.fn._sqt=setTimeout(()=>{const p=this.selectionStart;finRender();const x=document.querySelectorAll('.fnsrch');const y=x[x.length-1];if(y){y.focus();y.setSelectionRange(p,p)}},250)">
   ${its.slice(0,F.sall?999:30).map(x=>`<div class="fnpi"><span>${e(x.name)}</span><div class="fnl2"><select onchange="finRef('item.${x.uid}.grp',this)">${[['doner','Донер'],['kitchen','Кухня'],['bar','Бар'],['other','Не еда']].map(([k,l])=>`<option value="${k}" ${x.grp==k?'selected':''}>${l}</option>`).join('')}</select>
   <select onchange="finRef('item.${x.uid}.recipe',this)"><option value="">без техкарты</option>${Object.keys(R.recipes||{}).map(r=>`<option value="${r}" ${x.recipe==r?'selected':''}>${RCN[r]||r}</option>`).join('')}</select>
-  <select onchange="finRef('item.${x.uid}.meat',this)"><option value="">—</option>${[['ch','курица'],['bf','говядина'],['as','ассорти']].map(([k,l])=>`<option value="${k}" ${x.meat==k?'selected':''}>${l}</option>`).join('')}</select></div></div>`).join('')}
+  <select onchange="finRef('item.${x.uid}.meat',this)"><option value="">-</option>${[['ch','курица'],['bf','говядина'],['as','ассорти']].map(([k,l])=>`<option value="${k}" ${x.meat==k?'selected':''}>${l}</option>`).join('')}</select></div></div>`).join('')}
   ${!F.sall&&its.length>30?`<button class="fnadd" onclick="finSet('sall',1)">Показать все (${its.length})</button>`:''}</div>
   <div class="fnfoot"><button class="main" onclick="finRefSave()">Сохранить настройки</button></div>`;
  return h}
@@ -3764,11 +3790,11 @@ async function finRefSave(){const F=S.fn,E=F.refEd||{},p={cfg:{},ingr:{},recipe:
  const body={cfg:p.cfg,ingr:Object.values(p.ingr),recipe:p.recipe,items:Object.values(p.items)};
  const r=await sb.rpc('fin_ref_save',{p:body});if(r.error){toast(r.error.message,1);return}F.ref=r.data;F.refEd={};F.mon=null;toast('Настройки сохранены');finRender()}
 // ---------- автопилот: киоск самообслуживания, экран кухни, табло «Готово», устройства ----------
-// Режим устройства: kiosk — включается сам, если вошли аккаунтом с ролью «Киоск»;
-// kds (кухня) и board (табло) — из «Касса → Устройства» или по ссылке ?mode=kds / ?mode=board. ?mode=off — выключить.
-Object.assign(T.ru,{k_tap:'Коснитесь, чтобы заказать',k_sub:'без очереди — заберёте по номеру на табло',k_name:'Как вас позвать?',k_nameph:'Имя — появится на табло',k_pay:'Оплата на кассе после заказа',k_go:'Заказать',k_num:'Ваш заказ',k_paynow:'Подойдите к кассе и оплатите',k_wait:'Когда будет готово, номер загорится на табло',k_new:'Новый заказ',k_idle:'Вы ещё здесь?',k_idle2:'Через {n} с начнём заново',k_stay:'Продолжить',k_reset:'Начать заново',k_auto:'Экран вернётся к началу через {n} с'});
-Object.assign(T.kk,{k_tap:'Тапсырыс беру үшін түртіңіз',k_sub:'кезексіз — таблодағы нөмір бойынша аласыз',k_name:'Атыңыз кім?',k_nameph:'Атыңыз — таблода шығады',k_pay:'Тапсырыстан кейін кассада төлейсіз',k_go:'Тапсырыс беру',k_num:'Сіздің тапсырыс',k_paynow:'Кассаға барып төлеңіз',k_wait:'Дайын болғанда нөмір таблода жанады',k_new:'Жаңа тапсырыс',k_idle:'Осындасыз ба?',k_idle2:'{n} с кейін басынан бастаймыз',k_stay:'Жалғастыру',k_reset:'Басынан бастау',k_auto:'Экран {n} с кейін басына оралады'});
-Object.assign(T.en,{k_tap:'Tap to order',k_sub:'skip the line — pick up by the number on the screen',k_name:'What’s your name?',k_nameph:'Name — shown on the screen',k_pay:'Pay at the counter after ordering',k_go:'Place order',k_num:'Your order',k_paynow:'Please pay at the counter',k_wait:'Your number will light up on the screen when it’s ready',k_new:'New order',k_idle:'Still there?',k_idle2:'Starting over in {n}s',k_stay:'Continue',k_reset:'Start over',k_auto:'Back to start in {n}s'});
+// Режим устройства: kiosk - включается сам, если вошли аккаунтом с ролью «Киоск»;
+// kds (кухня) и board (табло) - из «Касса → Устройства» или по ссылке ?mode=kds / ?mode=board. ?mode=off - выключить.
+Object.assign(T.ru,{k_tap:'Коснитесь, чтобы заказать',k_sub:'без очереди - заберёте по номеру на табло',k_name:'Как вас позвать?',k_nameph:'Имя - появится на табло',k_pay:'Оплата на кассе после заказа',k_go:'Заказать',k_num:'Ваш заказ',k_paynow:'Подойдите к кассе и оплатите',k_wait:'Когда будет готово, номер загорится на табло',k_new:'Новый заказ',k_idle:'Вы ещё здесь?',k_idle2:'Через {n} с начнём заново',k_stay:'Продолжить',k_reset:'Начать заново',k_auto:'Экран вернётся к началу через {n} с'});
+Object.assign(T.kk,{k_tap:'Тапсырыс беру үшін түртіңіз',k_sub:'кезексіз - таблодағы нөмір бойынша аласыз',k_name:'Атыңыз кім?',k_nameph:'Атыңыз - таблода шығады',k_pay:'Тапсырыстан кейін кассада төлейсіз',k_go:'Тапсырыс беру',k_num:'Сіздің тапсырыс',k_paynow:'Кассаға барып төлеңіз',k_wait:'Дайын болғанда нөмір таблода жанады',k_new:'Жаңа тапсырыс',k_idle:'Осындасыз ба?',k_idle2:'{n} с кейін басынан бастаймыз',k_stay:'Жалғастыру',k_reset:'Басынан бастау',k_auto:'Экран {n} с кейін басына оралады'});
+Object.assign(T.en,{k_tap:'Tap to order',k_sub:'skip the line - pick up by the number on the screen',k_name:'What’s your name?',k_nameph:'Name - shown on the screen',k_pay:'Pay at the counter after ordering',k_go:'Place order',k_num:'Your order',k_paynow:'Please pay at the counter',k_wait:'Your number will light up on the screen when it’s ready',k_new:'New order',k_idle:'Still there?',k_idle2:'Starting over in {n}s',k_stay:'Continue',k_reset:'Start over',k_auto:'Back to start in {n}s'});
 
 const AP={want:null,att:true,last:Date.now(),warn:0,done:null,doneT:0,kst:LS.get('dn_kds_st','all'),tick:LS.get('dn_kds_tick',{}),seen:null,fresh:{},brd:null,brdSeen:null,brdT:0,taps:[],wl:null,snd:LS.get('dn_kds_snd',1)};
 {const q=new URLSearchParams(location.search).get('mode');if(q){LS.set('dn_mode',q=='off'?'':q);if(q=='off'){LS.set('dn_mode','')}}AP.want=LS.get('dn_mode','')||null}
@@ -3780,7 +3806,7 @@ function apSetMode(m){LS.set('dn_mode',m||'');AP.want=m||null;cl(true);cp(true);
 function apLayer(){let x=$('ap');if(!x){x=document.createElement('div');x.id='ap';document.body.appendChild(x)}return x}
 async function apWake(){const m=apMode();if(!m){try{AP.wl&&AP.wl.release()}catch{}AP.wl=null;return}if(AP.wl||!('wakeLock' in navigator))return;try{AP.wl=await navigator.wakeLock.request('screen');AP.wl.addEventListener('release',()=>{AP.wl=null})}catch{}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)apWake()});
-// 5 быстрых касаний по логотипу — служебный выход из режима
+// 5 быстрых касаний по логотипу - служебный выход из режима
 function apTapLogo(){const n=Date.now();AP.taps=AP.taps.filter(t=>n-t<2500);AP.taps.push(n);if(AP.taps.length<5)return;AP.taps=[];
   const m=apMode();if(m=='kiosk')apPinM();else if(m)apSetMode('')}
 
@@ -3790,9 +3816,9 @@ function apSync(){const m=apMode(),R=document.documentElement;
   if(m=='kds'){kdsRender();return}
   if(m=='board'){brdRender();brdPoll();return}
   if(m=='kiosk'){kioskLayer();return}
-  // режим выбран, но этот аккаунт не подходит — подсказка сверху
+  // режим выбран, но этот аккаунт не подходит - подсказка сверху
   if(S.me&&!S.pf)L.innerHTML='';
-  else if(AP.want=='kds'&&!S.loading)L.innerHTML=`<div class="apnote"><b>Экран кухни</b><span>${S.me?'Этот аккаунт не кассир — войдите аккаунтом кассира или админа':'Войдите аккаунтом кассира или админа'}</span><button onclick="${S.me?"apSetMode('')":"authM()"}">${S.me?'Выключить режим':'Войти'}</button></div>`;
+  else if(AP.want=='kds'&&!S.loading)L.innerHTML=`<div class="apnote"><b>Экран кухни</b><span>${S.me?'Этот аккаунт не кассир - войдите аккаунтом кассира или админа':'Войдите аккаунтом кассира или админа'}</span><button onclick="${S.me?"apSetMode('')":"authM()"}">${S.me?'Выключить режим':'Войти'}</button></div>`;
   else if(AP.want=='kiosk'&&!S.loading)L.innerHTML=`<div class="apnote"><b>Киоск</b><span>${S.me?'Этот аккаунт без роли «Киоск». Назначьте её в Касса → Пользователи':'Войдите аккаунтом с ролью «Киоск»'}</span><button onclick="${S.me?"apSetMode('')":"authM()"}">${S.me?'Выключить режим':'Войти'}</button></div>`;
   else L.innerHTML=''}
 {const _r=render;render=function(){_r();try{apSync()}catch(err){console.error(err)}}}
@@ -3839,7 +3865,7 @@ function kioskIdle(){const n=Date.now();
 const apMill=()=>`<svg viewBox="0 0 64 64" class="apmill"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M24 58l4-26h8l4 26z"/><path d="M28 46h8"/><g class="apbl"><path d="M32 30L18 12l-4 4z"/><path d="M32 30L50 16l-4-4z"/><path d="M32 30L46 48l4-4z"/><path d="M32 30L14 44l4 4z"/></g><circle cx="32" cy="30" r="3" fill="currentColor"/></g></svg>`;
 
 // служебный выход из киоска: PIN из «Касса → Устройства»
-function apPinM(){shw(`<div class="nxsh"><h3>Выход из киоска</h3><p class="mu" style="margin:0 0 10px">Введите PIN — его задаёт админ в «Касса → Устройства»</p><input id="appin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN"><div class="err" id="appe"></div><button class="main" onclick="apPinGo()">Выйти из аккаунта киоска</button></div>`);setTimeout(()=>$('appin')?.focus(),50)}
+function apPinM(){shw(`<div class="nxsh"><h3>Выход из киоска</h3><p class="mu" style="margin:0 0 10px">Введите PIN - его задаёт админ в «Касса → Устройства»</p><input id="appin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="PIN"><div class="err" id="appe"></div><button class="main" onclick="apPinGo()">Выйти из аккаунта киоска</button></div>`);setTimeout(()=>$('appin')?.focus(),50)}
 async function apPinGo(){const v=$('appin').value.trim();const{data,error}=await sb.rpc('kiosk_pin_ok',{p_pin:v});if(error||!data){$('appe').textContent=/pin:locked/.test(error?.message||'')?'Слишком много попыток. Подождите 10 минут.':'Неверный PIN';return}cp(true);LS.set('dn_mode','');AP.want=null;await sb.auth.signOut();location.reload()}
 
 // ================= ЭКРАН КУХНИ =================
@@ -3864,11 +3890,11 @@ function kCard(o,col){const ls=kLines(o).filter(l=>AP.kst=='all'||l.st==AP.kst);
   <div class="kbt">${o.status!='new'?`<button class="kb2" onclick="kSet(${o.id},'${o.status=='ready'?'cooking':'new'}')">↶</button>`:''}<button class="kb ${btn[0]}" onclick="kSet(${o.id},'${btn[0]}')">${btn[1]}</button></div></div>`}
 function kdsRender(){const L=apLayer(),all=kdsList(),later=all.filter(isLater).sort((a,b)=>preT(a)-preT(b)),
   nw=all.filter(o=>o.status=='new'&&!isLater(o)).sort((a,b)=>kAge(b)-kAge(a)),ck=all.filter(o=>o.status=='cooking').sort((a,b)=>kAge(b)-kAge(a)),rd=all.filter(o=>o.status=='ready').sort((a,b)=>Date.parse(b.ready_at||b.created_at)-Date.parse(a.ready_at||a.created_at));
-  // новые заказы — подсветка и звук
+  // новые заказы - подсветка и звук
   const ids=new Set(all.map(o=>o.id));if(AP.seen){all.forEach(o=>{if(!AP.seen.has(o.id)&&o.status=='new'){AP.fresh[o.id]=Date.now()+6000;if(AP.snd)kChime()}})}AP.seen=ids;
   for(const k in AP.fresh)if(AP.fresh[k]<Date.now())delete AP.fresh[k];
-  const st=kdsStats(),col=(t_,arr,cls)=>`<section class="kcol ${cls}"><h2>${t_}<i>${arr.length}</i></h2><div class="kcs">${arr.map(o=>kCard(o)).join('')||`<div class="kemp">—</div>`}</div></section>`;
-  const h=`<div class="kds"><header><div class="klg" onclick="apTapLogo()">${apMill()}<b>Кухня</b></div><nav>${KST.map(([k,n])=>`<button class="${AP.kst==k?'on':''}" onclick="kSt('${k}')">${n}</button>`).join('')}</nav><div class="kstat"><span>Сегодня <b>${st.n}</b></span><span>Среднее <b>${st.avg?mmss(st.avg):'—'}</b></span><span class="kclk" id="kclk">${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</span></div><button class="ksnd${AP.snd?' on':''}" onclick="kSnd()" title="Звук">${AP.snd?'🔔':'🔕'}</button><button class="kx" onclick="apSetMode('')" title="Выйти из режима">✕</button></header>
+  const st=kdsStats(),col=(t_,arr,cls)=>`<section class="kcol ${cls}"><h2>${t_}<i>${arr.length}</i></h2><div class="kcs">${arr.map(o=>kCard(o)).join('')||`<div class="kemp">-</div>`}</div></section>`;
+  const h=`<div class="kds"><header><div class="klg" onclick="apTapLogo()">${apMill()}<b>Кухня</b></div><nav>${KST.map(([k,n])=>`<button class="${AP.kst==k?'on':''}" onclick="kSt('${k}')">${n}</button>`).join('')}</nav><div class="kstat"><span>Сегодня <b>${st.n}</b></span><span>Среднее <b>${st.avg?mmss(st.avg):'-'}</b></span><span class="kclk" id="kclk">${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</span></div><button class="ksnd${AP.snd?' on':''}" onclick="kSnd()" title="Звук">${AP.snd?'🔔':'🔕'}</button><button class="kx" onclick="apSetMode('')" title="Выйти из режима">✕</button></header>
   ${later.length?`<div class="klater"><span>Предзаказы</span>${later.map(o=>`<i>№${o.id} · к ${new Date(o.pickup_time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</i>`).join('')}</div>`:''}
   <main>${col('Новые',nw,'cn')}${col('Готовятся',ck,'cc')}${col('Готово',rd.slice(0,12),'cr')}</main></div>`;
   if(L._h!==h){const y=[...L.querySelectorAll('.kcs')].map(x=>x.scrollTop);L.innerHTML=h;L._h=h;L.querySelectorAll('.kcs').forEach((x,i)=>x.scrollTop=y[i]||0)}}
@@ -3892,9 +3918,9 @@ function brdSay(x){try{if(!('speechSynthesis' in window))return;const u=new Spee
 function brdRender(){const L=apLayer(),B=AP.brd||[],ck=B.filter(x=>x.st!='ready'),rd=B.filter(x=>x.st=='ready').sort((a,b)=>Date.parse(b.r||0)-Date.parse(a.r||0));
   for(const k in AP.fresh)if(k[0]=='b'&&AP.fresh[k]<Date.now())delete AP.fresh[k];
   const h=`<div class="brd"><header><div class="klg" onclick="apTapLogo()">${apMill()}<b>DEGIRMEN</b></div><span class="bclk">${new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</span></header>
-  <main><section class="bck"><h2>Готовится<small>Дайындалуда</small></h2><div class="bnums">${ck.map(x=>`<span><b>${x.id}</b>${x.n?`<i>${e(x.n)}</i>`:''}</span>`).join('')||'<em>—</em>'}</div></section>
-  <section class="brdy"><h2>Готово — заберите<small>Дайын — алыңыз</small></h2><div class="bnums">${rd.map(x=>`<span class="${AP.fresh['b'+x.id]?'fresh':''}"><b>${x.id}</b>${x.n?`<i>${e(x.n)}</i>`:''}</span>`).join('')||'<em>Здесь появится ваш номер</em>'}</div></section></main>
-  ${AP.bu?'':`<button class="bsnd" onclick="brdUnlock()">🔊 Коснитесь, чтобы включить звук объявлений</button>`}<footer>${AP.brdErr?'Нет связи — переподключаемся…':'Закажите без очереди на планшете у кассы или в приложении Degirmen'}</footer></div>`;
+  <main><section class="bck"><h2>Готовится<small>Дайындалуда</small></h2><div class="bnums">${ck.map(x=>`<span><b>${x.id}</b>${x.n?`<i>${e(x.n)}</i>`:''}</span>`).join('')||'<em>-</em>'}</div></section>
+  <section class="brdy"><h2>Готово - заберите<small>Дайын - алыңыз</small></h2><div class="bnums">${rd.map(x=>`<span class="${AP.fresh['b'+x.id]?'fresh':''}"><b>${x.id}</b>${x.n?`<i>${e(x.n)}</i>`:''}</span>`).join('')||'<em>Здесь появится ваш номер</em>'}</div></section></main>
+  ${AP.bu?'':`<button class="bsnd" onclick="brdUnlock()">🔊 Коснитесь, чтобы включить звук объявлений</button>`}<footer>${AP.brdErr?'Нет связи - переподключаемся…':'Закажите без очереди на планшете у кассы или в приложении Degirmen'}</footer></div>`;
   if(L._h!==h){L.innerHTML=h;L._h=h}}
 
 // ================= УСТРОЙСТВА (касса) =================
@@ -3904,10 +3930,10 @@ function apDevM(){const base=location.origin+location.pathname,link=m=>`${base}?
   scr(topbar('Устройства','cl()')+`<div class="body w apdw">
   ${card('🖥️','Экран кухни','Заказы колонками «Новые → Готовятся → Готово», таймер у каждого, звук на новый заказ, фильтр Донер / Кухня / Бар. На устройстве нужен вход кассира или админа.',`<button class="main" onclick="apSetMode('kds')">Открыть на этом устройстве</button>${cpy('kds')}`)}
   ${card('📺','Табло «Заказ готов»','Для телевизора в зале: номера «Готовится» и «Готово», голосом объявляет готовые заказы. Вход не нужен.',`<button class="main" onclick="apSetMode('board')">Открыть на этом устройстве</button>${cpy('board')}`)}
-  ${card('📱','Киоск самообслуживания','Планшет у кассы: гость сам собирает заказ, пишет имя и платит на кассе. Неактивность 40–75 с — экран сам возвращается к началу.',`<ol class="apsteps"><li>Зарегистрируйте в приложении отдельную почту для планшета (например kiosk.navoi@…)</li><li>Касса → Пользователи → этот аккаунт → роль <b>«Киоск»</b></li><li>На планшете войдите этим аккаунтом — киоск включится сам</li><li>Выход: 5 касаний по логотипу и PIN ниже</li></ol>${isAdm()?`<div class="appinw"><input id="apnp" type="password" inputmode="numeric" maxlength="8" placeholder="Новый PIN выхода (4–8 цифр)"><button class="sec2" onclick="apPinSave()">Сохранить</button></div>`:''}`)}
+  ${card('📱','Киоск самообслуживания','Планшет у кассы: гость сам собирает заказ, пишет имя и платит на кассе. Неактивность 40–75 с - экран сам возвращается к началу.',`<ol class="apsteps"><li>Зарегистрируйте в приложении отдельную почту для планшета (например kiosk.navoi@…)</li><li>Касса → Пользователи → этот аккаунт → роль <b>«Киоск»</b></li><li>На планшете войдите этим аккаунтом - киоск включится сам</li><li>Выход: 5 касаний по логотипу и PIN ниже</li></ol>${isAdm()?`<div class="appinw"><input id="apnp" type="password" inputmode="numeric" maxlength="8" placeholder="Новый PIN выхода (4–8 цифр)"><button class="sec2" onclick="apPinSave()">Сохранить</button></div>`:''}`)}
   <p class="mu apfoot">Выйти из режима кухни или табло: 5 касаний по логотипу или крестик в углу.</p></div>`,'apdev')}
 function apCopy(s){try{navigator.clipboard.writeText(s);toast('Ссылка скопирована')}catch{toast(s)}}
-async function apPinSave(){const v=$('apnp').value.trim();if(!/^\d{4,8}$/.test(v)){toast('PIN — от 4 до 8 цифр',1);return}const{error}=await sb.rpc('set_kiosk_pin',{p_pin:v});if(error){toast(error.message,1);return}$('apnp').value='';toast('PIN сохранён')}
+async function apPinSave(){const v=$('apnp').value.trim();if(!/^\d{4,8}$/.test(v)){toast('PIN - от 4 до 8 цифр',1);return}const{error}=await sb.rpc('set_kiosk_pin',{p_pin:v});if(error){toast(error.message,1);return}$('apnp').value='';toast('PIN сохранён')}
 
 // касса: источник заказа, имя гостя, отметка оплаты
 const kasWho=o=>o.src=='kiosk'?`<span class="apsrc">Киоск</span> ${e(o.guest_name||'')}`:e(S.names[o.user_id]||'');
@@ -3931,11 +3957,11 @@ kb_nofood:'Не вижу на фото еды. Попробуйте ещё ра�
 kb_login:'Войдите, чтобы вести дневник питания',kb_saved:'Записано в дневник',kb_deleted:'Запись удалена',kb_approx:'Оценка примерная (±20%). Если знаете точнее, поправьте граммы.',kb_slot:'Приём пищи',
 kb_g_t:'Моя норма',kb_sex:'Пол',kb_male:'Мужской',kb_female:'Женский',kb_age:'Возраст',kb_h:'Рост, см',kb_w:'Вес, кг',kb_act:'Активность',
 kb_a1:'Почти без движения',kb_a2:'Лёгкая: 1–3 тренировки в неделю',kb_a3:'Средняя: 3–5 тренировок',kb_a4:'Высокая: 6–7 тренировок',kb_a5:'Очень высокая: физическая работа и спорт',
-kb_aim:'Цель',kb_lose:'Снизить вес',kb_keep:'Держать вес',kb_gain:'Набрать массу',kb_calc:'Рассчитать',kb_res:'Норма в день',kb_g_note:'Это ориентир по формуле Миффлина — Сан Жеора, а не медицинская рекомендация. При заболеваниях, беременности и в подростковом возрасте норму лучше обсудить с врачом.',
-kb_g_save:'Сохранить норму',kb_18:'Расчёт по формуле — для взрослых 18+. Норму можно задать вручную.',kb_fill:'Заполните пол, возраст, рост и вес',kb_m_t:'Из меню Degirmen',kb_m_ph:'Поиск по меню',kb_qty:'Количество',kb_from:'от {n} ккал',kb_new:'новое'});
+kb_aim:'Цель',kb_lose:'Снизить вес',kb_keep:'Держать вес',kb_gain:'Набрать массу',kb_calc:'Рассчитать',kb_res:'Норма в день',kb_g_note:'Это ориентир по формуле Миффлина - Сан Жеора, а не медицинская рекомендация. При заболеваниях, беременности и в подростковом возрасте норму лучше обсудить с врачом.',
+kb_g_save:'Сохранить норму',kb_18:'Расчёт по формуле - для взрослых 18+. Норму можно задать вручную.',kb_fill:'Заполните пол, возраст, рост и вес',kb_m_t:'Из меню Degirmen',kb_m_ph:'Поиск по меню',kb_qty:'Количество',kb_from:'от {n} ккал',kb_new:'новое'});
 Object.assign(T.kk,{kb_t:'Тамақтану күнделігі',kb_sub:'Фото бойынша ККАЛ: тәрелкені суретке түсіріңіз',kb_today:'Бүгін',kb_yday:'Кеше',kb_of:'{n} ішінен',kb_left:'{n} ккал қалды',kb_over:'мақсаттан +{n} ккал',kb_nogoal:'Нормамды есептеу',kb_goal:'Норма',
 kb_b:'Таңғы ас',kb_l:'Түскі ас',kb_d:'Кешкі ас',kb_s:'Тіскебасар',kb_add:'Қосу',kb_photo:'Суретке түсіру',kb_gal:'Галереядан фото',kb_text:'Сөзбен сипаттау',kb_menu:'Degirmen мәзірінен',kb_snap:'Тамақ фотосы',kb_ana:'Тәрелкеде не бар',kb_pct:'күндік норманың {n}%',
-kb_streak:'{n} күн қатарынан',kb_start:'Бүгін тамақты жазыңыз — серия басталады',kb_ord:'Degirmen-дегі тапсырыстарыңыз',kb_ord_add:'+ күнделікке',kb_ord_all:'Барлығын қосу',
+kb_streak:'{n} күн қатарынан',kb_start:'Бүгін тамақты жазыңыз - серия басталады',kb_ord:'Degirmen-дегі тапсырыстарыңыз',kb_ord_add:'+ күнделікке',kb_ord_all:'Барлығын қосу',
 kb_scan1:'Тәрелкеге қарап жатырмын…',kb_scan2:'Өнімдерді анықтап жатырмын…',kb_scan3:'Грамын шамалап жатырмын…',kb_scan4:'Ақуыз, май, көмірсуды есептеп жатырмын…',
 kb_what:'Не жедіңіз?',kb_what_ph:'Мысалы: бір тәрелке палау және қантты шай',kb_ex:['2 жұмыртқа және майлы тост','бір тәрелке палау','латте және круассан','қаймақпен 5 манты'],kb_count:'Есептеу',
 kb_save:'Күнделікке жазу',kb_upd:'Сақтау',kb_del:'Жазбаны өшіру',kb_del2:'Шынымен өшіру керек пе?',kb_fix:'Нақтылау',kb_fix_ph:'Мысалы: бұл тауық емес, күркетауық',kb_retry:'Басқа фото',kb_again:'Қайта көру',
@@ -3944,8 +3970,8 @@ kb_nofood:'Фотода тамақ көрінбейді. Қайта көріңі
 kb_login:'Тамақтану күнделігін жүргізу үшін кіріңіз',kb_saved:'Күнделікке жазылды',kb_deleted:'Жазба өшірілді',kb_approx:'Бағалау шамамен (±20%). Нақты білсеңіз, грамын түзетіңіз.',kb_slot:'Ас',
 kb_g_t:'Менің нормам',kb_sex:'Жынысы',kb_male:'Ер',kb_female:'Әйел',kb_age:'Жасы',kb_h:'Бойы, см',kb_w:'Салмағы, кг',kb_act:'Белсенділік',
 kb_a1:'Қозғалыс аз',kb_a2:'Жеңіл: аптасына 1–3 жаттығу',kb_a3:'Орташа: 3–5 жаттығу',kb_a4:'Жоғары: 6–7 жаттығу',kb_a5:'Өте жоғары: дене жұмысы және спорт',
-kb_aim:'Мақсат',kb_lose:'Салмақ тастау',kb_keep:'Салмақты сақтау',kb_gain:'Салмақ қосу',kb_calc:'Есептеу',kb_res:'Күндік норма',kb_g_note:'Бұл Миффлин — Сан Жеор формуласы бойынша бағдар, медициналық ұсыныс емес. Ауру, жүктілік кезінде және жасөспірімдерге норманы дәрігермен ақылдасқан жөн.',
-kb_g_save:'Норманы сақтау',kb_18:'Формула бойынша есеп — 18 жастан асқандарға. Норманы қолмен қоюға болады.',kb_fill:'Жынысын, жасын, бойын және салмағын толтырыңыз',kb_m_t:'Degirmen мәзірінен',kb_m_ph:'Мәзірден іздеу',kb_qty:'Саны',kb_from:'{n} ккал бастап',kb_new:'жаңа'});
+kb_aim:'Мақсат',kb_lose:'Салмақ тастау',kb_keep:'Салмақты сақтау',kb_gain:'Салмақ қосу',kb_calc:'Есептеу',kb_res:'Күндік норма',kb_g_note:'Бұл Миффлин - Сан Жеор формуласы бойынша бағдар, медициналық ұсыныс емес. Ауру, жүктілік кезінде және жасөспірімдерге норманы дәрігермен ақылдасқан жөн.',
+kb_g_save:'Норманы сақтау',kb_18:'Формула бойынша есеп - 18 жастан асқандарға. Норманы қолмен қоюға болады.',kb_fill:'Жынысын, жасын, бойын және салмағын толтырыңыз',kb_m_t:'Degirmen мәзірінен',kb_m_ph:'Мәзірден іздеу',kb_qty:'Саны',kb_from:'{n} ккал бастап',kb_new:'жаңа'});
 Object.assign(T.en,{kb_t:'Food diary',kb_sub:'Calories from a photo: just snap your plate',kb_today:'Today',kb_yday:'Yesterday',kb_of:'of {n}',kb_left:'{n} kcal left',kb_over:'+{n} kcal over target',kb_nogoal:'Calculate my target',kb_goal:'Target',
 kb_b:'Breakfast',kb_l:'Lunch',kb_d:'Dinner',kb_s:'Snack',kb_add:'Add',kb_photo:'Take a photo',kb_gal:'Photo from gallery',kb_text:'Describe in words',kb_menu:'From the Degirmen menu',kb_snap:'Snap food',kb_ana:'What’s on the plate',kb_pct:'{n}% of daily target',
 kb_streak:'{n}-day streak',kb_start:'Log a meal today to start a streak',kb_ord:'Your Degirmen orders',kb_ord_add:'+ to diary',kb_ord_all:'Add all',
@@ -4101,7 +4127,7 @@ function kbMenuM(slot){S.kb.mq='';S.kb.mslot=slot||kbDefSlot();kbMenuList()}
 function kbMenuList(){const q=(S.kb.mq||'').toLowerCase(),L=S.items.filter(i=>i.data?.nut&&!i.sold_out&&(!q||nm(i.name).toLowerCase().includes(q)));
   const kOf=i=>{const N=i.data.nut,a=N[Object.keys(N)[0]];return a[0][1]};
   shw(`<div class="nxsh kbsh"><h3>${t('kb_m_t')}</h3><input class="kbmq" placeholder="${t('kb_m_ph')}" value="${e(S.kb.mq||'')}" oninput="S.kb.mq=this.value;kbMenuListUpd()"><div class="kbml" id="kbml">${kbMenuRows(L,kOf)}</div></div>`)}
-function kbMenuRows(L,kOf){return L.map(i=>`<button class="kbmr" onclick="kbMenuPick('${i.id}')"><span class="kbmp">${hasArt(i)?artSVG(i,null,1):ph(i)}</span><span><b>${e(nm(i.name))}</b><small>${t('kb_from',S.L,{n:kOf(i)})}</small></span></button>`).join('')||`<div class="mu" style="padding:16px 4px">—</div>`}
+function kbMenuRows(L,kOf){return L.map(i=>`<button class="kbmr" onclick="kbMenuPick('${i.id}')"><span class="kbmp">${hasArt(i)?artSVG(i,null,1):ph(i)}</span><span><b>${e(nm(i.name))}</b><small>${t('kb_from',S.L,{n:kOf(i)})}</small></span></button>`).join('')||`<div class="mu" style="padding:16px 4px">-</div>`}
 function kbMenuListUpd(){const q=(S.kb.mq||'').toLowerCase(),L=S.items.filter(i=>i.data?.nut&&!i.sold_out&&(!q||nm(i.name).toLowerCase().includes(q))),el=$('kbml');if(el)el.innerHTML=kbMenuRows(L,i=>{const N=i.data.nut;return N[Object.keys(N)[0]][0][1]})}
 function kbMenuPick(id){const it=itemOf(id),N=it.data.nut,f=Object.keys(N)[0];S.kb.mp={id,f,z:0,q:1};kbMenuOne()}
 function kbMenuOne(){const P=S.kb.mp,it=itemOf(P.id),N=it.data.nut,keys=Object.keys(N),arr=N[P.f],v=nutCalc(it,P.f,P.z,null),q=P.q;
@@ -4115,7 +4141,7 @@ function kbMenuAdd(){const P=S.kb.mp,it=itemOf(P.id),v=nutCalc(it,P.f,P.z,null),
   const fl=keys.length>1?((FL[P.f]&&FL[P.f][S.L])||P.f):'',name=(q>1?q+'× ':'')+nm(it.name)+(fl?' · '+fl:'');
   cp(true);S.kb.ana={st:'res',src:'menu',slot:S.kb.mslot,d:S.kb.d,title:name.slice(0,80),descr:'',items:[kbBase({name:name.slice(0,60),g:v.w*q,kcal:v.k*q,p:kbR1(v.p*q),f:kbR1(v.f*q),c:kbR1(v.c*q)})]};kbaRender()}
 
-// ---------- норма: Миффлин — Сан Жеор ----------
+// ---------- норма: Миффлин - Сан Жеор ----------
 function kbGoalM(){const G=S.kb.goal||{};S.kb.gw={sex:G.sex||'',age:G.age||'',h:G.height||'',w:G.weight?+G.weight:'',act:+G.act||1.375,goal:G.goal||'keep',kcal:G.kcal||'',p:G.p||'',f:G.f||'',c:G.c||''};kbgRender()}
 function kbCalc(W){const bmr=10*W.w+6.25*W.h-5*W.age+(W.sex=='m'?5:-161),tdee=bmr*W.act;let k=W.goal=='lose'?Math.max(tdee*.85,bmr):W.goal=='gain'?tdee*1.1:tdee;
   k=Math.round(Math.max(k,W.sex=='m'?1500:1200)/10)*10;const p=Math.round(W.w*(W.goal=='keep'?1.4:1.8)),f=Math.round(Math.max(W.w*.8,k*.25/9)),c=Math.max(50,Math.round((k-4*p-9*f)/4));return{kcal:k,p,f,c}}
@@ -4136,7 +4162,7 @@ async function kbgSave(b){const W=S.kb.gw,k=Math.round(+W.kcal),p=Math.round(+W.
   const a=+W.age,row={user_id:S.me.id,sex:W.sex||null,age:a>=18&&a<=100?a:null,height:+W.h>=120&&+W.h<=230?Math.round(+W.h):null,weight:+W.w>=35&&+W.w<=300?kbR1(+W.w):null,act:+W.act||null,goal:W.goal||null,kcal:k,p,f,c,updated_at:new Date().toISOString()};
   const{data,error}=await sb.from('nutri_goals').upsert(row,{onConflict:'user_id'}).select().single();b.disabled=false;if(error){toast(error.message,1);return}S.kb.goal=data;toast(t('kb_saved'));kbM()}
 
-// выход из аккаунта — дневник другого человека не показываем
+// выход из аккаунта - дневник другого человека не показываем
 {const _r=render;render=function(){if(S.kb){if(!S.me)S.kb=null;else if(!S.kb.uid)S.kb.uid=S.me.id;else if(S.kb.uid!=S.me.id)S.kb=null}_r()}}
 // ---------- юридические документы: русский ----------
 // Строка «• …» - пункт списка. {CO} {BIN} {ADRL} {ADR} {DIR} {MAIL} {TEL} {HRS} {SITE} подставляются из DOC_CO.
@@ -5194,7 +5220,7 @@ function finArH(){const F=S.fn,A=F.f?.arrivals||[],can=F.data?.can_edit,dis=can?
   const r=await sb.rpc('arrivals_stats',{p_from:from,p_to:to});if(!r.error){F.arr=r.data;if(S.scr=='fin')finRender()}}}
 {const _mh=finMonH;finMonH=function(){let h=_mh();const F=S.fn,P=F.arr?.people||[];if(!F.mon||!P.length)return h;
   const RL=Object.fromEntries(FAR);
-  return h+`<div class="fncard"><div class="fnh">⏰ Приход на работу</div><div class="fnhint">Опоздание - пришёл позже начала смены больше чем на 10 минут. Начало смены: ${Object.entries(F.arr.shift||{}).map(([k,v])=>`${RL[k]||k} ${v}`).join(', ')}.</div>${P.map(p=>`<div class="fnpl${p.late>=3?' neg':''}"><span>${e(p.name)}<small>${RL[p.role]||''} · дней ${p.days} · в среднем приходит в ${p.avg_in||'—'}</small></span><b>${p.late?`${p.late} опозд.${p.late_avg?` ~${p.late_avg} мин`:''}`:'вовремя'}</b></div>`).join('')}</div>`}}
+  return h+`<div class="fncard"><div class="fnh">⏰ Приход на работу</div><div class="fnhint">Опоздание - пришёл позже начала смены больше чем на 10 минут. Начало смены: ${Object.entries(F.arr.shift||{}).map(([k,v])=>`${RL[k]||k} ${v}`).join(', ')}.</div>${P.map(p=>`<div class="fnpl${p.late>=3?' neg':''}"><span>${e(p.name)}<small>${RL[p.role]||''} · дней ${p.days} · в среднем приходит в ${p.avg_in||'-'}</small></span><b>${p.late?`${p.late} опозд.${p.late_avg?` ~${p.late_avg} мин`:''}`:'вовремя'}</b></div>`).join('')}</div>`}}
 
 // месяц: долг владельцев (авансы на имя владельца - не расход)
 {const _mh=finMonH;finMonH=function(){let h=_mh();const D=S.fn?.mon?.tot?.owner_debt||[];if(!D.length)return h;
@@ -5301,11 +5327,11 @@ addEventListener('resize',()=>{const sc=document.querySelector('#m .scr.pm:not(.
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
-<script>(function(){const wide=matchMedia('(min-width:760px) and (hover:hover) and (pointer:fine)').matches,emb=/[?&](m=1|mode=|doc=)/.test(location.search)||window.top!==window.self||(()=>{try{return !!JSON.parse(localStorage.getItem('dn_mode'))}catch{return false}})();  // кухня/табло/киоск — всегда на весь экран
+<script>(function(){const wide=matchMedia('(min-width:760px) and (hover:hover) and (pointer:fine)').matches,emb=/[?&](m=1|mode=|doc=)/.test(location.search)||window.top!==window.self||(()=>{try{return !!JSON.parse(localStorage.getItem('dn_mode'))}catch{return false}})();  // кухня/табло/киоск - всегда на весь экран
 if((!wide||emb)&&typeof supabase=='undefined'){window.DNSPL&&DNSPL.ready();window.DNOFF&&DNOFF.check()}  // библиотека не загрузилась (нет сети и нет кэша): экран «нет интернета», при возврате связи страница перезагрузится
 if(!wide||emb){const sc=document.createElement('script');sc.textContent=document.getElementById('appjs').textContent;document.body.appendChild(sc);return}
 let l='ru';try{l=JSON.parse(localStorage.getItem('dn_l'))||'ru'}catch{}
-const X={ru:['Заказывай с телефона','Приложение сделано для телефона. Наведи камеру на код — откроется меню. Или закажи прямо здесь.','открыть на весь экран'],kk:['Телефоннан тапсырыс бер','Қосымша телефонға арналған. Кодқа камераны бағытта — мәзір ашылады. Немесе осы жерден тапсырыс бер.','толық экранда ашу'],en:['Order from your phone','The app is made for phones. Point your camera at the code to open the menu, or order right here.','open full screen']}[l]||[];
+const X={ru:['Заказывай с телефона','Приложение сделано для телефона. Наведи камеру на код - откроется меню. Или закажи прямо здесь.','открыть на весь экран'],kk:['Телефоннан тапсырыс бер','Қосымша телефонға арналған. Кодқа камераны бағытта - мәзір ашылады. Немесе осы жерден тапсырыс бер.','толық экранда ашу'],en:['Order from your phone','The app is made for phones. Point your camera at the code to open the menu, or order right here.','open full screen']}[l]||[];
 document.documentElement.setAttribute('data-theme','dark');const q=location.search?location.search+'&m=1':'?m=1',url=location.origin+location.pathname;
 document.body.innerHTML=`<div class="dsk"><div class="side"><div class="lg">DEGIRMEN</div><h1>${X[0]}</h1><p>${X[1]}</p><div class="qr" id="qr"></div><a href="${q}">${X[2]} →</a></div><iframe src="${q}" title="Degirmen Navoi" allow="vibrate; microphone"></iframe></div>`;
 const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.onload=()=>{try{new QRCode(document.getElementById('qr'),{text:url,width:264,height:264,colorDark:'#1a130f',colorLight:'#f6f1ea'})}catch{}};document.head.appendChild(s)})();</script></body></html>
