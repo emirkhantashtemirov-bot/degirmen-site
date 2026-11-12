@@ -4,8 +4,8 @@
 <link rel="manifest" href="/app.webmanifest"><link rel="icon" type="image/svg+xml" href="/media/logo-mill.svg"><link rel="icon" type="image/png" sizes="32x32" href="/media/icon/favicon-32.png"><link rel="apple-touch-icon" href="/media/icon/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Degirmen">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
 <style>
 :root{--bg:#1a130f;--c:#110c09;--s1:#231a14;--s2:#2a1f18;--tx:#f3ebe1;--mu:#9a8a7c;--off:#6e5f53;--ac:#b8432c;--warm:#3a2a1f;--e:cubic-bezier(.2,.8,.2,1);--sp:cubic-bezier(.34,1.45,.64,1);--lt:#f6f1ea;--dk:#1a1410;--f:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{-webkit-text-size-adjust:100%}
@@ -1324,7 +1324,7 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
    Только экраны гостя: меню, карточка товара, корзина, заказы, профиль, вход, ИИ-помощник.
    Касса, кухня, табло, киоск, финансы и админ-экраны принудительно тёмные (thEff в коде).
    ============================================================ */
-html[data-theme=light]{--bg:#f3eadc;--c:#fffaf2;--s1:#efe4d3;--s2:#e7dac6;--tx:#2a1d15;--mu:#6e5848;--off:#968170;--ac:#b8432c;--warm:#f1e6d5;--lt:#2a1d15;--dk:#fffaf2;
+html[data-theme=light]{--bg:#f3eadc;--c:#fffaf2;--s1:#efe4d3;--s2:#e7dac6;--tx:#2a1d15;--mu:#6e5848;--off:#7d6958;--ac:#b8432c;--warm:#f1e6d5;--lt:#2a1d15;--dk:#fffaf2;
 --gold:#b07c2c;--gold2:#a8762a;--gold-t:#94621a;--line:rgba(42,29,21,.08);--line-g:rgba(168,118,42,.28);
 --sh-1:0 2px 10px rgba(92,60,30,.08);--sh-2:0 10px 28px rgba(92,60,30,.12);--sh-3:0 24px 60px rgba(92,60,30,.18);color-scheme:light}
 html[data-theme=light] body{background:var(--bg)}
@@ -1730,7 +1730,7 @@ var calm=ls('dn_motion')=='off',t0=Date.now(),rdy=0,done=0,im=el.querySelectorAl
 var on=function(x){x.classList.add('spon')};
 im[0].onload=function(){on(im[0])};im[0].src='/media/p/splash.s.webp';
 im[1].onload=function(){on(im[1])};im[1].src='/media/v/splash.webp';
-var c=navigator.connection,slow=c&&(c.saveData||/2g/.test(c.effectiveType||''));
+var c=navigator.connection,slow=c&&(c.saveData||(c.effectiveType&&c.effectiveType!='4g'));
 if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.src='/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function hide(){if(done)return;done=1;el.classList.add('spout');R.classList.remove('splon');try{if(typeof S!='undefined'&&typeof render=='function'&&!S.scr&&!S.loading){enter();render()}}catch(e){}
  setTimeout(function(){try{v&&v.pause();v&&v.removeAttribute('src')}catch(e){}el.remove();window.DNSPL.gone=true;try{dispatchEvent(new Event('dnsplash'))}catch(e){}},calm?350:760)}
@@ -1747,7 +1747,7 @@ var x=X[L]||X.ru,st={open:0,min:0,down:0,n:0,tm:0,cd:0};
 d.getElementById('offh').textContent=x[0];d.getElementById('offt').textContent=x[1];d.getElementById('ofr').textContent=x[4];d.getElementById('ofm').textContent=x[5];pill.querySelector('span').textContent=x[6];
 function ping(){var u='/robots.txt?ping='+Date.now();return (of||fetch).call(window,u,{method:'HEAD',cache:'no-store'}).then(function(r){return true},function(){return false})}
 function stat(s){d.getElementById('ofs').textContent=s}
-function show(){if(!st.down){st.down=1;st.n=0}if(st.min){pill.classList.remove('ofok');pill.classList.add('spon');schedule();return}
+function show(){if(d.documentElement.getAttribute('data-theme')=='dark')return;if(!st.down){st.down=1;st.n=0}if(st.min){pill.classList.remove('ofok');pill.classList.add('spon');schedule();return}
  if(!st.open){st.open=1;el.classList.add('spon');requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('ofvis')})});}schedule()}
 function close(){el.classList.remove('ofvis');setTimeout(function(){if(!el.classList.contains('ofvis'))el.classList.remove('spon')},360);st.open=0}
 function schedule(){clearTimeout(st.tm);clearInterval(st.cd);var w=Math.min(4000*Math.pow(1.5,st.n),15000),end=Date.now()+w;el.classList.remove('oftry');
@@ -3234,7 +3234,7 @@ const PUSH_OK=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notif
 const IOS_TAB=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.standalone;
 let swReg=null;
 async function swInit(){if(!('serviceWorker' in navigator)||!location.protocol.startsWith('http'))return;try{
-  for(const r of await navigator.serviceWorker.getRegistrations()){const u=(r.active||r.waiting||r.installing)?.scriptURL||'';if(u&&!/\/push-sw\.js$/.test(u))r.unregister()}
+  for(const r of await navigator.serviceWorker.getRegistrations()){const u=(r.active||r.waiting||r.installing)?.scriptURL||'';if(u&&!/\/push-sw\.js$/.test(u)&&r.scope==location.origin+'/')r.unregister()}
   try{const k=await fetch('/sw-off.txt?'+Date.now(),{cache:'no-store'});if(k.status==200){for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister();for(const c of await caches.keys())if(c.startsWith('dn-'))await caches.delete(c);return}}catch{}  // аварийный выключатель worker
   swReg=await navigator.serviceWorker.register('push-sw.js',{updateViaCache:'none'});  // worker также держит оболочку приложения для работы без интернета
   if(!PUSH_OK)return;
