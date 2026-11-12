@@ -10,7 +10,11 @@
 - Меню одной лентой: секции `.csec#cat-<код>`, вкладки `.cats` переключаются по прокрутке, `setCat(k)` листает к разделу.
 - `brewsell/` - бренд-сайт кофе Brewsell (three.js r160 с jsdelivr, 3D-сцены), `label.jpg` - наклейка.
 - `avto/` - «Автоучёт» (учёт машин, 3D, мини-игра `drive.html`). `guard/` - APK слежения за планшетами. `glm/` - песочница.
+- Без сети: `push-sw.js` (push + кэш: HTML сначала из сети, фото /media/p и шрифты из кэша, видео и Supabase не кэшируются; при правке worker менять `VER`). Аварийно отключить worker: положить файл `sw-off.txt` в корень. Экран «нет интернета» (#off) и заставка (#spl) - отдельные скрипты в начале `<body>`, работают без приложения. Манифест `app.webmanifest`, значки `media/icon/`, знак мельницы `media/logo-mill.svg` (в коде `MILL()`).
 - Деплой: push в `main` → сервер подтягивает изменения раз в минуту. Коммиты с трейлерами Co-Authored-By и Claude-Session.
+
+- Фото и видео меню: `media/p/<id>.webp` (+ `.s.webp`), `media/v/<id>.mp4`; собираются в ветке `media` (GitHub Action по `media/src.tsv`). `push-sw.js` кэширует фото: при замене файла с тем же именем поднять `VER` в `push-sw.js`. Аварийно отключить worker: положить в корень файл `sw-off.txt`.
+- Новый вид проверять на `/v2.html` (копия index.html из ветки `visual`), потом переносить в `main`.
 
 ## База (Supabase, проект nctmbakzbzzkygndaklr)
 - Оплата: Edge Function `epay` (код в `supabase/functions/epay`), доступы ePay только в закрытой `paloma_config` (epay_*). Заказ: `pay_method` cash|online, `pay_status` none|pending|paid|failed|refunded. Онлайн-оплату отмечает только сервер после проверки статуса в банке. Неоплаченные заказы не идут на кухню. Возврат - `can_refund()` (разработчик + список `refunders`).
