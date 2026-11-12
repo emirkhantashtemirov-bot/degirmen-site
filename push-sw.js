@@ -4,7 +4,7 @@
 //  - фото меню /media/p/*, значки, шрифты и библиотека supabase-js с CDN: из кэша, с ограничением по количеству;
 //  - видео /media/v/*, запросы к базе (Supabase), функции, POST - никогда не кэшируются;
 //  - аварийный выключатель: если /sw-off.txt отдаёт 200, worker удаляет кэши и снимает себя.
-const VER = 'v3-1';
+const VER = 'v3-2';
 const SHELL = 'dn-shell-' + VER, MEDIA = 'dn-media-' + VER, LIB = 'dn-lib-' + VER;
 const KEEP = [SHELL, MEDIA, LIB];
 const MEDIA_MAX = 80, LIB_MAX = 30;
@@ -43,12 +43,12 @@ async function cacheFirst(req, name, max) {
   const c = await caches.open(name), hit = await c.match(req);
   if (hit) return hit;
   const r = await fetch(req);
-  if (r && (r.ok || r.type === 'opaque')) { c.put(req, r.clone()).then(() => trim(name, max)).catch(() => {}); }
+  if (r && r.ok) { c.put(req, r.clone()).then(() => trim(name, max)).catch(() => {}); }
   return r;
 }
 async function page(req) {
   try {
-    const r = await fetch(req);
+    const r = await fetch(req.url, { cache: 'no-cache', credentials: 'same-origin', redirect: 'follow' });
     if (r && r.ok && r.type === 'basic') { const cp = r.clone(); caches.open(SHELL).then(c => c.put('/', cp)).catch(() => {}); }
     killCheck();
     return r;
