@@ -23,13 +23,18 @@ jobs:
               *.png|*.jpg|*.jpeg|*.webp)
                 [ -f "media/p/$id.webp" ] && continue
                 curl -fsSL -m 120 -o "tmp/$id.src" "$BASE/$f" || { echo "FAIL $id"; continue; }
+                case "$id" in splash*)  # заставка: пропорции кадра сохраняются (9:16)
+                  ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=1080:-2:flags=lanczos" -c:v libwebp -quality 86 -compression_level 6 "media/p/$id.webp"
+                  ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=360:-2:flags=lanczos" -c:v libwebp -quality 80 "media/p/$id.s.webp"
+                  continue;;
+                esac
                 ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=1200:1200:flags=lanczos" -c:v libwebp -quality 90 -compression_level 6 "media/p/$id.webp"
                 ffmpeg -nostdin -loglevel error -y -i "tmp/$id.src" -vf "scale=420:420:flags=lanczos" -c:v libwebp -quality 84 "media/p/$id.s.webp"
                 ;;
               *.mp4)
                 [ -f "media/v/$id.mp4" ] && continue
                 curl -fsSL -m 120 -o "tmp/$id.mp4" "$BASE/$f" || { echo "FAIL $id"; continue; }
-                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2:flags=lanczos" -c:v libx264 -preset slow -crf 21 -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
+                ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -an -vf "scale=720:-2:flags=lanczos" -c:v libx264 -preset slow -crf $(case "$id" in splash*) echo 24;; *) echo 21;; esac) -pix_fmt yuv420p -movflags +faststart "media/v/$id.mp4"
                                 ffmpeg -nostdin -loglevel error -y -i "tmp/$id.mp4" -frames:v 1 -c:v libwebp -quality 88 "media/v/$id.webp"
                 ;;
             esac
