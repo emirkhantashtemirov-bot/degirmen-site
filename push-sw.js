@@ -25,7 +25,7 @@ self.addEventListener('activate', e => {
 
 let killT = 0;
 async function killCheck() {
-  if (Date.now() - killT < 60000) return; killT = Date.now();
+  if (Date.now() - killT < 10000) return; killT = Date.now();
   try {
     const r = await fetch('/sw-off.txt?' + Date.now(), { cache: 'no-store' });
     if (r.status === 200) {

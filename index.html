@@ -1653,6 +1653,8 @@ html[data-theme=light] .gmsec{border-color:rgba(42,29,21,.16);color:#2a1d15;min-
 html[data-theme=light] .gmnew{color:#b8432c}
 html[data-theme=light] .gmrow.me{background:rgba(184,67,44,.12)}
 html[data-theme=light] .gmtap{background:rgba(251,245,236,.92);color:#2a1d15;box-shadow:0 8px 20px -8px rgba(42,29,21,.5)}
+html[data-theme=light] :is(.wide,.sm).off .wp span{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:rgba(42,29,21,.08);color:#5c4636;font-size:13px;font-weight:700;letter-spacing:0}
+html[data-theme=light] :is(.wide,.sm).off .nm,html[data-theme=light] :is(.wide,.sm).off h3{color:#6b5444}
 </style><style id="splcss">
 /* ---------- заставка (#spl) и экран «нет интернета» (#off): работают без приложения и без сети ---------- */
 #spl{position:fixed;inset:0;z-index:2147483000;background:#efe2cd;background:radial-gradient(120% 70% at 50% 28%,#f8efe2 0,#ecdcc4 62%,#e2cdb0 100%);overflow:hidden;contain:strict;transition:opacity .62s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);color:#2a1d15;font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
@@ -3232,6 +3234,7 @@ const IOS_TAB=/iPhone|iPad|iPod/.test(navigator.userAgent)&&!navigator.standalon
 let swReg=null;
 async function swInit(){if(!('serviceWorker' in navigator)||!location.protocol.startsWith('http'))return;try{
   for(const r of await navigator.serviceWorker.getRegistrations()){const u=(r.active||r.waiting||r.installing)?.scriptURL||'';if(u&&!/\/push-sw\.js$/.test(u))r.unregister()}
+  try{const k=await fetch('/sw-off.txt?'+Date.now(),{cache:'no-store'});if(k.status==200){for(const r of await navigator.serviceWorker.getRegistrations())await r.unregister();for(const c of await caches.keys())if(c.startsWith('dn-'))await caches.delete(c);return}}catch{}  // аварийный выключатель worker
   swReg=await navigator.serviceWorker.register('push-sw.js',{updateViaCache:'none'});  // worker также держит оболочку приложения для работы без интернета
   if(!PUSH_OK)return;
   const sub=await swReg.pushManager.getSubscription();S.pushOn=!!sub&&Notification.permission=='granted';if(S.pushOn)pushSync(sub);if(S.v=='ord')render()}catch{}}
