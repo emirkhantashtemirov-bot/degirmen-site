@@ -1619,6 +1619,74 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 .pmbar{position:fixed;left:0;right:0;top:0;z-index:7;display:flex;align-items:center;min-height:calc(68px + env(safe-area-inset-top));box-sizing:border-box;padding:env(safe-area-inset-top) 72px 0 22px;background:color-mix(in srgb,color-mix(in srgb,var(--sand,#dcbf9d) 30%,#fbf5ec) 88%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 rgba(92,60,30,.1),0 12px 26px -20px rgba(92,60,30,.6);opacity:var(--tp);pointer-events:none;color:#2a1d15}
 .pmbar b{font-size:18px;font-weight:700;letter-spacing:-.2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate3d(0,calc((1 - var(--tp))*12px),0)}
 .scr.pm .rb.dk{z-index:9}.scr.pm .pbar{z-index:8}
+/* видео приготовления: поверх круга, исчезает плавно (filter, чтобы не мешать прозрачности от прокрутки); пока не пошло - фото под ним скрыто */
+.circ.hv>.hvp{transition:filter .3s ease}
+.circ.hv>.hvp.gone{filter:opacity(0);pointer-events:none}
+.circ.hv.prp>img,.circ.hv.prp>.phe{filter:opacity(0)}
+.circ.hv>.hvn{filter:opacity(0);transition:filter .32s ease;z-index:2}
+.circ.hv>.hvn.in{filter:opacity(1)}
+.hvr{position:absolute;right:14px;bottom:46px;z-index:4;display:flex;align-items:center;gap:6px;height:34px;padding:0 13px 0 10px;border:0;border-radius:17px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;font:600 13px/1 var(--f);letter-spacing:-.1px;cursor:pointer;
+ transform:translate3d(0,var(--py,0px),0);opacity:calc(1 - var(--tp,0)*1.6);transition:filter .3s ease,visibility 0s;-webkit-tap-highlight-color:transparent}
+.hvr svg{flex:none;opacity:.85}
+.hvr:active{filter:brightness(.94)}
+.circ.hv.prun .hvr{visibility:hidden;filter:opacity(0);transition:filter .2s ease,visibility 0s .2s}
+html[data-theme=dark] .hvr{background:rgba(28,20,16,.5);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.14)}
+.circ.hv .hvr{bottom:14px}
+.scr.pm .circ.hv .hvr{bottom:46px}
+/* картинки состояний */
+.sti{display:block;position:relative;overflow:hidden;background:#e4cdac}
+.sti>img{display:block;width:100%;height:100%;object-fit:cover}
+.sti .stfb{display:none}
+.sti.stf{background:none;overflow:visible}.sti.stf .stfb{display:contents}
+.lvi.lvpi{width:56px;height:56px;border-radius:17px;overflow:hidden;background:none;padding:0}
+.lvi.lvpi>.sti{width:100%;height:100%;border-radius:inherit}
+.lvi.lvpi>.sti.stf{display:grid;place-items:center;background:rgba(217,165,74,.14)}
+.lvl span.lvq{width:40px;height:40px;border-radius:12px;position:relative;background:none;overflow:visible}
+.lvl span.lvq>.sti{width:100%;height:100%;border-radius:12px}
+.lvl span.lvq>.sti.stf{background:rgba(243,235,225,.07)}
+.lvl span.lvq em{position:absolute;right:-5px;bottom:-5px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;display:grid;place-items:center;font:700 10px/1 var(--f);font-style:normal;background:#3a2a1f;color:#f6ecdf;box-shadow:0 0 0 2px var(--c)}
+.lvl .got span.lvq em{background:#e9b949;color:#2a1f18}
+.lvl>div:not(.got) span.lvq>.sti img{filter:grayscale(.85) contrast(.92)}
+html[data-theme=light] .lvl span.lvq em{background:#efe2cf;color:#6e5848;box-shadow:0 0 0 2px #fbf3e6}
+html[data-theme=light] .lvl .got span.lvq em{background:#d9a53a;color:#2a1d15}
+html[data-theme=light] .lvi.lvpi{background:none}
+.lvbig .sti.stbig{width:150px;height:150px;border-radius:36px;box-shadow:0 22px 40px -18px rgba(0,0,0,.55)}
+.lvbig .sti.stbig.stf{width:auto;height:auto;box-shadow:none}
+.emw.stemp{width:176px;height:176px;margin-bottom:14px}
+.emw.stemp>.sti{width:100%;height:100%;border-radius:40px;box-shadow:0 22px 44px -26px rgba(92,60,30,.55)}
+.emw.stemp>.sti.stf{width:150px;height:126px;margin:0 auto;border-radius:0;box-shadow:none}
+.rdy-t.rdyp{display:flex;align-items:center;gap:14px;margin:12px 0 10px}
+.rdy-t.rdyp .sti{width:72px;height:72px;flex:none;border-radius:20px;box-shadow:0 12px 24px -14px rgba(92,60,30,.6)}
+.rdy-t.rdyp .sti.stf{display:none}
+.rdy-t.rdyp span{font-size:17px}
+.gfr{display:flex;align-items:center;gap:12px;color:var(--tx);font-weight:600;line-height:1.35}
+.gfr .sti{width:64px;height:64px;flex:none;border-radius:18px}
+.gfr .sti.stf{display:none}
+.rtc.rtdone .sti.stth{width:96px;height:96px;margin:2px auto 10px;border-radius:26px;box-shadow:0 14px 28px -16px rgba(92,60,30,.55)}
+.rtc.rtdone .sti.stth.stf{display:none}
+/* сезон: выбор заставки в админке и мягкий фон баннера на главной */
+.sea h3{margin:2px 4px 8px;font-size:18px}
+.seag{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px}
+.seac{display:flex;flex-direction:column;gap:7px;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:center}
+.seai{display:block;aspect-ratio:9/14;border-radius:16px;overflow:hidden;background:#dcc4a2}.seai img{width:100%;height:100%;object-fit:cover;display:block}
+.seac b{font-size:13px;font-weight:600;color:var(--mu)}
+.seac.on .seai{box-shadow:0 0 0 3px var(--ac)}.seac.on b{color:var(--tx);font-weight:800}
+.tvu{margin:2px 4px 8px;padding:12px 14px;border-radius:14px;background:var(--s1);font:600 14px/1.3 ui-monospace,Menlo,monospace;word-break:break-all;user-select:all}
+.hero.hsea{isolation:isolate}
+.hero.hsea::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--hsea) 50% 18%/cover no-repeat;opacity:.45;-webkit-mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.55) 62%,#000 100%);mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.55) 62%,#000 100%)}
+/* админка: выбор фото и видео позиции */
+.mdrow{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
+.mdrow .mdi{width:56px;height:56px;flex:none}
+.mdl{flex:1;min-width:0;font-weight:600;font-size:14px;line-height:1.25}.mdl small{display:block;font-weight:400;font-size:12px;color:var(--mu);margin-top:2px}
+.mdi{display:block;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#dcc4a2;position:relative}
+.mdi img{width:100%;height:100%;object-fit:cover;display:block}
+.mdx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--s1);color:var(--mu)}.mdx svg{width:62%;height:62%}.mdx img{width:100%;height:100%;object-fit:cover}
+.mdp h3{margin:2px 4px 12px;font-size:18px}
+.mdw{margin:0 4px 12px;font-size:13px;color:var(--mu)}
+.mdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px 10px;max-height:62vh;overflow:auto;padding:2px 2px 10px}
+.mdc{display:flex;flex-direction:column;gap:6px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.mdc small{font-size:11.5px;line-height:1.2;color:var(--mu)}
+.mdc.on .mdi{box-shadow:0 0 0 3px var(--ac)}.mdc.on small{color:var(--tx);font-weight:700}
 /* пищевая ценность выбранного размера - строка поверх героя */
 .pmnut{position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));z-index:4;display:flex;align-items:stretch;gap:0;padding:6px 4px;border-radius:18px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;opacity:calc(1 - var(--tp)*1.6);transform:translate3d(0,calc(var(--py)*-.4),0);pointer-events:none;max-width:calc(100% - 92px)}
 .pmnut span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:46px;padding:0 8px;line-height:1.1}
@@ -1674,6 +1742,12 @@ html[data-theme=light] :is(.wide,.sm).off .nm,html[data-theme=light] :is(.wide,.
 #spl .spp{position:absolute;z-index:2;left:50%;bottom:calc(46px + env(safe-area-inset-bottom));width:120px;height:3px;margin-left:-60px;border-radius:3px;background:rgba(255,250,242,.45);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 #spl .spp::before{content:'';position:absolute;top:0;bottom:0;width:45%;border-radius:3px;background:linear-gradient(90deg,rgba(255,250,242,0),#fffaf2,rgba(255,250,242,0));animation:splbar 1.25s ease-in-out infinite}
 #spl.spout{opacity:0;transform:scale(1.035);pointer-events:none}
+/* тёмные сезонные заставки (снег, Рамадан): верх кадра тёмный - мельница и надпись светлые */
+#spl.spdk{background:#1c2232}
+#spl.spdk::after{background:linear-gradient(to bottom,rgba(14,18,30,.62) 0,rgba(14,18,30,.42) 28%,rgba(14,18,30,.12) 46%,rgba(14,18,30,0) 60%),linear-gradient(to top,rgba(20,14,10,.22),rgba(20,14,10,0) 22%)}
+#spl.spdk .spk{color:#fbf5ec;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+#spl.spdk .spw{color:#fbf5ec}
+#spl.spdk .spt{color:rgba(251,245,236,.82)}
 #spl.spcalm *,#spl.spcalm .spm{animation:none!important;transition:opacity .3s!important;opacity:1}
 #spl.spcalm .spm:not(.spon){opacity:0}
 #spl.spcalm .spw i,#spl.spcalm .spt,#spl.spcalm .spk{opacity:1!important;transform:none!important}
@@ -1728,10 +1802,14 @@ var skip=/[?&](mode|doc)=/.test(q)||!!ls('dn_mode');try{skip=skip||sessionStorag
 if(skip||!el){if(el)el.remove();window.DNSPL={ready:function(){},gone:true};return}
 var calm=ls('dn_motion')=='off',t0=Date.now(),rdy=0,done=0,im=el.querySelectorAll('img'),v=el.querySelector('video');if(calm)el.classList.add('spcalm');else el.classList.add('spgo');
 var on=function(x){x.classList.add('spon')};
-im[0].onload=function(){on(im[0])};im[0].src='/media/p/splash.s.webp';
-im[1].onload=function(){on(im[1])};im[1].src='/media/v/splash.webp';
+/* сезонная заставка (админка → «Сезон», приложение хранит выбор в dn_season): spl_<k> / splv_<k>; файл не загрузился - обычная заставка */
+var SE={snow:1,newyear:0,ramadan:1,nauryz:0,summer:0},sk=ls('dn_season');if(!(typeof sk=='string'&&SE.hasOwnProperty(sk)))sk='';
+if(sk&&SE[sk])el.classList.add('spdk');
+var fb=function(x,u){x.onerror=function(){if(x.dataset.f)return;x.dataset.f='1';el.classList.remove('spdk');x.src=u}};
+im[0].onload=function(){on(im[0])};if(sk)fb(im[0],'/media/p/splash.s.webp');im[0].src=sk?'/media/p/spl_'+sk+'.s.webp':'/media/p/splash.s.webp';
+im[1].onload=function(){on(im[1])};if(sk)fb(im[1],'/media/v/splash.webp');im[1].src=sk?'/media/v/splv_'+sk+'.webp':'/media/v/splash.webp';
 var c=navigator.connection,slow=c&&(c.saveData||(c.effectiveType&&c.effectiveType!='4g'));
-if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.src='/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.addEventListener('error',function(){v.classList.remove('spon');v.removeAttribute('src')});v.src=sk?'/media/v/splv_'+sk+'.mp4':'/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function hide(){if(done)return;done=1;el.classList.add('spout');R.classList.remove('splon');try{if(typeof S!='undefined'&&typeof render=='function'&&!S.scr&&!S.loading){enter();render()}}catch(e){}
  setTimeout(function(){try{v&&v.pause();v&&v.removeAttribute('src')}catch(e){}el.remove();window.DNSPL.gone=true;try{dispatchEvent(new Event('dnsplash'))}catch(e){}},calm?350:760)}
 function tick(){var w=Date.now()-t0;if(rdy&&w>=1500)hide();else if(w>=6000)hide();else setTimeout(tick,rdy?1500-w:120)}
@@ -1828,11 +1906,17 @@ if(no.length)out.push(t('wo',L)+' '+no.join(', '));if(x2.length)out.push('x2 '+x
 const oc={};(l.o||[]).forEach(id=>oc[id]=(oc[id]||0)+1);for(const id in oc){const o=optOf(id);if(!o)continue;const n=nm(o.name,L),k=oc[id]>1?' ×'+oc[id]:'';out.push(o.grp=='milk'?t('g_milk',L).toLowerCase()+' '+n.toLowerCase():o.grp&&!MGRPS.includes(o.grp)?n.toLowerCase():'+'+n+k)};if(l.free)out.push(t('freeW',L).toUpperCase());return out.join(' · ')}
 const lineName=(l,L=S.L)=>nm(itemOf(l.id).name,L);
 // ---------- фото: image_url → локальный img/<id>.webp → эмодзи ----------
-const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),hasMed=it=>!!it&&!it.image_url&&MEDIA.has(it.id)&&!(it.data&&it.data.pack);  // свои фото и видео блюд: media/p/<id>.webp, media/v/<id>.mp4
-const imgSrc=it=>it.image_url||(hasMed(it)?'/media/p/'+it.id+'.webp':'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
+// Ключ фото/видео: data.media (выбирается в админке, 'none' - рисунок), иначе свой id, если для него есть файлы. Фото media/p/<ключ>.webp (+ .s.webp),
+// видео: старые ключи (MEDIA) - media/v/<ключ>.mp4, новые (MEDIA2: будущее меню и варианты) - media/v/v_<ключ>.mp4; постер - то же имя с .webp.
+const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),
+ MEDIA2=new Set('lhm pd_ch pd_mt pd_mx pz_mg pz_sj pz_ck pz_4c bg_bf bg_ck bg_mx kasha menemen eggs kahvalti simit borek bliny lav_bf lav_ck la_ice tea_pot'.split(' ')),
+ medOk=k=>MEDIA.has(k)||MEDIA2.has(k),
+ medKey=it=>{if(!it||it.image_url||(it.data&&it.data.pack))return '';const m=it.data&&it.data.media;if(m)return typeof m=='string'&&medOk(m)?m:'';return MEDIA.has(it.id)?it.id:''},
+ hasMed=it=>!!medKey(it),medP=(k,sm)=>'/media/p/'+k+(sm?'.s':'')+'.webp',medV=k=>'/media/v/'+(MEDIA2.has(k)?'v_':'')+k;
+const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
-const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?'/media/p/'+it.id+'.s.webp':imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
+const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?medP(medKey(it),1):imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
 function imgOk(im){im.classList.add('ld');im.parentNode.classList.add('hasimg');LOADED.add(im.getAttribute('src'))}
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
@@ -3029,7 +3113,7 @@ function fu(i,v){S.cart[i].free=v?true:undefined;cart();render()}
 async function loadUsed(){S.used=0;if(!S.me)return;const{data}=await sb.from('orders').select('items').eq('user_id',S.me.id).neq('status','cancelled').contains('items','[{"free":true}]');S.used=(data||[]).reduce((a,o)=>a+o.items.filter(i=>i.free).length,0)}
 const topbar=(title,fn='cl()')=>`<div class="top"><button class="rb" aria-label="←" onclick="${fn}">${IC.back}</button><h2>${title}</h2><span class="sp"></span></div>`;
 function prog(){if(!S.me)return `<div class="mu" style="margin:12px 4px;font-size:14px">${t('fc_rule')}</div>`;const n=S.pf?.orders_count||0,r=n%FREE_EVERY,a=avail();
-return `<div class="mu" style="margin:12px 4px;font-size:14px">${a?t('fc_have',S.L,{n:a}):t('fc_prog',S.L,{n,k:FREE_EVERY-r})}<div class="prg">${Array.from({length:FREE_EVERY},(_,i)=>`<i class="${a||i<r?'f':''}"></i>`).join('')}</div></div>`}
+return `<div class="mu${a?' gfc':''}" style="margin:12px 4px;font-size:14px">${a?`<div class="gfr">${stImg('gift','','stgf')}<span>${t('fc_have',S.L,{n:a})}</span></div>`:t('fc_prog',S.L,{n,k:FREE_EVERY-r})}<div class="prg">${Array.from({length:FREE_EVERY},(_,i)=>`<i class="${a||i<r?'f':''}"></i>`).join('')}</div></div>`}
 function cart(){if(!S.cart.length){scr(topbar(t('cart'))+`<div class="empty">${emArt('cart')}<h3>${t('empty')}</h3><p>${t('emptyH')}</p></div>`,'cart');return}
 const hasDr=S.cart.some(l=>isDr(itemOf(l.id)));
 scr(topbar(t('cart'))+`<div class="body w" style="padding-bottom:130px">`+S.cart.map((l,i)=>`<div class="cl">${ph(itemOf(l.id),'ph phs')}<div class="mid"><b>${e(lineName(l))}</b><div class="mu" style="font-size:14px">${e(desc(l))}</div>${freeBtn(l,i)}${giftBtn(l,i)}</div><div style="text-align:right"><b>${mn(lineTot(l))}</b><div class="qty"><button class="c" onclick="cq(${i},-1)">−</button><b>${l.qty}</b><button class="c" onclick="cq(${i},1)">+</button></div></div></div>`).join('')+
@@ -3056,12 +3140,12 @@ async function so(id,k,v){const{error}=await sb.rpc(k=='i'?'set_sold_out':'set_o
 const tmx=o=>o.pickup_time?`<div>${t('at','ru')} ${new Date(o.pickup_time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</div>`:'';
 function its(o,L){return o.items.map(i=>{const it=i.f!==undefined&&itemOf(i.id);const n=it?lineName(i,L):i.name,d=it?desc(i,L):i.desc;return `${i.qty}× ${e(n)} <span class="mu">${e(d)}</span>`}).join('<br>')}
 function kas(){const act=S.ord.filter(o=>!['done','cancelled'].includes(o.status));
-const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы')+cc(0,"finM('buy')",'Закупы'):'')+cc(0,'tutM()','🎓 Обучение')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
+const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы')+cc(0,"finM('buy')",'Закупы'):'')+cc(0,'tutM()','🎓 Обучение')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn'))+cc(0,'seaM()',t('se_btn'))+cc(0,'tvM()',t('tv_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
 if(S.kt=='stop'||(S.kt=='menu'&&!isAdm()))return tabs+[...S.items.map(x=>[x,'i']),...S.opts.filter(o=>o.categories.length).map(x=>[x,'o'])].map(([x,k])=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px"><span style="${x.sold_out?'opacity:.5':''}">${e(nm(x.name))}</span>${cc(x.sold_out,`so('${x.id}','${k}',${!x.sold_out})`,x.sold_out?t('back'):t('endd'))}</div>`).join('');
 if(S.kt=='menu')return tabs+menuEd();
 return tabs+(act.length?'':`<div class="empty">${emArt('ord',1)}<p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
 function menuEd(){const num=(id,v)=>`<input id="${id}" type="number" min="0" step="10" inputmode="numeric" value="${v}">`,nin=(pre,n)=>LANGS.map(l=>`<input id="${pre}-${l}" placeholder="${l.toUpperCase()}" value="${e(n[l]||'')}">`).join('');
-return `<p class="mu" style="margin:8px 20px;font-size:14px">${t('medit')}</p>`+S.items.map(it=>`<details class="ed" ${S.open==it.id?'open':''} ontoggle="if(this.open)S.open='${it.id}'"><summary>${e(nm(it.name))} <span class="sm2">· ${mn(it.price)}</span></summary><div class="lab">${t('photo')}</div><div class="edp">${ph(it)}<div><label class="c fbtn">${t('upl')}<input type="file" accept="image/*" onchange="upPhoto('${it.id}',this)"></label>${it.image_url?`<div style="margin-top:8px"><button class="c" onclick="delPhoto('${it.id}')">${t('delph')}</button></div>`:''}</div></div><div class="lab">${t('nameL')}</div>${nin('n-'+it.id,it.name)}<div class="lab">${t('price')}</div>`+fills(it).map(f=>it.data.p[f].map((v,i)=>`<label class="kv"><span>${fills(it).length>1?e(nm(FL[f]||{ru:f}))+' ':''}${it.data.p[f].length>1?e(szl(it,i)):''}</span>${num(`p-${it.id}-${f}-${i}`,v)}</label>`).join('')).join('')+`<button class="main" style="margin-top:12px" onclick="saveItem('${it.id}')">${t('save')}</button></details>`).join('')+
+return `<p class="mu" style="margin:8px 20px;font-size:14px">${t('medit')}</p>`+S.items.map(it=>`<details class="ed" ${S.open==it.id?'open':''} ontoggle="if(this.open)S.open='${it.id}'"><summary>${e(nm(it.name))} <span class="sm2">· ${mn(it.price)}</span></summary><div class="lab">${t('photo')}</div><div class="edp">${ph(it)}<div><label class="c fbtn">${t('upl')}<input type="file" accept="image/*" onchange="upPhoto('${it.id}',this)"></label>${it.image_url?`<div style="margin-top:8px"><button class="c" onclick="delPhoto('${it.id}')">${t('delph')}</button></div>`:''}</div></div>${mdRow(it)}<div class="lab">${t('nameL')}</div>${nin('n-'+it.id,it.name)}<div class="lab">${t('price')}</div>`+fills(it).map(f=>it.data.p[f].map((v,i)=>`<label class="kv"><span>${fills(it).length>1?e(nm(FL[f]||{ru:f}))+' ':''}${it.data.p[f].length>1?e(szl(it,i)):''}</span>${num(`p-${it.id}-${f}-${i}`,v)}</label>`).join('')).join('')+`<button class="main" style="margin-top:12px" onclick="saveItem('${it.id}')">${t('save')}</button></details>`).join('')+
 `<h3 style="margin:20px 20px 4px">${t('opts')}</h3>`+S.opts.filter(o=>o.categories.length).map(o=>`<details class="ed"><summary>${e(nm(o.name))} <span class="sm2">· +${o.price}</span></summary><div class="lab">${t('nameL')}</div>${nin('on-'+o.id,o.name)}<div class="lab">${t('price')}</div>${num('op-'+o.id,o.price)}<button class="main" style="margin-top:12px" onclick="saveOpt('${o.id}')">${t('save')}</button></details>`).join('')}
 function readNames(pre,old){const n={...old};for(const l of LANGS){const v=$(`${pre}-${l}`).value.trim();if(!v){toast(t('badName'),1);return null}n[l]=v}return n}
 const readPrice=id=>{const v=$(id).value.trim();return /^\d+$/.test(v)?parseInt(v,10):null};
@@ -3085,7 +3169,7 @@ const mine=()=>S.ord.filter(o=>o.user_id==S.me?.id),activeMine=()=>mine().filter
 function tracker(o){const i=STEPS.indexOf(o.status),pct=pctOf(o),from=S.pp[o.id]??0,fx=o.status=='ready'&&(S.pp[o.id]===undefined||S.pp[o.id]<pct);
 return `<div class="trk ${o.status=='ready'?'rdy':''}${fx?' fx':''}"><div class="tbar"><i style="--p:${pct};--from:${from}"></i></div>${STEPS.map((s,k)=>`<div class="stp ${k<i?'d':k==i?'cu':''}">${t(s=='ready'?'b_ready':'s_'+s)}</div>`).join('')}</div>`}
 const pctOf=o=>Math.max(0,STEPS.indexOf(o.status))/(STEPS.length-1);
-function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t">${t('s_ready')}</div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it,'ph phs').replace('<div class="ph phs','<div style="width:56px;height:56px;flex:none;border-radius:14px" class="ph phs'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
+function orderCard(o,full){const it=o.items[0]&&o.items[0].f!==undefined?itemOf(o.items[0].id):null;return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="id">№${o.id}</span>${o.status=='cancelled'||o.status=='done'?`<span class="st">${t('s_'+o.status)}</span>`:''}</div>${full&&o.status!='cancelled'?tracker(o):''}${full&&o.status=='ready'?`<div class="rdy-t rdyp">${stImg('ready','','strd')}<span>${t('s_ready')}</span></div>`:''}${full?payBlk(o)+pushBtn(o)+gameBtn(o)+cnlBtn(o):''}<div style="display:flex;gap:14px;align-items:center;margin-top:10px">${it?ph(it,'ph phs').replace('<div class="ph phs','<div style="width:56px;height:56px;flex:none;border-radius:14px" class="ph phs'):''}<div style="flex:1;min-width:0">${its(o,S.L)}${o.note?`<div class="mu" style="font-size:14px">${t('notel')}: ${e(o.note)}</div>`:''}</div></div><div class="rpt"><b>${mn(o.total)}</b>${!full&&o.user_id==S.me?.id?`<button class="c" onclick="reorder(${o.id})">↻ ${t('rep')}</button>`:''}</div></div>`}
 // ---------- знак мельницы (свой, media/logo-mill.svg): башня + 4 крыла; крылья в группе .lgbd (крутятся при загрузке) ----------
 const MILL_S='M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z',MILL_K='M38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z';let MILL_N=0;
 function MILL(cls=''){const k='mlk'+(++MILL_N);return `<svg viewBox="0 0 64 64" class="dnmill ${cls}" aria-hidden="true" focusable="false"><defs><mask id="${k}" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="${MILL_S}" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path class="mlt" fill="currentColor" mask="url(#${k})" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="${MILL_S}${MILL_K}"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg>`}
@@ -3100,7 +3184,7 @@ function render(){let h='',bar='';document.body.style.overflow=S.scr?'hidden':''
 	if(S.loading)h=hdr()+`<div class="cats"><span class="skc on"></span><span class="skc"></span><span class="skc"></span><span class="skc"></span></div><div class="list" style="padding-top:24px"><div class="skw"><div class="skph"></div><div class="sktx"><i class="skl w1"></i><i class="skl w2"></i></div></div><div class="grid"><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div></div></div>`;
 else if(S.fail)h=hdr()+`<div class="empty">${emArt('hill')}<p>${t('loadfail')}</p><p class="mu" style="font-size:14px;margin-top:-6px">${({ru:'Проверьте интернет и нажмите «Повторить».',kk:'Интернетті тексеріп, «Қайталау» түймесін басыңыз.',en:'Check your connection and tap Retry.'})[S.L]||''}</p><button class="sec2" style="width:auto;padding:0 28px" onclick="boot()">${t('retry')}</button></div>`;
 else if(S.v=='menu'){let n=0;const cl_=catList();
-h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+heroHtml()+`<div class="cats">${cl_.map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
+h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+(typeof seaHero=='function'?seaHero(heroHtml()):heroHtml())+`<div class="cats">${cl_.map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
 `<div class="cv">`+cl_.map(cat=>`<section class="csec" id="cat-${cat}" data-cat="${cat}"><h2 class="ctit">${t('c_'+cat)}</h2>`+(cat=='cf'&&typeof bwCard=='function'?bwCard():'')+secOf(cat).map(s=>`<div id="sec-${cat}-${s.k}">${s.l?`<div class="sec">${t(s.l)}</div>`:''}<div class="list">${wide(s.items[0],n++)}${s.items.length>1?`<div class="grid">${s.items.slice(1).map(i=>small(i,n++)).join('')}</div>`:''}</div></div>`).join('')+`</section>`).join('')+`</div></div>`;
 const ac=activeMine(),rd=ac.some(o=>o.status=='ready'),nC=S.cart.reduce((a,x)=>a+x.qty,0);
 bar=aiFab()+`<div class="pill"><button onclick="goOrd()">${t('orders')}${ac.length?`<i class="dot ${rd?'r':''}"></i>`:''}</button>${staff()?`<button onclick="goKas()">${t('kas')}</button>`:''}<button class="pa" onclick="cart()">${t('cart')}${nC&&(S.shownTot??tot())>0?' · '+mn(S.shownTot??tot()):''}</button></div>`}
@@ -3432,7 +3516,7 @@ const rtSkip=()=>LS.get('dn_rskip',[]);
 function rateTarget(){if(!S.me)return null;const sk=rtSkip();
   return mine().filter(o=>o.status=='done'&&!S.rated.has(o.id)&&!sk.includes(o.id)&&Date.now()-Date.parse(o.created_at)<72*3600e3).sort((a,b)=>a.created_at<b.created_at?1:-1)[0]||null}
 function rateCard(){const R=S.rt;
-  if(R&&R.done)return `<div class="rtc rtdone"><div class="rtst">${[1,2,3,4,5].map(i=>starSvg(i<=R.stars,26)).join('')}</div><p>${t(R.stars<=3?'rt_ok_bad':'rt_ok')}</p></div>`;
+  if(R&&R.done)return `<div class="rtc rtdone">${stImg('thanks','','stth')}<div class="rtst">${[1,2,3,4,5].map(i=>starSvg(i<=R.stars,26)).join('')}</div><p>${t(R.stars<=3?'rt_ok_bad':'rt_ok')}</p></div>`;
   const o=rateTarget();if(!o)return '';
   if(!R||R.id!=o.id)S.rt={id:o.id,stars:0,tags:[],c:''};const r=S.rt;
   const tags=r.stars?(r.stars<=3?RT_BAD:RT_GOOD):[];
@@ -3493,10 +3577,10 @@ function syrP(){return S.me&&ordN()>=S.tiers.syrup?0:SYP}
 const millSvg=(sz=30)=>`<span class="mlw" style="display:inline-block;width:${sz}px;height:${sz}px;color:#f6ecdf;--mill-acc:#e0a24a">${MILL().replace(/class="lgbd"/g,'class="lgbd lvbl"')}</span>`;  // знак мельницы (новый) на тёмной плашке уровня и «О приложении»
 function tierCard(){if(!S.me||!S.pf||staff())return '';const n=ordN(),i=lvOf(n),m=lvMins(),nx=i<3?m[i+1]:null;
   const pct=nx==null?1:(n-m[i])/(nx-m[i]);
-  return `<div class="lvc lv${i}"><div class="lvh"><span class="lvi">${millSvg(34)}</span><div><small>${t('lv_t')}</small><b>${t('lv_'+LVK[i])}</b></div></div>
+  return `<div class="lvc lv${i}"><div class="lvh"><span class="lvi lvpi">${stImg('lvl'+(i+1),millSvg(34))}</span><div><small>${t('lv_t')}</small><b>${t('lv_'+LVK[i])}</b></div></div>
   <div class="lvbar"><i style="--p:${Math.max(.04,pct)}"></i></div>
   <div class="lvn">${nx==null?t('lv_max'):t('lv_next',S.L,{n:nx-n,w:plur(nx-n),l:t('lv_'+LVK[i+1])})}</div>
-  <div class="lvl">${LVK.map((k,j)=>`<div class="${j<=i?'got':''}${j==i?' cur':''}"><span>${j<=i?'✓':m[j]}</span><div><b>${t('lv_'+k)}</b><small>${t('lv_p_'+k)}</small></div></div>`).join('')}</div></div>`}
+  <div class="lvl">${LVK.map((k,j)=>`<div class="${j<=i?'got':''}${j==i?' cur':''}"><span class="lvq">${stImg('lvl'+(j+1),'')}<em>${j<=i?'✓':m[j]}</em></span><div><b>${t('lv_'+k)}</b><small>${t('lv_p_'+k)}</small></div></div>`).join('')}</div></div>`}
 {const _pg=prog;prog=function(){return tierCard()+_pg()}}
 
 // какие подарки уже использованы
@@ -3513,7 +3597,7 @@ function gu(i,v){const l=S.cart[i],k=giftKind(itemOf(l.id));l.gift=v?k:undefined
 // праздник при переходе на новый уровень (один раз на уровень)
 function lvCheck(){if(!S.me||!S.pf||staff())return;const key='dn_lv_'+S.me.id,i=lvOf(ordN()),seen=LS.get(key,null);
   if(seen===null){LS.set(key,i);return}if(i>seen){LS.set(key,i);lvParty(i)}}
-function lvParty(i){const d=document.createElement('div');d.className='lvup';d.innerHTML=`<div class="lvbox"><div class="lvbig">${millSvg(120)}</div><div class="lvconf">${Array.from({length:18},(_,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
+function lvParty(i){const d=document.createElement('div');d.className='lvup';d.innerHTML=`<div class="lvbox"><div class="lvbig">${stImg('lvl'+(i+1),millSvg(120),'stbig')}</div><div class="lvconf">${Array.from({length:18},(_,k)=>`<i style="--k:${k}"></i>`).join('')}</div>
   <small>${t('lv_up')}</small><h2>${t('lv_'+LVK[i])}</h2><p>${t('lv_upsub')}<br><b>${t('lv_p_'+LVK[i])}</b></p><button class="main" onclick="this.closest('.lvup').remove()">${t('lv_ok')}</button></div>`;
   document.body.appendChild(d);try{navigator.vibrate&&navigator.vibrate([30,60,30,60,120])}catch{}}
 {const _lp=loadPf2;loadPf2=async function(){await _lp();lvCheck()}}
@@ -5233,14 +5317,58 @@ function finArH(){const F=S.fn,A=F.f?.arrivals||[],can=F.data?.can_edit,dis=can?
 function vidOk(){const c=navigator.connection,R=document.documentElement;
  if(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||'')))return false;
  return !((navigator.deviceMemory&&navigator.deviceMemory<=2)||MOTION_OFF)}
-function heroMed(it){const src=imgSrc(it),ld=LOADED.has(src),id=e(it.id);
- return `<div class="circ hv${ld?' hasimg':''}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${vidOk()?`<video class="hvv" muted playsinline loop autoplay preload="metadata" poster="/media/v/${id}.webp" src="/media/v/${id}.mp4" onerror="hvErr(this)"></video>`:''}</div>`}
-function hvErr(v){try{v.pause()}catch{}v.remove()}  // видео не загрузилось - под ним уже лежит фото (а под фото - рисунок)
+// Видео приготовления (media/v/prep_<ключ>.mp4, 6 с): при открытии карточки играет один раз - от пустого стакана до готового напитка,
+// потом незаметно (плавно, 0.3 с) уступает место обычному видео по кругу: последний кадр приготовления = первый кадр круга.
+// Видео по кругу ждёт (preload="none", data-w) и начинает грузиться за ~2 с до конца приготовления. Кнопка «Как готовим» - повтор.
+const PREP=new Set('cp la fw ra am es lmo lbz lmm llb lpe tg to tb ta tc tk2'.split(' '));
+// Варианты: выбранная начинка/размер меняет фото и видео в карточке (карточки меню остаются прежними)
+const TEA_POT=new Set('tg to tb ta tc'.split(' '));
+function heroKey(it,s){const k=medKey(it);if(!k||k!=it.id||!s)return k;
+ if(it.id=='lav'&&s.f=='bf')return 'lav_bf';if(it.id=='lav'&&s.f=='ch')return 'lav_ck';
+ if(it.id=='la'&&s.f=='ic')return 'la_ice';
+ if(TEA_POT.has(it.id)&&it.data&&it.data.zl){const z=zi(it,s.f,s.z||0);if(/^(Чайник|Шәйнек|Pot)/i.test(String(it.data.zl[z]||'')))return 'tea_pot'}
+ return k}
+Object.assign(T.ru,{hv_rp:'Как готовим'});Object.assign(T.kk,{hv_rp:'Қалай дайындаймыз'});Object.assign(T.en,{hv_rp:'How it’s made'});
+const HV_RI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/><path d="M10.5 9.2v5.6l4.5-2.8z" fill="currentColor" stroke="none"/></svg>';
+const hvRpBtn=()=>`<button class="hvr" type="button" onclick="hvReplay(this)">${HV_RI}<span>${t('hv_rp')}</span></button>`;
+const hvLoopTag=(k,wait)=>`<video class="hvv hvl" muted playsinline loop ${wait?`preload="none" data-w="1" data-poster="${medV(k)}.webp"`:`autoplay preload="metadata" poster="${medV(k)}.webp"`} src="${medV(k)}.mp4" onerror="hvErr(this)"></video>`;
+const hvPrepTag=(k,hide)=>`<video class="hvv hvp${hide?' gone':''}" muted playsinline ${hide?'preload="auto"':'autoplay preload="auto"'} poster="/media/v/prep_${k}.webp" src="/media/v/prep_${k}.mp4" onerror="hvErr(this)" onended="hvEnd(this)" ontimeupdate="hvNear(this)" onplaying="hvGo(this)"></video>`;
+function heroMed(it,k){k=k||heroKey(it,S.sel)||medKey(it);const src=it.image_url||medP(k),ld=LOADED.has(src),id=e(it.id),v=vidOk(),pr=v&&PREP.has(k);
+ if(pr)setTimeout(hvGuard,4500);
+ return `<div class="circ hv${ld?' hasimg':''}${pr?' prp prun':''}" data-k="${e(k)}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${v?hvLoopTag(k,pr):''}${pr?hvPrepTag(k)+hvRpBtn():''}</div>`}
+const hvHero=el=>el&&el.closest&&el.closest('.circ.hv');
+// видео по кругу: начать загрузку (за пару секунд до конца приготовления или если приготовление не получилось)
+function hvArm(l){if(!l||!l.dataset.w||l.dataset.arm)return;l.dataset.arm='1';if(l.dataset.poster&&!l.getAttribute('poster'))l.setAttribute('poster',l.dataset.poster);l.preload='auto';try{l.load()}catch{}}
+function hvNear(p){const h=hvHero(p);if(!h||!p.duration)return;if(p.duration-p.currentTime<2.4)hvArm(h.querySelector('.hvl'))}
+function hvGo(p){const h=hvHero(p);if(h){h.classList.remove('prp');h._pst=1}}  // приготовление пошло: фото под ним больше не нужно прятать
+// конец приготовления: круг с начала, как только он реально заиграл - приготовление плавно исчезает
+function hvEnd(p){const h=hvHero(p),l=h&&h.querySelector('.hvl');if(!h)return;h.classList.remove('prp');p.dataset.st='done';
+ const fin=()=>{p.classList.add('gone');h.classList.remove('prun')};
+ if(!l){fin();return}hvArm(l);delete l.dataset.w;try{l.currentTime=0}catch{}
+ let ok=0;const go=()=>{if(ok)return;ok=1;l.removeEventListener('playing',go);requestAnimationFrame(fin)};
+ l.addEventListener('playing',go);if(document.hidden||l.closest('.scr.out'))return;const r=l.play();if(r&&r.catch)r.catch(()=>{});
+ setTimeout(()=>{if(!ok&&l.isConnected&&!l.paused&&l.currentTime>0)go()},900)}  // на всякий случай: если «playing» не пришло, а круг идёт
+// приготовление так и не началось (медленная сеть): убираем его, остаётся круг (или фото)
+function hvGuard(){document.querySelectorAll('#m .circ.hv.prun').forEach(h=>{const p=h.querySelector('.hvp');if(!p||h._pst||!p.isConnected)return;if(p.readyState<3&&!document.hidden)hvErr(p)})}
+// повтор: приготовление проявляется поверх круга с первого кадра и играет заново
+function hvReplay(b){const h=hvHero(b);if(!h||h.classList.contains('prun')||!vidOk())return;const k=h.dataset.k;if(!PREP.has(k))return;
+ let p=h.querySelector('.hvp');if(!p){h.querySelector('.hvr').insertAdjacentHTML('beforebegin',hvPrepTag(k,1));p=h.querySelector('.hvp')}
+ const l=h.querySelector('.hvl');h.classList.add('prun');h._pst=1;delete p.dataset.st;
+ const show=()=>{p.removeEventListener('seeked',show);p.removeEventListener('loadeddata',show);if(!p.isConnected)return;p.classList.remove('gone');const r=p.play();if(r&&r.catch)r.catch(()=>{});
+  setTimeout(()=>{if(l&&h.classList.contains('prun')&&!p.classList.contains('gone')){l.dataset.w='1';try{l.pause()}catch{}}},340)};
+ try{p.pause()}catch{}
+ if(p.readyState>=2){p.addEventListener('seeked',show);try{p.currentTime=0}catch{show()}if(p.currentTime===0&&!p.seeking)show()}else{p.addEventListener('loadeddata',show);try{p.load()}catch{}}
+ setTimeout(()=>{if(h.classList.contains('prun')&&p.classList.contains('gone')){h.classList.remove('prun');p.remove()}},5000)}  // не загрузилось - остаёмся на круге
+function hvErr(v){try{v.pause()}catch{}const h=hvHero(v);
+ if(v.classList.contains('hvp')&&h){h.classList.remove('prp','prun');v.remove();const l=h.querySelector('.hvl');if(l&&l.dataset.w){hvArm(l);delete l.dataset.w;if(!document.hidden&&!l.closest('.scr.out')){const r=l.play();if(r&&r.catch)r.catch(()=>{})}}return}
+ if(h&&v.classList.contains('hvl')){const r=h.querySelector('.hvr');if(r)r.remove();const p=h.querySelector('.hvp');if(p&&p.dataset.st=='done')p.remove()}
+ v.remove()}  // видео не загрузилось - под ним уже лежит фото (а под фото - рисунок)
 const hvAll=()=>document.querySelectorAll('#m video.hvv');
-function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(()=>{})})}
+function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out')||v.dataset.w||v.dataset.st=='done'||v.classList.contains('gone'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(er=>{if(er&&er.name=='NotAllowedError'&&v.classList.contains('hvp'))hvErr(v)})})}  // автозапуск запрещён (режим энергосбережения) - без приготовления, сразу готовый напиток
 function hvStop(){hvAll().forEach(v=>{try{v.pause()}catch{}})}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);hvPlay();return r}}
-{const _x=cl;cl=function(){hvStop();return _x.apply(this,arguments)}}
+// закрытие карточки: видео на паузу, а через 0.5 с (после анимации) загрузка прерывается
+{const _x=cl;cl=function(){hvStop();const o=[...document.querySelectorAll('#m video.hvv')];const r=_x.apply(this,arguments);setTimeout(()=>o.forEach(v=>{if(v.isConnected&&!v.closest('.scr.out'))return;try{v.pause();v.removeAttribute('src');v.load()}catch{}}),500);return r}}
 document.addEventListener('visibilitychange',()=>{document.hidden?hvStop():hvPlay()});
 // ---------- тема: гости всегда в светлой (решение владельца); экраны персонала, кухни, табло и киоска всегда тёмные ----------
 const TH_CUST=new Set(['prod','cart','auth','prof','about','doc','ai','kb','kba','kbg','notif','game']);
@@ -5251,8 +5379,12 @@ try{localStorage.removeItem('dn_theme')}catch{}
 {const _x=scr;scr=function(){const r=_x.apply(this,arguments);thApply();return r}}
 // ---------- витрина v2: карточка товара на весь экран, фото «растворяется» в фоне; карточки меню в цвет студийного фона ----------
 // Цвет фона снят с самих файлов (низ кадра, 6% высоты): первые 6 знаков - фото media/p, вторые - первый кадр видео media/v.
-const SAND={am:'e4c39dd9b997',bat:'e3c198d3b591',cp:'dec19fd1b597',es:'e2c8aad5bca2',fw:'ddc1a3ceb399',gl:'e0c09cd0b291',isk:'ddbe9ed0b397',krc:'e1c09bd3b492',krs:'e5c39fd7b896',la:'d7ba99c9ad8f',lav:'ecceaadec2a1',lbz:'ecd3b7dfc6ad',llb:'ecdabee3d1b9',lmm:'efd0abe1c3a2',lmo:'ebd1afdec3a5',lpe:'e8cfafd9c0a3',pl:'d6ba9cc6ac92',pn:'e0c2a0cfb396',ra:'e5c7a3d7ba9a',ta:'e6cdb1d9c1a9',tb:'c7a280bd9a7b',tc:'e3c6a1d5ba9a',tg:'e8d0b1dbc4a9',tk1:'e6c8a4d7bc9b',tk2:'e6cca9d9c0a1',to:'e8c7a1d9ba99'};
-function sandOf(it,v){const c=it&&SAND[it.id];return c?'#'+(v?c.slice(6):c.slice(0,6)):''}
+const SAND={am:'e4c39dd9b997',bat:'e3c198d3b591',cp:'dec19fd1b597',es:'e2c8aad5bca2',fw:'ddc1a3ceb399',gl:'e0c09cd0b291',isk:'ddbe9ed0b397',krc:'e1c09bd3b492',krs:'e5c39fd7b896',la:'d7ba99c9ad8f',lav:'ecceaadec2a1',lbz:'ecd3b7dfc6ad',llb:'ecdabee3d1b9',lmm:'efd0abe1c3a2',lmo:'ebd1afdec3a5',lpe:'e8cfafd9c0a3',pl:'d6ba9cc6ac92',pn:'e0c2a0cfb396',ra:'e5c7a3d7ba9a',ta:'e6cdb1d9c1a9',tb:'c7a280bd9a7b',tc:'e3c6a1d5ba9a',tg:'e8d0b1dbc4a9',tk1:'e6c8a4d7bc9b',tk2:'e6cca9d9c0a1',to:'e8c7a1d9ba99',
+ lhm:'d6b798c2a68c',pd_ch:'d2b290c1a387',pd_mt:'dbbf9fcdb397',pd_mx:'dbbb98c9ac8f',pz_mg:'d7b38ec6a686',pz_sj:'dbc1a6ceb59d',pz_ck:'d6b592c5a789',pz_4c:'d5b38fc7a889',bg_bf:'e6caa9d9bfa1',bg_ck:'e4c8a7d2ba9e',bg_mx:'e5c8a6d8bea0',
+ kasha:'e1c3a2d3b697',menemen:'debd9acfb092',eggs:'d8b896c7a78a',kahvalti:'debc99ceae90',simit:'e0be97d2b291',borek:'d9b999c9ab90',bliny:'dcb996caa88a',lav_bf:'e6c29cd7b695',lav_ck:'e7c295d7b48d',la_ice:'e0c6a8d2b99e',tea_pot:'e6c7a7d6ba9e'};
+function sandK(k,v){const c=k&&SAND[k];return c?'#'+(v?c.slice(6):c.slice(0,6)):''}
+function sandOf(it,v){return sandK(medKey(it),v)}
+const hvKey=sc=>{const h=sc&&sc.querySelector('.circ.hv');return h&&h.dataset.k||''};
 function mcC(i){return hasMed(i)?' mc':''}
 function mcS(i){const c=hasMed(i)&&sandOf(i,0);return c?';--cs:'+c:''}
 // карточка товара: свои фото/видео - полноэкранная витрина (класс pm), остальные - прежний круг, но в том же стиле (p2)
@@ -5260,10 +5392,10 @@ function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
  sc.classList.add('p2');const on=hasMed(it)&&!!sc.querySelector('.circ.hv');sc.classList.toggle('pm',on);
  const ds=it.data&&it.data.ds,tx=ds?(typeof ds=='string'?ds:ds[S.L]||ds.ru||''):'';let pd=sc.querySelector('.pds');
  if(tx&&!(it.data&&it.data.pack)){if(!pd){pd=document.createElement('p');pd.className='pds';const tp=sc.querySelector('.top');on?tp.after(pd):(sc.querySelector('.circ')||tp).after(pd)}if(pd.textContent!=tx)pd.textContent=tx}else if(pd)pd.remove();
- if(on&&!sc.style.getPropertyValue('--sand'))sc.style.setProperty('--sand',sandOf(it,!!sc.querySelector('video.hvv'))||'#dcbf9d');thApply()}
+ if(on&&!sc.style.getPropertyValue('--sand'))sc.style.setProperty('--sand',sandK(hvKey(sc)||medKey(it),!!sc.querySelector('video.hvv'))||'#dcbf9d');thApply()}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDeco();return r}}
 // видео не загрузилось - под ним фото, а оно чуть светлее первого кадра: фон подстраивается под фото
-{const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it){const c=sandOf(it,0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
+{const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it&&!sc.querySelector('video.hvv')){const c=sandK(hvKey(sc)||medKey(it),0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
 // закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
 // вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
 {let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
@@ -5328,6 +5460,73 @@ function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.cir
  st.setProperty('--tp',calm?(tp>.5?'1':'0'):tp.toFixed(3))}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDress();return r}}
 addEventListener('resize',()=>{const sc=document.querySelector('#m .scr.pm:not(.out)');if(sc){pmLay(sc);pmFrame(sc)}},{passive:true});
+// ---------- варианты в карточке товара: выбранная начинка/размер меняет фото и видео (плавно, ~0.3 с); карточки меню не меняются ----------
+function hvSwap(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m .scr[data-n=prod]:not(.out)'),h=sc&&sc.querySelector('.circ.hv');if(!h||!it||it.image_url)return;
+ const k=heroKey(it,s);if(!k||k==h.dataset.k)return;
+ const tok=(h._sw||0)+1;h._sw=tok;h.dataset.k=k;h.querySelectorAll('.hvn').forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});
+ const v=vidOk(),im=new Image();im.className='hvn';im.alt='';im.decoding='async';im.width=1200;im.height=1200;im.dataset.id=it.id;
+ const add=[im];let vd=null;
+ if(v){const w=document.createElement('div');w.innerHTML=hvLoopTag(k,0);vd=w.firstChild;vd.classList.add('hvn');add.push(vd)}
+ const ref=h.querySelector('.hvr')||h.querySelector('.pmnut');add.forEach(x=>ref?h.insertBefore(x,ref):h.appendChild(x));
+ let done=0;const go=ok=>{if(done||h._sw!=tok)return;done=1;
+  if(!ok){add.forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});return}  // фото варианта не загрузилось - остаётся прежнее
+  LOADED.add(im.getAttribute('src'));add.forEach(x=>x.classList.add('in'));
+  if(vd){const r=vd.play();if(r&&r.catch)r.catch(()=>{})}
+  setTimeout(()=>{if(h._sw!=tok)return;[...h.children].forEach(x=>{if(add.includes(x))return;if(x.matches('img,video,.hvr')){try{x.pause&&x.pause();if(x.tagName=='VIDEO'){x.removeAttribute('src');x.load()}}catch{}x.remove()}});
+   add.forEach(x=>x.classList.remove('hvn','in'));h.classList.remove('prp','prun');h.classList.add('hasimg');
+   if(v&&PREP.has(k)&&!h.querySelector('.hvr')){const nt=h.querySelector('.pmnut');nt?nt.insertAdjacentHTML('beforebegin',hvRpBtn()):h.insertAdjacentHTML('beforeend',hvRpBtn())}},360);
+  const c=sandK(k,vd?1:0);if(c&&sc.classList.contains('pm')){sc.style.setProperty('--sand',c);thApply()}};
+ im.onload=()=>{const d=im.decode?im.decode().catch(()=>{}):Promise.resolve();d.then(()=>go(1))};im.onerror=()=>go(0);
+ setTimeout(()=>{if(!done&&im.complete&&im.naturalWidth)go(1)},1500);
+ im.src=medP(k)}
+{const _x=prod;prod=function(){const r=_x.apply(this,arguments);try{hvSwap()}catch(er){console.warn(er)}return r}}
+// ---------- админка: «Фото и видео» для любой позиции (data.media). Сохраняется тем же путём, что и остальное в редакторе меню: update menu_items ----------
+Object.assign(T.ru,{md_t:'Фото и видео',md_auto:'Как задумано',md_none:'Без фото (рисунок)',md_pick:'Выбрать',md_own:'У позиции загружено своё фото - пока оно есть, показывается оно. Чтобы показать выбранное, удалите своё фото.',md_hint:'Фото для меню и видео в карточке товара'});
+Object.assign(T.kk,{md_t:'Фото және бейне',md_auto:'Әдепкі',md_none:'Фотосыз (сурет)',md_pick:'Таңдау',md_own:'Позицияға өз фотосы жүктелген - ол тұрғанда сол көрсетіледі. Таңдалғанын көрсету үшін өз фотоны өшіріңіз.',md_hint:'Мәзірге фото және тауар картасына бейне'});
+Object.assign(T.en,{md_t:'Photo and video',md_auto:'Default',md_none:'No photo (drawing)',md_pick:'Choose',md_own:'This item has its own uploaded photo - it is shown while it exists. Delete it to show the chosen one.',md_hint:'Menu photo and product card video'});
+const MD_NM={lhm:'Лахмаджун',pd_ch:'Пиде с сыром',pd_mt:'Пиде с мясом',pd_mx:'Пиде с суджуком',pz_mg:'Пицца Маргарита',pz_sj:'Пицца с суджуком',pz_ck:'Пицца с курицей',pz_4c:'Пицца 4 сыра',bg_bf:'Бургер говяжий',bg_ck:'Бургер куриный',bg_mx:'Бургер двойной',
+ kasha:'Каша',menemen:'Менемен',eggs:'Яичница',kahvalti:'Турецкий завтрак',simit:'Симит',borek:'Бёрек',bliny:'Блины',lav_bf:'Донер в лаваше: говядина',lav_ck:'Донер в лаваше: курица',la_ice:'Айс-латте',tea_pot:'Фруктовый чай в чайнике'};
+const mdName=k=>MD_NM[k]||(itemOf(k)?nm(itemOf(k).name):k);
+const MD_ALL=()=>[...MEDIA,...MEDIA2];
+function mdRow(it){const m=it.data&&it.data.media,k=medKey({...it,image_url:null});
+ const lab=m=='none'?t('md_none'):m&&medOk(m)?mdName(m):k?t('md_auto')+' · '+mdName(k):t('md_none');
+ return `<div class="lab">${t('md_t')}</div><div class="mdrow"><span class="mdi">${k?`<img src="${medP(k,1)}" alt="" loading="lazy">`:`<span class="mdx">${PHI({...it,image_url:null,data:{...it.data,media:'none'}})}</span>`}</span><span class="mdl">${e(lab)}<small>${t('md_hint')}</small></span><button class="c" onclick="mdPick('${it.id}')">${t('md_pick')}</button></div>`}
+function mdPick(id){const it=itemOf(id);if(!it||!isAdm())return;const cur=(it.data&&it.data.media)||'',art=`<span class="mdx">${PHI({...it,image_url:null,data:{...it.data,media:'none'}})}</span>`;
+ const cell=(k,lab,img)=>`<button class="mdc${cur==k?' on':''}" onclick="mdSet('${e(id)}','${k}')"><span class="mdi">${img}</span><small>${e(lab)}</small></button>`;
+ shw(`<div class="mdp"><h3>${t('md_t')} · ${e(nm(it.name))}</h3>${it.image_url?`<p class="mdw">${t('md_own')}</p>`:''}<div class="mdg">`+
+  cell('',t('md_auto'),MEDIA.has(it.id)?`<img src="${medP(it.id,1)}" alt="" loading="lazy">`:art)+cell('none',t('md_none'),art)+
+  MD_ALL().map(k=>cell(k,mdName(k),`<img src="${medP(k,1)}" alt="" loading="lazy">`)).join('')+`</div></div>`)}
+async function mdSet(id,k){if(!isAdm()||(k&&k!='none'&&!medOk(k)))return;
+ const cur=await sb.from('menu_items').select('data').eq('id',id).maybeSingle();  // свежие данные позиции: не затираем цены, которые могли обновиться из Paloma
+ if(cur.error||!cur.data||!cur.data.data){toast(cur.error?cur.error.message:t('noRights'),1);return}
+ const d={...cur.data.data};if(k)d.media=k;else delete d.media;
+ const{data,error}=await sb.from('menu_items').update({data:d}).eq('id',id).select();
+ if(error||!data?.length){toast(error?error.message:t('noRights'),1);return}cp();await loadMenu();render();toast(t('saved'))}
+// ---------- сезонная заставка: админ выбирает в «Сезон» (app_settings.season через set_app_setting), приложение запоминает в dn_season для заставки ----------
+Object.assign(T.ru,{se_btn:'Сезон',se_t:'Сезонная заставка',se_d:'Картинка при открытии приложения. Включите под праздник или погоду - гости увидят её со следующего запуска.',se_default:'Обычная',se_snow:'Снег',se_newyear:'Новый год',se_ramadan:'Рамадан',se_nauryz:'Наурыз',se_summer:'Лето',se_ok:'Готово. Гости увидят новую заставку при следующем открытии',se_see:'Посмотреть заставку',
+ tv_btn:'Экран в зале',tv_t:'Экран в зале',tv_d:'Страница для телевизора: видео блюд по кругу с названием и ценой. Откройте адрес в браузере телевизора или ТВ-приставки и включите полный экран. Цены обновляются сами.',tv_open:'Открыть',tv_copy:'Скопировать адрес',tv_cp:'Адрес скопирован',tv_ids:'Только выбранные блюда: добавьте в конец адреса ?ids=lav,cp,la'});
+Object.assign(T.kk,{se_btn:'Маусым',se_t:'Маусымдық заставка',se_d:'Қосымша ашылғандағы сурет. Мерекеге не ауа райына қарай қосыңыз - қонақтар келесі ашқанда көреді.',se_default:'Әдеттегі',se_snow:'Қар',se_newyear:'Жаңа жыл',se_ramadan:'Рамазан',se_nauryz:'Наурыз',se_summer:'Жаз',se_ok:'Дайын. Қонақтар жаңа заставканы келесі ашқанда көреді',se_see:'Заставканы көру',
+ tv_btn:'Залдағы экран',tv_t:'Залдағы экран',tv_d:'Теледидарға арналған бет: тағамдардың бейнесі атауы мен бағасымен кезекпен көрсетіледі. Мекенжайды теледидар не ТВ-приставка браузерінде ашып, толық экранды қосыңыз. Бағалар өзі жаңарады.',tv_open:'Ашу',tv_copy:'Мекенжайды көшіру',tv_cp:'Мекенжай көшірілді',tv_ids:'Тек таңдалған тағамдар: мекенжай соңына ?ids=lav,cp,la қосыңыз'});
+Object.assign(T.en,{se_btn:'Season',se_t:'Seasonal splash',se_d:'The picture shown when the app opens. Switch it on for a holiday or the weather - guests will see it from their next launch.',se_default:'Regular',se_snow:'Snow',se_newyear:'New Year',se_ramadan:'Ramadan',se_nauryz:'Nauryz',se_summer:'Summer',se_ok:'Done. Guests will see the new splash next time they open the app',se_see:'Preview the splash',
+ tv_btn:'Hall screen',tv_t:'Hall screen',tv_d:'A page for the TV: dish videos in a loop with name and price. Open the address in the TV or TV box browser and go full screen. Prices update by themselves.',tv_open:'Open',tv_copy:'Copy address',tv_cp:'Address copied',tv_ids:'Only some dishes: add ?ids=lav,cp,la to the end of the address'});
+const SEASONS=['default','snow','newyear','ramadan','nauryz','summer'];
+const seaCur=()=>{const v=LS.get('dn_season','default');return SEASONS.includes(v)?v:'default'};
+async function seasonLoad(){try{const{data,error}=await sb.from('app_settings').select('v').eq('k','season').maybeSingle();if(error)return;
+ const v=data&&typeof data.v=='string'&&SEASONS.includes(data.v)?data.v:'default';if(v!=LS.get('dn_season','default')){LS.set('dn_season',v);if(!S.scr&&S.v=='menu')render()}}catch{}}
+setTimeout(seasonLoad,1200);
+function seaM(){if(!isAdm())return;const cur=seaCur();
+ shw(`<div class="sea"><h3>${t('se_t')}</h3><p class="mdw">${t('se_d')}</p><div class="seag">${SEASONS.map(k=>`<button class="seac${k==cur?' on':''}" onclick="seaSet('${k}')"><span class="seai"><img src="/media/p/${k=='default'?'splash':'spl_'+k}.s.webp" alt="" loading="lazy"></span><b>${t('se_'+k)}</b></button>`).join('')}</div>
+ <button class="c" style="margin-top:14px;width:100%" onclick="try{sessionStorage.removeItem('dn_spl')}catch{}location.reload()">${t('se_see')}</button></div>`)}
+async function seaSet(k){if(!isAdm()||!SEASONS.includes(k))return;const{error}=await sb.rpc('set_app_setting',{p_k:'season',p_v:k});if(error){toast(error.message,1);return}
+ LS.set('dn_season',k);seaM();toast(t('se_ok'))}
+// баннер на главной: в сезон - мягкий фон из сезонной картинки справа
+function seaHero(h){const k=seaCur();if(k=='default'||typeof h!='string')return h;return h.replace(/^<div class="hero/,`<div style="--hsea:url('/media/p/spl_${k}.s.webp')" class="hsea hsea-${k} hero`)}
+function tvM(){if(!isAdm())return;const u=location.origin+'/tv.html';
+ shw(`<div class="sea"><h3>${t('tv_t')}</h3><p class="mdw">${t('tv_d')}</p><div class="tvu">${e(u)}</div><p class="mdw">${t('tv_ids')}</p>
+ <div style="display:flex;gap:10px"><a class="c" style="flex:1;text-align:center;text-decoration:none" href="/tv.html" target="_blank" rel="noopener">${t('tv_open')}</a><button class="c" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText('${e(u)}').then(()=>toast(t('tv_cp')),()=>{})">${t('tv_copy')}</button></div></div>`)}
+// ---------- картинки состояний (media/p/st_*.s.webp): уровни, пустая корзина, заказ готов, подарок, спасибо за оценку. Не загрузилась - прежний рисунок ----------
+function stImg(k,fb,cls){return `<span class="sti${cls?' '+cls:''}" aria-hidden="true"><img src="/media/p/st_${k}.s.webp" alt="" decoding="async" width="420" height="420" onerror="this.parentNode.classList.add('stf');this.remove()">${fb?`<span class="stfb">${fb}</span>`:''}</span>`}
+{const _x=emArt;emArt=function(k,sm){const r=_x.apply(this,arguments);return k=='cart'?`<div class="emw stemp">${stImg('empty_cart',r)}</div>`:r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
