@@ -3137,7 +3137,7 @@ else if(k=='syr')h=`<h3>${t('syr')} · ${syrP()?'+'+syrP()+' ₸':t('lv_free')}<
 else if(k=='sug')h=`<h3>${t('sugl')}</h3><div class="pr" style="justify-content:flex-start;margin:14px 0">${[0,1,2,3].map(v=>cc(s.sg==v,`pk('sg',${v})`,v?v:t('nosug'))).join('')}</div>`;
 shw(h+`<button class="lite" onclick="cp()">${t('done')}</button>`)}
 function add(){if(!S.sel)return;const s=S.sel,circ=document.querySelector('.circ'),r0=circ&&circ.getBoundingClientRect(),im=circ&&circ.querySelector('img.ld'),src=im&&im.src,prev=tot();
-pushLine({id:s.id,f:s.f,z:zi(itemOf(s.id),s.f,s.z),o:[...s.o],qty:1,syr:s.syr,sg:s.sg,ing:{...s.ing}});try{navigator.vibrate&&navigator.vibrate(15)}catch{}
+pushLine({id:s.id,f:s.f,z:zi(itemOf(s.id),s.f,s.z),o:[...s.o],qty:1,syr:s.syr,sg:s.sg,ing:{...s.ing}});try{navigator.vibrate&&navigator.vibrate(12)}catch{}
 if(RM||!r0){cl();toast(t('added'));return}
 S.shownTot=prev;cl();flight(r0,src,prev)}
 // маленькая копия фото летит по дуге в кнопку «Корзина», кнопка подпрыгивает, сумма пересчитывается
@@ -5604,6 +5604,75 @@ if(/[?&]diag=1/.test(location.search))(function(){const d=document.createElement
  const tick=t=>{fr++;worst=Math.max(worst,t-last);last=t;requestAnimationFrame(tick)};requestAnimationFrame(tick);
  setInterval(()=>{const n=performance.now();lt=lt.filter(x=>n-x[0]<5000);const an=document.getAnimations?document.getAnimations().filter(a=>a.playState=='running').length:'-',m=performance.memory?Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'-';
   d.textContent=`fps ${fr}  худший кадр ${Math.round(worst)}мс\nзависаний за 5с: ${lt.length} (${Math.round(lt.reduce((a,x)=>a+x[1],0))}мс)\nанимаций ${an}  видео ${document.querySelectorAll('video').length}  узлов ${document.getElementsByTagName('*').length}\nпамять ${m}  ${ev}`;fr=0;worst=0},1000)})();
+// ---------- отклик на нажатие (как в iOS): элемент чуть сжимается под пальцем и мягко пружинит обратно; при прокрутке нажатие снимается ----------
+{const CARD='.wide,.sm,.bwcard',BTN='#app .cats button,#app .subs button,#m .scr[data-n=prod] :is(.tile,.szb,.pl,.go,.c),#m .scr[data-n=cart] :is(.main,.lite,.c,.pl),#m2 .shw :is(.c,.lite,.pl),#bar .pill button',ALL=CARD+','+BTN;
+ document.head.insertAdjacentHTML('beforeend',`<style>
+html.motion :is(.wide,.sm,.bwcard,.cats button,.subs button,.tile,.szb,.pl,.go,.c,.main,.lite,.pill button):active:not(.prs){transform:none}
+html.motion .prs{transform:scale(.95)!important;transition:transform .09s cubic-bezier(.3,0,.6,1)!important}
+html.motion :is(.wide,.sm,.bwcard).prs{transform:scale(.97)!important}
+html.motion .tile.prs{transform:scale(.96)!important}
+html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background-color .25s,color .25s,opacity .25s!important}
+</style>`);
+ let pe=null,px=0,py=0;
+ const up=()=>{const x=pe;if(!x)return;pe=null;x.classList.remove('prs');x.classList.add('prr');clearTimeout(x._prt);x._prt=setTimeout(()=>x.classList.remove('prr'),400)};
+ addEventListener('pointerdown',ev=>{if(!FM||RM||ev.button>0||!ev.isPrimary)return;up();const el=ev.target&&ev.target.closest&&ev.target.closest(ALL);if(!el||el.disabled||el.classList.contains('off'))return;
+  pe=el;px=ev.clientX;py=ev.clientY;clearTimeout(el._prt);el.classList.remove('prr');el.classList.add('prs')},{passive:true,capture:true});
+ addEventListener('pointermove',ev=>{if(pe&&(Math.abs(ev.clientX-px)>8||Math.abs(ev.clientY-py)>8))up()},{passive:true,capture:true});
+ addEventListener('pointerup',up,{passive:true,capture:true});addEventListener('pointercancel',up,{passive:true,capture:true});
+ addEventListener('scroll',()=>{if(pe)up()},{passive:true,capture:true});addEventListener('blur',up)}
+// ---------- «живая» цена на кнопке: цифры прокручиваются к новому значению, как счётчик; ширина цифр одинаковая - кнопка не прыгает ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>
+#pp{display:inline-block;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.2;vertical-align:top}
+#pp .od{display:inline-block;height:1.2em;overflow:hidden;vertical-align:top}
+#pp .odc{display:block}#pp .odc i{display:block;height:1.2em;font-style:normal}
+#pp .odx{display:inline-block;height:1.2em;vertical-align:top;white-space:pre}
+</style>`);
+ const D='0123456789',COL='<span class="odc">'+[...D].map(d=>'<i>'+d+'</i>').join('')+'</span>';
+ setPrice=function(txt){const el=$('pp');if(!el)return;const cur=el.dataset.v||el.textContent;if(cur==txt&&!el._odt)return;el.dataset.v=txt;clearTimeout(el._odt);el._odt=0;
+  if(!FM||RM||cur==txt){el.textContent=txt;return}
+  const a=[...cur],b=[...txt],off=a.length-b.length;
+  el.innerHTML=b.map((c,i)=>D.includes(c)?'<span class="od">'+COL+'</span>':'<span class="odx">'+e(c)+'</span>').join('');
+  const cols=el.querySelectorAll('.odc');let k=0;
+  b.forEach((c,i)=>{if(!D.includes(c))return;const o=a[i+off],from=o&&D.includes(o)?+o:0,to=+c,col=cols[k++];
+   col.style.transform=`translateY(${-to*10}%)`;if(from!=to)col.animate([{transform:`translateY(${-from*10}%)`},{transform:`translateY(${-to*10}%)`}],{duration:300+k*25,easing:'cubic-bezier(.2,.9,.25,1.05)'})});
+  el._odt=setTimeout(()=>{el._odt=0;if(el.dataset.v==txt)el.textContent=txt},300+k*25+40)}}
+// ---------- карточка товара раскрывается из нажатой карточки меню и закрывается обратно в неё (один замер, только transform и opacity) ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>html.motion #m .scr.flp{animation:none!important}</style>`);
+ const vis=r=>r&&r.width>8&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,
+  SPR='cubic-bezier(.2,1.08,.32,1)',
+  fl=(cr,hr)=>{const s=Math.max(cr.width/hr.width,cr.height/hr.height),dx=cr.left+cr.width/2-hr.left-hr.width*s/2,dy=cr.top+cr.height/2-hr.top-hr.height*s/2;return `translate3d(${dx}px,${dy}px,0) scale(${s})`};
+ const _o=op_;op_=function(id,ev){let cr=null;try{const src=FM&&!RM&&ev&&ev.currentTarget&&ev.currentTarget.querySelector&&ev.currentTarget.querySelector('.ph,.bwp');if(src)cr=src.getBoundingClientRect()}catch{}
+  const r=_o.apply(this,arguments);
+  try{if(vis(cr)){const sc=document.querySelector('#m .scr[data-n=prod].in:not(.out)'),h=sc&&sc.querySelector('.circ');if(sc)sc.classList.add('flp');const hr=h&&h.getBoundingClientRect();
+   if(sc&&!vis(hr))sc.classList.remove('flp');else if(sc){
+    h.animate([{transform:fl(cr,hr),transformOrigin:'0 0'},{transform:'none',transformOrigin:'0 0'}],{duration:460,easing:SPR});
+    sc.animate([{opacity:0},{opacity:1}],{duration:240,easing:'cubic-bezier(.3,0,.4,1)'})}}}catch{}
+  return r};
+ const _c=closeProd;closeProd=function(){let o=null,h=null,hr=null;const id=S.sel&&S.sel.id;
+  try{if(FM&&!RM&&id){o=document.querySelector('#m .scr[data-n=prod]:not(.out)');h=o&&o.querySelector('.circ');hr=h&&h.getBoundingClientRect();if(o)o.classList.remove('flp')}}catch{}
+  const r=_c.apply(this,arguments);
+  try{if(o&&o.classList.contains('out')&&vis(hr)){const c=document.querySelector(`#app [data-id="${id}"] :is(.ph,.bwp)`),cr=c&&c.getBoundingClientRect();
+   if(vis(cr)){o.getAnimations().forEach(a=>a.cancel());o.classList.add('flp');
+    h.animate([{transform:'none',transformOrigin:'0 0'},{transform:fl(cr,hr),transformOrigin:'0 0'}],{duration:340,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
+    o.animate([{opacity:1},{opacity:1,offset:.45},{opacity:0}],{duration:340,easing:'linear',fill:'forwards'})}}}catch{}
+  return r}}
+// ---------- добавки: окно выбора «вырастает» из нажатой плитки; выбранное на плитке - маленькая плашка, она мягко появляется ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>
+html.motion #m2 .shw.shg .shin{animation:none}
+.scr[data-n=prod] .tile.on small{opacity:1;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,currentColor 12%,transparent)}
+</style>`);
+ let tr=null,tt=0;
+ addEventListener('click',ev=>{const tl=ev.target&&ev.target.closest&&ev.target.closest('#m .scr[data-n=prod] .tile');if(tl&&FM&&!RM){tr=tl.getBoundingClientRect();tt=performance.now()}},{capture:true,passive:true});
+ const _p=picker;picker=function(){const had=!!document.querySelector('#m2 .shw:not(.out)');const r=_p.apply(this,arguments);
+  try{const r0=tr,fresh=performance.now()-tt<600;tr=null;const w=!had&&fresh&&r0&&S.pk&&document.querySelector('#m2 .shw:not(.out)'),si=w&&w.querySelector('.shin');
+   if(si){w.classList.add('shg');const b=si.getBoundingClientRect(),ox=r0.left+r0.width/2-b.left,oy=r0.top+r0.height/2-b.top;
+    si.animate([{transform:'scale(.6)',opacity:0,transformOrigin:`${ox}px ${oy}px`},{transform:'none',opacity:1,transformOrigin:`${ox}px ${oy}px`}],{duration:420,easing:'cubic-bezier(.2,1.12,.35,1)'})}}catch{}
+  return r};
+ const _u=prodUpd;prodUpd=function(){const pt=$('pt'),old=pt?[...pt.querySelectorAll('.tile')].map(x=>x.querySelector('small').textContent+'|'+x.classList.contains('on')):[];const r=_u.apply(this,arguments);
+  try{if(FM&&!RM&&old.length){const ts=[...$('pt').querySelectorAll('.tile')];if(ts.length==old.length)ts.forEach((x,i)=>{const sm=x.querySelector('small'),k=sm.textContent+'|'+x.classList.contains('on');if(k==old[i])return;
+   sm.animate([{transform:'scale(.6)',opacity:0},{transform:'none',opacity:1}],{duration:320,easing:'cubic-bezier(.3,1.5,.6,1)'});
+   if(old[i].split('|')[1]!=String(x.classList.contains('on')))x.querySelector('.ic').animate([{transform:'scale(.5)'},{transform:'none'}],{duration:360,easing:'cubic-bezier(.3,1.6,.55,1)'})})}}catch{}
+  return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
