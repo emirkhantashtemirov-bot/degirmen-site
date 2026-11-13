@@ -1633,6 +1633,19 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 html[data-theme=dark] .hvr{background:rgba(28,20,16,.5);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.14)}
 .circ.hv .hvr{bottom:14px}
 .scr.pm .circ.hv .hvr{bottom:46px}
+/* админка: выбор фото и видео позиции */
+.mdrow{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
+.mdrow .mdi{width:56px;height:56px;flex:none}
+.mdl{flex:1;min-width:0;font-weight:600;font-size:14px;line-height:1.25}.mdl small{display:block;font-weight:400;font-size:12px;color:var(--mu);margin-top:2px}
+.mdi{display:block;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#dcc4a2;position:relative}
+.mdi img{width:100%;height:100%;object-fit:cover;display:block}
+.mdx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--s1);color:var(--mu)}.mdx svg{width:62%;height:62%}.mdx img{width:100%;height:100%;object-fit:cover}
+.mdp h3{margin:2px 4px 12px;font-size:18px}
+.mdw{margin:0 4px 12px;font-size:13px;color:var(--mu)}
+.mdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px 10px;max-height:62vh;overflow:auto;padding:2px 2px 10px}
+.mdc{display:flex;flex-direction:column;gap:6px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.mdc small{font-size:11.5px;line-height:1.2;color:var(--mu)}
+.mdc.on .mdi{box-shadow:0 0 0 3px var(--ac)}.mdc.on small{color:var(--tx);font-weight:700}
 /* пищевая ценность выбранного размера - строка поверх героя */
 .pmnut{position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));z-index:4;display:flex;align-items:stretch;gap:0;padding:6px 4px;border-radius:18px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;opacity:calc(1 - var(--tp)*1.6);transform:translate3d(0,calc(var(--py)*-.4),0);pointer-events:none;max-width:calc(100% - 92px)}
 .pmnut span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:46px;padding:0 8px;line-height:1.1}
@@ -3081,7 +3094,7 @@ if(S.kt=='stop'||(S.kt=='menu'&&!isAdm()))return tabs+[...S.items.map(x=>[x,'i']
 if(S.kt=='menu')return tabs+menuEd();
 return tabs+(act.length?'':`<div class="empty">${emArt('ord',1)}<p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
 function menuEd(){const num=(id,v)=>`<input id="${id}" type="number" min="0" step="10" inputmode="numeric" value="${v}">`,nin=(pre,n)=>LANGS.map(l=>`<input id="${pre}-${l}" placeholder="${l.toUpperCase()}" value="${e(n[l]||'')}">`).join('');
-return `<p class="mu" style="margin:8px 20px;font-size:14px">${t('medit')}</p>`+S.items.map(it=>`<details class="ed" ${S.open==it.id?'open':''} ontoggle="if(this.open)S.open='${it.id}'"><summary>${e(nm(it.name))} <span class="sm2">· ${mn(it.price)}</span></summary><div class="lab">${t('photo')}</div><div class="edp">${ph(it)}<div><label class="c fbtn">${t('upl')}<input type="file" accept="image/*" onchange="upPhoto('${it.id}',this)"></label>${it.image_url?`<div style="margin-top:8px"><button class="c" onclick="delPhoto('${it.id}')">${t('delph')}</button></div>`:''}</div></div><div class="lab">${t('nameL')}</div>${nin('n-'+it.id,it.name)}<div class="lab">${t('price')}</div>`+fills(it).map(f=>it.data.p[f].map((v,i)=>`<label class="kv"><span>${fills(it).length>1?e(nm(FL[f]||{ru:f}))+' ':''}${it.data.p[f].length>1?e(szl(it,i)):''}</span>${num(`p-${it.id}-${f}-${i}`,v)}</label>`).join('')).join('')+`<button class="main" style="margin-top:12px" onclick="saveItem('${it.id}')">${t('save')}</button></details>`).join('')+
+return `<p class="mu" style="margin:8px 20px;font-size:14px">${t('medit')}</p>`+S.items.map(it=>`<details class="ed" ${S.open==it.id?'open':''} ontoggle="if(this.open)S.open='${it.id}'"><summary>${e(nm(it.name))} <span class="sm2">· ${mn(it.price)}</span></summary><div class="lab">${t('photo')}</div><div class="edp">${ph(it)}<div><label class="c fbtn">${t('upl')}<input type="file" accept="image/*" onchange="upPhoto('${it.id}',this)"></label>${it.image_url?`<div style="margin-top:8px"><button class="c" onclick="delPhoto('${it.id}')">${t('delph')}</button></div>`:''}</div></div>${mdRow(it)}<div class="lab">${t('nameL')}</div>${nin('n-'+it.id,it.name)}<div class="lab">${t('price')}</div>`+fills(it).map(f=>it.data.p[f].map((v,i)=>`<label class="kv"><span>${fills(it).length>1?e(nm(FL[f]||{ru:f}))+' ':''}${it.data.p[f].length>1?e(szl(it,i)):''}</span>${num(`p-${it.id}-${f}-${i}`,v)}</label>`).join('')).join('')+`<button class="main" style="margin-top:12px" onclick="saveItem('${it.id}')">${t('save')}</button></details>`).join('')+
 `<h3 style="margin:20px 20px 4px">${t('opts')}</h3>`+S.opts.filter(o=>o.categories.length).map(o=>`<details class="ed"><summary>${e(nm(o.name))} <span class="sm2">· +${o.price}</span></summary><div class="lab">${t('nameL')}</div>${nin('on-'+o.id,o.name)}<div class="lab">${t('price')}</div>${num('op-'+o.id,o.price)}<button class="main" style="margin-top:12px" onclick="saveOpt('${o.id}')">${t('save')}</button></details>`).join('')}
 function readNames(pre,old){const n={...old};for(const l of LANGS){const v=$(`${pre}-${l}`).value.trim();if(!v){toast(t('badName'),1);return null}n[l]=v}return n}
 const readPrice=id=>{const v=$(id).value.trim();return /^\d+$/.test(v)?parseInt(v,10):null};
@@ -5416,6 +5429,28 @@ function hvSwap(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
  setTimeout(()=>{if(!done&&im.complete&&im.naturalWidth)go(1)},1500);
  im.src=medP(k)}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);try{hvSwap()}catch(er){console.warn(er)}return r}}
+// ---------- админка: «Фото и видео» для любой позиции (data.media). Сохраняется тем же путём, что и остальное в редакторе меню: update menu_items ----------
+Object.assign(T.ru,{md_t:'Фото и видео',md_auto:'Как задумано',md_none:'Без фото (рисунок)',md_pick:'Выбрать',md_own:'У позиции загружено своё фото - пока оно есть, показывается оно. Чтобы показать выбранное, удалите своё фото.',md_hint:'Фото для меню и видео в карточке товара'});
+Object.assign(T.kk,{md_t:'Фото және бейне',md_auto:'Әдепкі',md_none:'Фотосыз (сурет)',md_pick:'Таңдау',md_own:'Позицияға өз фотосы жүктелген - ол тұрғанда сол көрсетіледі. Таңдалғанын көрсету үшін өз фотоны өшіріңіз.',md_hint:'Мәзірге фото және тауар картасына бейне'});
+Object.assign(T.en,{md_t:'Photo and video',md_auto:'Default',md_none:'No photo (drawing)',md_pick:'Choose',md_own:'This item has its own uploaded photo - it is shown while it exists. Delete it to show the chosen one.',md_hint:'Menu photo and product card video'});
+const MD_NM={lhm:'Лахмаджун',pd_ch:'Пиде с сыром',pd_mt:'Пиде с мясом',pd_mx:'Пиде с суджуком',pz_mg:'Пицца Маргарита',pz_sj:'Пицца с суджуком',pz_ck:'Пицца с курицей',pz_4c:'Пицца 4 сыра',bg_bf:'Бургер говяжий',bg_ck:'Бургер куриный',bg_mx:'Бургер двойной',
+ kasha:'Каша',menemen:'Менемен',eggs:'Яичница',kahvalti:'Турецкий завтрак',simit:'Симит',borek:'Бёрек',bliny:'Блины',lav_bf:'Донер в лаваше: говядина',lav_ck:'Донер в лаваше: курица',la_ice:'Айс-латте',tea_pot:'Фруктовый чай в чайнике'};
+const mdName=k=>MD_NM[k]||(itemOf(k)?nm(itemOf(k).name):k);
+const MD_ALL=()=>[...MEDIA,...MEDIA2];
+function mdRow(it){const m=it.data&&it.data.media,k=medKey({...it,image_url:null});
+ const lab=m=='none'?t('md_none'):m&&medOk(m)?mdName(m):k?t('md_auto')+' · '+mdName(k):t('md_none');
+ return `<div class="lab">${t('md_t')}</div><div class="mdrow"><span class="mdi">${k?`<img src="${medP(k,1)}" alt="" loading="lazy">`:`<span class="mdx">${PHI({...it,image_url:null,data:{...it.data,media:'none'}})}</span>`}</span><span class="mdl">${e(lab)}<small>${t('md_hint')}</small></span><button class="c" onclick="mdPick('${it.id}')">${t('md_pick')}</button></div>`}
+function mdPick(id){const it=itemOf(id);if(!it||!isAdm())return;const cur=(it.data&&it.data.media)||'',art=`<span class="mdx">${PHI({...it,image_url:null,data:{...it.data,media:'none'}})}</span>`;
+ const cell=(k,lab,img)=>`<button class="mdc${cur==k?' on':''}" onclick="mdSet('${e(id)}','${k}')"><span class="mdi">${img}</span><small>${e(lab)}</small></button>`;
+ shw(`<div class="mdp"><h3>${t('md_t')} · ${e(nm(it.name))}</h3>${it.image_url?`<p class="mdw">${t('md_own')}</p>`:''}<div class="mdg">`+
+  cell('',t('md_auto'),MEDIA.has(it.id)?`<img src="${medP(it.id,1)}" alt="" loading="lazy">`:art)+cell('none',t('md_none'),art)+
+  MD_ALL().map(k=>cell(k,mdName(k),`<img src="${medP(k,1)}" alt="" loading="lazy">`)).join('')+`</div></div>`)}
+async function mdSet(id,k){if(!isAdm()||(k&&k!='none'&&!medOk(k)))return;
+ const cur=await sb.from('menu_items').select('data').eq('id',id).maybeSingle();  // свежие данные позиции: не затираем цены, которые могли обновиться из Paloma
+ if(cur.error||!cur.data||!cur.data.data){toast(cur.error?cur.error.message:t('noRights'),1);return}
+ const d={...cur.data.data};if(k)d.media=k;else delete d.media;
+ const{data,error}=await sb.from('menu_items').update({data:d}).eq('id',id).select();
+ if(error||!data?.length){toast(error?error.message:t('noRights'),1);return}cp();await loadMenu();render();toast(t('saved'))}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
