@@ -5656,6 +5656,23 @@ html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background
     h.animate([{transform:'none',transformOrigin:'0 0'},{transform:fl(cr,hr),transformOrigin:'0 0'}],{duration:340,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
     o.animate([{opacity:1},{opacity:1,offset:.45},{opacity:0}],{duration:340,easing:'linear',fill:'forwards'})}}}catch{}
   return r}}
+// ---------- добавки: окно выбора «вырастает» из нажатой плитки; выбранное на плитке - маленькая плашка, она мягко появляется ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>
+html.motion #m2 .shw.shg .shin{animation:none}
+.scr[data-n=prod] .tile.on small{opacity:1;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,currentColor 12%,transparent)}
+</style>`);
+ let tr=null,tt=0;
+ addEventListener('click',ev=>{const tl=ev.target&&ev.target.closest&&ev.target.closest('#m .scr[data-n=prod] .tile');if(tl&&FM&&!RM){tr=tl.getBoundingClientRect();tt=performance.now()}},{capture:true,passive:true});
+ const _p=picker;picker=function(){const had=!!document.querySelector('#m2 .shw:not(.out)');const r=_p.apply(this,arguments);
+  try{const r0=tr,fresh=performance.now()-tt<600;tr=null;const w=!had&&fresh&&r0&&S.pk&&document.querySelector('#m2 .shw:not(.out)'),si=w&&w.querySelector('.shin');
+   if(si){w.classList.add('shg');const b=si.getBoundingClientRect(),ox=r0.left+r0.width/2-b.left,oy=r0.top+r0.height/2-b.top;
+    si.animate([{transform:'scale(.6)',opacity:0,transformOrigin:`${ox}px ${oy}px`},{transform:'none',opacity:1,transformOrigin:`${ox}px ${oy}px`}],{duration:420,easing:'cubic-bezier(.2,1.12,.35,1)'})}}catch{}
+  return r};
+ const _u=prodUpd;prodUpd=function(){const pt=$('pt'),old=pt?[...pt.querySelectorAll('.tile')].map(x=>x.querySelector('small').textContent+'|'+x.classList.contains('on')):[];const r=_u.apply(this,arguments);
+  try{if(FM&&!RM&&old.length){const ts=[...$('pt').querySelectorAll('.tile')];if(ts.length==old.length)ts.forEach((x,i)=>{const sm=x.querySelector('small'),k=sm.textContent+'|'+x.classList.contains('on');if(k==old[i])return;
+   sm.animate([{transform:'scale(.6)',opacity:0},{transform:'none',opacity:1}],{duration:320,easing:'cubic-bezier(.3,1.5,.6,1)'});
+   if(old[i].split('|')[1]!=String(x.classList.contains('on')))x.querySelector('.ic').animate([{transform:'scale(.5)'},{transform:'none'}],{duration:360,easing:'cubic-bezier(.3,1.6,.55,1)'})})}}catch{}
+  return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
