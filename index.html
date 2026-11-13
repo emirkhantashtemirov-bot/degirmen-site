@@ -3137,7 +3137,7 @@ else if(k=='syr')h=`<h3>${t('syr')} · ${syrP()?'+'+syrP()+' ₸':t('lv_free')}<
 else if(k=='sug')h=`<h3>${t('sugl')}</h3><div class="pr" style="justify-content:flex-start;margin:14px 0">${[0,1,2,3].map(v=>cc(s.sg==v,`pk('sg',${v})`,v?v:t('nosug'))).join('')}</div>`;
 shw(h+`<button class="lite" onclick="cp()">${t('done')}</button>`)}
 function add(){if(!S.sel)return;const s=S.sel,circ=document.querySelector('.circ'),r0=circ&&circ.getBoundingClientRect(),im=circ&&circ.querySelector('img.ld'),src=im&&im.src,prev=tot();
-pushLine({id:s.id,f:s.f,z:zi(itemOf(s.id),s.f,s.z),o:[...s.o],qty:1,syr:s.syr,sg:s.sg,ing:{...s.ing}});try{navigator.vibrate&&navigator.vibrate(15)}catch{}
+pushLine({id:s.id,f:s.f,z:zi(itemOf(s.id),s.f,s.z),o:[...s.o],qty:1,syr:s.syr,sg:s.sg,ing:{...s.ing}});try{navigator.vibrate&&navigator.vibrate(12)}catch{}
 if(RM||!r0){cl();toast(t('added'));return}
 S.shownTot=prev;cl();flight(r0,src,prev)}
 // маленькая копия фото летит по дуге в кнопку «Корзина», кнопка подпрыгивает, сумма пересчитывается
@@ -5620,6 +5620,22 @@ html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background
  addEventListener('pointermove',ev=>{if(pe&&(Math.abs(ev.clientX-px)>8||Math.abs(ev.clientY-py)>8))up()},{passive:true,capture:true});
  addEventListener('pointerup',up,{passive:true,capture:true});addEventListener('pointercancel',up,{passive:true,capture:true});
  addEventListener('scroll',()=>{if(pe)up()},{passive:true,capture:true});addEventListener('blur',up)}
+// ---------- «живая» цена на кнопке: цифры прокручиваются к новому значению, как счётчик; ширина цифр одинаковая - кнопка не прыгает ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>
+#pp{display:inline-block;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.2;vertical-align:top}
+#pp .od{display:inline-block;height:1.2em;overflow:hidden;vertical-align:top}
+#pp .odc{display:block}#pp .odc i{display:block;height:1.2em;font-style:normal}
+#pp .odx{display:inline-block;height:1.2em;vertical-align:top;white-space:pre}
+</style>`);
+ const D='0123456789',COL='<span class="odc">'+[...D].map(d=>'<i>'+d+'</i>').join('')+'</span>';
+ setPrice=function(txt){const el=$('pp');if(!el)return;const cur=el.dataset.v||el.textContent;if(cur==txt&&!el._odt)return;el.dataset.v=txt;clearTimeout(el._odt);el._odt=0;
+  if(!FM||RM||cur==txt){el.textContent=txt;return}
+  const a=[...cur],b=[...txt],off=a.length-b.length;
+  el.innerHTML=b.map((c,i)=>D.includes(c)?'<span class="od">'+COL+'</span>':'<span class="odx">'+e(c)+'</span>').join('');
+  const cols=el.querySelectorAll('.odc');let k=0;
+  b.forEach((c,i)=>{if(!D.includes(c))return;const o=a[i+off],from=o&&D.includes(o)?+o:0,to=+c,col=cols[k++];
+   col.style.transform=`translateY(${-to*10}%)`;if(from!=to)col.animate([{transform:`translateY(${-from*10}%)`},{transform:`translateY(${-to*10}%)`}],{duration:300+k*25,easing:'cubic-bezier(.2,.9,.25,1.05)'})});
+  el._odt=setTimeout(()=>{el._odt=0;if(el.dataset.v==txt)el.textContent=txt},300+k*25+40)}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
