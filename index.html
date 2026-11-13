@@ -1619,6 +1619,20 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 .pmbar{position:fixed;left:0;right:0;top:0;z-index:7;display:flex;align-items:center;min-height:calc(68px + env(safe-area-inset-top));box-sizing:border-box;padding:env(safe-area-inset-top) 72px 0 22px;background:color-mix(in srgb,color-mix(in srgb,var(--sand,#dcbf9d) 30%,#fbf5ec) 88%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 rgba(92,60,30,.1),0 12px 26px -20px rgba(92,60,30,.6);opacity:var(--tp);pointer-events:none;color:#2a1d15}
 .pmbar b{font-size:18px;font-weight:700;letter-spacing:-.2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translate3d(0,calc((1 - var(--tp))*12px),0)}
 .scr.pm .rb.dk{z-index:9}.scr.pm .pbar{z-index:8}
+/* видео приготовления: поверх круга, исчезает плавно (filter, чтобы не мешать прозрачности от прокрутки); пока не пошло - фото под ним скрыто */
+.circ.hv>.hvp{transition:filter .3s ease}
+.circ.hv>.hvp.gone{filter:opacity(0);pointer-events:none}
+.circ.hv.prp>img,.circ.hv.prp>.phe{filter:opacity(0)}
+.circ.hv>.hvn{filter:opacity(0);transition:filter .32s ease;z-index:2}
+.circ.hv>.hvn.in{filter:opacity(1)}
+.hvr{position:absolute;right:14px;bottom:46px;z-index:4;display:flex;align-items:center;gap:6px;height:34px;padding:0 13px 0 10px;border:0;border-radius:17px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;font:600 13px/1 var(--f);letter-spacing:-.1px;cursor:pointer;
+ transform:translate3d(0,var(--py,0px),0);opacity:calc(1 - var(--tp,0)*1.6);transition:filter .3s ease,visibility 0s;-webkit-tap-highlight-color:transparent}
+.hvr svg{flex:none;opacity:.85}
+.hvr:active{filter:brightness(.94)}
+.circ.hv.prun .hvr{visibility:hidden;filter:opacity(0);transition:filter .2s ease,visibility 0s .2s}
+html[data-theme=dark] .hvr{background:rgba(28,20,16,.5);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.14)}
+.circ.hv .hvr{bottom:14px}
+.scr.pm .circ.hv .hvr{bottom:46px}
 /* пищевая ценность выбранного размера - строка поверх героя */
 .pmnut{position:absolute;left:14px;top:calc(14px + env(safe-area-inset-top));z-index:4;display:flex;align-items:stretch;gap:0;padding:6px 4px;border-radius:18px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;opacity:calc(1 - var(--tp)*1.6);transform:translate3d(0,calc(var(--py)*-.4),0);pointer-events:none;max-width:calc(100% - 92px)}
 .pmnut span{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:46px;padding:0 8px;line-height:1.1}
@@ -1828,11 +1842,17 @@ if(no.length)out.push(t('wo',L)+' '+no.join(', '));if(x2.length)out.push('x2 '+x
 const oc={};(l.o||[]).forEach(id=>oc[id]=(oc[id]||0)+1);for(const id in oc){const o=optOf(id);if(!o)continue;const n=nm(o.name,L),k=oc[id]>1?' ×'+oc[id]:'';out.push(o.grp=='milk'?t('g_milk',L).toLowerCase()+' '+n.toLowerCase():o.grp&&!MGRPS.includes(o.grp)?n.toLowerCase():'+'+n+k)};if(l.free)out.push(t('freeW',L).toUpperCase());return out.join(' · ')}
 const lineName=(l,L=S.L)=>nm(itemOf(l.id).name,L);
 // ---------- фото: image_url → локальный img/<id>.webp → эмодзи ----------
-const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),hasMed=it=>!!it&&!it.image_url&&MEDIA.has(it.id)&&!(it.data&&it.data.pack);  // свои фото и видео блюд: media/p/<id>.webp, media/v/<id>.mp4
-const imgSrc=it=>it.image_url||(hasMed(it)?'/media/p/'+it.id+'.webp':'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
+// Ключ фото/видео: data.media (выбирается в админке, 'none' - рисунок), иначе свой id, если для него есть файлы. Фото media/p/<ключ>.webp (+ .s.webp),
+// видео: старые ключи (MEDIA) - media/v/<ключ>.mp4, новые (MEDIA2: будущее меню и варианты) - media/v/v_<ключ>.mp4; постер - то же имя с .webp.
+const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),
+ MEDIA2=new Set('lhm pd_ch pd_mt pd_mx pz_mg pz_sj pz_ck pz_4c bg_bf bg_ck bg_mx kasha menemen eggs kahvalti simit borek bliny lav_bf lav_ck la_ice tea_pot'.split(' ')),
+ medOk=k=>MEDIA.has(k)||MEDIA2.has(k),
+ medKey=it=>{if(!it||it.image_url||(it.data&&it.data.pack))return '';const m=it.data&&it.data.media;if(m)return typeof m=='string'&&medOk(m)?m:'';return MEDIA.has(it.id)?it.id:''},
+ hasMed=it=>!!medKey(it),medP=(k,sm)=>'/media/p/'+k+(sm?'.s':'')+'.webp',medV=k=>'/media/v/'+(MEDIA2.has(k)?'v_':'')+k;
+const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
-const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?'/media/p/'+it.id+'.s.webp':imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
+const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?medP(medKey(it),1):imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
 function imgOk(im){im.classList.add('ld');im.parentNode.classList.add('hasimg');LOADED.add(im.getAttribute('src'))}
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
@@ -5233,14 +5253,58 @@ function finArH(){const F=S.fn,A=F.f?.arrivals||[],can=F.data?.can_edit,dis=can?
 function vidOk(){const c=navigator.connection,R=document.documentElement;
  if(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||'')))return false;
  return !((navigator.deviceMemory&&navigator.deviceMemory<=2)||MOTION_OFF)}
-function heroMed(it){const src=imgSrc(it),ld=LOADED.has(src),id=e(it.id);
- return `<div class="circ hv${ld?' hasimg':''}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${vidOk()?`<video class="hvv" muted playsinline loop autoplay preload="metadata" poster="/media/v/${id}.webp" src="/media/v/${id}.mp4" onerror="hvErr(this)"></video>`:''}</div>`}
-function hvErr(v){try{v.pause()}catch{}v.remove()}  // видео не загрузилось - под ним уже лежит фото (а под фото - рисунок)
+// Видео приготовления (media/v/prep_<ключ>.mp4, 6 с): при открытии карточки играет один раз - от пустого стакана до готового напитка,
+// потом незаметно (плавно, 0.3 с) уступает место обычному видео по кругу: последний кадр приготовления = первый кадр круга.
+// Видео по кругу ждёт (preload="none", data-w) и начинает грузиться за ~2 с до конца приготовления. Кнопка «Как готовим» - повтор.
+const PREP=new Set('cp la fw ra am es lmo lbz lmm llb lpe tg to tb ta tc tk2'.split(' '));
+// Варианты: выбранная начинка/размер меняет фото и видео в карточке (карточки меню остаются прежними)
+const TEA_POT=new Set('tg to tb ta tc'.split(' '));
+function heroKey(it,s){const k=medKey(it);if(!k||k!=it.id||!s)return k;
+ if(it.id=='lav'&&s.f=='bf')return 'lav_bf';if(it.id=='lav'&&s.f=='ch')return 'lav_ck';
+ if(it.id=='la'&&s.f=='ic')return 'la_ice';
+ if(TEA_POT.has(it.id)&&it.data&&it.data.zl){const z=zi(it,s.f,s.z||0);if(/^(Чайник|Шәйнек|Pot)/i.test(String(it.data.zl[z]||'')))return 'tea_pot'}
+ return k}
+Object.assign(T.ru,{hv_rp:'Как готовим'});Object.assign(T.kk,{hv_rp:'Қалай дайындаймыз'});Object.assign(T.en,{hv_rp:'How it’s made'});
+const HV_RI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/><path d="M10.5 9.2v5.6l4.5-2.8z" fill="currentColor" stroke="none"/></svg>';
+const hvRpBtn=()=>`<button class="hvr" type="button" onclick="hvReplay(this)">${HV_RI}<span>${t('hv_rp')}</span></button>`;
+const hvLoopTag=(k,wait)=>`<video class="hvv hvl" muted playsinline loop ${wait?`preload="none" data-w="1" data-poster="${medV(k)}.webp"`:`autoplay preload="metadata" poster="${medV(k)}.webp"`} src="${medV(k)}.mp4" onerror="hvErr(this)"></video>`;
+const hvPrepTag=(k,hide)=>`<video class="hvv hvp${hide?' gone':''}" muted playsinline ${hide?'preload="auto"':'autoplay preload="auto"'} poster="/media/v/prep_${k}.webp" src="/media/v/prep_${k}.mp4" onerror="hvErr(this)" onended="hvEnd(this)" ontimeupdate="hvNear(this)" onplaying="hvGo(this)"></video>`;
+function heroMed(it,k){k=k||heroKey(it,S.sel)||medKey(it);const src=it.image_url||medP(k),ld=LOADED.has(src),id=e(it.id),v=vidOk(),pr=v&&PREP.has(k);
+ if(pr)setTimeout(hvGuard,4500);
+ return `<div class="circ hv${ld?' hasimg':''}${pr?' prp prun':''}" data-k="${e(k)}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${v?hvLoopTag(k,pr):''}${pr?hvPrepTag(k)+hvRpBtn():''}</div>`}
+const hvHero=el=>el&&el.closest&&el.closest('.circ.hv');
+// видео по кругу: начать загрузку (за пару секунд до конца приготовления или если приготовление не получилось)
+function hvArm(l){if(!l||!l.dataset.w||l.dataset.arm)return;l.dataset.arm='1';if(l.dataset.poster&&!l.getAttribute('poster'))l.setAttribute('poster',l.dataset.poster);l.preload='auto';try{l.load()}catch{}}
+function hvNear(p){const h=hvHero(p);if(!h||!p.duration)return;if(p.duration-p.currentTime<2.4)hvArm(h.querySelector('.hvl'))}
+function hvGo(p){const h=hvHero(p);if(h){h.classList.remove('prp');h._pst=1}}  // приготовление пошло: фото под ним больше не нужно прятать
+// конец приготовления: круг с начала, как только он реально заиграл - приготовление плавно исчезает
+function hvEnd(p){const h=hvHero(p),l=h&&h.querySelector('.hvl');if(!h)return;h.classList.remove('prp');p.dataset.st='done';
+ const fin=()=>{p.classList.add('gone');h.classList.remove('prun')};
+ if(!l){fin();return}hvArm(l);delete l.dataset.w;try{l.currentTime=0}catch{}
+ let ok=0;const go=()=>{if(ok)return;ok=1;l.removeEventListener('playing',go);requestAnimationFrame(fin)};
+ l.addEventListener('playing',go);if(document.hidden||l.closest('.scr.out'))return;const r=l.play();if(r&&r.catch)r.catch(()=>{});
+ setTimeout(()=>{if(!ok&&l.isConnected&&!l.paused&&l.currentTime>0)go()},900)}  // на всякий случай: если «playing» не пришло, а круг идёт
+// приготовление так и не началось (медленная сеть): убираем его, остаётся круг (или фото)
+function hvGuard(){document.querySelectorAll('#m .circ.hv.prun').forEach(h=>{const p=h.querySelector('.hvp');if(!p||h._pst||!p.isConnected)return;if(p.readyState<3&&!document.hidden)hvErr(p)})}
+// повтор: приготовление проявляется поверх круга с первого кадра и играет заново
+function hvReplay(b){const h=hvHero(b);if(!h||h.classList.contains('prun')||!vidOk())return;const k=h.dataset.k;if(!PREP.has(k))return;
+ let p=h.querySelector('.hvp');if(!p){h.querySelector('.hvr').insertAdjacentHTML('beforebegin',hvPrepTag(k,1));p=h.querySelector('.hvp')}
+ const l=h.querySelector('.hvl');h.classList.add('prun');h._pst=1;delete p.dataset.st;
+ const show=()=>{p.removeEventListener('seeked',show);p.removeEventListener('loadeddata',show);if(!p.isConnected)return;p.classList.remove('gone');const r=p.play();if(r&&r.catch)r.catch(()=>{});
+  setTimeout(()=>{if(l&&h.classList.contains('prun')&&!p.classList.contains('gone')){l.dataset.w='1';try{l.pause()}catch{}}},340)};
+ try{p.pause()}catch{}
+ if(p.readyState>=2){p.addEventListener('seeked',show);try{p.currentTime=0}catch{show()}if(p.currentTime===0&&!p.seeking)show()}else{p.addEventListener('loadeddata',show);try{p.load()}catch{}}
+ setTimeout(()=>{if(h.classList.contains('prun')&&p.classList.contains('gone')){h.classList.remove('prun');p.remove()}},5000)}  // не загрузилось - остаёмся на круге
+function hvErr(v){try{v.pause()}catch{}const h=hvHero(v);
+ if(v.classList.contains('hvp')&&h){h.classList.remove('prp','prun');v.remove();const l=h.querySelector('.hvl');if(l&&l.dataset.w){hvArm(l);delete l.dataset.w;if(!document.hidden&&!l.closest('.scr.out')){const r=l.play();if(r&&r.catch)r.catch(()=>{})}}return}
+ if(h&&v.classList.contains('hvl')){const r=h.querySelector('.hvr');if(r)r.remove();const p=h.querySelector('.hvp');if(p&&p.dataset.st=='done')p.remove()}
+ v.remove()}  // видео не загрузилось - под ним уже лежит фото (а под фото - рисунок)
 const hvAll=()=>document.querySelectorAll('#m video.hvv');
-function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(()=>{})})}
+function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out')||v.dataset.w||v.dataset.st=='done'||v.classList.contains('gone'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(er=>{if(er&&er.name=='NotAllowedError'&&v.classList.contains('hvp'))hvErr(v)})})}  // автозапуск запрещён (режим энергосбережения) - без приготовления, сразу готовый напиток
 function hvStop(){hvAll().forEach(v=>{try{v.pause()}catch{}})}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);hvPlay();return r}}
-{const _x=cl;cl=function(){hvStop();return _x.apply(this,arguments)}}
+// закрытие карточки: видео на паузу, а через 0.5 с (после анимации) загрузка прерывается
+{const _x=cl;cl=function(){hvStop();const o=[...document.querySelectorAll('#m video.hvv')];const r=_x.apply(this,arguments);setTimeout(()=>o.forEach(v=>{if(v.isConnected&&!v.closest('.scr.out'))return;try{v.pause();v.removeAttribute('src');v.load()}catch{}}),500);return r}}
 document.addEventListener('visibilitychange',()=>{document.hidden?hvStop():hvPlay()});
 // ---------- тема: гости всегда в светлой (решение владельца); экраны персонала, кухни, табло и киоска всегда тёмные ----------
 const TH_CUST=new Set(['prod','cart','auth','prof','about','doc','ai','kb','kba','kbg','notif','game']);
@@ -5251,8 +5315,12 @@ try{localStorage.removeItem('dn_theme')}catch{}
 {const _x=scr;scr=function(){const r=_x.apply(this,arguments);thApply();return r}}
 // ---------- витрина v2: карточка товара на весь экран, фото «растворяется» в фоне; карточки меню в цвет студийного фона ----------
 // Цвет фона снят с самих файлов (низ кадра, 6% высоты): первые 6 знаков - фото media/p, вторые - первый кадр видео media/v.
-const SAND={am:'e4c39dd9b997',bat:'e3c198d3b591',cp:'dec19fd1b597',es:'e2c8aad5bca2',fw:'ddc1a3ceb399',gl:'e0c09cd0b291',isk:'ddbe9ed0b397',krc:'e1c09bd3b492',krs:'e5c39fd7b896',la:'d7ba99c9ad8f',lav:'ecceaadec2a1',lbz:'ecd3b7dfc6ad',llb:'ecdabee3d1b9',lmm:'efd0abe1c3a2',lmo:'ebd1afdec3a5',lpe:'e8cfafd9c0a3',pl:'d6ba9cc6ac92',pn:'e0c2a0cfb396',ra:'e5c7a3d7ba9a',ta:'e6cdb1d9c1a9',tb:'c7a280bd9a7b',tc:'e3c6a1d5ba9a',tg:'e8d0b1dbc4a9',tk1:'e6c8a4d7bc9b',tk2:'e6cca9d9c0a1',to:'e8c7a1d9ba99'};
-function sandOf(it,v){const c=it&&SAND[it.id];return c?'#'+(v?c.slice(6):c.slice(0,6)):''}
+const SAND={am:'e4c39dd9b997',bat:'e3c198d3b591',cp:'dec19fd1b597',es:'e2c8aad5bca2',fw:'ddc1a3ceb399',gl:'e0c09cd0b291',isk:'ddbe9ed0b397',krc:'e1c09bd3b492',krs:'e5c39fd7b896',la:'d7ba99c9ad8f',lav:'ecceaadec2a1',lbz:'ecd3b7dfc6ad',llb:'ecdabee3d1b9',lmm:'efd0abe1c3a2',lmo:'ebd1afdec3a5',lpe:'e8cfafd9c0a3',pl:'d6ba9cc6ac92',pn:'e0c2a0cfb396',ra:'e5c7a3d7ba9a',ta:'e6cdb1d9c1a9',tb:'c7a280bd9a7b',tc:'e3c6a1d5ba9a',tg:'e8d0b1dbc4a9',tk1:'e6c8a4d7bc9b',tk2:'e6cca9d9c0a1',to:'e8c7a1d9ba99',
+ lhm:'d6b798c2a68c',pd_ch:'d2b290c1a387',pd_mt:'dbbf9fcdb397',pd_mx:'dbbb98c9ac8f',pz_mg:'d7b38ec6a686',pz_sj:'dbc1a6ceb59d',pz_ck:'d6b592c5a789',pz_4c:'d5b38fc7a889',bg_bf:'e6caa9d9bfa1',bg_ck:'e4c8a7d2ba9e',bg_mx:'e5c8a6d8bea0',
+ kasha:'e1c3a2d3b697',menemen:'debd9acfb092',eggs:'d8b896c7a78a',kahvalti:'debc99ceae90',simit:'e0be97d2b291',borek:'d9b999c9ab90',bliny:'dcb996caa88a',lav_bf:'e6c29cd7b695',lav_ck:'e7c295d7b48d',la_ice:'e0c6a8d2b99e',tea_pot:'e6c7a7d6ba9e'};
+function sandK(k,v){const c=k&&SAND[k];return c?'#'+(v?c.slice(6):c.slice(0,6)):''}
+function sandOf(it,v){return sandK(medKey(it),v)}
+const hvKey=sc=>{const h=sc&&sc.querySelector('.circ.hv');return h&&h.dataset.k||''};
 function mcC(i){return hasMed(i)?' mc':''}
 function mcS(i){const c=hasMed(i)&&sandOf(i,0);return c?';--cs:'+c:''}
 // карточка товара: свои фото/видео - полноэкранная витрина (класс pm), остальные - прежний круг, но в том же стиле (p2)
@@ -5260,10 +5328,10 @@ function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
  sc.classList.add('p2');const on=hasMed(it)&&!!sc.querySelector('.circ.hv');sc.classList.toggle('pm',on);
  const ds=it.data&&it.data.ds,tx=ds?(typeof ds=='string'?ds:ds[S.L]||ds.ru||''):'';let pd=sc.querySelector('.pds');
  if(tx&&!(it.data&&it.data.pack)){if(!pd){pd=document.createElement('p');pd.className='pds';const tp=sc.querySelector('.top');on?tp.after(pd):(sc.querySelector('.circ')||tp).after(pd)}if(pd.textContent!=tx)pd.textContent=tx}else if(pd)pd.remove();
- if(on&&!sc.style.getPropertyValue('--sand'))sc.style.setProperty('--sand',sandOf(it,!!sc.querySelector('video.hvv'))||'#dcbf9d');thApply()}
+ if(on&&!sc.style.getPropertyValue('--sand'))sc.style.setProperty('--sand',sandK(hvKey(sc)||medKey(it),!!sc.querySelector('video.hvv'))||'#dcbf9d');thApply()}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDeco();return r}}
 // видео не загрузилось - под ним фото, а оно чуть светлее первого кадра: фон подстраивается под фото
-{const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it){const c=sandOf(it,0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
+{const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it&&!sc.querySelector('video.hvv')){const c=sandK(hvKey(sc)||medKey(it),0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
 // закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
 // вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
 {let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
