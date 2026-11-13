@@ -5078,7 +5078,8 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .appd .rf{background:transparent;border:1px solid var(--off);color:var(--mu)}.appd .rf.sure{border-color:var(--ac);color:#fff;background:var(--ac)}
 </style>`);
 S.pm=(()=>{try{return localStorage.getItem('dn_pm')}catch{return null}})()||'online';
-const pmNow=()=>S.pm=='cash'?'cash':'online';
+const cashOk=()=>{try{return staff()&&!(typeof isKiosk=='function'&&isKiosk())}catch(e){return false}};
+const pmNow=()=>S.pm=='cash'&&cashOk()?'cash':'online';
 function pmSet(v){S.pm=v;try{localStorage.setItem('dn_pm',v)}catch{}pmPaint()}
 function pmHtml(){const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" onclick="pmSet('${v}')"><i></i><span>${a}<small>${b}</small></span></button>`;
   return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_on'),t('pm_on_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}
@@ -5673,6 +5674,50 @@ html.motion #m2 .shw.shg .shin{animation:none}
    sm.animate([{transform:'scale(.6)',opacity:0},{transform:'none',opacity:1}],{duration:320,easing:'cubic-bezier(.3,1.5,.6,1)'});
    if(old[i].split('|')[1]!=String(x.classList.contains('on')))x.querySelector('.ic').animate([{transform:'scale(.5)'},{transform:'none'}],{duration:360,easing:'cubic-bezier(.3,1.6,.55,1)'})})}}catch{}
   return r}}
+// ---------- без наличных в приложении и киоске + номер для бонусов в киоске (13.11.2026) ----------
+// Наличные - только на кассе (цель приложения - разгрузить кассира). Выбор наличных остаётся лишь сотрудникам.
+// Киоск: перед оплатой гость вводит номер (или пропускает). Номер пишется в заказ (orders.guest_phone),
+// бонусы начислятся, когда этот номер подтвердят в приложении через WhatsApp.
+Object.assign(T.ru,{pm_only:'Оплата онлайн',pm_only_s:'Карта, Apple Pay, Google Pay. Наличными - только на кассе',kp_t:'Учтём заказ в бонусах',kp_s:'Номер, на который вы заходите в приложение Degirmen',kp_next:'Далее',kp_skip:'Пропустить',kp_bad:'Нужно 10 цифр после +7',kp_back:'Назад'});
+Object.assign(T.kk,{pm_only:'Онлайн төлем',pm_only_s:'Карта, Apple Pay, Google Pay. Қолма-қол - тек кассада',kp_t:'Тапсырысты бонусқа есептейік',kp_s:'Degirmen қосымшасына кіретін нөміріңіз',kp_next:'Әрі қарай',kp_skip:'Өткізу',kp_bad:'+7-ден кейін 10 сан керек',kp_back:'Артқа'});
+Object.assign(T.en,{pm_only:'Online payment',pm_only_s:'Card, Apple Pay, Google Pay. Cash only at the counter',kp_t:'Earn bonuses for this order',kp_s:'The number you use in the Degirmen app',kp_next:'Next',kp_skip:'Skip',kp_bad:'Enter 10 digits after +7',kp_back:'Back'});
+document.head.insertAdjacentHTML('beforeend',`<style>
+.pmonly{display:flex;gap:12px;align-items:center;background:var(--s2);border-radius:18px;padding:14px 16px;margin:6px 0 10px}.pmonly b{display:block;font:700 15px var(--f)}.pmonly small{display:block;color:var(--mu);font-size:13px;margin-top:2px}
+.kpov{position:fixed;inset:0;z-index:9997;padding-top:80px!important;background:var(--c);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:var(--f)}
+.kpov h2{font:800 32px/1.15 var(--f);margin:0 0 8px}.kpov .sub{color:var(--mu);font-size:16px;margin:0 0 22px}
+.kpov .num{min-width:min(80vw,380px);padding:16px 22px;border-radius:30px;background:var(--s2);font:700 30px var(--f);letter-spacing:1px;min-height:38px}
+.kpov .num i{color:var(--mu);font-style:normal}.kpov .er{color:#f0a08a;min-height:22px;margin:8px 0 4px;font-size:15px}
+.kpov .pad{display:grid;grid-template-columns:repeat(3,84px);gap:14px;margin:8px 0 18px}
+.kpov .pad button{width:84px;height:84px;border-radius:50%;border:0;background:var(--s2);color:var(--tx);font:600 32px var(--f);transition:transform .12s}
+.kpov .pad button:active{transform:scale(.9)}.kpov .pad .em{visibility:hidden}
+.kpov .kpgo{flex:0 0 60px;width:min(80vw,380px);height:60px;max-height:60px;border:0;border-radius:30px;background:var(--ac);color:#fff;font:700 19px var(--f)}.kpov .kpgo:disabled{opacity:.4}
+.kpov .tp{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between}
+.kpov .tp button{height:46px;padding:0 20px;border:0;border-radius:23px;background:var(--s2);color:var(--tx);font:600 16px var(--f)}
+</style>`);
+// приложение: гостю - одна плашка «Оплата онлайн» вместо выбора
+{const _ph=pmHtml;pmHtml=function(){if(cashOk())return _ph();
+  return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div><div class="pmonly">${IC.chk||''}<span><b>${t('pm_only')}</b><small>${(typeof isKiosk=='function'&&isKiosk())?t('pm_qr_s'):t('pm_only_s')}</small></span></div></div>`}}
+// киоск: номер для бонусов перед оплатой
+const KP={v:''};
+function kpFmt(v){const d=(v+'__________').slice(0,10);const g=[d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].join(' ');return '+7 '+g.replace(/_/g,'<i>·</i>')}
+function kpView(err){let o=$('kpov');if(!o){document.body.insertAdjacentHTML('beforeend','<div class="kpov" id="kpov"></div>');o=$('kpov')}
+  const k=n=>`<button onclick="kpKey('${n}')">${n}</button>`;
+  o.innerHTML=`<div class="tp"><button onclick="kpClose()">‹ ${t('kp_back')}</button><button onclick="kpGo(1)">${t('kp_skip')}</button></div>
+  <h2>${t('kp_t')}</h2><p class="sub">${t('kp_s')}</p><div class="num">${kpFmt(KP.v)}</div><div class="er">${err?t('kp_bad'):''}</div>
+  <div class="pad">${[1,2,3,4,5,6,7,8,9].map(k).join('')}<button class="em"></button>${k(0)}<button onclick="kpKey('del')">⌫</button></div>
+  <button class="kpgo" onclick="kpGo(0)" ${KP.v.length?'':'disabled'}>${t('kp_next')}</button>`}
+function kpKey(n){if(n=='del')KP.v=KP.v.slice(0,-1);else if(KP.v.length<10)KP.v+=n;try{navigator.vibrate&&navigator.vibrate(8)}catch{}kpView()}
+function kpClose(){$('kpov')?.remove()}
+function kpGo(skip){if(!skip&&KP.v.length!=10){kpView(1);return}S.kphone=skip?'':'7'+KP.v;kpClose();place()}
+function kpOpen(){KP.v='';S.kphone=null;kpView()}
+{const _r=kioskReset;kioskReset=function(){kpClose();KP.v='';S.kphone=null;return _r.apply(this,arguments)}}
+// киоск: кнопка в корзине сначала открывает номер, потом заказ; в заказ уходит guest_phone и оплата только QR
+{const _c=cart;cart=function(){_c();if(!isKiosk()||!S.cart.length)return;const b=$('kgo');if(b){b.setAttribute('onclick','kpOpen()');b.textContent=`${t('pay_go')} ${mn(tot())}`}}}
+{const _p=place;place=async function(){if(!isKiosk())return _p();if(S.kphone==null){kpOpen();return}S.pm='online';
+  const ph=S.kphone;
+  // подмешиваем номер в вставку заказа киоска
+  const _from=sb.from.bind(sb);sb.from=function(tb){const q=_from(tb);if(tb=='orders'){const _i=q.insert.bind(q);q.insert=(row,...a)=>_i(Array.isArray(row)?row:{...row,guest_phone:ph||null},...a)}return q};
+  try{return await _p()}finally{sb.from=_from;S.kphone=null}}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
