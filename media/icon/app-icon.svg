@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<defs>
+ <radialGradient id="bg" cx="50%" cy="38%" r="75%"><stop offset="0" stop-color="#CF5C3F"/><stop offset=".6" stop-color="#B23F28"/><stop offset="1" stop-color="#8A2B1A"/></radialGradient>
+ <linearGradient id="tw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF8EE"/><stop offset="1" stop-color="#EBDCC6"/></linearGradient>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<ellipse cx="256" cy="414" rx="96" ry="10" fill="#000" opacity=".16"/>
+<path d="M226 232 L286 232 L318 410 L194 410 Z" fill="url(#tw)"/>
+<path d="M240 410 L240 370 Q256 352 272 370 L272 410 Z" fill="#8A2B1A"/>
+<rect x="247" y="296" width="18" height="22" rx="9" fill="#8A2B1A"/>
+<g transform="rotate(45 256 214)">
+ <path d="M228 196 L228 70 Q228 58 240 58 L272 58 Q284 58 284 70 L284 196 Z" fill="#FBF1E3"/>
+ <rect x="240" y="76" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="110" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="144" width="32" height="22" rx="3" fill="url(#bg)"/>
+</g><g transform="rotate(135 256 214)">
+ <path d="M228 196 L228 70 Q228 58 240 58 L272 58 Q284 58 284 70 L284 196 Z" fill="#FBF1E3"/>
+ <rect x="240" y="76" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="110" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="144" width="32" height="22" rx="3" fill="url(#bg)"/>
+</g><g transform="rotate(225 256 214)">
+ <path d="M228 196 L228 70 Q228 58 240 58 L272 58 Q284 58 284 70 L284 196 Z" fill="#FBF1E3"/>
+ <rect x="240" y="76" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="110" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="144" width="32" height="22" rx="3" fill="url(#bg)"/>
+</g><g transform="rotate(315 256 214)">
+ <path d="M228 196 L228 70 Q228 58 240 58 L272 58 Q284 58 284 70 L284 196 Z" fill="#FBF1E3"/>
+ <rect x="240" y="76" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="110" width="32" height="22" rx="3" fill="url(#bg)"/>
+ <rect x="240" y="144" width="32" height="22" rx="3" fill="url(#bg)"/>
+</g>
+<circle cx="256" cy="214" r="27" fill="#FBF1E3"/>
+<circle cx="256" cy="214" r="15" fill="#E3B866"/>
+</svg>
