@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Degirmen - экран в зале</title>
+<link rel="icon" type="image/svg+xml" href="/media/logo-mill.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
+<!-- Экран в зале (телевизор, ТВ-приставка): видео блюд по кругу, слева название, строка описания и цена из базы (обновляются каждые 5 минут).
+     ?ids=lav,cp,la - выбрать блюда. Видео не загрузилось - фото с медленным приближением. Без сети работает с тем, что уже загружено. -->
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#e8ceb0;cursor:none}
+body{font-family:Manrope,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#2a1d15;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+*{cursor:none}
+#st{position:fixed;inset:0;overflow:hidden}
+.sl{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity 1.2s cubic-bezier(.4,0,.2,1);background:var(--bg,#e8ceb0)}
+.sl.on{opacity:1;z-index:1}
+.sl img,.sl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%}
+.sl img{transform-origin:72% 55%}
+.sl.kb img{animation:kb 11s cubic-bezier(.25,.1,.25,1) forwards}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.09)}}
+.sl video{opacity:0;transition:opacity .5s ease}
+.sl video.pl{opacity:1}
+.sl::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg,#e8ceb0) 0,color-mix(in srgb,var(--bg,#e8ceb0) 55%,transparent) 30%,transparent 52%);opacity:.75}
+.tx{position:absolute;z-index:2;left:6.6vw;top:0;bottom:0;width:39vw;display:flex;flex-direction:column;justify-content:center}
+.tx>*{opacity:0;transform:translate3d(0,1.4vw,0);transition:opacity .9s ease,transform 1.1s cubic-bezier(.2,.8,.2,1)}
+.sl.on .tx>*{opacity:1;transform:none}
+.sl.on .tx>:nth-child(1){transition-delay:.35s}.sl.on .tx>:nth-child(2){transition-delay:.5s}.sl.on .tx>:nth-child(3){transition-delay:.65s}.sl.on .tx>:nth-child(4){transition-delay:.8s}
+.kc{font-size:1.02vw;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:#9a6e46;margin-bottom:1.3vw}
+.nm{font-size:5.3vw;font-weight:800;letter-spacing:-.035em;line-height:1.02;text-wrap:balance}
+.ds{margin-top:1.7vw;max-width:31vw;font-size:1.5vw;font-weight:500;line-height:1.45;color:#6a5444;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pr{margin-top:2.6vw;display:flex;align-items:baseline;gap:.7vw;font-size:3.1vw;font-weight:800;letter-spacing:-.02em;color:#b8432c}
+.pr small{font-size:1.45vw;font-weight:600;letter-spacing:0;color:#7a5f4c}
+.pr:empty{display:none}
+.br{position:fixed;z-index:5;left:6.6vw;top:6.2vh;display:flex;align-items:center;gap:.85vw;font-size:1.02vw;font-weight:700;letter-spacing:.34em;color:#2a1d15}
+.br svg{width:2.3vw;height:2.3vw}
+.br .bl{transform-box:view-box;transform-origin:32px 23px;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ft{position:fixed;z-index:5;left:6.6vw;bottom:7.4vh;display:flex;align-items:center;gap:1.1vw;font-size:.95vw;font-weight:700;letter-spacing:.12em;color:#7a5f4c}
+.bar{width:16vw;height:.26vw;min-height:3px;border-radius:9px;background:rgba(42,29,21,.13);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;border-radius:inherit;background:#b8432c;transform-origin:0 50%;transform:scaleX(0)}
+@media (prefers-reduced-motion:reduce){.sl.kb img{animation:none}.br .bl{animation:none}}
+</style>
+</head>
+<body>
+<div id="st"></div>
+<div class="br"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><mask id="tvk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="bl"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#tvk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="bl"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle cx="32" cy="23" r="4.1" fill="#b8432c"/></svg><span>DEGIRMEN</span></div>
+<div class="ft"><span id="cn">01 / 10</span><span class="bar"><i id="pb"></i></span></div>
+<script>
+(function(){'use strict';
+var SB='https://nctmbakzbzzkygndaklr.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig';
+var ALL=['lav','bat','isk','pl','cp','la','lbz','krc','pn','tk1'];
+// фон кадра (левая пустая часть), чтобы края и смена кадров были незаметны
+var BG={lav:'#efd3b5',bat:'#eac7a0',isk:'#e3c8ad',pl:'#e6d0b9',cp:'#c6a27d',la:'#e5cbaf',lbz:'#f9e4cf',krc:'#d1aa81',pn:'#eacba8',tk1:'#ebcaa3'};
+// запасные названия, если база недоступна с самого начала
+var NM={lav:'Донер в лаваше',bat:'Донер в батоне',isk:'Искандер',pl:'Донер на тарелке',cp:'Капучино',la:'Латте',lbz:'Клубника-базилик',krc:'Круассан с курицей',pn:'Панини с куриной грудкой',tk1:'Чайник турецкого чая'};
+var KC={dn:'донер',cf:'кофе',lem:'лимонады',sw:'сэндвичи',tk:'турецкий чай',tea:'чай'};
+var q=(location.search.match(/[?&]ids=([^&]+)/)||[])[1],ids=q?decodeURIComponent(q).split(',').map(function(x){return x.trim()}).filter(function(x){return ALL.indexOf(x)>=0}):[];
+if(!ids.length)ids=ALL.slice();
+var M={};try{M=JSON.parse(localStorage.getItem('dn_tv_menu')||'{}')||{}}catch(e){M={}}
+var st=document.getElementById('st'),pb=document.getElementById('pb'),cn=document.getElementById('cn');
+var BLOB={},DUR=10000,FADE=1200,cur=null,idx=-1,timer=0,t0=0,dur=DUR;
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function mn(n){return Number(n).toLocaleString('ru')+' ₸'}
+function first(s){s=String(s||'');var m=s.match(/^.*?[.!?](\s|$)/);return (m?m[0]:s).trim()}
+function info(k){var it=M[k],d=it&&it.data||{},ds=d.ds,nm=it&&it.name&&(it.name.ru||it.name)||NM[k],pr='',pc=[];
+ try{for(var f in (d.p||{}))pc=pc.concat(d.p[f])}catch(e){}pc=pc.filter(function(x){return typeof x=='number'&&x>0});
+ if(it&&it.sold_out)pr='';else if(pc.length)pr=(pc.length>1?'<small>от</small>':'')+mn(Math.min.apply(null,pc));
+ return {nm:nm,ds:first(typeof ds=='string'?ds:ds&&ds.ru||''),pr:pr,kc:(function(c){return c&&String(nm).toLowerCase().indexOf(c)<0?c:''})(it&&KC[it.category]),off:!!(it&&it.sold_out)}}
+// запросы к базе: только чтение меню (тот же открытый ключ, что у приложения)
+function load(){var u=SB+'/rest/v1/menu_items?select=id,name,category,data,price,sold_out&id=in.('+ALL.join(',')+')';
+ return fetch(u,{headers:{apikey:KEY,Authorization:'Bearer '+KEY},cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){
+  var n={};(a||[]).forEach(function(x){n[x.id]=x});if(Object.keys(n).length){M=n;try{localStorage.setItem('dn_tv_menu',JSON.stringify(n))}catch(e){}}
+  if(cur)paint(cur,cur.k)}).catch(function(){})}
+// файлы держим в памяти: после первого круга всё работает и без сети
+function keep(u){if(BLOB[u])return Promise.resolve(BLOB[u]);return fetch(u).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){BLOB[u]=URL.createObjectURL(b);return BLOB[u]}).catch(function(){return null})}
+function src(u){return BLOB[u]||u}
+function paint(sl,k){var i=info(k),t=sl.querySelector('.tx');t.innerHTML=(i.kc?'<div class="kc">'+esc(i.kc)+'</div>':'')+'<div class="nm">'+esc(i.nm)+'</div>'+(i.ds?'<div class="ds">'+esc(i.ds)+'</div>':'')+'<div class="pr">'+i.pr+'</div>'}
+function order(){var a=ids.filter(function(k){return !(M[k]&&M[k].sold_out)});return a.length?a:ids}
+function next(){clearTimeout(timer);var a=order();idx=(idx+1)%a.length;var k=a[idx],old=cur;
+ var sl=document.createElement('div');sl.className='sl';sl.k=k;sl.style.setProperty('--bg',BG[k]||'#e8ceb0');
+ sl.innerHTML='<img alt=""><video muted playsinline preload="auto"></video><div class="tx"></div>';paint(sl,k);
+ var im=sl.querySelector('img'),v=sl.querySelector('video'),pu='/media/p/tv_'+k+'.webp',vu='/media/v/tvv_'+k+'.mp4',went=0;
+ im.src=src(pu);keep(pu);
+ var still=function(){if(went)return;went=1;try{v.pause()}catch(e){}v.removeAttribute('src');v.remove();sl.classList.add('kb');go(DUR)};
+ v.onerror=still;v.onended=function(){if(cur===sl)next()};
+ v.onplaying=function(){v.classList.add('pl');if(!went){went=1;go(((v.duration&&isFinite(v.duration))?v.duration*1000:DUR))}};
+ v.src=src(vu);if(!BLOB[vu])keep(vu);
+ st.appendChild(sl);cur=sl;cn.textContent=('0'+(idx+1)).slice(-2)+' / '+('0'+a.length).slice(-2);
+ requestAnimationFrame(function(){requestAnimationFrame(function(){sl.classList.add('on')})});
+ if(old){old.classList.remove('on');setTimeout(function(){var ov=old.querySelector('video');if(ov){try{ov.pause()}catch(e){}ov.removeAttribute('src');try{ov.load()}catch(e){}}old.remove()},FADE+100)}
+ var p=v.play();if(p&&p.catch)p.catch(function(){setTimeout(function(){if(!went&&v.paused)still()},1500)});
+ setTimeout(function(){if(!went&&cur===sl)still()},4000)}  // видео так и не пошло - фото
+function go(ms){t0=performance.now();dur=ms;clearTimeout(timer);timer=setTimeout(function(){next()},ms+400)}  // запасной переход, если «ended» не придёт
+function tick(){var p=0;if(cur){var v=cur.querySelector('video.pl');p=v&&v.duration?v.currentTime/v.duration:(performance.now()-t0)/dur}pb.style.transform='scaleX('+Math.max(0,Math.min(1,p)).toFixed(4)+')';requestAnimationFrame(tick)}
+// экран не гаснет
+var wl=null;function wake(){try{if(navigator.wakeLock&&document.visibilityState=='visible')navigator.wakeLock.request('screen').then(function(l){wl=l}).catch(function(){})}catch(e){}}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState=='visible'){wake();if(cur){var v=cur.querySelector('video');if(v&&v.paused&&v.getAttribute('src')){var p=v.play();if(p&&p.catch)p.catch(function(){})}}}});
+// раз в 6 часов перезагрузка (новая версия страницы), но только если сайт отвечает - иначе продолжаем с тем, что есть
+function reload(){fetch('/tv.html?'+Date.now(),{cache:'no-store'}).then(function(r){if(r.ok)location.reload();else setTimeout(reload,6e5)}).catch(function(){setTimeout(reload,6e5)})}
+setTimeout(reload,6*3600e3);
+setInterval(load,5*60e3);
+wake();load();next();tick();
+// заранее подгружаем все кадры в память, по одному
+(function pre(i){if(i>=ids.length)return;var k=ids[i];keep('/media/p/tv_'+k+'.webp').then(function(){return keep('/media/v/tvv_'+k+'.mp4')}).then(function(){setTimeout(function(){pre(i+1)},300)})})(0);
+})();
+</script>
+</body>
+</html>
