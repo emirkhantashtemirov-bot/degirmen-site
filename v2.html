@@ -1724,6 +1724,20 @@ html[data-theme=light] .gmrow.me{background:rgba(184,67,44,.12)}
 html[data-theme=light] .gmtap{background:rgba(251,245,236,.92);color:#2a1d15;box-shadow:0 8px 20px -8px rgba(42,29,21,.5)}
 html[data-theme=light] :is(.wide,.sm).off .wp span{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:999px;background:rgba(42,29,21,.08);color:#5c4636;font-size:13px;font-weight:700;letter-spacing:0}
 html[data-theme=light] :is(.wide,.sm).off .nm,html[data-theme=light] :is(.wide,.sm).off h3{color:#6b5444}
+
+/* плавность на телефоне: без размытия на том, что двигается при прокрутке (размытие пересчитывается в каждом кадре), фон плотнее; карточка товара выезжает снизу */
+html[data-theme=light] .ftr,html[data-theme=light] .pill,html[data-theme=light] .pbar,html[data-theme=light] .kbbar{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#fffaf2!important}
+html[data-theme=light] .scr.p2 .pbar{background:rgba(255,250,242,.97)!important}
+html[data-theme=light] .pg .cats.stk{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#f3eadc!important}
+.pmbar,.hvr,.pmnut,.scr.pm .rb.dk{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html[data-theme=light] .pmbar{background:color-mix(in srgb,var(--sand,#dcbf9d) 22%,#fbf5ec)!important}
+html[data-theme=light] .hvr,html[data-theme=light] .pmnut{background:rgba(255,250,242,.9)!important}
+html[data-theme=light] .scr.pm .rb.dk{background:rgba(255,250,242,.92)!important}
+@keyframes pmin{from{transform:translate3d(0,100%,0)}to{transform:none}}
+@keyframes pmout{to{transform:translate3d(0,100%,0)}}
+html.motion .scr.p2.in,html.motion .scr.pm.in{animation:pmin .42s cubic-bezier(.22,1,.36,1) backwards!important;will-change:transform}
+html.motion .scr.p2.out,html.motion .scr.pm.out{animation:pmout .3s cubic-bezier(.4,0,.8,.3) forwards!important;will-change:transform}
+html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!important}
 </style><style id="splcss">
 /* ---------- заставка (#spl) и экран «нет интернета» (#off): работают без приложения и без сети ---------- */
 #spl{position:fixed;inset:0;z-index:2147483000;background:#efe2cd;background:radial-gradient(120% 70% at 50% 28%,#f8efe2 0,#ecdcc4 62%,#e2cdb0 100%);overflow:hidden;contain:strict;transition:opacity .62s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);color:#2a1d15;font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
@@ -1913,11 +1927,11 @@ const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb 
  MEDIA2=new Set('lhm pd_ch pd_mt pd_mx pz_mg pz_sj pz_ck pz_4c bg_bf bg_ck bg_mx kasha menemen eggs kahvalti simit borek bliny lav_bf lav_ck la_ice tea_pot'.split(' ')),
  medOk=k=>MEDIA.has(k)||MEDIA2.has(k),
  medKey=it=>{if(!it||it.image_url||(it.data&&it.data.pack))return '';const m=it.data&&it.data.media;if(m)return typeof m=='string'&&medOk(m)?m:'';return MEDIA.has(it.id)?it.id:''},
- hasMed=it=>!!medKey(it),medP=(k,sm)=>'/media/p/'+k+(sm?'.s':'')+'.webp',medV=k=>'/media/v/'+(MEDIA2.has(k)?'v_':'')+k;
+ hasMed=it=>!!medKey(it),medP=(k,sm)=>'/media/p/'+k+(sm==1?'.s':sm==2?'.m':'')+'.webp',medV=k=>'/media/v/'+(MEDIA2.has(k)?'v_':'')+k;
 const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
-const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?medP(medKey(it),1):imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
+const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp?(it.image_url||medP(medKey(it),/\bphs\b/.test(cls)?1:2)):imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':/\.m\./.test(src)?' width="640" height="640"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
 function imgOk(im){const p=im.parentNode;im.classList.add('ld');p.classList.add('hasimg');LOADED.add(im.getAttribute('src'));
  if(p.classList.contains('ph')&&p.closest('#app')){const a=p.querySelector(':scope>.phe');if(a&&a.firstChild)a.replaceChildren()}}  // фото в ленте загрузилось - рисунок под ним больше не нужен (он запасной, на случай если фото не загрузится): убираем его узлы, чтобы страница была легче
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
@@ -3058,9 +3072,9 @@ const pl=(on,fn,l)=>`<button class="pl ${on?'on':''}" onclick="${fn}">${l}</butt
 const defLine=(it,qty=1,z=0)=>({id:it.id,f:fills(it)[0],z,o:[],qty,syr:-1,sg:0,ing:Object.fromEntries(gi(it).map(k=>[k,1]))});
 function pushLine(l){const sg=x=>JSON.stringify([x.id,x.f,x.z,[...x.o].sort(),x.syr,x.sg,x.ing]),m=S.cart.find(x=>!x.free&&sg(x)==sg(l));if(m){m.qty=Math.min(QMAX,m.qty+l.qty);if(m.qty==QMAX)toast(t('e_qmax'))}else{if(S.cart.length>=LMAX){toast(t('e_too_big'),1);return}l.qty=Math.min(QMAX,l.qty);S.cart.push(l)}}
 function op_(id,ev){const it=itemOf(id);if(it.sold_out)return;S.sel=defLine(it);const src=ev&&ev.currentTarget&&ev.currentTarget.querySelector('.ph');
-if(document.startViewTransition&&!RM&&src){src.style.viewTransitionName='hero';document.startViewTransition(()=>{src.style.viewTransitionName='';S.vt=1;if(S.sel)prod();S.vt=0}).finished.finally(()=>{const c=document.querySelector('.circ');if(c)c.style.viewTransitionName=''})}else prod()}
+if(false&&src){src.style.viewTransitionName='hero';document.startViewTransition(()=>{src.style.viewTransitionName='';S.vt=1;if(S.sel)prod();S.vt=0}).finished.finally(()=>{const c=document.querySelector('.circ');if(c)c.style.viewTransitionName=''})}else prod()}
 // закрытие: фото «возвращается» в карточку
-function closeProd(){const id=S.sel&&S.sel.id,c=document.querySelector('.circ');if(document.startViewTransition&&!RM&&c&&id){c.style.viewTransitionName='hero';document.startViewTransition(()=>{c.style.viewTransitionName='';cl(true);const card=document.querySelector(`#app [data-id="${id}"] .ph`);if(card)card.style.viewTransitionName='hero'}).finished.finally(()=>{document.querySelectorAll('#app .ph').forEach(x=>x.style.viewTransitionName='')})}else cl()}
+function closeProd(){const id=S.sel&&S.sel.id,c=document.querySelector('.circ');if(false&&c&&id){c.style.viewTransitionName='hero';document.startViewTransition(()=>{c.style.viewTransitionName='';cl(true);const card=document.querySelector(`#app [data-id="${id}"] .ph`);if(card)card.style.viewTransitionName='hero'}).finished.finally(()=>{document.querySelectorAll('#app .ph').forEach(x=>x.style.viewTransitionName='')})}else cl()}
 function pk(k,v){S.sel[k]=v;prod();if(S.pk)picker()}function pi(k,v){S.sel.ing[k]=v;prod();picker()}function po(id){const o=S.sel.o,i=o.indexOf(id);i<0?o.push(id):o.splice(i,1);prod();picker()}
 const tl=(k,label,sub,on)=>`<button class="tile ${on?'on':''}" onclick="S.pk='${k}';picker()"><span class="ic">${on?IC.chk:IC.plus}</span>${label}<small>${sub?e(sub):'&nbsp;'}</small></button>`;
 function tilesOf(it,s){const out=[],gs=gi(it);
@@ -3219,7 +3233,7 @@ function sync(){const s=top(),now=!!s,w=!!s&&s.classList.contains('warm');
 new MutationObserver(sync).observe(M,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
 // при закрытии карточки с «перелётом» картинки главный экран встаёт на место сразу, чтобы картинка прилетела точно в свою карточку
 const still=on=>AB().forEach(a=>a.style.transition=on?'none':'');
-const _closeProd=closeProd;closeProd=function(){if(document.startViewTransition&&!RM){still(1);setTimeout(()=>still(0),800)}return _closeProd.apply(this,arguments)};
+const _closeProd=closeProd;closeProd=function(){if(false){still(1);setTimeout(()=>still(0),800)}return _closeProd.apply(this,arguments)};
 // «Заказы» и «Касса» - это страницы, а не экраны поверх: раньше меню просто исчезало и новая страница собиралась кусками.
 // Теперь переход целиком: новая страница заезжает справа, меню уходит влево и темнеет; назад - наоборот.
 const pageVT=(fn,dir)=>function(){const args=arguments;
