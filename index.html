@@ -1633,6 +1633,16 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 html[data-theme=dark] .hvr{background:rgba(28,20,16,.5);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.14)}
 .circ.hv .hvr{bottom:14px}
 .scr.pm .circ.hv .hvr{bottom:46px}
+/* сезон: выбор заставки в админке и мягкий фон баннера на главной */
+.sea h3{margin:2px 4px 8px;font-size:18px}
+.seag{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 10px}
+.seac{display:flex;flex-direction:column;gap:7px;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:center}
+.seai{display:block;aspect-ratio:9/14;border-radius:16px;overflow:hidden;background:#dcc4a2}.seai img{width:100%;height:100%;object-fit:cover;display:block}
+.seac b{font-size:13px;font-weight:600;color:var(--mu)}
+.seac.on .seai{box-shadow:0 0 0 3px var(--ac)}.seac.on b{color:var(--tx);font-weight:800}
+.tvu{margin:2px 4px 8px;padding:12px 14px;border-radius:14px;background:var(--s1);font:600 14px/1.3 ui-monospace,Menlo,monospace;word-break:break-all;user-select:all}
+.hero.hsea{isolation:isolate}
+.hero.hsea::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--hsea) 50% 18%/cover no-repeat;opacity:.45;-webkit-mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.55) 62%,#000 100%);mask-image:linear-gradient(90deg,transparent 30%,rgba(0,0,0,.55) 62%,#000 100%)}
 /* админка: выбор фото и видео позиции */
 .mdrow{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
 .mdrow .mdi{width:56px;height:56px;flex:none}
@@ -1701,6 +1711,12 @@ html[data-theme=light] :is(.wide,.sm).off .nm,html[data-theme=light] :is(.wide,.
 #spl .spp{position:absolute;z-index:2;left:50%;bottom:calc(46px + env(safe-area-inset-bottom));width:120px;height:3px;margin-left:-60px;border-radius:3px;background:rgba(255,250,242,.45);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 #spl .spp::before{content:'';position:absolute;top:0;bottom:0;width:45%;border-radius:3px;background:linear-gradient(90deg,rgba(255,250,242,0),#fffaf2,rgba(255,250,242,0));animation:splbar 1.25s ease-in-out infinite}
 #spl.spout{opacity:0;transform:scale(1.035);pointer-events:none}
+/* тёмные сезонные заставки (снег, Рамадан): верх кадра тёмный - мельница и надпись светлые */
+#spl.spdk{background:#1c2232}
+#spl.spdk::after{background:linear-gradient(to bottom,rgba(14,18,30,.62) 0,rgba(14,18,30,.42) 28%,rgba(14,18,30,.12) 46%,rgba(14,18,30,0) 60%),linear-gradient(to top,rgba(20,14,10,.22),rgba(20,14,10,0) 22%)}
+#spl.spdk .spk{color:#fbf5ec;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
+#spl.spdk .spw{color:#fbf5ec}
+#spl.spdk .spt{color:rgba(251,245,236,.82)}
 #spl.spcalm *,#spl.spcalm .spm{animation:none!important;transition:opacity .3s!important;opacity:1}
 #spl.spcalm .spm:not(.spon){opacity:0}
 #spl.spcalm .spw i,#spl.spcalm .spt,#spl.spcalm .spk{opacity:1!important;transform:none!important}
@@ -1755,10 +1771,14 @@ var skip=/[?&](mode|doc)=/.test(q)||!!ls('dn_mode');try{skip=skip||sessionStorag
 if(skip||!el){if(el)el.remove();window.DNSPL={ready:function(){},gone:true};return}
 var calm=ls('dn_motion')=='off',t0=Date.now(),rdy=0,done=0,im=el.querySelectorAll('img'),v=el.querySelector('video');if(calm)el.classList.add('spcalm');else el.classList.add('spgo');
 var on=function(x){x.classList.add('spon')};
-im[0].onload=function(){on(im[0])};im[0].src='/media/p/splash.s.webp';
-im[1].onload=function(){on(im[1])};im[1].src='/media/v/splash.webp';
+/* сезонная заставка (админка → «Сезон», приложение хранит выбор в dn_season): spl_<k> / splv_<k>; файл не загрузился - обычная заставка */
+var SE={snow:1,newyear:0,ramadan:1,nauryz:0,summer:0},sk=ls('dn_season');if(!(typeof sk=='string'&&SE.hasOwnProperty(sk)))sk='';
+if(sk&&SE[sk])el.classList.add('spdk');
+var fb=function(x,u){x.onerror=function(){if(x.dataset.f)return;x.dataset.f='1';el.classList.remove('spdk');x.src=u}};
+im[0].onload=function(){on(im[0])};if(sk)fb(im[0],'/media/p/splash.s.webp');im[0].src=sk?'/media/p/spl_'+sk+'.s.webp':'/media/p/splash.s.webp';
+im[1].onload=function(){on(im[1])};if(sk)fb(im[1],'/media/v/splash.webp');im[1].src=sk?'/media/v/splv_'+sk+'.webp':'/media/v/splash.webp';
 var c=navigator.connection,slow=c&&(c.saveData||(c.effectiveType&&c.effectiveType!='4g'));
-if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.src='/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
+if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.addEventListener('error',function(){v.classList.remove('spon');v.removeAttribute('src')});v.src=sk?'/media/v/splv_'+sk+'.mp4':'/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function hide(){if(done)return;done=1;el.classList.add('spout');R.classList.remove('splon');try{if(typeof S!='undefined'&&typeof render=='function'&&!S.scr&&!S.loading){enter();render()}}catch(e){}
  setTimeout(function(){try{v&&v.pause();v&&v.removeAttribute('src')}catch(e){}el.remove();window.DNSPL.gone=true;try{dispatchEvent(new Event('dnsplash'))}catch(e){}},calm?350:760)}
 function tick(){var w=Date.now()-t0;if(rdy&&w>=1500)hide();else if(w>=6000)hide();else setTimeout(tick,rdy?1500-w:120)}
@@ -3089,7 +3109,7 @@ async function so(id,k,v){const{error}=await sb.rpc(k=='i'?'set_sold_out':'set_o
 const tmx=o=>o.pickup_time?`<div>${t('at','ru')} ${new Date(o.pickup_time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}</div>`:'';
 function its(o,L){return o.items.map(i=>{const it=i.f!==undefined&&itemOf(i.id);const n=it?lineName(i,L):i.name,d=it?desc(i,L):i.desc;return `${i.qty}× ${e(n)} <span class="mu">${e(d)}</span>`}).join('<br>')}
 function kas(){const act=S.ord.filter(o=>!['done','cancelled'].includes(o.status));
-const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы')+cc(0,"finM('buy')",'Закупы'):'')+cc(0,'tutM()','🎓 Обучение')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
+const tabs=`<div class="tabs">${cc(S.kt=='ord',"S.kt='ord';render()",t('tabOrd')+' ('+act.length+')')}${cc(S.kt=='stop',"S.kt='stop';render()",t('tabStop'))+cc(0,"finM('day')",'Отчёт дня')+(isAdm()?cc(0,"finM('month')",'Финансы')+cc(0,"finM('buy')",'Закупы'):'')+cc(0,'tutM()','🎓 Обучение')}${isAdm()?cc(S.kt=='menu',"S.kt='menu';render()",t('tabMenu'))+cc(0,'statsM()',t('stt'))+cc(0,'fcM()',t('nx_fc'))+cc(0,'usersM()',t('nx_users'))+cc(0,'palNewM()',t('pw_btn'))+cc(0,'seaM()',t('se_btn'))+cc(0,'tvM()',t('tv_btn')):''}${cc(0,'stockM()',t('nx_stock'))+cc(0,'apDevM()','Устройства')}</div>`;
 if(S.kt=='stop'||(S.kt=='menu'&&!isAdm()))return tabs+[...S.items.map(x=>[x,'i']),...S.opts.filter(o=>o.categories.length).map(x=>[x,'o'])].map(([x,k])=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px"><span style="${x.sold_out?'opacity:.5':''}">${e(nm(x.name))}</span>${cc(x.sold_out,`so('${x.id}','${k}',${!x.sold_out})`,x.sold_out?t('back'):t('endd'))}</div>`).join('');
 if(S.kt=='menu')return tabs+menuEd();
 return tabs+(act.length?'':`<div class="empty">${emArt('ord',1)}<p>${t('kas_empty')}</p></div>`)+act.map(o=>`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><span><span class="id">#${o.id}</span> ${kasWho(o)}</span><span class="st ${o.status}">${t('s_'+o.status,'ru')}</span></div><div style="margin:10px 0">${its(o,'ru')}</div>${o.note?`<div>${t('notel','ru')}: ${e(o.note)}</div>`:''}${tmx(o)}${kasPaid(o)}<b>${mn(o.total)}</b><div class="pr" style="justify-content:flex-start;margin-top:12px">${[['cooking',0],['ready',1],['done',0],['cancelled',0]].map(([s,on])=>cc(on,`ss(${o.id},'${s}')`,t('b_'+s,'ru'))).join('')}</div></div>`).join('')}
@@ -3133,7 +3153,7 @@ function render(){let h='',bar='';document.body.style.overflow=S.scr?'hidden':''
 	if(S.loading)h=hdr()+`<div class="cats"><span class="skc on"></span><span class="skc"></span><span class="skc"></span><span class="skc"></span></div><div class="list" style="padding-top:24px"><div class="skw"><div class="skph"></div><div class="sktx"><i class="skl w1"></i><i class="skl w2"></i></div></div><div class="grid"><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div></div></div>`;
 else if(S.fail)h=hdr()+`<div class="empty">${emArt('hill')}<p>${t('loadfail')}</p><p class="mu" style="font-size:14px;margin-top:-6px">${({ru:'Проверьте интернет и нажмите «Повторить».',kk:'Интернетті тексеріп, «Қайталау» түймесін басыңыз.',en:'Check your connection and tap Retry.'})[S.L]||''}</p><button class="sec2" style="width:auto;padding:0 28px" onclick="boot()">${t('retry')}</button></div>`;
 else if(S.v=='menu'){let n=0;const cl_=catList();
-h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+heroHtml()+`<div class="cats">${cl_.map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
+h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+(typeof seaHero=='function'?seaHero(heroHtml()):heroHtml())+`<div class="cats">${cl_.map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
 `<div class="cv">`+cl_.map(cat=>`<section class="csec" id="cat-${cat}" data-cat="${cat}"><h2 class="ctit">${t('c_'+cat)}</h2>`+(cat=='cf'&&typeof bwCard=='function'?bwCard():'')+secOf(cat).map(s=>`<div id="sec-${cat}-${s.k}">${s.l?`<div class="sec">${t(s.l)}</div>`:''}<div class="list">${wide(s.items[0],n++)}${s.items.length>1?`<div class="grid">${s.items.slice(1).map(i=>small(i,n++)).join('')}</div>`:''}</div></div>`).join('')+`</section>`).join('')+`</div></div>`;
 const ac=activeMine(),rd=ac.some(o=>o.status=='ready'),nC=S.cart.reduce((a,x)=>a+x.qty,0);
 bar=aiFab()+`<div class="pill"><button onclick="goOrd()">${t('orders')}${ac.length?`<i class="dot ${rd?'r':''}"></i>`:''}</button>${staff()?`<button onclick="goKas()">${t('kas')}</button>`:''}<button class="pa" onclick="cart()">${t('cart')}${nC&&(S.shownTot??tot())>0?' · '+mn(S.shownTot??tot()):''}</button></div>`}
@@ -5451,6 +5471,28 @@ async function mdSet(id,k){if(!isAdm()||(k&&k!='none'&&!medOk(k)))return;
  const d={...cur.data.data};if(k)d.media=k;else delete d.media;
  const{data,error}=await sb.from('menu_items').update({data:d}).eq('id',id).select();
  if(error||!data?.length){toast(error?error.message:t('noRights'),1);return}cp();await loadMenu();render();toast(t('saved'))}
+// ---------- сезонная заставка: админ выбирает в «Сезон» (app_settings.season через set_app_setting), приложение запоминает в dn_season для заставки ----------
+Object.assign(T.ru,{se_btn:'Сезон',se_t:'Сезонная заставка',se_d:'Картинка при открытии приложения. Включите под праздник или погоду - гости увидят её со следующего запуска.',se_default:'Обычная',se_snow:'Снег',se_newyear:'Новый год',se_ramadan:'Рамадан',se_nauryz:'Наурыз',se_summer:'Лето',se_ok:'Готово. Гости увидят новую заставку при следующем открытии',se_see:'Посмотреть заставку',
+ tv_btn:'Экран в зале',tv_t:'Экран в зале',tv_d:'Страница для телевизора: видео блюд по кругу с названием и ценой. Откройте адрес в браузере телевизора или ТВ-приставки и включите полный экран. Цены обновляются сами.',tv_open:'Открыть',tv_copy:'Скопировать адрес',tv_cp:'Адрес скопирован',tv_ids:'Только выбранные блюда: добавьте в конец адреса ?ids=lav,cp,la'});
+Object.assign(T.kk,{se_btn:'Маусым',se_t:'Маусымдық заставка',se_d:'Қосымша ашылғандағы сурет. Мерекеге не ауа райына қарай қосыңыз - қонақтар келесі ашқанда көреді.',se_default:'Әдеттегі',se_snow:'Қар',se_newyear:'Жаңа жыл',se_ramadan:'Рамазан',se_nauryz:'Наурыз',se_summer:'Жаз',se_ok:'Дайын. Қонақтар жаңа заставканы келесі ашқанда көреді',se_see:'Заставканы көру',
+ tv_btn:'Залдағы экран',tv_t:'Залдағы экран',tv_d:'Теледидарға арналған бет: тағамдардың бейнесі атауы мен бағасымен кезекпен көрсетіледі. Мекенжайды теледидар не ТВ-приставка браузерінде ашып, толық экранды қосыңыз. Бағалар өзі жаңарады.',tv_open:'Ашу',tv_copy:'Мекенжайды көшіру',tv_cp:'Мекенжай көшірілді',tv_ids:'Тек таңдалған тағамдар: мекенжай соңына ?ids=lav,cp,la қосыңыз'});
+Object.assign(T.en,{se_btn:'Season',se_t:'Seasonal splash',se_d:'The picture shown when the app opens. Switch it on for a holiday or the weather - guests will see it from their next launch.',se_default:'Regular',se_snow:'Snow',se_newyear:'New Year',se_ramadan:'Ramadan',se_nauryz:'Nauryz',se_summer:'Summer',se_ok:'Done. Guests will see the new splash next time they open the app',se_see:'Preview the splash',
+ tv_btn:'Hall screen',tv_t:'Hall screen',tv_d:'A page for the TV: dish videos in a loop with name and price. Open the address in the TV or TV box browser and go full screen. Prices update by themselves.',tv_open:'Open',tv_copy:'Copy address',tv_cp:'Address copied',tv_ids:'Only some dishes: add ?ids=lav,cp,la to the end of the address'});
+const SEASONS=['default','snow','newyear','ramadan','nauryz','summer'];
+const seaCur=()=>{const v=LS.get('dn_season','default');return SEASONS.includes(v)?v:'default'};
+async function seasonLoad(){try{const{data,error}=await sb.from('app_settings').select('v').eq('k','season').maybeSingle();if(error)return;
+ const v=data&&typeof data.v=='string'&&SEASONS.includes(data.v)?data.v:'default';if(v!=LS.get('dn_season','default')){LS.set('dn_season',v);if(!S.scr&&S.v=='menu')render()}}catch{}}
+setTimeout(seasonLoad,1200);
+function seaM(){if(!isAdm())return;const cur=seaCur();
+ shw(`<div class="sea"><h3>${t('se_t')}</h3><p class="mdw">${t('se_d')}</p><div class="seag">${SEASONS.map(k=>`<button class="seac${k==cur?' on':''}" onclick="seaSet('${k}')"><span class="seai"><img src="/media/p/${k=='default'?'splash':'spl_'+k}.s.webp" alt="" loading="lazy"></span><b>${t('se_'+k)}</b></button>`).join('')}</div>
+ <button class="c" style="margin-top:14px;width:100%" onclick="try{sessionStorage.removeItem('dn_spl')}catch{}location.reload()">${t('se_see')}</button></div>`)}
+async function seaSet(k){if(!isAdm()||!SEASONS.includes(k))return;const{error}=await sb.rpc('set_app_setting',{p_k:'season',p_v:k});if(error){toast(error.message,1);return}
+ LS.set('dn_season',k);seaM();toast(t('se_ok'))}
+// баннер на главной: в сезон - мягкий фон из сезонной картинки справа
+function seaHero(h){const k=seaCur();if(k=='default'||typeof h!='string')return h;return h.replace(/^<div class="hero/,`<div style="--hsea:url('/media/p/spl_${k}.s.webp')" class="hsea hsea-${k} hero`)}
+function tvM(){if(!isAdm())return;const u=location.origin+'/tv.html';
+ shw(`<div class="sea"><h3>${t('tv_t')}</h3><p class="mdw">${t('tv_d')}</p><div class="tvu">${e(u)}</div><p class="mdw">${t('tv_ids')}</p>
+ <div style="display:flex;gap:10px"><a class="c" style="flex:1;text-align:center;text-decoration:none" href="/tv.html" target="_blank" rel="noopener">${t('tv_open')}</a><button class="c" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText('${e(u)}').then(()=>toast(t('tv_cp')),()=>{})">${t('tv_copy')}</button></div></div>`)}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
