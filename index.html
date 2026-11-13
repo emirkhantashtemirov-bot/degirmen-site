@@ -5636,6 +5636,26 @@ html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background
   b.forEach((c,i)=>{if(!D.includes(c))return;const o=a[i+off],from=o&&D.includes(o)?+o:0,to=+c,col=cols[k++];
    col.style.transform=`translateY(${-to*10}%)`;if(from!=to)col.animate([{transform:`translateY(${-from*10}%)`},{transform:`translateY(${-to*10}%)`}],{duration:300+k*25,easing:'cubic-bezier(.2,.9,.25,1.05)'})});
   el._odt=setTimeout(()=>{el._odt=0;if(el.dataset.v==txt)el.textContent=txt},300+k*25+40)}}
+// ---------- карточка товара раскрывается из нажатой карточки меню и закрывается обратно в неё (один замер, только transform и opacity) ----------
+{document.head.insertAdjacentHTML('beforeend',`<style>html.motion #m .scr.flp{animation:none!important}</style>`);
+ const vis=r=>r&&r.width>8&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,
+  SPR='cubic-bezier(.2,1.08,.32,1)',
+  fl=(cr,hr)=>{const s=Math.max(cr.width/hr.width,cr.height/hr.height),dx=cr.left+cr.width/2-hr.left-hr.width*s/2,dy=cr.top+cr.height/2-hr.top-hr.height*s/2;return `translate3d(${dx}px,${dy}px,0) scale(${s})`};
+ const _o=op_;op_=function(id,ev){let cr=null;try{const src=FM&&!RM&&ev&&ev.currentTarget&&ev.currentTarget.querySelector&&ev.currentTarget.querySelector('.ph,.bwp');if(src)cr=src.getBoundingClientRect()}catch{}
+  const r=_o.apply(this,arguments);
+  try{if(vis(cr)){const sc=document.querySelector('#m .scr[data-n=prod].in:not(.out)'),h=sc&&sc.querySelector('.circ');if(sc)sc.classList.add('flp');const hr=h&&h.getBoundingClientRect();
+   if(sc&&!vis(hr))sc.classList.remove('flp');else if(sc){
+    h.animate([{transform:fl(cr,hr),transformOrigin:'0 0'},{transform:'none',transformOrigin:'0 0'}],{duration:460,easing:SPR});
+    sc.animate([{opacity:0},{opacity:1}],{duration:240,easing:'cubic-bezier(.3,0,.4,1)'})}}}catch{}
+  return r};
+ const _c=closeProd;closeProd=function(){let o=null,h=null,hr=null;const id=S.sel&&S.sel.id;
+  try{if(FM&&!RM&&id){o=document.querySelector('#m .scr[data-n=prod]:not(.out)');h=o&&o.querySelector('.circ');hr=h&&h.getBoundingClientRect();if(o)o.classList.remove('flp')}}catch{}
+  const r=_c.apply(this,arguments);
+  try{if(o&&o.classList.contains('out')&&vis(hr)){const c=document.querySelector(`#app [data-id="${id}"] :is(.ph,.bwp)`),cr=c&&c.getBoundingClientRect();
+   if(vis(cr)){o.getAnimations().forEach(a=>a.cancel());o.classList.add('flp');
+    h.animate([{transform:'none',transformOrigin:'0 0'},{transform:fl(cr,hr),transformOrigin:'0 0'}],{duration:340,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
+    o.animate([{opacity:1},{opacity:1,offset:.45},{opacity:0}],{duration:340,easing:'linear',fill:'forwards'})}}}catch{}
+  return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
