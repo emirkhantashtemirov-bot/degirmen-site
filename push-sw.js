@@ -7,7 +7,7 @@
 const VER = 'v3-3';
 const SHELL = 'dn-shell-' + VER, MEDIA = 'dn-media-' + VER, LIB = 'dn-lib-' + VER;
 const KEEP = [SHELL, MEDIA, LIB];
-const MEDIA_MAX = 80, LIB_MAX = 30;
+const MEDIA_MAX = 260, LIB_MAX = 30;
 const PRE = ['/', '/app.webmanifest', '/media/logo-mill.svg', '/media/icon/icon-192.png', '/media/p/splash.s.webp'];
 
 self.addEventListener('install', e => {
