@@ -4,11 +4,11 @@
 //  - фото меню /media/p/*, значки, шрифты и библиотека supabase-js с CDN: из кэша, с ограничением по количеству;
 //  - видео /media/v/*, запросы к базе (Supabase), функции, POST - никогда не кэшируются;
 //  - аварийный выключатель: если /sw-off.txt отдаёт 200, worker удаляет кэши и снимает себя.
-const VER = 'v3-3';
+const VER = 'v3-4';
 const SHELL = 'dn-shell-' + VER, MEDIA = 'dn-media-' + VER, LIB = 'dn-lib-' + VER;
 const KEEP = [SHELL, MEDIA, LIB];
 const MEDIA_MAX = 260, LIB_MAX = 30;
-const PRE = ['/', '/app.webmanifest', '/media/logo-mill.svg', '/media/icon/icon-192.png', '/media/p/splash.s.webp'];
+const PRE = ['/', '/app.webmanifest', '/media/logo-mill.svg', '/media/icon/icon-192-v2.png', '/media/p/splash.s.webp'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();
@@ -73,7 +73,7 @@ self.addEventListener('fetch', e => {
     if (same && (u.pathname === '/' || u.pathname === '/index.html')) e.respondWith(page(req));
     return;
   }
-  if (same && (u.pathname.startsWith('/media/p/') || u.pathname.startsWith('/media/icon/') || u.pathname === '/media/logo-mill.svg' || u.pathname === '/app.webmanifest')) {
+  if (same && (u.pathname.startsWith('/media/p/') || u.pathname.startsWith('/media/icon/') || u.pathname === '/media/logo-mill.svg')) {
     e.respondWith(cacheFirst(req, MEDIA, MEDIA_MAX)); return;
   }
   if (u.hostname === 'fonts.googleapis.com' || u.hostname === 'fonts.gstatic.com' || (u.hostname === 'cdn.jsdelivr.net' && u.pathname.startsWith('/npm/@supabase/supabase-js@2.'))) {
@@ -85,7 +85,7 @@ self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data && e.data.text() }; }
   e.waitUntil(self.registration.showNotification(d.title || 'Degirmen Navoi', {
-    body: d.body || '', tag: d.tag, renotify: true, icon: '/media/icon/icon-192.png', badge: '/media/icon/icon-192.png',
+    body: d.body || '', tag: d.tag, renotify: true, icon: '/media/icon/icon-192-v2.png', badge: '/media/icon/icon-192-v2.png',
     vibrate: [200, 100, 200], data: { url: d.url || './' }
   }));
 });
