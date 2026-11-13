@@ -750,7 +750,7 @@ a.tgb{text-decoration:none;-webkit-tap-highlight-color:transparent}
 .fnadd{width:100%;margin-top:6px;padding:10px;border-radius:14px;border:1px dashed rgba(243,235,225,.18);background:none;color:var(--mu);font:600 14px var(--f);cursor:pointer}
 .fnwo .fnpl span{flex:1;min-width:0}.fnwo .fnpl .fnx{margin-right:-8px}.fnwo .fnl.wo{margin-top:10px}.fnwo .fnl.wo .fnn+.fnn{margin-top:6px}
 /* прокрутка: постоянные анимации (пар, блик, вращающаяся пачка Brewsell, точка на колокольчике, пульс ИИ) стоят, пока лента едет, иначе страница пересчитывает вёрстку каждый кадр */
-html.scrl .artv,html.scrl .artv *,html.scrl .stmw i,html.scrl .bwp,html.scrl .bwp *,html.scrl .bwbtn::after,html.scrl .kbhb::after,html.scrl .kbdot,html.scrl .aifab svg,html.scrl .aifab::after,html.scrl .aimic.on::after{animation-play-state:paused!important}
+html.scrl .artv,.artv.scp *,html.scrl .stmw i,html.scrl .bwp,.bwp.scp *,html.scrl .bwbtn::after,html.scrl .kbhb::after,html.scrl .kbdot,html.scrl .aifab svg,html.scrl .aifab::after,html.scrl .aimic.on::after{animation-play-state:paused!important}
 .fnd.ok{color:#9fd39f}.fnd.bad{color:#ff9a86}
 .fnnote2{width:100%;min-height:64px;margin-top:10px;padding:12px 14px;border:0;border-radius:16px;background:var(--s2);color:var(--tx);font:15px/1.4 var(--f);resize:vertical}
 .fnfoot{display:flex;flex-direction:column;gap:2px;margin:6px 0 14px}
@@ -1308,6 +1308,7 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
 .bwp .fr::after{animation:none!important;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.18) 48%,transparent 60%)}
 .bwp-b,.bwp-r,.bwo{will-change:transform}
 .offs,.offs *,.offs::after,.offs *::after{animation-play-state:paused!important}
+.ph.far::after{animation:none!important}
 /* свои фото блюд (media/p): фото заполняет площадку карточки целиком */
 .ph.mp img{object-fit:cover}
 .ph.mp.hasimg{box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
@@ -1917,7 +1918,8 @@ const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото и
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
 const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp&&/\bphs\b/.test(cls)?medP(medKey(it),1):imgSrc(it),ld=LOADED.has(src);return `<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
-function imgOk(im){im.classList.add('ld');im.parentNode.classList.add('hasimg');LOADED.add(im.getAttribute('src'))}
+function imgOk(im){const p=im.parentNode;im.classList.add('ld');p.classList.add('hasimg');LOADED.add(im.getAttribute('src'));
+ if(p.classList.contains('ph')&&p.closest('#app')){const a=p.querySelector(':scope>.phe');if(a&&a.firstChild)a.replaceChildren()}}  // фото в ленте загрузилось - рисунок под ним больше не нужен (он запасной, на случай если фото не загрузится): убираем его узлы, чтобы страница была легче
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
 const GRPS=['spc','tmp','milk','cup'],MGRPS=['hlth','top'];
@@ -2803,7 +2805,7 @@ return `<div class="lab">${t('nx_mywall')}</div>`+S.wall.map((c,i)=>{const a=who
 
 // ---------- отрисовка без лишних перерисовок ----------
 // Сравниваем разметку без классов «появления»: если изменились только они, DOM не трогаем - анимации не проигрываются повторно, картинки не мигают.
-function paint(h){const hn=h.replace(/ (ent|pgin)(?=[ "])/g,'');
+function paint(h){const hn=h.replace(/ (ent|pgin)(?=[ "])/g,'').replace(/mlk\d+/g,'mlk').replace(/ hasimg(?=[ "])/g,'').replace(/ class="ld"/g,' class=""');  // не считаем изменением: новый id маски MILL() и отметки «фото загрузилось» (их ставит imgOk прямо в живой ленте) - иначе вся лента перерисовывается заново
 if(S._h!==null&&S._h!==undefined&&S._hn===hn){S._h=h;return}
 const cs=document.querySelector('.cats'),sl=cs?cs.scrollLeft:0,io=cs&&cs.querySelector('.ind'),old=io?{x:+io.dataset.x,w:+io.dataset.w}:null;
 const cv=document.querySelector('#app .cv');
@@ -4952,7 +4954,7 @@ function spy(){raf=0;if(S.v!='menu'||S.scr||Date.now()<lockT)return;const cs=doc
   let cur=null;for(const sec of document.querySelectorAll('#app .csec')){if(sec.getBoundingClientRect().top<=line)cur=sec.dataset.cat;else break}
   if(!cur){const f=document.querySelector('#app .csec');cur=f&&f.dataset.cat}
   if(cur&&cur!=S.cat){S.cat=cur;nxCats()}}
-addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(spy)},{passive:true});
+addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>setTimeout(spy))},{passive:true});  // положение разделов читаем сразу после кадра, когда раскладка уже готова: иначе getBoundingClientRect в каждом кадре прокрутки заставлял браузер пересчитывать страницу заново
 addEventListener('scrollend',()=>{lockT=0;spy()});
 })();
 
@@ -4960,7 +4962,10 @@ addEventListener('scrollend',()=>{lockT=0;spy()});
 (function(){
  // 1) карточка Brewsell и герой анимируются, только когда видны на экране
  const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('offs',!e.isIntersecting)),{rootMargin:'80px'}):null;
- const watch=()=>{if(!io)return;document.querySelectorAll('#app .bwcard,#app .hero').forEach(el=>{if(!el._io){el._io=1;el.classList.add('offs');io.observe(el)}})};
+ // 2) мерцание «фото загружается» крутится только у карточек рядом с экраном: дальние фото всё равно ещё не грузятся, а каждое мерцание - отдельный слой, который телефон пересчитывает в каждом кадре
+ const io2='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{e.target.classList.toggle('far',!e.isIntersecting);if(e.target.classList.contains('hasimg'))io2.unobserve(e.target)}),{rootMargin:'400px 0px'}):null;
+ const watch=()=>{if(!io)return;document.querySelectorAll('#app .bwcard,#app .hero').forEach(el=>{if(!el._io){el._io=1;el.classList.add('offs');io.observe(el)}});
+  if(io2)document.querySelectorAll('#app .ph:not(.hasimg):not(.noimg)').forEach(el=>{if(!el._io2){el._io2=1;el.classList.add('far');io2.observe(el)}})};
  const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};
 })();
 // ---------- списания в отчёте дня + подключение кассиров к боту ----------
@@ -4991,7 +4996,9 @@ async function staffInvite(){const F=S.fn;const name=(prompt('Имя касси�
  try{await navigator.clipboard.writeText(url);toast('Ссылка скопирована. Отправьте её кассиру')}catch{prompt('Скопируйте ссылку и отправьте кассиру:',url)}}
 async function staffOff(id){if(!confirm('Отключить этого сотрудника от бота?'))return;const r=await sb.rpc('staff_off',{p_chat:id});if(r.error){toast(String(r.error.message||r.error),1);return}S.fn.staff=r.data||[];finRender()}
 // ---------- на время прокрутки ставим фоновые анимации на паузу (класс scrl на <html>), через 0,18 с после остановки - снова идут ----------
-(function(){const h=document.documentElement;let t=0,on=0;addEventListener('scroll',()=>{if(!on){on=1;h.classList.add('scrl')}clearTimeout(t);t=setTimeout(()=>{on=0;h.classList.remove('scrl')},180)},{passive:true})})();
+// Рисунки (.artv) и пачку Brewsell (.bwp) ставим на паузу отдельным классом scp прямо на них: правило «html.scrl .artv *» заставляло браузер
+// в начале и в конце каждой прокрутки пересчитывать стили всей страницы (тысячи узлов рисунков), отсюда короткое подтормаживание
+(function(){const h=document.documentElement;let t=0,on=0,L=[];addEventListener('scroll',()=>{if(!on){on=1;h.classList.add('scrl');L=[...document.querySelectorAll('#app .artv:not(.still),#app .bwp')];L.forEach(x=>x.classList.add('scp'))}clearTimeout(t);t=setTimeout(()=>{on=0;h.classList.remove('scrl');L.forEach(x=>x.classList.remove('scp'));L=[]},180)},{passive:true})})();
 
 // ---------- оплата: Halyk ePay онлайн + наличные на кассе (06.11.2026) ----------
 // Способ выбирается в корзине. Онлайн: заказ создаётся, затем страница банка; оплату подтверждает только сервер (epay).
@@ -5398,7 +5405,7 @@ function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
 {const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it&&!sc.querySelector('video.hvv')){const c=sandK(hvKey(sc)||medKey(it),0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
 // закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
 // вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
-{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
+{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(()=>setTimeout(f))}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
 let TH_T=0;
 {const _x=cl;cl=function(now){const R=document.documentElement,was=R.getAttribute('data-theme'),o=document.querySelector('#m .scr:not(.out)');clearTimeout(TH_T);const r=_x.apply(this,arguments);
  if(!now&&!RM&&o&&o.classList.contains('out')&&was&&thEff()!=was){R.setAttribute('data-theme',was);TH_T=setTimeout(()=>{TH_T=0;thApply()},390)}return r}}
@@ -5455,9 +5462,11 @@ function pmLay(sc){const hero=sc.querySelector('.circ.hv');if(!hero)return;const
 function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.circ.hv'),pt=sc.querySelector('.pt');if(!hero)return;
  if(!sc._hh||sc._hw!=innerWidth){sc._hw=innerWidth;sc._hh=hero.offsetHeight||1;sc._tt=pt?pt.offsetTop+pt.offsetHeight:sc._hh}
  const y=Math.max(0,sc.scrollTop),calm=MOTION_OFF||RM,p=Math.min(1,y/sc._hh),bh=(window.visualViewport?0:0)+68,
-  tp=Math.min(1,Math.max(0,(y-(sc._tt-bh-64))/52)),st=sc.style;
+  tp=Math.min(1,Math.max(0,(y-(sc._tt-bh-64))/52)),st=hero.style,tv=calm?(tp>.5?'1':'0'):tp.toFixed(3);
+ // переменные ставим прямо на те элементы, которые их используют (герой, заголовок, верхняя панель), а не на весь экран:
+ // иначе браузер в каждом кадре прокрутки пересчитывал стили всех элементов карточки
  st.setProperty('--py',calm?'0px':(y*.42).toFixed(1)+'px');st.setProperty('--ps',calm?'1':(1+.07*p).toFixed(4));st.setProperty('--po',calm?'1':(1-.5*p).toFixed(3));
- st.setProperty('--tp',calm?(tp>.5?'1':'0'):tp.toFixed(3))}
+ st.setProperty('--tp',tv);[pt,sc.querySelector(':scope>.pmbar')].forEach(x=>{if(x&&x.style.getPropertyValue('--tp')!==tv)x.style.setProperty('--tp',tv)})}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDress();return r}}
 addEventListener('resize',()=>{const sc=document.querySelector('#m .scr.pm:not(.out)');if(sc){pmLay(sc);pmFrame(sc)}},{passive:true});
 // ---------- варианты в карточке товара: выбранная начинка/размер меняет фото и видео (плавно, ~0.3 с); карточки меню не меняются ----------
