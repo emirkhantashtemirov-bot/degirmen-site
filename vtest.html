@@ -1,0 +1,24 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Проверка видео</title>
+<style>body{font:16px/1.4 system-ui,sans-serif;margin:16px;background:#f3eadc;color:#2a1d15}video{width:100%;max-width:420px;border-radius:16px;background:#ddd;display:block;margin:8px 0}pre{white-space:pre-wrap;background:#fffaf2;padding:12px;border-radius:12px;font-size:13px}button{font-size:16px;padding:10px 16px;border-radius:12px;border:0;background:#b8432c;color:#fff}</style></head><body>
+<h3>Проверка видео</h3>
+<p>Сделай скриншот этой страницы через 10 секунд и пришли его.</p>
+<video id="v" muted playsinline autoplay loop controls preload="auto" src="/media/v/cp.mp4"></video>
+<button onclick="go()">Запустить вручную</button>
+<pre id="o"></pre>
+<script>
+var o=document.getElementById('o'),v=document.getElementById('v'),t0=Date.now();
+function L(s){o.textContent+=((Date.now()-t0)/1000).toFixed(1)+'с  '+s+'\n'}
+var c=navigator.connection||{},ls={};try{ls.motion=localStorage.getItem('dn_motion')}catch(e){ls.motion='нет доступа'}
+L('браузер: '+navigator.userAgent);
+L('сеть: '+(c.effectiveType||'?')+', экономия трафика: '+(c.saveData?'ДА':'нет'));
+L('память устройства: '+(navigator.deviceMemory||'?')+' ГБ');
+L('настройка анимаций в приложении: '+ls.motion);
+L('видео mp4 поддерживается: '+(v.canPlayType('video/mp4; codecs="avc1.64001F"')||'нет'));
+['loadstart','loadedmetadata','canplay','playing','stalled','waiting','error'].forEach(function(e){v.addEventListener(e,function(){L('событие '+e+(e=='error'&&v.error?' код '+v.error.code+' '+(v.error.message||''):'')+' (сеть '+v.networkState+', готовность '+v.readyState+')')})});
+v.play().then(function(){L('автозапуск: ок')},function(e){L('автозапуск: ОТКАЗ '+e.name)});
+fetch('/media/v/cp.mp4',{method:'HEAD',cache:'no-store'}).then(function(r){L('сервер: '+r.status+' '+r.headers.get('content-type')+' '+r.headers.get('content-length')+' байт, accept-ranges: '+r.headers.get('accept-ranges'))},function(e){L('сервер: ошибка '+e)});
+fetch('/media/v/prep_cp.mp4',{method:'HEAD',cache:'no-store'}).then(function(r){L('prep_cp.mp4: '+r.status+' '+r.headers.get('content-length')+' байт')},function(e){L('prep_cp.mp4: ошибка '+e)});
+navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(a){L('service worker: '+a.length)});
+function go(){v.play().then(function(){L('ручной запуск: ок')},function(e){L('ручной запуск: ОТКАЗ '+e.name)})}
+setTimeout(function(){L('итог: '+(v.currentTime>0.5?'видео ИДЁТ':'видео СТОИТ')+', время '+v.currentTime.toFixed(1))},8000);
+</script></body></html>
