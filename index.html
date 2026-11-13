@@ -5604,6 +5604,22 @@ if(/[?&]diag=1/.test(location.search))(function(){const d=document.createElement
  const tick=t=>{fr++;worst=Math.max(worst,t-last);last=t;requestAnimationFrame(tick)};requestAnimationFrame(tick);
  setInterval(()=>{const n=performance.now();lt=lt.filter(x=>n-x[0]<5000);const an=document.getAnimations?document.getAnimations().filter(a=>a.playState=='running').length:'-',m=performance.memory?Math.round(performance.memory.usedJSHeapSize/1e6)+'MB':'-';
   d.textContent=`fps ${fr}  худший кадр ${Math.round(worst)}мс\nзависаний за 5с: ${lt.length} (${Math.round(lt.reduce((a,x)=>a+x[1],0))}мс)\nанимаций ${an}  видео ${document.querySelectorAll('video').length}  узлов ${document.getElementsByTagName('*').length}\nпамять ${m}  ${ev}`;fr=0;worst=0},1000)})();
+// ---------- отклик на нажатие (как в iOS): элемент чуть сжимается под пальцем и мягко пружинит обратно; при прокрутке нажатие снимается ----------
+{const CARD='.wide,.sm,.bwcard',BTN='#app .cats button,#app .subs button,#m .scr[data-n=prod] :is(.tile,.szb,.pl,.go,.c),#m .scr[data-n=cart] :is(.main,.lite,.c,.pl),#m2 .shw :is(.c,.lite,.pl),#bar .pill button',ALL=CARD+','+BTN;
+ document.head.insertAdjacentHTML('beforeend',`<style>
+html.motion :is(.wide,.sm,.bwcard,.cats button,.subs button,.tile,.szb,.pl,.go,.c,.main,.lite,.pill button):active:not(.prs){transform:none}
+html.motion .prs{transform:scale(.95)!important;transition:transform .09s cubic-bezier(.3,0,.6,1)!important}
+html.motion :is(.wide,.sm,.bwcard).prs{transform:scale(.97)!important}
+html.motion .tile.prs{transform:scale(.96)!important}
+html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background-color .25s,color .25s,opacity .25s!important}
+</style>`);
+ let pe=null,px=0,py=0;
+ const up=()=>{const x=pe;if(!x)return;pe=null;x.classList.remove('prs');x.classList.add('prr');clearTimeout(x._prt);x._prt=setTimeout(()=>x.classList.remove('prr'),400)};
+ addEventListener('pointerdown',ev=>{if(!FM||RM||ev.button>0||!ev.isPrimary)return;up();const el=ev.target&&ev.target.closest&&ev.target.closest(ALL);if(!el||el.disabled||el.classList.contains('off'))return;
+  pe=el;px=ev.clientX;py=ev.clientY;clearTimeout(el._prt);el.classList.remove('prr');el.classList.add('prs')},{passive:true,capture:true});
+ addEventListener('pointermove',ev=>{if(pe&&(Math.abs(ev.clientX-px)>8||Math.abs(ev.clientY-py)>8))up()},{passive:true,capture:true});
+ addEventListener('pointerup',up,{passive:true,capture:true});addEventListener('pointercancel',up,{passive:true,capture:true});
+ addEventListener('scroll',()=>{if(pe)up()},{passive:true,capture:true});addEventListener('blur',up)}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
