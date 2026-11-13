@@ -3238,7 +3238,7 @@ else h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('kas'),"goMenu()")+kas(
 paint(h)
 if(S._b!==bar){$('bar').innerHTML=bar;S._b=bar}}
 // подчёркивание активной категории плавно переезжает; лента прокручивается к активной
-function placeInd(old,sl){const cs=document.querySelector('.cats'),ind=cs&&cs.querySelector('.ind'),b=cs&&cs.querySelector('button.on');if(!ind||!b)return;const x=b.offsetLeft,w=b.offsetWidth,set=(x,w)=>ind.style.transform=`translateX(${x}px) scaleX(${w/100})`;ind.dataset.x=x;ind.dataset.w=w;ind.style.transition='none';set(old?old.x:x,old?old.w:w);cs.scrollLeft=sl;ind.getBoundingClientRect();ind.style.transition='';set(x,w);cs.scrollTo({left:Math.max(0,x-(cs.clientWidth-w)/2),behavior:RM?'auto':'smooth'})}
+function placeInd(old,sl){const cs=document.querySelector('.cats'),ind=cs&&cs.querySelector('.ind'),b=cs&&cs.querySelector('button.on');if(!ind||!b)return;const x=b.offsetLeft,w=b.offsetWidth,set=(x,w)=>ind.style.transform=`translateX(${x}px) scaleX(${w/100})`;ind.dataset.x=x;ind.dataset.w=w;ind.style.transition='none';set(old?old.x:x,old?old.w:w);cs.scrollLeft=sl;ind.getBoundingClientRect();ind.style.transition='';set(x,w);const go=()=>cs.isConnected&&cs.scrollTo({left:Math.max(0,x-(cs.clientWidth-w)/2),behavior:RM?'auto':'smooth'});if(window.PG_SCR&&PG_SCR.on)PG_SCR.after=go;else go()}  // пока палец листает ленту, вкладки не двигаем - догоняют после остановки
 function setCat(k){if(S.cat==k)return;catSwap(k)}
 function goMenu(){S.v='menu';enter();render();window.scrollTo(0,0)}
 function goOrd(){S.v='ord';enter();render();loadOrd().then(render);window.scrollTo(0,0)}function goKas(){S.v='kas';enter();render();loadOrd().then(render);window.scrollTo(0,0)}
@@ -4998,7 +4998,13 @@ function spy(){raf=0;if(S.v!='menu'||S.scr||Date.now()<lockT)return;const cs=doc
   let cur=null;for(const sec of document.querySelectorAll('#app .csec')){if(sec.getBoundingClientRect().top<=line)cur=sec.dataset.cat;else break}
   if(!cur){const f=document.querySelector('#app .csec');cur=f&&f.dataset.cat}
   if(cur&&cur!=S.cat){S.cat=cur;nxCats()}}
-addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>setTimeout(spy))},{passive:true});  // положение разделов читаем сразу после кадра, когда раскладка уже готова: иначе getBoundingClientRect в каждом кадре прокрутки заставлял браузер пересчитывать страницу заново
+// spy зовём только когда край раздела пересекает линию под вкладками (IntersectionObserver - полоса 1 px), а не в каждом кадре прокрутки
+let io=null,ioK='',seen=[];
+function watch(){const secs=[...document.querySelectorAll('#app .csec')],line=Math.round(catsH()+24),k=line+'/'+innerHeight;
+  if(io&&ioK==k&&secs.length==seen.length&&secs.every((x,i)=>x===seen[i]))return;if(io)io.disconnect();io=null;ioK=k;seen=secs;if(!secs.length)return;
+  io=new IntersectionObserver(()=>spy(),{rootMargin:`${-line}px 0px ${-(innerHeight-line-1)}px 0px`});secs.forEach(x=>io.observe(x))}
+if('IntersectionObserver' in window){const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};addEventListener('resize',()=>{ioK='';watch()},{passive:true})}
+else addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(spy)},{passive:true});
 addEventListener('scrollend',()=>{lockT=0;spy()});
 })();
 
@@ -5042,7 +5048,12 @@ async function staffOff(id){if(!confirm('Отключить этого сотр�
 // ---------- на время прокрутки ставим фоновые анимации на паузу (класс scrl на <html>), через 0,18 с после остановки - снова идут ----------
 // Рисунки (.artv) и пачку Brewsell (.bwp) ставим на паузу отдельным классом scp прямо на них: правило «html.scrl .artv *» заставляло браузер
 // в начале и в конце каждой прокрутки пересчитывать стили всей страницы (тысячи узлов рисунков), отсюда короткое подтормаживание
-(function(){const h=document.documentElement;let t=0,on=0,L=[];addEventListener('scroll',()=>{if(!on){on=1;h.classList.add('scrl');L=[...document.querySelectorAll('#app .artv:not(.still),#app .bwp')];L.forEach(x=>x.classList.add('scp'))}clearTimeout(t);t=setTimeout(()=>{on=0;h.classList.remove('scrl');L.forEach(x=>x.classList.remove('scp'));L=[]},180)},{passive:true})})();
+// 13.11: класс scrl на <html> больше не ставим - его смена в начале и в конце каждой прокрутки пересчитывала стили всей страницы (~3 мс на ПК, на телефоне больше).
+// Пар, пачка Brewsell, кнопки - анимации transform/opacity, их крутит видеокарта, прокрутке они не мешают. На паузу ставим только рисунки (.artv, SVG) - точечно.
+window.PG_SCR={on:0,after:null};
+(function(){let t=0,L=[];const done=()=>{clearTimeout(t);if(!PG_SCR.on)return;PG_SCR.on=0;L.forEach(x=>x.classList.remove('scp'));L=[];const f=PG_SCR.after;PG_SCR.after=null;if(f)f()};
+ addEventListener('scroll',()=>{if(!PG_SCR.on){PG_SCR.on=1;L=[...document.querySelectorAll('#app .artv:not(.still)')];L.forEach(x=>x.classList.add('scp'))}clearTimeout(t);t=setTimeout(done,180)},{passive:true});
+ addEventListener('scrollend',done)})();
 
 // ---------- оплата: Halyk ePay онлайн + наличные на кассе (06.11.2026) ----------
 // Способ выбирается в корзине. Онлайн: заказ создаётся, затем страница банка; оплату подтверждает только сервер (epay).
@@ -5449,7 +5460,7 @@ function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
 {const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it&&!sc.querySelector('video.hvv')){const c=sandK(hvKey(sc)||medKey(it),0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
 // закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
 // вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
-{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(()=>setTimeout(f))}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
+{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
 let TH_T=0;
 {const _x=cl;cl=function(now){const R=document.documentElement,was=R.getAttribute('data-theme'),o=document.querySelector('#m .scr:not(.out)');clearTimeout(TH_T);const r=_x.apply(this,arguments);
  if(!now&&!RM&&o&&o.classList.contains('out')&&was&&thEff()!=was){R.setAttribute('data-theme',was);TH_T=setTimeout(()=>{TH_T=0;thApply()},390)}return r}}
