@@ -5315,7 +5315,7 @@ function finArH(){const F=S.fn,A=F.f?.arrivals||[],can=F.data?.can_edit,dis=can?
   return h+`<div class="fncard"><div class="fnh">🧑‍💼 Долг владельцев</div><div class="fnhint">Авансы владельцев за месяц. Это не расход: деньги вернут в кассу в конце месяца.</div>${D.map(o=>`<div class="fnpl"><span>${e(o.name)}<small>дней ${o.days}</small></span><b>${fnM(o.total)}</b></div>`).join('')}</div>`}}
 // ---------- живая витрина в карточке товара: короткое видео по кругу; на совсем слабых телефонах (память до 2 ГБ), при экономии трафика и без анимаций - фото; без сети - рисунок ----------
 function vidOk(){const c=navigator.connection,R=document.documentElement;
- if(c&&(c.saveData||/(^|-)2g$/.test(c.effectiveType||'')))return false;
+ if(c&&/(^|-)2g$/.test(c.effectiveType||''))return false;  // экономия трафика видео не отключает: видео грузится только при открытии карточки
  return !((navigator.deviceMemory&&navigator.deviceMemory<=2)||MOTION_OFF)}
 // Видео приготовления (media/v/prep_<ключ>.mp4, 6 с): при открытии карточки играет один раз - от пустого стакана до готового напитка,
 // потом незаметно (плавно, 0.3 с) уступает место обычному видео по кругу: последний кадр приготовления = первый кадр круга.
