@@ -5396,6 +5396,26 @@ function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.cir
  st.setProperty('--tp',calm?(tp>.5?'1':'0'):tp.toFixed(3))}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDress();return r}}
 addEventListener('resize',()=>{const sc=document.querySelector('#m .scr.pm:not(.out)');if(sc){pmLay(sc);pmFrame(sc)}},{passive:true});
+// ---------- варианты в карточке товара: выбранная начинка/размер меняет фото и видео (плавно, ~0.3 с); карточки меню не меняются ----------
+function hvSwap(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m .scr[data-n=prod]:not(.out)'),h=sc&&sc.querySelector('.circ.hv');if(!h||!it||it.image_url)return;
+ const k=heroKey(it,s);if(!k||k==h.dataset.k)return;
+ const tok=(h._sw||0)+1;h._sw=tok;h.dataset.k=k;h.querySelectorAll('.hvn').forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});
+ const v=vidOk(),im=new Image();im.className='hvn';im.alt='';im.decoding='async';im.width=1200;im.height=1200;im.dataset.id=it.id;
+ const add=[im];let vd=null;
+ if(v){const w=document.createElement('div');w.innerHTML=hvLoopTag(k,0);vd=w.firstChild;vd.classList.add('hvn');add.push(vd)}
+ const ref=h.querySelector('.hvr')||h.querySelector('.pmnut');add.forEach(x=>ref?h.insertBefore(x,ref):h.appendChild(x));
+ let done=0;const go=ok=>{if(done||h._sw!=tok)return;done=1;
+  if(!ok){add.forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});return}  // фото варианта не загрузилось - остаётся прежнее
+  LOADED.add(im.getAttribute('src'));add.forEach(x=>x.classList.add('in'));
+  if(vd){const r=vd.play();if(r&&r.catch)r.catch(()=>{})}
+  setTimeout(()=>{if(h._sw!=tok)return;[...h.children].forEach(x=>{if(add.includes(x))return;if(x.matches('img,video,.hvr')){try{x.pause&&x.pause();if(x.tagName=='VIDEO'){x.removeAttribute('src');x.load()}}catch{}x.remove()}});
+   add.forEach(x=>x.classList.remove('hvn','in'));h.classList.remove('prp','prun');h.classList.add('hasimg');
+   if(v&&PREP.has(k)&&!h.querySelector('.hvr')){const nt=h.querySelector('.pmnut');nt?nt.insertAdjacentHTML('beforebegin',hvRpBtn()):h.insertAdjacentHTML('beforeend',hvRpBtn())}},360);
+  const c=sandK(k,vd?1:0);if(c&&sc.classList.contains('pm')){sc.style.setProperty('--sand',c);thApply()}};
+ im.onload=()=>{const d=im.decode?im.decode().catch(()=>{}):Promise.resolve();d.then(()=>go(1))};im.onerror=()=>go(0);
+ setTimeout(()=>{if(!done&&im.complete&&im.naturalWidth)go(1)},1500);
+ im.src=medP(k)}
+{const _x=prod;prod=function(){const r=_x.apply(this,arguments);try{hvSwap()}catch(er){console.warn(er)}return r}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
