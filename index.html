@@ -1738,6 +1738,25 @@ html[data-theme=light] .scr.pm .rb.dk{background:rgba(255,250,242,.92)!important
 html.motion .scr.p2.in,html.motion .scr.pm.in{animation:pmin .42s cubic-bezier(.22,1,.36,1) backwards!important}
 html.motion .scr.p2.out,html.motion .scr.pm.out{animation:pmout .3s cubic-bezier(.4,0,.8,.3) forwards!important}
 html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!important}
+/* карточка товара: герой, заголовок и верхняя панель двигаются за прокруткой силами самого браузера (scroll-driven animations, класс sdt).
+   Браузер считает их в том же кадре, что и прокрутку, поэтому они не отстают от пальца. Значения те же, что раньше давал pmFrame:
+   фото: сдвиг 0,42 от прокрутки, увеличение до 1,07 и прозрачность до 0,5 за высоту фото; заголовок и панель: переход на участке 52 px.
+   --pmh, --pmt0, --pmt1 ставит pmGeo один раз после раскладки (не в каждом кадре). Без поддержки (iOS Safari) и при выключенных анимациях работает старый pmFrame */
+@keyframes pmTy{from{translate:0 0}to{translate:0 1260px}}
+@keyframes pmSo{from{scale:1;opacity:1}to{scale:1.07;opacity:.5}}
+@keyframes pmTyT{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,1260px,0)}}
+@keyframes pmTyN{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-504px,0)}}
+@keyframes pmFo{0%{opacity:1}62.5%,100%{opacity:0}}
+@keyframes pmPt{from{transform:translate3d(0,0,0);opacity:1}to{transform:translate3d(0,-10px,0);opacity:0}}
+@keyframes pmBi{from{opacity:0}to{opacity:1}}
+@keyframes pmBb{from{transform:translate3d(0,12px,0)}to{transform:translate3d(0,0,0)}}
+.scr.pm.sdt{scroll-timeline:--pmy block}
+.scr.pm.sdt .circ.hv>:is(img,video,.phe){transform:none;opacity:1;animation:pmTy 1s linear both,pmSo 1s linear both;animation-timeline:--pmy,--pmy;animation-range:0px 3000px,0px var(--pmh,500px)}
+.scr.pm.sdt .hvr{transform:none;opacity:1;animation:pmTyT 1s linear both,pmFo 1s linear both;animation-timeline:--pmy,--pmy;animation-range:0px 3000px,var(--pmt0,400px) var(--pmt1,452px)}
+.scr.pm.sdt .pmnut{transform:none;opacity:1;animation:pmTyN 1s linear both,pmFo 1s linear both;animation-timeline:--pmy,--pmy;animation-range:0px 3000px,var(--pmt0,400px) var(--pmt1,452px)}
+.scr.pm.sdt .pt{transform:none;opacity:1;animation:pmPt 1s linear both;animation-timeline:--pmy;animation-range:var(--pmt0,400px) var(--pmt1,452px)}
+.scr.pm.sdt>.pmbar{opacity:0;animation:pmBi 1s linear both;animation-timeline:--pmy;animation-range:var(--pmt0,400px) var(--pmt1,452px)}
+.scr.pm.sdt>.pmbar b{transform:translate3d(0,12px,0);animation:pmBb 1s linear both;animation-timeline:--pmy;animation-range:var(--pmt0,400px) var(--pmt1,452px)}
 </style><style id="splcss">
 /* ---------- заставка (#spl) и экран «нет интернета» (#off): работают без приложения и без сети ---------- */
 #spl{position:fixed;inset:0;z-index:2147483000;background:#efe2cd;background:radial-gradient(120% 70% at 50% 28%,#f8efe2 0,#ecdcc4 62%,#e2cdb0 100%);overflow:hidden;contain:strict;transition:opacity .62s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);color:#2a1d15;font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
@@ -5478,12 +5497,16 @@ function pmDress(){const sc=document.querySelector('#m .scr.pm:not(.out)');if(!s
  const nh=pmNutHtml(it);let nr=hero&&hero.querySelector('.pmnut');sc.classList.toggle('hasnut',!!nh);
  if(nh&&hero){if(!nr){nr=document.createElement('div');nr.className='pmnut';hero.appendChild(nr)}if(nr.innerHTML!=nh)nr.innerHTML=nh}else if(nr)nr.remove();
  pmLay(sc);if(!sc._pmf){sc._pmf=1;pmBind(sc)}else pmFrame(sc)}
-function pmBind(sc){let q=0;const run=()=>{q=0;pmFrame(sc)};sc.addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(run)}},{passive:true});pmFrame(sc)}
+// где браузер умеет вести анимацию от прокрутки сам (Chrome, Android) - класс sdt и никакого JS на прокрутке; иначе (iOS Safari, анимации выключены) - pmFrame в том же кадре
+const PM_SDT=!(MOTION_OFF||RM)&&!!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline:scroll()')&&CSS.supports('animation-range:0px 10px'));
+function pmBind(sc){if(PM_SDT){sc.classList.add('sdt');pmFrame(sc);return}let q=0;const run=()=>{q=0;pmFrame(sc)};sc.addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(run)}},{passive:true});pmFrame(sc)}
 function pmLay(sc){const hero=sc.querySelector('.circ.hv');if(!hero)return;const hh=hero.offsetHeight,top=hero.offsetTop+hh-30;sc.style.setProperty('--pnt',top+'px');
  sc.style.setProperty('--sp','124px');const kids=[...sc.children].filter(x=>!x.matches('.pbar,.pmbar,.rb,.circ')&&x.offsetHeight);let bot=0;kids.forEach(x=>{bot=Math.max(bot,x.offsetTop+x.offsetHeight)});
  const pt=sc.querySelector('.pt'),tt=pt?pt.offsetTop+pt.offsetHeight:top+60,need=Math.round(innerHeight-68-(bot-top)+(tt-top)+8),sp=Math.max(124,need);sc.style.setProperty('--sp',sp+'px');sc.style.setProperty('--pnh',(bot+sp-top+40)+'px');sc._hh=0}
 function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.circ.hv'),pt=sc.querySelector('.pt');if(!hero)return;
- if(!sc._hh||sc._hw!=innerWidth){sc._hw=innerWidth;sc._hh=hero.offsetHeight||1;sc._tt=pt?pt.offsetTop+pt.offsetHeight:sc._hh}
+ if(!sc._hh||sc._hw!=innerWidth){sc._hw=innerWidth;sc._hh=hero.offsetHeight||1;sc._tt=pt?pt.offsetTop+pt.offsetHeight:sc._hh;
+  sc.style.setProperty('--pmh',sc._hh+'px');sc.style.setProperty('--pmt0',(sc._tt-132)+'px');sc.style.setProperty('--pmt1',(sc._tt-80)+'px')}
+ if(sc.classList.contains('sdt'))return;  // дальше - только запасной путь без scroll-driven animations
  const y=Math.max(0,sc.scrollTop),calm=MOTION_OFF||RM,p=Math.min(1,y/sc._hh),bh=(window.visualViewport?0:0)+68,
   tp=Math.min(1,Math.max(0,(y-(sc._tt-bh-64))/52)),st=hero.style,tv=calm?(tp>.5?'1':'0'):tp.toFixed(3);
  // переменные ставим прямо на те элементы, которые их используют (герой, заголовок, верхняя панель), а не на весь экран:
