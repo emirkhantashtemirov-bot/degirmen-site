@@ -408,6 +408,12 @@ html.motion #app.ov.ovw{transform:scale(.94);opacity:.45}
 html.motion #bar.ov{opacity:0;pointer-events:none}
 /* пока поверх открыт экран, фон не тратит кадры на анимации */
 #amb.pz,#amb.pz *{animation-play-state:paused!important}
+/* долгое нажатие: без меню браузера и выделения, видео поверх фото в том же кадре (18.11.2026) */
+#app .mc,#app .mc img{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+.ph.mp video.lpv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;z-index:1;pointer-events:none}
+.wide.mc .ph.mp video.lpv,.sm.mc .ph.mp video.lpv{transform:scale(1.1);transform-origin:50% 46%}
+.ph.mp video.lpv.on{opacity:1}
+
 /* баннер с видео справа: видео во всю высоту, слева плавно растворяется в фоне баннера (18.11.2026) */
 .hero.hero3{position:relative;overflow:hidden;min-height:150px}
 .hero3 .htx{position:relative;z-index:2;max-width:60%}
@@ -3774,7 +3780,8 @@ Object.assign(T.ru,{hd_t:'донер к обеду',hd_s:'мясо с верте
 Object.assign(T.kk,{hd_t:'түскі асқа донер',hd_s:'шампур еті - керек уақытқа тапсырыс бер',hd_b:'донер таңдау',ht_t:'кешке шай',ht_s:'шәйнектегі түрік шайы - екеуге бір',ht_b:'шай таңдау',kas_empty:'Белсенді тапсырыс жоқ. Жаңалары осында дыбыспен шығады.'});
 Object.assign(T.en,{hd_t:'doner for lunch',hd_s:'meat off the spit - order for the time you need',hd_b:'choose a doner',ht_t:'tea for the evening',ht_s:'Turkish tea in a pot - one for two',ht_b:'choose tea',kas_empty:'No active orders. New ones will appear here with a sound.'});
 // утро (до 11) - кофе, день (11–16) - донер, вечер - чай. Время по Алматы.
-function heroSlot(){const h=new Date(Date.now()+5*3600e3).getUTCHours();return h<11?'cf':h<16?'dn':'tea'}
+function heroSlot(){const hq=(location.search.match(/[?&]hero=(cf|dn|tea)/)||[])[1];if(hq)return hq;  // ?hero=dn - посмотреть баннер другого времени суток
+ const h=new Date(Date.now()+5*3600e3).getUTCHours();return h<11?'cf':h<16?'dn':'tea'}
 // баннер с видео (18.11.2026): кофе - молоко льётся в кофе, донер - лаваш с гриля, чай - чайник. Играет один раз, когда баннер на экране, повтор - нажатием на видео. Нет видео (слабый интернет, экономия трафика) - прежние рисунки
 const HVT={cf:'hero',dn:'hd',tea:'ht'};
 function heroVid(sl){const k=HVT[sl];return `<div class="hero hero3${S.ent?' ent':''}" onclick="setCat('${sl}')"><div class="htx"><b>${t(k+'_t')}</b><span>${t(k+'_s')}</span><i>${t(k+'_b')} ${IC.chv}</i></div><span class="hvid"><video src="/media/v/hero_${sl}.mp4" poster="/media/p/hero_${sl}.webp" muted playsinline preload="metadata" disablepictureinpicture aria-hidden="true" onclick="event.stopPropagation();heroVRe(this)"></video></span></div>`}
@@ -5079,6 +5086,24 @@ function bwCard(){const it=S.items.find(i=>i.id=='bw');if(!it||it.sold_out)retur
 {const bwIO=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(en=>{const v=en.target;if(en.isIntersecting&&en.intersectionRatio>=.5){if(!v.ended&&!v._done){const p=v.play();p&&p.catch(()=>{})}}else if(!v.paused)v.pause()}),{threshold:[0,.5]}):null;
  const bwScan=()=>{if(!bwIO)return;document.querySelectorAll('#app .bwv video,#app .hvid video').forEach(v=>{if(v._io)return;v._io=1;v.addEventListener('ended',()=>{v._done=1});bwIO.observe(v)})};
  const _r=render;render=function(){const r=_r.apply(this,arguments);try{bwScan()}catch(_){}return r}}
+// долгое нажатие на карточку (18.11.2026): вместо меню браузера «Скачать изображение» - лёгкая вибрация, и в окошке карточки один раз играет видео блюда. Отпустил после этого - карточка не открывается
+{let lpT=0,lpX=0,lpY=0,lpEl=null,lpAt=0;
+ const lpCard=e=>e.target.closest&&e.target.closest('#app .mc');
+ const lpStop=()=>{clearTimeout(lpT);lpT=0;lpEl=null};
+ function lpPlay(card){const m=(card.getAttribute('onclick')||'').match(/op_\('([^']+)'/),it=m&&itemOf(m[1]),k=it&&medKey(it),ph=card.querySelector('.ph.mp');if(!k||!ph||!vidOk())return false;
+  let v=ph.querySelector('video.lpv');if(v){v.currentTime=0;v.play().catch(()=>{});return true}
+  v=document.createElement('video');v.className='lpv';v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('disablepictureinpicture','');v.preload='auto';v.src=medV(k)+'.mp4';
+  v.addEventListener('playing',()=>v.classList.add('on'),{once:true});
+  v.addEventListener('ended',()=>{v.classList.remove('on');setTimeout(()=>v.remove(),420)});
+  v.addEventListener('error',()=>v.remove());
+  ph.appendChild(v);const p=v.play();p&&p.catch(()=>v.remove());return true}
+ document.addEventListener('pointerdown',e=>{const c=lpCard(e);if(!c||e.button>0)return;lpStop();lpEl=c;lpX=e.clientX;lpY=e.clientY;
+  lpT=setTimeout(()=>{const el=lpEl;lpStop();if(el&&lpPlay(el)){lpAt=Date.now();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}}},420)},{passive:true});
+ document.addEventListener('pointermove',e=>{if(lpT&&(Math.abs(e.clientX-lpX)>10||Math.abs(e.clientY-lpY)>10))lpStop()},{passive:true});
+ ['pointerup','pointercancel'].forEach(n=>document.addEventListener(n,()=>{if(lpT)lpStop()},{passive:true}));
+ addEventListener('scroll',()=>{if(lpT)lpStop()},{passive:true});
+ document.addEventListener('contextmenu',e=>{if(lpCard(e))e.preventDefault()});
+ document.addEventListener('click',e=>{if(lpAt&&Date.now()-lpAt<900&&lpCard(e)){e.stopPropagation();e.preventDefault();lpAt=0}},true)}
 // ---------- меню одной лентой: вкладка = раздел, подсветка по прокрутке (как scrollspy) ----------
 (function(){let lockT=0,raf=0;
 const catsH=()=>{const c=document.querySelector('.cats');return c?c.offsetHeight:70};
