@@ -408,6 +408,10 @@ html.motion #app.ov.ovw{transform:scale(.94);opacity:.45}
 html.motion #bar.ov{opacity:0;pointer-events:none}
 /* пока поверх открыт экран, фон не тратит кадры на анимации */
 #amb.pz,#amb.pz *{animation-play-state:paused!important}
+/* Brewsell: видео пачки вместо 3D (18.11.2026) */
+.bwv{flex:none;width:118px;height:160px;margin:-6px 4px -6px 6px;border-radius:20px;overflow:hidden;background:#efe3d0;box-shadow:inset 0 0 0 1px rgba(92,60,30,.08)}
+.bwv video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+
 /* кофемашина в баннере v2 (18.11.2026): играет один раз (повтор - нажатием на неё). Две струи падают, по мере наполнения укорачиваются, хвост уходит в чашку; кофе поднимается с крема, потом пар. Конечный кадр - полная чашка */
 .mach.m2{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .m2 .h2s{transform-box:fill-box;transform-origin:50% 0;opacity:0}
@@ -1999,10 +2003,10 @@ const lineName=(l,L=S.L)=>nm(itemOf(l.id).name,L);
 // ---------- фото: image_url → локальный img/<id>.webp → эмодзи ----------
 // Ключ фото/видео: data.media (выбирается в админке, 'none' - рисунок), иначе свой id, если для него есть файлы. Фото media/p/<ключ>.webp (+ .s.webp),
 // видео: старые ключи (MEDIA) - media/v/<ключ>.mp4, новые (MEDIA2: будущее меню и варианты) - media/v/v_<ключ>.mp4; постер - то же имя с .webp.
-const MEDIA=new Set('cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),
+const MEDIA=new Set('bw cp lav bat krc am es fw la ra lmo lbz lmm llb lpe tg to tb ta tc tk1 tk2 isk pl gl krs pn'.split(' ')),
  MEDIA2=new Set('lhm pd_ch pd_mt pd_mx pz_mg pz_sj pz_ck pz_4c bg_bf bg_ck bg_mx kasha menemen eggs kahvalti simit borek bliny lav_bf lav_ck la_ice tea_pot'.split(' ')),
  medOk=k=>MEDIA.has(k)||MEDIA2.has(k),
- medKey=it=>{if(!it||it.image_url||(it.data&&it.data.pack))return '';const m=it.data&&it.data.media;if(m)return typeof m=='string'&&medOk(m)?m:'';return MEDIA.has(it.id)?it.id:''},
+ medKey=it=>{if(!it||it.image_url||(it.data&&it.data.pack&&!MEDIA.has(it.id)))return '';const m=it.data&&it.data.media;if(m)return typeof m=='string'&&medOk(m)?m:'';return MEDIA.has(it.id)?it.id:''},
  hasMed=it=>!!medKey(it),medP=(k,sm)=>'/media/p/'+k+(sm==1?'.s':sm==2?'.m':'')+'.webp',medV=k=>'/media/v/'+(MEDIA2.has(k)?'v_':'')+k;
 const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото из админки главнее, иначе своё фото из media; если не загрузится - рисунок
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
@@ -3193,7 +3197,7 @@ if(S._pid==s.id&&document.querySelector('#m .scr[data-n=prod]:not(.out) #pb'))re
 S._pid=s.id;
 scr(`<div class="top"><span class="sp" style="width:48px"></span><div class="pt">${e(nm(it.name))}</div><button class="rb dk" aria-label="×" onclick="closeProd()">${IC.x}</button></div>`+
 `<div class="fills" id="pf">${fillsHtml(it,s)}</div>`+
-(it.data&&it.data.pack&&typeof bwPack=='function'?`<div class="circ bwc">${bwPack('big')}</div>`:hasMed(it)?heroMed(it):hasArt(it)?`<div class="circ hasart"${S.vt?' style="view-transition-name:hero"':''}><span class="artw" id="artw" onclick="artTap()" data-k='${e(artKey(it,s))}'>${artOpen(it,s)}</span></div>`:
+(it.data&&it.data.pack&&!hasMed(it)&&typeof bwPack=='function'?`<div class="circ bwc">${bwPack('big')}</div>`:hasMed(it)?heroMed(it):hasArt(it)?`<div class="circ hasart"${S.vt?' style="view-transition-name:hero"':''}><span class="artw" id="artw" onclick="artTap()" data-k='${e(artKey(it,s))}'>${artOpen(it,s)}</span></div>`:
 `<div class="circ ${it.image_url?'ct':''}${LOADED.has(imgSrc(it))?' hasimg':''}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(imgSrc(it))}" alt="" class="${LOADED.has(imgSrc(it))?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`)+
 `${moreBtn(it)}<div id="pgr">${grpsHtml(it,s)}</div><div class="tiles" id="pt">${tilesOf(it,s)}</div><div id="ppair">${pairHtml(it)}</div><div class="pbar" id="pb">${pbarHtml(it,s)}</div>`,'prod','warm')}
 // обновление «по месту»: фото не перезагружается, круг размера плавно переезжает
@@ -5056,9 +5060,13 @@ async function geoDelGo(id){const{error}=await sb.rpc('admin_device_set',{p_id:i
 const BWT={ru:{n:'«Ореховый брауни» · зерно 1 кг',d:'Наш итальянский бленд без кислинки. Варим на нём каждый день.',b:'Купить',m:'О кофе и рецептах →'},kk:{n:'«Жаңғақты брауни» · дәнді кофе 1 кг',d:'Қышқылсыз итальяндық бленд. Күн сайын осы дәнмен қайнатамыз.',b:'Сатып алу',m:'Кофе мен рецепттер →'},en:{n:'Hazelnut Brownie · whole beans 1 kg',d:'Our Italian blend with no sourness. We brew it every day.',b:'Buy',m:'About the coffee →'}};
 function bwPack(sz){return `<div class="bwp ${sz||''}" aria-hidden="true"><div class="bwp-r"><div class="bwp-b"><i class="f fr"></i><i class="f bk"></i><i class="f lf"></i><i class="f rt"></i><i class="f tp"></i><i class="f bt"></i></div></div><div class="bwo">${[0,1,2,3,4].map(k=>`<i style="--k:${k}"></i>`).join('')}</div><i class="bwp-sh"></i></div>`}
 function bwCard(){const it=S.items.find(i=>i.id=='bw');if(!it||it.sold_out)return '';const x=BWT[S.L]||BWT.ru;
-  return `<div class="bwcard${S.ent?' ent':''}" data-id="bw" onclick="op_('bw',event)">${bwPack('')}<div class="bwt"><div class="bws">Brewsell</div><div class="bwn">${x.n}</div><div class="bwd">${x.d}</div><a class="bwmore" href="/brewsell/" onclick="event.stopPropagation()">${x.m}</a><div class="bwpr"><b>${price(it)}</b><span class="bwbtn">${x.b}</span></div></div></div>`}
+  return `<div class="bwcard${S.ent?' ent':''}" data-id="bw" onclick="op_('bw',event)"><div class="bwv"><video src="/media/v/bw_card.mp4" poster="/media/p/bw_card.webp" muted playsinline preload="metadata" disablepictureinpicture aria-hidden="true"></video></div><div class="bwt"><div class="bws">Brewsell</div><div class="bwn">${x.n}</div><div class="bwd">${x.d}</div><a class="bwmore" href="/brewsell/" onclick="event.stopPropagation()">${x.m}</a><div class="bwpr"><b>${price(it)}</b><span class="bwbtn">${x.b}</span></div></div></div>`}
 {const _boot=boot;boot=async function(){const r=await _boot.apply(this,arguments);try{const q=new URLSearchParams(location.search);const it=itemOf('bw');if(q.get('buy')=='bw'&&!S._bw&&it){S._bw=1;history.replaceState(null,'',location.pathname+location.hash);if(!it.sold_out&&S.v=='menu'){setCat('cf');setTimeout(()=>op_('bw'),500)}}}catch(_){}return r}}
 
+// видео пачки Brewsell в ленте (18.11.2026): играет один раз, когда карточка видна; ушла с экрана - пауза, вернулась - доигрывает и останавливается на последнем кадре
+{const bwIO=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(en=>{const v=en.target;if(en.isIntersecting&&en.intersectionRatio>=.5){if(!v.ended&&!v._done){const p=v.play();p&&p.catch(()=>{})}}else if(!v.paused)v.pause()}),{threshold:[0,.5]}):null;
+ const bwScan=()=>{if(!bwIO)return;document.querySelectorAll('#app .bwv video').forEach(v=>{if(v._io)return;v._io=1;v.addEventListener('ended',()=>{v._done=1});bwIO.observe(v)})};
+ const _r=render;render=function(){const r=_r.apply(this,arguments);try{bwScan()}catch(_){}return r}}
 // ---------- меню одной лентой: вкладка = раздел, подсветка по прокрутке (как scrollspy) ----------
 (function(){let lockT=0,raf=0;
 const catsH=()=>{const c=document.querySelector('.cats');return c?c.offsetHeight:70};
