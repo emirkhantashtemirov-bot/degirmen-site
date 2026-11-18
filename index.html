@@ -408,6 +408,9 @@ html.motion #app.ov.ovw{transform:scale(.94);opacity:.45}
 html.motion #bar.ov{opacity:0;pointer-events:none}
 /* пока поверх открыт экран, фон не тратит кадры на анимации */
 #amb.pz,#amb.pz *{animation-play-state:paused!important}
+html.t-anim #app *,html.t-anim #app *::before,html.t-anim #app *::after{animation:none!important}
+html.t-bg #amb{display:none!important}
+html.t-wc #app *,html.t-wc #amb *{will-change:auto!important}
 /* iPhone (18.11.2026): Safari пересчитывает размытие фона (backdrop-filter) в каждом кадре прокрутки, а три огромных плывущих пятна фона - отдельные слои под всей лентой. На iPhone панели делаем плотными без размытия, фон - неподвижным */
 html.ios #amb .gl,html.ios #amb .bn{animation:none!important;will-change:auto}
 html.ios #amb .bn,html.ios #amb::after{display:none}
@@ -1853,6 +1856,8 @@ html[data-theme=light] .scr.pm .circ.hv::after{top:0;height:auto;inset:0;backgro
 addEventListener('beforeinstallprompt',function(x){x.preventDefault();window.__bip=x});
 (function(){var d=document,R=d.documentElement,el=d.getElementById('spl'),q=location.search,ls=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
 if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1))R.classList.add('ios');
+/* проверка рывков (18.11.2026): ?t=anim,bg,wc выключает по частям вечные анимации в ленте, фон и will-change - только для теста, обычным гостям не мешает */
+try{var tq=(location.search.match(/[?&]t=([a-z,]+)/)||[])[1];if(tq)tq.split(',').forEach(function(f){R.classList.add('t-'+f)})}catch(e){}
 var skip=/[?&](mode|doc)=/.test(q)||!!ls('dn_mode');try{skip=skip||sessionStorage.getItem('dn_spl')=='1';sessionStorage.setItem('dn_spl','1')}catch(e){}
 if(skip||!el){if(el)el.remove();window.DNSPL={ready:function(){},gone:true};return}
 var calm=ls('dn_motion')=='off',t0=Date.now(),rdy=0,done=0,im=el.querySelectorAll('img'),v=el.querySelector('video');if(calm)el.classList.add('spcalm');else el.classList.add('spgo');
