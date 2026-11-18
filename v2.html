@@ -21,7 +21,7 @@ svg{display:block}
 .sp{width:44px;flex:none}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:calc(18px + env(safe-area-inset-top)) 16px 8px}.top h2{font-size:24px;text-align:center;flex:1}
 .cats{position:sticky;top:0;z-index:5;display:flex;gap:22px;padding:12px 24px 14px;font-size:30px;font-weight:600;white-space:nowrap;overflow-x:auto;background:var(--bg);scrollbar-width:none}.cats::-webkit-scrollbar{display:none}
-.cats button{background:none;border:0;padding:0;font:inherit;color:var(--off)}.cats button.on{color:var(--tx)}.cats .ind{position:absolute;left:0;bottom:5px;width:100px;height:3px;border-radius:2px;background:var(--tx);transform-origin:left;transition:transform var(--t-mid) var(--ease-out);pointer-events:none}
+.cats button{background:none;border:0;padding:0;font:inherit;color:var(--off)}.cats button.on{color:var(--tx)}.cats .ind{position:absolute;left:0;bottom:5px;width:100px;height:3px;border-radius:2px;background:var(--tx);transform-origin:left;transition:transform .4s var(--e);pointer-events:none}
 .subs{display:flex;gap:18px;padding:10px 24px 0;font-size:16px;color:var(--mu);white-space:nowrap;overflow-x:auto;scrollbar-width:none}.subs button{background:none;border:0;padding:0;font:inherit;color:var(--mu)}
 .sec{padding:26px 24px 14px;font-size:26px;font-weight:600;scroll-margin-top:64px}
 .list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
@@ -61,7 +61,7 @@ svg{display:block}
 ::view-transition-group(hero){animation-duration:.45s;animation-timing-function:var(--e)}::view-transition-old(root),::view-transition-new(root){animation-duration:.28s}
 .go{flex:1;height:64px;border:0;border-radius:32px;background:var(--ac);color:#fff;font:700 20px var(--f);white-space:nowrap}
 .shw{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}.shw::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:var(--bd,1);animation:fade .3s var(--e);transition:opacity .25s}.shw.out::before{opacity:0}
-.shin{background:var(--c);width:100%;max-width:560px;max-height:85vh;overflow:auto;border-radius:28px 28px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));color:var(--tx);position:relative;animation:spring 360ms var(--ease-out) backwards;box-shadow:0 70px 0 var(--c);will-change:transform}.shw.out .shin{animation:none;transform:translateY(105%);transition:transform 260ms var(--ease-in)}
+.shin{background:var(--c);width:100%;max-width:560px;max-height:85vh;overflow:auto;border-radius:28px 28px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));color:var(--tx);position:relative;animation:spring .46s cubic-bezier(.34,1.18,.64,1) backwards;box-shadow:0 70px 0 var(--c);will-change:transform}.shw.out .shin{animation:none;transform:translateY(105%);transition:transform .27s cubic-bezier(.4,0,1,1)}
 .shd{width:40px;height:5px;border-radius:3px;background:var(--s2);margin:-10px auto 16px}@keyframes spring{from{transform:translateY(100%)}}
 .shin h3{font-size:22px;margin-bottom:6px}
 .opt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--s2)}.opt:last-of-type{border:0}.opt>span:first-child{font-size:17px}
@@ -91,7 +91,7 @@ input,select{width:100%;padding:15px 18px;border-radius:28px;border:0;background
 @keyframes dpop{from{transform:scale(.3)}}@keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(3.4);opacity:0}}
 .rdy-t{margin:6px 0 8px;font-weight:700;color:var(--ac)}.fx+.rdy-t{animation:rise .5s var(--e) .25s backwards}
 .tabs{display:flex;gap:8px;padding:6px 16px;overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tabs .c{height:44px;padding:0 20px;font-size:15px}
-.tst{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--s2);color:var(--tx);padding:12px 20px;border-radius:24px;z-index:60;opacity:0;pointer-events:none;transition:opacity var(--t-fast) var(--ease-in),transform var(--t-fast) var(--ease-in);max-width:90vw;text-align:center;font-size:14px}.tst.on{opacity:1;transform:translate(-50%,0);transition-duration:var(--t-mid);transition-timing-function:var(--ease-out)}  /* 18.11.2026: появление 280, уход 160 */.tst.bad{background:var(--ac);color:#fff}
+.tst{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--s2);color:var(--tx);padding:12px 20px;border-radius:24px;z-index:60;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center;font-size:14px}.tst.on{opacity:1;transform:translate(-50%,0)}.tst.bad{background:var(--ac);color:#fff}
 .err{color:#e08a76;font-size:14px;margin:6px 4px}.empty{text-align:center;padding:60px 24px;color:var(--mu)}.empty h3{color:var(--tx);margin-bottom:6px}
 .lab{font-size:14px;color:var(--mu);margin:20px 4px 8px}
 .prg{display:flex;gap:4px;margin-top:8px}.prg i{flex:1;height:4px;border-radius:2px;background:var(--s2)}.prg i.f{background:var(--mu)}
@@ -101,7 +101,7 @@ input,select{width:100%;padding:15px 18px;border-radius:28px;border:0;background
 .sk{height:196px;border-radius:28px;background:var(--c);margin-bottom:10px;position:relative;overflow:hidden}.sk.s{height:236px;margin:0}
 .sk::after,.ph:not(.hasimg):not(.noimg)::after,.circ:not(.hasimg):not(.noimg)::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.07) 50%,transparent 80%);transform:translateX(-100%);animation:shm 1.4s infinite}@keyframes shm{to{transform:translateX(100%)}}
 /* --- анимации: только transform и opacity --- */
-.ent{animation:rise .42s var(--e) backwards;animation-delay:calc(min(var(--i,0),8)*40ms)}@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.ent{animation:rise .42s var(--e) backwards;animation-delay:calc(var(--i,0)*40ms)}@keyframes rise{from{opacity:0;transform:translateY(18px)}}
 .pgin{animation:scin .36s var(--e) backwards}
 .wide,.sm,.tile,.c,.pl,.szb,.go,.main,.lite,.sec2,.rb,.pill button,.subs button,.cats button{transition:transform .2s var(--e)}
 .wide:active,.sm:active,.tile:active,.c:active,.pl:active,.szb:active,.go:active,.main:active,.lite:active,.sec2:active,.rb:active,.pill button:active,.subs button:active,.cats button:active{transform:scale(.97)}
@@ -393,35 +393,21 @@ html.motion .nuring circle+g circle{animation:nuring .9s var(--e) backwards}@key
 .nuchg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;color:var(--mu);font-size:12.5px}.nuchg span{padding:3px 9px;border-radius:9px;background:var(--s1);color:var(--tx)}
 /* ---------- шлифовка: переходы между экранами ---------- */
 /* новый экран заезжает справа, главный уезжает под него и темнеет (как в iOS) */
-html.motion .scr.in{animation:scin2 var(--t-slow) var(--ease-out) backwards}
-html.motion .scr.out{animation:scout2 300ms cubic-bezier(.32,.72,0,1) forwards;pointer-events:none}
+html.motion .scr.in{animation:scin2 .46s cubic-bezier(.22,1,.36,1) backwards}
+html.motion .scr.out{animation:scout2 .34s cubic-bezier(.32,.72,0,1) forwards;pointer-events:none}
 @keyframes scin2{from{transform:translateX(42%);opacity:0}40%{opacity:1}}
 @keyframes scout2{to{transform:translateX(100%);opacity:.6}}
 html.motion .scr.warm.in{animation:pop3 .46s cubic-bezier(.22,1,.36,1) backwards;box-shadow:none}
 html.motion .scr.warm.out{animation:popout3 .26s cubic-bezier(.45,0,.75,.3) forwards}
 @keyframes pop3{from{opacity:0;transform:translateY(26px) scale(.965)}}
 @keyframes popout3{to{opacity:0;transform:translateY(22px) scale(.97)}}
-html.motion #bar{transition:opacity .3s}
-/* 18.11.2026: ленту под открытым экраном больше не двигаем (сдвиг #app - перерисовка всей ленты на iPhone).
-   Затемняет отдельный пустой слой #dim между лентой и экраном, анимируется только его прозрачность */
-#dim{position:fixed;inset:0;z-index:15;pointer-events:none;background:#070403;opacity:0}
-html.motion #dim{transition:opacity var(--t-slow) var(--ease-out)}
-html.motion #dim:not(.on){transition-duration:300ms}
-#dim.on{opacity:.45}
-[data-theme=light] #dim{background:rgb(42,29,21)}
-[data-theme=light] #dim.on{opacity:.22}
+html.motion #app{transition:transform .46s cubic-bezier(.22,1,.36,1),opacity .46s cubic-bezier(.22,1,.36,1)}html.motion #bar{transition:opacity .3s}
+html.motion #app.ov{transform:translateX(-16%);opacity:.55}
+html.motion #app.ov.ovw{transform:scale(.94);opacity:.45}
 /* нижнюю панель не сдвигаем (у неё position:fixed внутри), а только гасим */
 html.motion #bar.ov{opacity:0;pointer-events:none}
 /* пока поверх открыт экран, фон не тратит кадры на анимации */
 #amb.pz,#amb.pz *{animation-play-state:paused!important}
-/* iPhone (18.11.2026): Safari пересчитывает размытие фона (backdrop-filter) в каждом кадре прокрутки, а три огромных плывущих пятна фона - отдельные слои под всей лентой. На iPhone панели делаем плотными без размытия, фон - неподвижным */
-html.ios #amb .gl,html.ios #amb .bn{animation:none!important;will-change:auto}
-html.ios #amb .bn,html.ios #amb::after{display:none}
-html.ios .pill,html.ios .ftr,html.ios .kbbar,html.ios .pbar,html.ios .pg .cats,html.ios .pg .cats.stk,html.ios .scr.p2 .pbar,html.ios .scr.pm .rb.dk{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
-html.ios[data-theme=light] .pill,html.ios[data-theme=light] .ftr,html.ios[data-theme=light] .pbar,html.ios[data-theme=light] .kbbar,html.ios[data-theme=light] .scr.p2 .pbar{background:rgba(255,250,242,.985)!important}
-html.ios[data-theme=light] .pg .cats.stk{background:rgba(243,234,220,.99)!important}
-html.ios .pg .cats{transition:none!important}
-html.ios .bwbtn{animation:none!important}
 
 /* содержимое экрана появляется волной, а не одним блоком */
 @keyframes stgup{from{opacity:0;transform:translateY(18px)}}
@@ -1134,9 +1120,7 @@ textarea#kbtx{width:100%;min-height:96px;padding:14px 16px;border:0;border-radiu
 --gold:#e9c46a;--gold2:#d4a24c;--gold-t:#f3dfa9;
 --line:rgba(243,235,225,.065);--line-g:rgba(233,196,106,.22);
 /* тайминги и пружина нажатия */
---t-fast:160ms;--t-med:.28s;--t-mid:280ms;--t-slow:420ms;--prs:.965;
-/* система движения (18.11.2026): плавный выход, разгон, лёгкая пружина */
---ease-out:cubic-bezier(.22,1,.36,1);--ease-in:cubic-bezier(.4,0,1,1);--ease-spring:cubic-bezier(.34,1.3,.64,1);
+--t-fast:.18s;--t-med:.28s;--t-slow:.44s;--prs:.965;
 /* моноширинный для сумм (админка, итоги) */
 --mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,'Roboto Mono',monospace;
 }
@@ -1323,7 +1307,6 @@ html.motion :is(.prb,.morb,.abc,.thm button,.sseg button,.spd button,.nuch butto
 .bwbtn{overflow:visible}
 .bwp .fr::after{animation:none!important;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.18) 48%,transparent 60%)}
 .bwp-b,.bwp-r,.bwo{will-change:transform}
-.offs :is(.bwp-b,.bwp-r,.bwo){will-change:auto}  /* 18.11.2026: карточка Brewsell вне экрана не держит отдельные слои */
 .offs,.offs *,.offs::after,.offs *::after{animation-play-state:paused!important}
 .ph.far::after{animation:none!important}
 /* свои фото блюд (media/p): фото заполняет площадку карточки целиком */
@@ -1352,11 +1335,6 @@ html[data-theme=light] #amb .g2{background:radial-gradient(circle,rgba(176,122,6
 html[data-theme=light] #amb .g3{background:radial-gradient(circle,rgba(233,196,106,.14),rgba(233,196,106,0) 60%)}
 html[data-theme=light] #amb .bn{opacity:.07}
 html[data-theme=light] #amb::after{opacity:.035}
-/* iPhone (18.11.2026): вместо отдельного неподвижного слоя #amb под всей лентой - те же три мягких пятна прямо в фоне страницы (верхний экран) */
-html.ios #amb{display:none}
-html.ios:not(.ap-kds):not(.ap-board):not(.ap-kiosk)[data-theme] body{background-color:var(--bg);background-repeat:no-repeat;background-size:100% 100vh;background-position:0 0;
- background-image:radial-gradient(circle 56.6vmax at 10vmax 15vmax,rgba(184,67,44,.20),rgba(184,67,44,0) 62%),radial-gradient(circle 56.6vmax at calc(100% - 5vmax) calc(20vh + 40vmax),rgba(176,122,69,.22),rgba(176,122,69,0) 62%),radial-gradient(circle 56.6vmax at 30vmax calc(100vh + 5vmax),rgba(233,196,106,.10),rgba(233,196,106,0) 60%)}
-html.ios:not(.ap-kds):not(.ap-board):not(.ap-kiosk)[data-theme=light] body{background-image:radial-gradient(circle 56.6vmax at 10vmax 15vmax,rgba(184,67,44,.07),rgba(184,67,44,0) 62%),radial-gradient(circle 56.6vmax at calc(100% - 5vmax) calc(20vh + 40vmax),rgba(176,122,69,.12),rgba(176,122,69,0) 62%),radial-gradient(circle 56.6vmax at 30vmax calc(100vh + 5vmax),rgba(233,196,106,.14),rgba(233,196,106,0) 60%)}
 /* шапка, баннер, вкладки */
 html[data-theme=light] .rb{background:rgba(255,250,242,.9);box-shadow:0 0 0 1px var(--line),0 4px 12px rgba(92,60,30,.08)}
 html[data-theme=light] .rb.dk{background:rgba(42,29,21,.07);box-shadow:none}
@@ -1648,21 +1626,9 @@ html.nomotion .iosbar b,html.nomotion .iosar{animation:none}
 .circ.hv.prp>img,.circ.hv.prp>.phe{filter:opacity(0)}
 .circ.hv>.hvn{filter:opacity(0);transition:filter .32s ease;z-index:2}
 .circ.hv>.hvn.in{filter:opacity(1)}
-/* 18.11.2026: без scroll-driven анимаций (iPhone) смена видео через opacity, а не filter (filter на видео - лишний слой в каждом кадре).
-   С sdt прозрачность героя ведёт анимация прокрутки, поэтому там остаётся filter */
-.scr.pm:not(.sdt) .circ.hv>.hvp{filter:none;transition:opacity .3s ease}
-.scr.pm:not(.sdt) .circ.hv>.hvp.gone{filter:none;opacity:0}
-.scr.pm:not(.sdt) .circ.hv.prp>img,.scr.pm:not(.sdt) .circ.hv.prp>.phe{filter:none;opacity:0}
-.scr.pm:not(.sdt) .circ.hv>.hvn{filter:none;opacity:0;transition:opacity .32s ease}
-.scr.pm:not(.sdt) .circ.hv>.hvn.in{filter:none;opacity:var(--po,1)}
 .hvr{position:absolute;right:14px;bottom:46px;z-index:4;display:flex;align-items:center;gap:6px;height:34px;padding:0 13px 0 10px;border:0;border-radius:17px;background:rgba(255,250,242,.62);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 8px 20px -10px rgba(92,60,30,.4);color:#2a1d15;font:600 13px/1 var(--f);letter-spacing:-.1px;cursor:pointer;
  transform:translate3d(0,var(--py,0px),0);opacity:calc(1 - var(--tp,0)*1.6);transition:filter .3s ease,visibility 0s;-webkit-tap-highlight-color:transparent}
 .hvr svg{flex:none;opacity:.85}
-/* iPhone (18.11.2026): путь без scroll-driven анимаций - заголовок/панель переключаются классом pmtp с переходом */
-.scr.pm.pmj.pmtp{--tp:1}
-.scr.pm.pmj .pt,.scr.pm.pmj .pmbar,.scr.pm.pmj .pmbar b{transition:opacity var(--t-mid) var(--ease-out),transform var(--t-mid) var(--ease-out)}
-.scr.pm.pmj .hvr{transition:filter .3s ease,opacity var(--t-mid) var(--ease-out),visibility 0s}
-.scr.pm.pmj .circ.hv.prun .hvr{transition:filter .2s ease,opacity var(--t-mid) var(--ease-out),visibility 0s .2s}
 .hvr:active{filter:brightness(.94)}
 .circ.hv.prun .hvr{visibility:hidden;filter:opacity(0);transition:filter .2s ease,visibility 0s .2s}
 html[data-theme=dark] .hvr{background:rgba(28,20,16,.5);color:#f6f1ea;box-shadow:inset 0 0 0 1px rgba(255,236,214,.14)}
@@ -1769,7 +1735,7 @@ html[data-theme=light] .hvr,html[data-theme=light] .pmnut{background:rgba(255,25
 html[data-theme=light] .scr.pm .rb.dk{background:rgba(255,250,242,.92)!important}
 @keyframes pmin{from{transform:translate3d(0,100%,0)}to{transform:none}}
 @keyframes pmout{to{transform:translate3d(0,100%,0)}}
-html.motion .scr.p2.in,html.motion .scr.pm.in{animation:pmin var(--t-slow) var(--ease-out) backwards!important}
+html.motion .scr.p2.in,html.motion .scr.pm.in{animation:pmin .42s cubic-bezier(.22,1,.36,1) backwards!important}
 html.motion .scr.p2.out,html.motion .scr.pm.out{animation:pmout .3s cubic-bezier(.4,0,.8,.3) forwards!important}
 html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!important}
 /* карточка товара: герой, заголовок и верхняя панель двигаются за прокруткой силами самого браузера (scroll-driven animations, класс sdt).
@@ -1797,15 +1763,10 @@ html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!imp
 #spl .spm{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 70%;opacity:0;transition:opacity 1.1s ease;transform:scale(1.06);will-change:opacity,transform}
 #spl .spm.spon{opacity:1}
 #spl.spgo .spm{animation:splzoom 7s cubic-bezier(.2,.6,.3,1) both}
-/* 18.11.2026: без blur(14px) - размытие большой картинки на iPhone дорогое; маленькая .s.webp и так мягкая */
-#spl .spm.splo{transform:scale(1.08)}
+#spl .spm.splo{filter:blur(14px);transform:scale(1.12)}
 #spl::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(246,236,222,.97) 0,rgba(246,236,222,.93) 30%,rgba(246,236,222,.5) 45%,rgba(246,236,222,0) 60%),linear-gradient(to top,rgba(42,29,21,.18),rgba(42,29,21,0) 22%)}
 #spl .spb{position:absolute;z-index:2;left:0;right:0;top:calc(13vh + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:14px}
-#spl .spk{width:86px;height:86px;color:#2a1d15;animation:splin .9s cubic-bezier(.2,.8,.2,1) both}
-/* 18.11.2026: вместо drop-shadow у вращающейся мельницы (перерисовка тени в каждом кадре) - неподвижная мягкая тень-градиент под знаком */
-#spl .spb::before{content:'';position:absolute;z-index:-1;left:50%;top:22px;width:120px;height:78px;margin-left:-60px;border-radius:50%;background:radial-gradient(closest-side,rgba(92,60,30,.16),rgba(92,60,30,0));pointer-events:none;animation:splch .9s ease .2s both;opacity:0}
-#spl.spdk .spb::before{background:radial-gradient(closest-side,rgba(0,0,0,.3),rgba(0,0,0,0))}
-#spl.sphd .spb::before{animation:splch .5s ease 1.1s both}
+#spl .spk{width:86px;height:86px;color:#2a1d15;filter:drop-shadow(0 10px 18px rgba(92,60,30,.18));animation:splin .9s cubic-bezier(.2,.8,.2,1) both}
 #spl .spk .lgbd{transform-box:view-box;transform-origin:32px 23px;animation:splsail 2.4s cubic-bezier(.3,.6,.25,1) .1s both}
 #spl.spgo .spk .lgbd{animation:splsail 2.4s cubic-bezier(.3,.6,.25,1) .1s both,splspin 9s linear 2.5s infinite}
 #spl .spk .mlh{fill:#b8432c}
@@ -1813,30 +1774,22 @@ html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!imp
 #spl .spw i{font-style:normal;display:inline-block;opacity:0;transform:translateY(10px);animation:splch .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.35s + var(--i)*55ms)}
 #spl .spt{font-size:12px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#7a5a3f;opacity:0;animation:splch .8s ease .95s both}
 #spl .spp{position:absolute;z-index:2;left:50%;bottom:calc(46px + env(safe-area-inset-bottom));width:120px;height:3px;margin-left:-60px;border-radius:3px;background:rgba(255,250,242,.45);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
-#spl .spp::before{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:3px;background:linear-gradient(90deg,rgba(255,250,242,0),#fffaf2,rgba(255,250,242,0));animation:splbx 1.25s ease-in-out infinite}
+#spl .spp::before{content:'';position:absolute;top:0;bottom:0;width:45%;border-radius:3px;background:linear-gradient(90deg,rgba(255,250,242,0),#fffaf2,rgba(255,250,242,0));animation:splbar 1.25s ease-in-out infinite}
 #spl.spout{opacity:0;transform:scale(1.035);pointer-events:none}
 /* тёмные сезонные заставки (снег, Рамадан): верх кадра тёмный - мельница и надпись светлые */
 #spl.spdk{background:#1c2232}
 #spl.spdk::after{background:linear-gradient(to bottom,rgba(14,18,30,.62) 0,rgba(14,18,30,.42) 28%,rgba(14,18,30,.12) 46%,rgba(14,18,30,0) 60%),linear-gradient(to top,rgba(20,14,10,.22),rgba(20,14,10,0) 22%)}
-#spl.spdk .spk{color:#fbf5ec}
+#spl.spdk .spk{color:#fbf5ec;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}
 #spl.spdk .spw{color:#fbf5ec}
 #spl.spdk .spt{color:rgba(251,245,236,.82)}
 #spl.spcalm *,#spl.spcalm .spm{animation:none!important;transition:opacity .3s!important;opacity:1}
 #spl.spcalm .spm:not(.spon){opacity:0}
 #spl.spcalm .spw i,#spl.spcalm .spt,#spl.spcalm .spk{opacity:1!important;transform:none!important}
-#spl.sphd::before{content:'';position:absolute;inset:0;z-index:1;background:#f3eadc;animation:sphbg .9s ease .25s both;pointer-events:none}
-#spl.sphd .spk{animation:sphmv 1.05s cubic-bezier(.65,0,.25,1) .12s both}
-#spl.sphd .spk .lgbd{animation:splspin 9s linear .9s infinite}
-@keyframes sphmv{from{transform:translateY(var(--hy,0)) scale(var(--hs,1));filter:none}to{transform:none}}
-@keyframes sphbg{to{opacity:0}}
 @keyframes splin{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:none}}
 @keyframes splsail{from{transform:rotate(-200deg)}to{transform:rotate(0)}}
 @keyframes splspin{to{transform:rotate(360deg)}}
 @keyframes splch{to{opacity:1;transform:none}}
 @keyframes splbar{from{left:-45%}to{left:100%}}
-/* 18.11.2026: полоска загрузки едет через transform, а не left (без пересчёта раскладки в каждом кадре) */
-@keyframes splbx{from{transform:translateX(-100%)}to{transform:translateX(222%)}}
-@keyframes ofbx{from{transform:translateX(-112.5%)}to{transform:translateX(250%)}}
 @keyframes splzoom{from{transform:scale(1.08)}to{transform:scale(1.0)}}
 #off{position:fixed;inset:0;z-index:2147482000;display:none;align-items:flex-end;justify-content:center;background:rgba(42,29,21,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:Manrope,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#2a1d15;opacity:0;transition:opacity .35s ease}
 #off.spon{display:flex}#off.ofvis{opacity:1}
@@ -1857,7 +1810,7 @@ html.motion .scr.p2.in>.body>*,html.motion .scr.pm.in>.body>*{animation:none!imp
 #off p{margin:0 auto;max-width:330px;font-size:15px;line-height:1.5;color:#5c4636}
 #off .ofs2{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 18px;font-size:13px;font-weight:600;color:#7a5a3f;min-height:20px}
 #off .ofs2 i{width:56px;height:3px;border-radius:3px;background:#eadbc6;position:relative;overflow:hidden}
-#off .ofs2 i::before{content:'';position:absolute;top:0;bottom:0;left:0;width:40%;border-radius:3px;background:#b8432c;animation:ofbx 1.3s ease-in-out infinite}
+#off .ofs2 i::before{content:'';position:absolute;top:0;bottom:0;width:40%;border-radius:3px;background:#b8432c;animation:splbar 1.3s ease-in-out infinite}
 #off:not(.oftry) .ofs2 i{display:none}
 #off .ofbt{display:flex;flex-direction:column;gap:10px}
 #off button{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border-radius:18px;font-weight:700;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
@@ -1881,22 +1834,14 @@ html.nomotion #off *,html.nomotion #offp *{animation:none!important}
 html[data-theme=light] .wide.mc .ph.mp,html[data-theme=light] .sm.mc .ph.mp,html[data-theme=light] .scr.pm .circ.hv{-webkit-mask-image:none!important;mask-image:none!important}
 html[data-theme=light] .wide.mc .ph.mp::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;animation:none;background:linear-gradient(to right,var(--cs,#dfc29f) 0,color-mix(in srgb,var(--cs,#dfc29f) 82%,transparent) 9%,color-mix(in srgb,var(--cs,#dfc29f) 45%,transparent) 18%,color-mix(in srgb,var(--cs,#dfc29f) 14%,transparent) 27%,transparent 36%)}
 html[data-theme=light] .sm.mc .ph.mp::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;animation:none;background:linear-gradient(to bottom,transparent 56%,color-mix(in srgb,var(--cs,#dfc29f) 18%,transparent) 64%,color-mix(in srgb,var(--cs,#dfc29f) 50%,transparent) 73%,color-mix(in srgb,var(--cs,#dfc29f) 80%,transparent) 82%,var(--cs,#dfc29f) 92%)}
-/* iPhone, тёмная тема (18.11.2026): вместо маски на каждом фото - тот же переход градиентом цвета карточки поверх, как в светлой */
-html.ios[data-theme=dark] .wide.mc .ph.mp,html.ios[data-theme=dark] .sm.mc .ph.mp{-webkit-mask-image:none!important;mask-image:none!important;--mbg:color-mix(in srgb,var(--cs,#dfc29f) 9%,#241a14)}
-html.ios[data-theme=dark] .wide.mc .ph.mp::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;animation:none;background:radial-gradient(ellipse 62% 74% at 57% 50%,transparent 0,transparent 52%,color-mix(in srgb,var(--mbg) 14%,transparent) 62%,color-mix(in srgb,var(--mbg) 40%,transparent) 71%,color-mix(in srgb,var(--mbg) 68%,transparent) 79%,color-mix(in srgb,var(--mbg) 89%,transparent) 86%,var(--mbg) 93%)}
-html.ios[data-theme=dark] .sm.mc .ph.mp::after{content:'';position:absolute;inset:0;z-index:5;pointer-events:none;animation:none;background:radial-gradient(ellipse 68% 56% at 50% 45%,transparent 0,transparent 52%,color-mix(in srgb,var(--mbg) 14%,transparent) 62%,color-mix(in srgb,var(--mbg) 40%,transparent) 71%,color-mix(in srgb,var(--mbg) 68%,transparent) 80%,color-mix(in srgb,var(--mbg) 89%,transparent) 88%,var(--mbg) 96%)}
 html[data-theme=light] .scr.pm .circ.hv::after{top:0;height:auto;inset:0;background:linear-gradient(to bottom,transparent 52%,color-mix(in srgb,var(--sand,#dcbf9d) 7%,transparent) 58%,color-mix(in srgb,var(--sand,#dcbf9d) 20%,transparent) 64%,color-mix(in srgb,var(--sand,#dcbf9d) 38%,transparent) 70%,color-mix(in srgb,var(--sand,#dcbf9d) 58%,transparent) 76%,color-mix(in srgb,var(--sand,#dcbf9d) 76%,transparent) 82%,color-mix(in srgb,var(--sand,#dcbf9d) 90%,transparent) 88%,color-mix(in srgb,var(--sand,#dcbf9d) 97%,transparent) 94%,var(--sand,#dcbf9d) 99%)!important}
 </style></head><body><div id="spl" aria-hidden="true"><img class="spm splo" alt="" decoding="async"><img class="spm" alt="" decoding="async"><video class="spm" muted playsinline preload="none" disablepictureinpicture></video><div class="spb"><svg viewBox="0 0 64 64" class="dnmill spk" aria-hidden="true"><defs><mask id="splk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#splk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><div class="spw"><i style="--i:0">D</i><i style="--i:1">E</i><i style="--i:2">G</i><i style="--i:3">I</i><i style="--i:4">R</i><i style="--i:5">M</i><i style="--i:6">E</i><i style="--i:7">N</i></div><div class="spt">Navoi 310A</div></div><div class="spp"></div></div>
 <script>/* заставка: один раз за сессию, мин. 1.2 с, до готовности данных (не дольше 6 с); работает без сети */
 addEventListener('beforeinstallprompt',function(x){x.preventDefault();window.__bip=x});
 (function(){var d=document,R=d.documentElement,el=d.getElementById('spl'),q=location.search,ls=function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
-if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1))R.classList.add('ios');
 var skip=/[?&](mode|doc)=/.test(q)||!!ls('dn_mode');try{skip=skip||sessionStorage.getItem('dn_spl')=='1';sessionStorage.setItem('dn_spl','1')}catch(e){}
 if(skip||!el){if(el)el.remove();window.DNSPL={ready:function(){},gone:true};return}
 var calm=ls('dn_motion')=='off',t0=Date.now(),rdy=0,done=0,im=el.querySelectorAll('img'),v=el.querySelector('video');if(calm)el.classList.add('spcalm');else el.classList.add('spgo');
-/* запуск с экрана «Домой» на Android: система сперва показывает мельницу по центру (значок из манифеста). Наша заставка начинает с той же картинки и уводит мельницу вверх - без «квадрата» и скачка */
-try{if(!calm&&/[?&]src=pwa/.test(q)&&/Android/i.test(navigator.userAgent)&&matchMedia('(display-mode: standalone)').matches){var r=el.querySelector('.spb').getBoundingClientRect();
- el.style.setProperty('--hy',Math.round(innerHeight/2-(r.top+43))+'px');el.style.setProperty('--hs',Math.min(1.6,Math.max(.8,innerWidth*.232/86)).toFixed(3));el.classList.add('sphd')}}catch(e){}
 var on=function(x){x.classList.add('spon')};
 /* сезонная заставка (админка → «Сезон», приложение хранит выбор в dn_season): spl_<k> / splv_<k>; файл не загрузился - обычная заставка */
 var SE={snow:1,newyear:0,ramadan:1,nauryz:0,summer:0},sk=ls('dn_season');if(!(typeof sk=='string'&&SE.hasOwnProperty(sk)))sk='';
@@ -1908,9 +1853,7 @@ var c=navigator.connection,slow=c&&(c.saveData||(c.effectiveType&&c.effectiveTyp
 if(!calm&&!slow&&v){v.addEventListener('playing',function(){on(v)});v.addEventListener('error',function(){v.classList.remove('spon');v.removeAttribute('src')});v.src=sk?'/media/v/splv_'+sk+'.mp4':'/media/v/splash.mp4';v.preload='auto';try{var p=v.play();if(p&&p.catch)p.catch(function(){})}catch(e){}}
 function hide(){if(done)return;done=1;el.classList.add('spout');R.classList.remove('splon');try{if(typeof S!='undefined'&&typeof render=='function'&&!S.scr&&!S.loading){enter();render()}}catch(e){}
  setTimeout(function(){try{v&&v.pause();v&&v.removeAttribute('src')}catch(e){}el.remove();window.DNSPL.gone=true;try{dispatchEvent(new Event('dnsplash'))}catch(e){}},calm?350:760)}
-// 18.11.2026: уводим, когда меню уже нарисовано, и ещё через 2 кадра (первая отрисовка ленты не совпадает с уходом заставки)
-function shown(){try{return !!d.querySelector('#app .cv')||(typeof S!='undefined'&&(S.fail||S.v!='menu'))||!!(window.DNOFF&&DNOFF.isDown&&DNOFF.isDown())}catch(e){return true}}  // нет сети и меню не нарисовать - не держим заставку поверх окна «нет интернета»
-function tick(){var w=Date.now()-t0;if(w>=6000)hide();else if(rdy&&w>=1500&&shown())requestAnimationFrame(function(){requestAnimationFrame(hide)});else setTimeout(tick,rdy&&w<1500?1500-w:120)}
+function tick(){var w=Date.now()-t0;if(rdy&&w>=1500)hide();else if(w>=6000)hide();else setTimeout(tick,rdy?1500-w:120)}
 R.classList.add('splon');window.DNSPL={ready:function(){rdy=1},gone:false,hide:hide};setTimeout(tick,120);
 })();</script>
 <div id="off" role="dialog" aria-modal="true" aria-labelledby="offh"><div class="ofb"><div class="ofi" aria-hidden="true"><span class="ofw ofa"></span><span class="ofw ofb2"></span><svg viewBox="0 0 64 64" class="dnmill" aria-hidden="true"><defs><mask id="offk" maskUnits="userSpaceOnUse"><rect width="64" height="64" fill="#fff"/><g class="lgbd"><path d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/></g><circle cx="32" cy="23" r="6.6"/><path d="M29.2 61V55.8a2.8 2.8 0 0 1 5.6 0V61z"/></mask></defs><path fill="currentColor" mask="url(#offk)" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7ZM38.3 15.2L39.8 16.7L48.7 7.9L47.1 6.3ZM39.8 29.3L38.3 30.8L47.1 39.7L48.7 38.1ZM25.7 30.8L24.2 29.3L15.3 38.1L16.9 39.7ZM24.2 16.7L25.7 15.2L16.9 6.3L15.3 7.9Z"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><span class="ofz">z</span><span class="ofz">z</span><span class="ofg"></span></div><h2 id="offh"></h2><p id="offt"></p><div class="ofs2" aria-live="polite"><i></i><span id="ofs"></span></div><div class="ofbt"><button class="of1" id="ofr" type="button"></button><button class="of2" id="ofm" type="button"></button></div></div></div><button id="offp" type="button" aria-live="polite"><b></b><span></span></button>
@@ -1943,7 +1886,7 @@ addEventListener('online',function(){if(st.down)attempt()});
 var of=window.fetch;if(of)window.fetch=function(){var a=arguments;return of.apply(this,a).catch(function(e){if(!(e&&e.name=='AbortError'))ping().then(function(ok){if(!ok)show()});throw e})};
 window.DNOFF={show:show,back:back,isDown:function(){return !!st.down},check:function(){return ping().then(function(ok){if(!ok)show();return ok})}};
 if(navigator.onLine===false)(document.readyState=='loading'?addEventListener('DOMContentLoaded',show):show());
-})();</script><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div id="dim" aria-hidden="true"></div><div class="tst" id="tst"></div>
+})();</script><noscript><h1>Degirmen Navoi - донер, кофе и выпечка в Алматы</h1><p>Адрес: г. Алматы, ул. Навои, 310А. Ежедневно 08:00-22:00. Телефон +7 700 555 00 27.</p><p>Донер в лаваше, батоне и на тарелке, искандер, турецкий чай, кофе, лимонады, сэндвичи, круассаны и выпечка. Заказ онлайн с самовывозом.</p><p><a href="/?doc=menu">Меню, состав и аллергены</a> · <a href="/?doc=offer">Публичная оферта</a> · <a href="/?doc=pay">Оплата и возврат</a> · <a href="/?doc=privacy">Политика конфиденциальности</a> · <a href="/?doc=about">Реквизиты</a></p></noscript><div id="amb" aria-hidden="true"><b class="gl g1"></b><b class="gl g2"></b><b class="gl g3"></b><i class="bn" style="left:43%;--s:1.26;--t:46s;--d:-41s;--r:-218deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:70%;--s:0.67;--t:52s;--d:-3s;--r:-209deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:13%;--s:0.90;--t:36s;--d:-15s;--r:-341deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:56%;--s:0.64;--t:52s;--d:-7s;--r:-361deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:82%;--s:1.01;--t:35s;--d:-36s;--r:212deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:30%;--s:0.63;--t:38s;--d:-18s;--r:236deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:71%;--s:0.68;--t:43s;--d:-35s;--r:-226deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:76%;--s:1.00;--t:40s;--d:-23s;--r:-340deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:93%;--s:0.64;--t:35s;--d:-39s;--r:-327deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:89%;--s:0.97;--t:58s;--d:-20s;--r:349deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i><i class="bn" style="left:60%;--s:0.85;--t:41s;--d:-50s;--r:-378deg"><svg viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="9" ry="13" fill="#c08a5a"/><path d="M10 2c-4 6 4 18 0 24" stroke="#1a130f" stroke-width="2" fill="none"/></svg></i></div><div id="app"></div><div id="m"></div><div id="m2"></div><div id="bar"></div><div class="tst" id="tst"></div>
 <script id="appjs" type="text/x-app">
 // запрос без ответа не вешает приложение: 25 с на обычные запросы, дольше на ИИ и загрузку фото
 const tFetch=(u,o={})=>{const url=String(u?.url||u),ms=/\/storage\//.test(url)?120000:/\/functions\//.test(url)?90000:25000,ac=new AbortController(),tm=setTimeout(()=>ac.abort(),ms);if(o.signal){if(o.signal.aborted)ac.abort();else o.signal.addEventListener('abort',()=>ac.abort())}return fetch(u,{...o,signal:ac.signal}).finally(()=>clearTimeout(tm))};
@@ -1952,21 +1895,21 @@ const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 const LANGS=['ru','kk','en'],CATS=['dn','cf','sw','tea','lem','tk'],CE={sw:'🥐',dn:'🌯',cf:'☕',tea:'🫖',lem:'🍹',tk:'🍵'};  // эмодзи - только заглушка, если нет фото
 const IC={user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',x:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>',plus:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',chk:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',chv:'<svg class="chv" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>',back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>'};
 const T={
-ru:{menu:'Меню',orders:'Заказы',kas:'Касса',login:'Войти',logout:'Выйти',profile:'Профиль',cart:'Корзина',add:'В корзину',ingr:'Состав',sauces:'Соусы',extras:'Добавки',syr:'Сироп',sugl:'Сахар',no:'без',nm:'обычно',x2:'двойной',nosyr:'без сиропа',nosug:'без сахара',sug:'сахар',wo:'без',spoon:'ложки',tot:'Итого',empty:'Корзина пуста',emptyH:'Добавьте что-нибудь из меню',notePh:'Пожелание повару (до 20 символов)',timeL:'Время самовывоза (необязательно)',timeN:'Оплата на кассе при получении.',place:'Оформить',ups:'Добавьте напиток',from:'от',gone:'закончилось',loadfail:'Не удалось загрузить меню',stop:'Стоп-лист',back:'Вернуть',endd:'Закончилось',reg:'Регистрация',signin:'Вход',name:'Имя',pw:'Пароль (мин. 6 символов)',doreg:'Зарегистрироваться',haveacc:'Уже есть аккаунт? Войти',noacc:'Нет аккаунта? Зарегистрироваться',mail:'Проверь почту: отправили письмо для подтверждения',okord:'Заказ принят. Оплата на кассе при получении.',err:'Ошибка',myord:'Заказы',loginSee:'Войдите, чтобы видеть заказы.',noord:'Заказов пока нет',pasttime:'Выберите время позже, чем сейчас.',changed:'Меню изменилось: часть позиций убрана или изменена. Проверьте корзину.',added:'Добавлено в корзину',offline:'Нет связи - показано сохранённое меню',hist:'История',done:'Готово',por1:'1 порция',por15:'1,5 порции',por2:'2 порции',freeW:'бесплатно',notel:'Пожелание',at:'к',retry:'Повторить',
+ru:{menu:'Меню',orders:'Заказы',kas:'Касса',login:'Войти',logout:'Выйти',profile:'Профиль',cart:'Корзина',add:'В корзину',ingr:'Состав',sauces:'Соусы',extras:'Добавки',syr:'Сироп',sugl:'Сахар',no:'без',nm:'обычно',x2:'двойной',nosyr:'без сиропа',nosug:'без сахара',sug:'сахар',wo:'без',spoon:'ложки',tot:'Итого',empty:'Корзина пуста',emptyH:'Добавьте что-нибудь из меню',notePh:'Пожелание повару (до 20 символов)',timeL:'Время самовывоза (необязательно)',timeN:'Заказ начнут готовить сразу после оплаты.',place:'Оформить',ups:'Добавьте напиток',from:'от',gone:'закончилось',loadfail:'Не удалось загрузить меню',stop:'Стоп-лист',back:'Вернуть',endd:'Закончилось',reg:'Регистрация',signin:'Вход',name:'Имя',pw:'Пароль (мин. 6 символов)',doreg:'Зарегистрироваться',haveacc:'Уже есть аккаунт? Войти',noacc:'Нет аккаунта? Зарегистрироваться',mail:'Проверь почту: отправили письмо для подтверждения',okord:'Заказ принят. Оплата на кассе при получении.',err:'Ошибка',myord:'Заказы',loginSee:'Войдите, чтобы видеть заказы.',noord:'Заказов пока нет',pasttime:'Выберите время позже, чем сейчас.',changed:'Меню изменилось: часть позиций убрана или изменена. Проверьте корзину.',added:'Добавлено в корзину',offline:'Нет связи - показано сохранённое меню',hist:'История',done:'Готово',por1:'1 порция',por15:'1,5 порции',por2:'2 порции',freeW:'бесплатно',notel:'Пожелание',at:'к',retry:'Повторить',
 s_new:'Принят',s_cooking:'Готовится',s_ready:'Готов - забирайте',s_done:'Выдан',s_cancelled:'Отменён',b_cooking:'Готовится',b_ready:'Готов',b_done:'Выдан',b_cancelled:'Отмена',
 c_dn:'донер',c_cf:'кофе',c_tea:'чай',c_lem:'лимонады',c_tk:'чайники',sub_w:'в лаваше и батоне',sub_p:'на тарелке',
 ban_ready:'Заказ №{n} готов - забирайте',
 fc_rule:'После 7 выданных заказов - кофе бесплатно. Войдите, чтобы копить.',fc_prog:'Выдано заказов: {n} · до бесплатного кофе: {k}',fc_have:'У вас бесплатный кофе: {n}. Выберите его в корзине.',fc_use:'Бесплатный кофе',fc_on:'Бесплатный кофе применён - отменить',
 tabOrd:'Заказы',tabStop:'Стоп-лист',tabMenu:'Меню и цены',save:'Сохранить',saved:'Сохранено',price:'Цена, ₸',opts:'Добавки',nameL:'Название',noRights:'Не сохранено: нет прав (нужна роль admin).',badNum:'Цены должны быть целыми числами от 0.',badName:'Названия на всех трёх языках обязательны.',medit:'Редактирование меню. Цены, названия и фото меняются сразу для всех гостей.',
 photo:'Фото',upl:'Загрузить фото',delph:'Убрать фото',uploading:'Загружаю фото…',uplFail:'Фото не загружено',photoSaved:'Фото обновлено',lng:'Язык',inst:'Установить на телефон',instIos:'Чтобы поставить на экран: «Поделиться» → «На экран Домой».',acct:'Аккаунт'},
-kk:{menu:'Мәзір',orders:'Тапсырыстар',kas:'Касса',login:'Кіру',logout:'Шығу',profile:'Профиль',cart:'Себет',add:'Себетке',ingr:'Құрамы',sauces:'Тұздықтар',extras:'Қосымша',syr:'Сироп',sugl:'Қант',no:'жоқ',nm:'қалыпты',x2:'қос',nosyr:'сиропсыз',nosug:'қантсыз',sug:'қант',wo:'жоқ',spoon:'қасық',tot:'Барлығы',empty:'Себет бос',emptyH:'Мәзірден бірдеңе қосыңыз',notePh:'Аспазға тілек (20 таңбаға дейін)',timeL:'Алып кету уақыты (міндетті емес)',timeN:'Төлем кассада алғанда.',place:'Рәсімдеу',ups:'Сусын қосыңыз',from:'бастап',gone:'таусылды',loadfail:'Мәзірді жүктеу мүмкін болмады',stop:'Стоп-тізім',back:'Қайтару',endd:'Таусылды',reg:'Тіркелу',signin:'Кіру',name:'Аты',pw:'Құпиясөз (кемінде 6 таңба)',doreg:'Тіркелу',haveacc:'Аккаунт бар ма? Кіру',noacc:'Аккаунт жоқ па? Тіркелу',mail:'Поштаңызды тексеріңіз: растау хаты жіберілді',okord:'Тапсырыс қабылданды. Төлем кассада алғанда.',err:'Қате',myord:'Тапсырыстар',loginSee:'Тапсырыстарды көру үшін кіріңіз.',noord:'Әзірге тапсырыс жоқ',pasttime:'Қазіргіден кейінгі уақытты таңдаңыз.',changed:'Мәзір өзгерді: кейбір позициялар өшірілді немесе өзгерді. Себетті тексеріңіз.',added:'Себетке қосылды',offline:'Байланыс жоқ - сақталған мәзір көрсетілді',hist:'Тарих',done:'Дайын',por1:'1 порция',por15:'1,5 порция',por2:'2 порция',freeW:'тегін',notel:'Тілек',at:'сағ.',retry:'Қайталау',
+kk:{menu:'Мәзір',orders:'Тапсырыстар',kas:'Касса',login:'Кіру',logout:'Шығу',profile:'Профиль',cart:'Себет',add:'Себетке',ingr:'Құрамы',sauces:'Тұздықтар',extras:'Қосымша',syr:'Сироп',sugl:'Қант',no:'жоқ',nm:'қалыпты',x2:'қос',nosyr:'сиропсыз',nosug:'қантсыз',sug:'қант',wo:'жоқ',spoon:'қасық',tot:'Барлығы',empty:'Себет бос',emptyH:'Мәзірден бірдеңе қосыңыз',notePh:'Аспазға тілек (20 таңбаға дейін)',timeL:'Алып кету уақыты (міндетті емес)',timeN:'Тапсырыс төлегеннен кейін бірден дайындалады.',place:'Рәсімдеу',ups:'Сусын қосыңыз',from:'бастап',gone:'таусылды',loadfail:'Мәзірді жүктеу мүмкін болмады',stop:'Стоп-тізім',back:'Қайтару',endd:'Таусылды',reg:'Тіркелу',signin:'Кіру',name:'Аты',pw:'Құпиясөз (кемінде 6 таңба)',doreg:'Тіркелу',haveacc:'Аккаунт бар ма? Кіру',noacc:'Аккаунт жоқ па? Тіркелу',mail:'Поштаңызды тексеріңіз: растау хаты жіберілді',okord:'Тапсырыс қабылданды. Төлем кассада алғанда.',err:'Қате',myord:'Тапсырыстар',loginSee:'Тапсырыстарды көру үшін кіріңіз.',noord:'Әзірге тапсырыс жоқ',pasttime:'Қазіргіден кейінгі уақытты таңдаңыз.',changed:'Мәзір өзгерді: кейбір позициялар өшірілді немесе өзгерді. Себетті тексеріңіз.',added:'Себетке қосылды',offline:'Байланыс жоқ - сақталған мәзір көрсетілді',hist:'Тарих',done:'Дайын',por1:'1 порция',por15:'1,5 порция',por2:'2 порция',freeW:'тегін',notel:'Тілек',at:'сағ.',retry:'Қайталау',
 s_new:'Қабылданды',s_cooking:'Дайындалуда',s_ready:'Дайын - алыңыз',s_done:'Берілді',s_cancelled:'Бас тартылды',b_cooking:'Дайындалуда',b_ready:'Дайын',b_done:'Берілді',b_cancelled:'Бас тарту',
 c_dn:'донер',c_cf:'кофе',c_tea:'шай',c_lem:'лимонадтар',c_tk:'шәйнектер',sub_w:'лаваш пен батонда',sub_p:'тәрелкеде',
 ban_ready:'№{n} тапсырыс дайын - алыңыз',
 fc_rule:'7 берілген тапсырыстан кейін - кофе тегін. Жинау үшін кіріңіз.',fc_prog:'Берілген тапсырыс: {n} · тегін кофеге дейін: {k}',fc_have:'Сізде тегін кофе бар: {n}. Оны себеттен таңдаңыз.',fc_use:'Тегін кофе',fc_on:'Тегін кофе қолданылды - болдырмау',
 tabOrd:'Тапсырыстар',tabStop:'Стоп-тізім',tabMenu:'Мәзір және бағалар',save:'Сақтау',saved:'Сақталды',price:'Бағасы, ₸',opts:'Қосымшалар',nameL:'Атауы',noRights:'Сақталмады: құқық жоқ (admin рөлі керек).',badNum:'Бағалар 0-ден бастап бүтін сан болуы керек.',badName:'Үш тілдегі атаулар міндетті.',medit:'Мәзірді өңдеу. Бағалар, атаулар мен суреттер барлық қонаққа бірден өзгереді.',
 photo:'Сурет',upl:'Сурет жүктеу',delph:'Суретті алып тастау',uploading:'Сурет жүктелуде…',uplFail:'Сурет жүктелмеді',photoSaved:'Сурет жаңартылды',lng:'Тіл',inst:'Телефонға орнату',instIos:'Экранға қою үшін: «Бөлісу» → «Басты экранға».',acct:'Аккаунт'},
-en:{menu:'Menu',orders:'Orders',kas:'Till',login:'Log in',logout:'Log out',profile:'Profile',cart:'Cart',add:'Add to cart',ingr:'Ingredients',sauces:'Sauces',extras:'Extras',syr:'Syrup',sugl:'Sugar',no:'no',nm:'regular',x2:'double',nosyr:'no syrup',nosug:'no sugar',sug:'sugar',wo:'no',spoon:'spoons',tot:'Total',empty:'Cart is empty',emptyH:'Add something from the menu',notePh:'Note for the cook (max 20 chars)',timeL:'Pickup time (optional)',timeN:'Pay at the till on pickup.',place:'Place order',ups:'Add a drink',from:'from',gone:'sold out',loadfail:'Could not load the menu',stop:'Stop list',back:'Restore',endd:'Sold out',reg:'Sign up',signin:'Log in',name:'Name',pw:'Password (min 6 characters)',doreg:'Sign up',haveacc:'Have an account? Log in',noacc:'No account? Sign up',mail:'Check your email: we sent a confirmation link',okord:'Order placed. Pay at the till on pickup.',err:'Error',myord:'Orders',loginSee:'Log in to see your orders.',noord:'No orders yet',pasttime:'Pick a time later than now.',changed:'The menu changed: some items were removed or updated. Please check your cart.',added:'Added to cart',offline:'Offline - showing the saved menu',hist:'History',done:'Done',por1:'1 portion',por15:'1.5 portions',por2:'2 portions',freeW:'free',notel:'Note',at:'at',retry:'Retry',
+en:{menu:'Menu',orders:'Orders',kas:'Till',login:'Log in',logout:'Log out',profile:'Profile',cart:'Cart',add:'Add to cart',ingr:'Ingredients',sauces:'Sauces',extras:'Extras',syr:'Syrup',sugl:'Sugar',no:'no',nm:'regular',x2:'double',nosyr:'no syrup',nosug:'no sugar',sug:'sugar',wo:'no',spoon:'spoons',tot:'Total',empty:'Cart is empty',emptyH:'Add something from the menu',notePh:'Note for the cook (max 20 chars)',timeL:'Pickup time (optional)',timeN:'We start your order right after payment.',place:'Place order',ups:'Add a drink',from:'from',gone:'sold out',loadfail:'Could not load the menu',stop:'Stop list',back:'Restore',endd:'Sold out',reg:'Sign up',signin:'Log in',name:'Name',pw:'Password (min 6 characters)',doreg:'Sign up',haveacc:'Have an account? Log in',noacc:'No account? Sign up',mail:'Check your email: we sent a confirmation link',okord:'Order placed. Pay at the till on pickup.',err:'Error',myord:'Orders',loginSee:'Log in to see your orders.',noord:'No orders yet',pasttime:'Pick a time later than now.',changed:'The menu changed: some items were removed or updated. Please check your cart.',added:'Added to cart',offline:'Offline - showing the saved menu',hist:'History',done:'Done',por1:'1 portion',por15:'1.5 portions',por2:'2 portions',freeW:'free',notel:'Note',at:'at',retry:'Retry',
 s_new:'Received',s_cooking:'Preparing',s_ready:'Ready - come pick it up',s_done:'Picked up',s_cancelled:'Cancelled',b_cooking:'Preparing',b_ready:'Ready',b_done:'Picked up',b_cancelled:'Cancel',
 c_dn:'doner',c_cf:'coffee',c_tea:'tea',c_lem:'lemonades',c_tk:'teapots',sub_w:'wraps & baguettes',sub_p:'on a plate',
 ban_ready:'Order #{n} is ready - come pick it up',
@@ -1981,8 +1924,7 @@ const SZ=['S','M','XL'],SL=['1','1,5','2'],STEPS=['new','cooking','ready','done'
 const SECS={dn:[{k:'w',ids:['lav','bat'],l:'sub_w'},{k:'p',ids:['pl','isk'],l:'sub_p'}]};  // подкатегории донера
 const cached=LS.get('dn_menu',null);
 let S={items:cached?.items||[],opts:cached?.opts||[],loading:!cached,off:false,cat:'dn',cart:[],me:null,pf:null,v:'menu',ord:[],names:{},sel:null,pk:null,scr:null,mode:'in',err:'',ch:null,fail:'',L:LANGS.includes(LS.get('dn_l','ru'))?LS.get('dn_l','ru'):'ru',kt:'ord',used:0,open:null,note:'',pt:'',after:null,ent:false,pp:{},shownTot:null,_h:null,_b:null};
-// 18.11.2026: если гость сам не выбирал режим, а в телефоне включено «уменьшить движение» - спокойный режим
-const MOTION_OFF=LS.get('dn_motion',null)=='off',FM=/[?&]motion=1/.test(location.search)||!MOTION_OFF;document.documentElement.classList.add(FM?'motion':'nomotion');  // анимации включены по умолчанию, даже если в Windows/macOS стоит «уменьшить движение»; выключаются в профиле  // только для проверки: принудительно включает анимации
+const MOTION_OFF=LS.get('dn_motion','on')=='off',FM=/[?&]motion=1/.test(location.search)||!MOTION_OFF;document.documentElement.classList.add(FM?'motion':'nomotion');  // анимации включены по умолчанию, даже если в Windows/macOS стоит «уменьшить движение»; выключаются в профиле  // только для проверки: принудительно включает анимации
 const RM=matchMedia('(prefers-reduced-motion:reduce)').matches&&!FM,LOADED=new Set();
 let entT;function enter(){S.ent=true;clearTimeout(entT);entT=setTimeout(()=>{S.ent=false},1000)}  // «играть анимацию появления»: только при открытии экрана / смене категории
 const $=id=>document.getElementById(id),e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),mn=n=>n.toLocaleString('ru')+' ₸',staff=()=>S.pf&&['cashier','admin'].includes(S.pf.role),isAdm=()=>S.pf?.role=='admin';
@@ -2016,10 +1958,9 @@ const imgSrc=it=>it.image_url||(hasMed(it)?medP(medKey(it)):'');  // фото и
 const PIC={sw:'<path d="M3 15c2-7 16-7 18 0-3 3-15 3-18 0z"/><path d="M8 11l1 5M12 10v6M16 11l-1 5"/>',kt:'<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M7 11c0-3 2-5 5-5s5 2 5 5"/><path d="M10 6l4-4M13 6l5-3"/>',dn:'<path d="M7.5 7h9l-2 13.5a1 1 0 0 1-1 .9h-3a1 1 0 0 1-1-.9z"/><path d="M7.5 7c1-2.2 2.8-2.2 3.6-.3c.8-1.9 2.6-1.9 3.4 0c.6-1.4 1.6-1.4 2 .3"/><path d="M9 11.5h6M9.5 15h5"/>',cf:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v3M11.5 3.5v3"/>',tea:'<path d="M5 10h12v4a6 6 0 0 1-12 0z"/><path d="M17 11l3-2v4l-3 2"/><path d="M9 7h4"/>',lem:'<path d="M6 4h12l-1.5 16h-9z"/><path d="M15 2l-2.5 8"/><path d="M7 9h10"/>',tk:'<path d="M8 4h8c0 4-3 5-3 8s3 4 3 8H8c0-4 3-5 3-8S8 8 8 4z"/>'};
 const PHI=it=>it&&it.data&&it.data.pack?'<img class="bwth" src="/brewsell/label.jpg" alt="">':hasArt(it)?artSVG(it,null,1):`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${PIC[it.category]||PIC.cf}</svg>`;
 const PH_C=new WeakMap();  // готовая разметка картинки карточки: рисунок-запаску (большой SVG) не собираем заново при каждом обновлении экрана
-// eg=1 (18.11.2026): первые карточки ленты грузятся сразу, без loading="lazy"
-const ph=(it,cls='ph',eg)=>{const mp=hasMed(it),src=mp?(it.image_url||medP(medKey(it),/\bphs\b/.test(cls)?1:2)):imgSrc(it),ld=LOADED.has(src),ck=cls+'|'+ld+'|'+src+(eg?'|e':'');let pc=PH_C.get(it);if(!pc)PH_C.set(it,pc={});if(pc[ck])return pc[ck];return pc[ck]=`<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt=""${eg?'':' loading="lazy"'} decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':/\.m\./.test(src)?' width="640" height="640"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
+const ph=(it,cls='ph')=>{const mp=hasMed(it),src=mp?(it.image_url||medP(medKey(it),/\bphs\b/.test(cls)?1:2)):imgSrc(it),ld=LOADED.has(src),ck=cls+'|'+ld+'|'+src;let pc=PH_C.get(it);if(!pc)PH_C.set(it,pc={});if(pc[ck])return pc[ck];return pc[ck]=`<div class="${cls}${mp?' mp':''}${ld?' hasimg':''}"><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" loading="lazy" decoding="async"${mp?(/\.s\./.test(src)?' width="420" height="420"':/\.m\./.test(src)?' width="640" height="640"':' width="1200" height="1200"'):''} class="${ld?'ld':''}" data-id="${e(it.id)}" onload="imgOk(this)" onerror="imgErr(this)"></div>`};
 function imgOk(im){const p=im.parentNode;im.classList.add('ld');p.classList.add('hasimg');LOADED.add(im.getAttribute('src'));
- if(p.classList.contains('ph')&&p.closest('#app')){const a=p.querySelector(':scope>.phe');if(a&&a.firstChild){if(window.PG_SCR&&PG_SCR.on)(PG_SCR.q=PG_SCR.q||[]).push(()=>{if(a.firstChild)a.replaceChildren()});else a.replaceChildren()}}}  // 18.11.2026: во время прокрутки - после её окончания  // фото в ленте загрузилось - рисунок под ним больше не нужен (он запасной, на случай если фото не загрузится): убираем его узлы, чтобы страница была легче
+ if(p.classList.contains('ph')&&p.closest('#app')){const a=p.querySelector(':scope>.phe');if(a&&a.firstChild)a.replaceChildren()}}  // фото в ленте загрузилось - рисунок под ним больше не нужен (он запасной, на случай если фото не загрузится): убираем его узлы, чтобы страница была легче
 function imgErr(im){const it=itemOf(im.dataset.id),loc=`img/${im.dataset.id}.webp`;if(it&&it.image_url&&!im.dataset.f){im.dataset.f=1;im.src=loc}else{im.parentNode.classList.add('noimg');im.remove()}}
 // ---------- группы выбора ----------
 const GRPS=['spc','tmp','milk','cup'],MGRPS=['hlth','top'];
@@ -2905,16 +2846,14 @@ return `<div class="lab">${t('nx_mywall')}</div>`+S.wall.map((c,i)=>{const a=who
 
 // ---------- отрисовка без лишних перерисовок ----------
 // Сравниваем разметку без классов «появления»: если изменились только они, DOM не трогаем - анимации не проигрываются повторно, картинки не мигают.
-// лента кэшируется без учёта загруженных фото (18.11.2026) - после вставки сразу отмечаем уже загруженные, чтобы они не проявлялись заново
-function ldMark(){for(const im of $('app').querySelectorAll('img:not(.ld)')){if(LOADED.has(im.getAttribute('src'))){im.classList.add('ld');im.parentNode.classList.add('hasimg')}}}
 function paint(h){const hn=h.replace(/ (ent|pgin)(?=[ "])/g,'').replace(/mlk\d+/g,'mlk').replace(/ hasimg(?=[ "])/g,'').replace(/ class="ld"/g,' class=""');  // не считаем изменением: новый id маски MILL() и отметки «фото загрузилось» (их ставит imgOk прямо в живой ленте) - иначе вся лента перерисовывается заново
 if(S._h!==null&&S._h!==undefined&&S._hn===hn){S._h=h;return}
 const cs=document.querySelector('.cats'),sl=cs?cs.scrollLeft:0,io=cs&&cs.querySelector('.ind'),old=io?{x:+io.dataset.x,w:+io.dataset.w}:null;
 const cv=document.querySelector('#app .cv');
 if(S.cvSwap&&cv){const tp=document.createElement('template');tp.innerHTML=h;const ncv=tp.content.querySelector('.cv');
  if(ncv){const os=document.querySelector('#app .subs'),ns=tp.content.querySelector('.subs');if(os&&ns)os.replaceWith(ns);else if(os)os.remove();else if(ns)document.querySelector('#app .cats').after(ns);
-  cv.replaceChildren(...ncv.childNodes);ldMark();nxCats();S._h=h;S._hn=hn;return}}
-$('app').innerHTML=h;S._h=h;S._hn=hn;ldMark();placeInd(old,sl);S.ord.forEach(o=>S.pp[o.id]=pctOf(o));if(S.ent&&!S.loading)setTimeout(()=>{S.ent=false},0)}
+  cv.replaceChildren(...ncv.childNodes);nxCats();S._h=h;S._hn=hn;return}}
+$('app').innerHTML=h;S._h=h;S._hn=hn;placeInd(old,sl);S.ord.forEach(o=>S.pp[o.id]=pctOf(o));if(S.ent&&!S.loading)setTimeout(()=>{S.ent=false},0)}
 // подсветка активной категории без перерисовки ленты
 function nxCats(){const cs=document.querySelector('.cats');if(!cs)return;const io=cs.querySelector('.ind'),old=io&&io.dataset.x?{x:+io.dataset.x,w:+io.dataset.w}:null;
 cs.querySelectorAll('button').forEach(b=>b.classList.toggle('on',(b.getAttribute('onclick')||'').includes(`'${S.cat}'`)));placeInd(old,cs.scrollLeft)}
@@ -3134,13 +3073,11 @@ S.aiStt=0;aiMicUI();if(/субтитр|dimatorzok|продолжение сле�
 // ---------- данные ----------
 async function loadMenu(){const a=await sb.from('menu_items').select('*').order('sort'),b=await sb.from('menu_options').select('*').order('sort');if(S.loading)enter();S.loading=false;
 if(a.error||b.error){S.off=true;S.fail=S.items.length?'':(a.error||b.error).message;return}S.fail='';S.off=false;S.items=a.data;S.opts=b.data;LS.set('dn_menu',{items:a.data,opts:b.data});if(!S.items.some(i=>i.category==S.cat))S.cat=CATS.find(c=>S.items.some(i=>i.category==c))||S.cat}
-async function loadPf(){await loadPf2();if(!S.ch)S.ch=sb.channel('o').on('postgres_changes',{event:'*',schema:'public',table:'orders'},async p=>{if(p.eventType=='INSERT'&&staff()&&p.new?.user_id!=S.me?.id&&!$('payov'))beep();const old=Object.fromEntries(S.ord.map(o=>[o.id,o.status]));await loadOrd();await loadPf2();await loadUsed();checkReady(old);if(!(S.v=='kas'&&S.kt=='menu'))render()}).subscribe()}
+async function loadPf(){await loadPf2();if(!S.ch)S.ch=sb.channel('o').on('postgres_changes',{event:'*',schema:'public',table:'orders'},async p=>{if(p.eventType=='INSERT'&&staff())beep();const old=Object.fromEntries(S.ord.map(o=>[o.id,o.status]));await loadOrd();await loadPf2();await loadUsed();checkReady(old);if(!(S.v=='kas'&&S.kt=='menu'))render()}).subscribe()}
 async function loadPf2(){if(!S.me)return;const{data}=await sb.from('profiles').select('*').eq('id',S.me.id).single();if(data)S.pf=data}
 async function loadOrd(){if(!S.me){S.ord=[];return}let q=sb.from('orders').select('*').order('created_at',{ascending:false}).limit(50);if(!staff())q=q.eq('user_id',S.me.id);const{data}=await q;S.ord=data||[];if(staff()&&S.ord.length){const ids=[...new Set(S.ord.map(o=>o.user_id))],r=await sb.from('profiles').select('id,name').in('id',ids);(r.data||[]).forEach(p=>S.names[p.id]=p.name)}}
 function checkReady(old){S.ord.filter(o=>o.user_id==S.me?.id&&o.status=='ready'&&old[o.id]&&old[o.id]!='ready').forEach(o=>{beep();try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch{}toast(t('ban_ready',S.L,{n:o.id}))})}
-// мягкий звон (две ноты, плавное затухание) вместо резкого писка 880 Гц (18.11.2026)
-let _bpAc=null;function beep(){try{const c=_bpAc=_bpAc||new (window.AudioContext||window.webkitAudioContext)();if(c.state=='suspended')c.resume();const n=c.currentTime;
- [[784,0],[1175,.13]].forEach(([f,d])=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,n+d);g.gain.exponentialRampToValueAtTime(.11,n+d+.02);g.gain.exponentialRampToValueAtTime(.0001,n+d+.9);o.connect(g);g.connect(c.destination);o.start(n+d);o.stop(n+d+.95)})}catch{}}
+function beep(){try{const c=new AudioContext(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();o.stop(c.currentTime+.4)}catch{}}
 let tt;function toast(m,bad){const x=$('tst');x.textContent=m;x.className='tst on'+(bad?' bad':'');clearTimeout(tt);tt=setTimeout(()=>x.className='tst',bad?4200:2200)}
 // ---------- экраны-оверлеи ----------
 function scr(h,name,cls=''){const o=document.querySelector('#m .scr'),same=o&&o.dataset.n==name&&!o.classList.contains('out'),y=same?o.scrollTop:0;S.scr=name;$('m').innerHTML=`<div class="scr ${cls} ${same||S.vt?'':'in'}" data-n="${name}">${h}</div>`;document.querySelector('#m .scr').scrollTop=y;document.body.style.overflow='hidden'}
@@ -3155,10 +3092,7 @@ document.addEventListener('touchstart',x=>st(x.touches[0].clientY,x.target),{pas
 document.addEventListener('touchend',en);document.addEventListener('touchcancel',en);
 document.addEventListener('mousedown',x=>st(x.clientY,x.target));document.addEventListener('mousemove',x=>mv(x.clientY,x));document.addEventListener('mouseup',en)})();
 function cp(now){S.pk=null;const w=document.querySelector('#m2 .shw');if(!w)return;if(now||RM){$('m2').innerHTML='';return}w.classList.add('out');setTimeout(()=>{if(!S.pk&&w.isConnected)$('m2').innerHTML=''},280)}
-function cl(now){cp(true);S._pid=null;const o=document.querySelector('#m .scr');S.sel=null;S.scr=null;document.body.style.overflow='';
- // 18.11.2026: в первом кадре закрытия - только нижняя панель (сумма корзины), вся лента - после анимации
- if(o&&!now&&!RM&&S.v=='menu'&&!S.loading&&!S.fail&&!apOn()){const b=barHtml();if(S._b!==b){$('bar').innerHTML=b;S._b=b}clearTimeout(S._clT);S._clT=setTimeout(()=>{S._clT=0;render()},400)}else render();
- if(o&&!now&&!RM){o.classList.add('out');setTimeout(()=>{if(!S.scr&&o.isConnected)$('m').innerHTML=''},380)}else $('m').innerHTML=''}
+function cl(now){cp(true);S._pid=null;const o=document.querySelector('#m .scr');S.sel=null;S.scr=null;document.body.style.overflow='';render();if(o&&!now&&!RM){o.classList.add('out');setTimeout(()=>{if(!S.scr&&o.isConnected)$('m').innerHTML=''},380)}else $('m').innerHTML=''}
 function refresh(){if(S.scr=='prod')prod();else if(S.scr=='cart')cart();else if(S.scr=='prof')profileM();else if(S.scr=='auth')authM(S.after);if(S.pk)picker();render()}
 function setL(l){S.L=l;LS.set('dn_l',l);document.documentElement.lang=l;if(S.me)sb.from('profiles').update({lang:l}).eq('id',S.me.id).then(()=>{});refresh()}
 const pl=(on,fn,l)=>`<button class="pl ${on?'on':''}" onclick="${fn}">${l}</button>`,cc=(on,fn,l)=>`<button class="c ${on?'on':''}" onclick="${fn}">${l}</button>`;
@@ -3213,8 +3147,8 @@ el.className='fly';el.style.cssText=`left:${r0.left}px;top:${r0.top}px;width:${r
 const a=el.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx*.5}px,${dy*.5-130}px) scale(${(1+k)/2.6})`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(${k})`,opacity:.8}],{duration:640,easing:'cubic-bezier(.45,.05,.3,1)',fill:'forwards'});
 let done=0;const fin=()=>{if(done)return;done=1;el.remove();S.shownTot=null;render();const b=document.querySelector('#bar .pa');if(!b)return;b.classList.add('bump');tween(b,prev,tot())};a.onfinish=fin;setTimeout(fin,760)}  // запасной таймер: если вкладка в фоне и событие не пришло
 function tween(b,from,to){const t0=performance.now(),lab=t('cart'),f=v=>lab+(v>0?' · '+mn(Math.round(v)):'');const st=now=>{const k=Math.min(1,(now-t0)/450),v=from+(to-from)*(1-Math.pow(1-k,3));b.textContent=f(v);if(k<1)requestAnimationFrame(st);else b.textContent=f(to)};requestAnimationFrame(st)}
-function up(id,z){const it=itemOf(id);if(!it||it.sold_out)return;pushLine(defLine(it,1,z));cart();barUp()}  // 18.11.2026: ленту под корзиной не пересобираем
-const QMAX=20,LMAX=30;function cq(i,d){const l=S.cart[i];if(d>0&&l.qty>=QMAX){toast(t('e_qmax'),1);return}l.qty+=d;if(l.qty<1)S.cart.splice(i,1);cart();barUp()}
+function up(id,z){const it=itemOf(id);if(!it||it.sold_out)return;pushLine(defLine(it,1,z));cart();render()}
+const QMAX=20,LMAX=30;function cq(i,d){const l=S.cart[i];if(d>0&&l.qty>=QMAX){toast(t('e_qmax'),1);return}l.qty+=d;if(l.qty<1)S.cart.splice(i,1);cart();render()}
 // ---------- корзина ----------
 const avail=()=>Math.max(0,Math.floor((S.pf?.orders_count||0)/FREE_EVERY)-S.used),freeIn=()=>S.cart.filter(l=>l.free).length;
 // Бесплатный кофе: заработано = orders_count/7, использовано = строки с free в неотменённых заказах (учёт без правки базы, см. db/NEXT.sql)
@@ -3287,38 +3221,24 @@ const hdr=()=>`<div class="hd"><div class="lg"><span class="lgm" aria-hidden="tr
 const secOf=cat=>{const its=S.items.filter(i=>i.category==cat&&!(i.data&&i.data.pack)),def=SECS[cat];if(!def)return [{k:'a',l:null,items:its}];const used=new Set(),out=def.map(s=>({...s,items:s.ids.map(id=>its.find(i=>i.id==id)).filter(Boolean)}));out.forEach(s=>s.items.forEach(i=>used.add(i.id)));const rest=its.filter(i=>!used.has(i.id));if(rest.length)out[out.length-1].items.push(...rest);return out.filter(s=>s.items.length)};
 const price=i=>{const pc=Object.values(i.data.p).flat();return i.sold_out?t('gone'):(pc.length>1?t('from')+' ':'')+mn(Math.min(...pc))};
 const hotCat=i=>['cf','tea','tk'].includes(i.category),stmw=i=>hotCat(i)?'<span class="stmw" aria-hidden="true"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></span>':'';
-const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent&&n<8?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i,'ph',n<8)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
-const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent&&n<8?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i,'ph',n<8)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
+const wide=(i,n)=>`<div class="wide ${i.sold_out?'off':''}${S.ent?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wt"><div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div></div>`;
+const small=(i,n)=>`<div class="sm ${i.sold_out?'off':''}${S.ent?' ent':''}${mcC(i)}" style="--i:${n}${mcS(i)}" data-id="${i.id}" onclick="op_('${i.id}',event)">${stmw(i)}${ph(i)}<div class="wn">${e(nm(i.name))}</div><div class="wp"><span>${price(i)}</span>${IC.chv}</div></div>`;
 function goSec(k){const el=document.getElementById('sec-'+k);el&&el.scrollIntoView({behavior:'smooth',block:'start'})}
-// нижняя панель меню отдельно (18.11.2026): cl() обновляет только её сразу, а ленту - после анимации закрытия
-function barHtml(){const ac=activeMine(),rd=ac.some(o=>o.status=='ready'),nC=S.cart.reduce((a,x)=>a+x.qty,0);
-return aiFab()+`<div class="pill"><button onclick="goOrd()">${t('orders')}${ac.length?`<i class="dot ${rd?'r':''}"></i>`:''}</button>${staff()?`<button onclick="goKas()">${t('kas')}</button>`:''}<button class="pa" onclick="cart()">${t('cart')}${nC&&(S.shownTot??tot())>0?' · '+mn(S.shownTot??tot()):''}</button></div>`}
-// только нижняя панель, если лента не зависит от изменения (корзина); иначе - обычный render
-const apOn=()=>{try{return typeof apMode=='function'&&!!apMode()}catch{return true}};  // киоск/кухня/табло - всегда полный render
-function barUp(){if(S.v!='menu'||S.loading||S.fail||apOn()){render();return}const b=barHtml();if(S._b!==b){$('bar').innerHTML=b;S._b=b}}
-function render(){clearTimeout(S._clT);S._clT=0;let h='',bar='';document.body.style.overflow=S.scr?'hidden':'';
+function render(){let h='',bar='';document.body.style.overflow=S.scr?'hidden':'';
 	if(S.loading)h=hdr()+`<div class="cats"><span class="skc on"></span><span class="skc"></span><span class="skc"></span><span class="skc"></span></div><div class="list" style="padding-top:24px"><div class="skw"><div class="skph"></div><div class="sktx"><i class="skl w1"></i><i class="skl w2"></i></div></div><div class="grid"><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div><div class="skc2"><div class="skph"></div><i class="skl w1"></i><i class="skl w3"></i></div></div></div>`;
 else if(S.fail)h=hdr()+`<div class="empty">${emArt('hill')}<p>${t('loadfail')}</p><p class="mu" style="font-size:14px;margin-top:-6px">${({ru:'Проверьте интернет и нажмите «Повторить».',kk:'Интернетті тексеріп, «Қайталау» түймесін басыңыз.',en:'Check your connection and tap Retry.'})[S.L]||''}</p><button class="sec2" style="width:auto;padding:0 28px" onclick="boot()">${t('retry')}</button></div>`;
 else if(S.v=='menu'){let n=0;const cl_=catList();
 h=`<div class="pg">`+hdr()+(S.off?`<div class="mu" style="margin:6px 24px 0;font-size:13px">${t('offline')}</div>`:'')+(typeof seaHero=='function'?seaHero(heroHtml()):heroHtml())+`<div class="cats">${cl_.map(k=>`<button class="${k==S.cat?'on':''}" onclick="setCat('${k}')">${t('c_'+k)}</button>`).join('')}<i class="ind"></i></div>`+
-(()=>{let ck;try{ck=[S.L,S.ent?1:0,document.documentElement.dataset.theme,cl_.join(),S.me&&S.me.id,JSON.stringify(S.items)].join('|')}catch(_){ck=Math.random()}if(S._cvK===ck&&S._cvH)return S._cvH;  // лента не изменилась - не собираем её заново (раньше каждое закрытие карточки собирало всё меню)
+(()=>{let ck;try{ck=[S.L,S.ent?1:0,LOADED.size,document.documentElement.dataset.theme,cl_.join(),S.me&&S.me.id,JSON.stringify(S.items)].join('|')}catch(_){ck=Math.random()}if(S._cvK===ck&&S._cvH)return S._cvH;  // лента не изменилась - не собираем её заново (раньше каждое закрытие карточки собирало всё меню)
 const x=`<div class="cv">`+cl_.map(cat=>`<section class="csec" id="cat-${cat}" data-cat="${cat}"><h2 class="ctit">${t('c_'+cat)}</h2>`+(cat=='cf'&&typeof bwCard=='function'?bwCard():'')+secOf(cat).map(s=>`<div id="sec-${cat}-${s.k}">${s.l?`<div class="sec">${t(s.l)}</div>`:''}<div class="list">${wide(s.items[0],n++)}${s.items.length>1?`<div class="grid">${s.items.slice(1).map(i=>small(i,n++)).join('')}</div>`:''}</div></div>`).join('')+`</section>`).join('');S._cvK=ck;return S._cvH=x})()+`</div></div>`;
-bar=barHtml()}
+const ac=activeMine(),rd=ac.some(o=>o.status=='ready'),nC=S.cart.reduce((a,x)=>a+x.qty,0);
+bar=aiFab()+`<div class="pill"><button onclick="goOrd()">${t('orders')}${ac.length?`<i class="dot ${rd?'r':''}"></i>`:''}</button>${staff()?`<button onclick="goKas()">${t('kas')}</button>`:''}<button class="pa" onclick="cart()">${t('cart')}${nC&&(S.shownTot??tot())>0?' · '+mn(S.shownTot??tot()):''}</button></div>`}
 else if(S.v=='ord'){const ac=activeMine(),hi=mine().filter(o=>!ac.includes(o));h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('myord'),"goMenu()")+(S.me?rateCard()+(S.ord.length?'':`<div class="empty">${emArt('ord')}<p>${t('noord')}</p></div>`)+ac.map(o=>orderCard(o,1)).join('')+(hi.length?`<div class="lab" style="margin:22px 24px 4px">${t('hist')}</div>`+hi.map(o=>orderCard(o,0)).join(''):'')+gameCard()+`<div style="padding:0 20px">${prog()}</div>`:`<div class="empty">${emArt('ord')}<p>${t('loginSee')}</p><button class="main" style="width:auto;padding:0 32px" onclick="authM()">${t('login')}</button></div>`)+`</div>`}
 else h=`<div class="pg nb${S.ent?' pgin':''}">`+topbar(t('kas'),"goMenu()")+kas()+`</div>`;
 paint(h)
 if(S._b!==bar){$('bar').innerHTML=bar;S._b=bar}}
 // подчёркивание активной категории плавно переезжает; лента прокручивается к активной
-// 18.11.2026: позиции кнопок вкладок меряем один раз после render (и при смене ширины/загрузке шрифта), в кадре прокрутки - только из кэша, без принудительного замера
-function catPos(cs,force){if(cs._pos&&!force)return cs._pos;const bs=[...cs.querySelectorAll('button')];cs._pos={b:bs,x:bs.map(b=>b.offsetLeft),w:bs.map(b=>b.offsetWidth),cw:cs.clientWidth,vw:innerWidth};return cs._pos}
-addEventListener('resize',()=>{const cs=document.querySelector('.cats');if(cs&&cs._pos&&cs._pos.vw!==innerWidth)cs._pos=null},{passive:true});
-try{document.fonts&&document.fonts.ready.then(()=>{const cs=document.querySelector('.cats');if(cs){cs._pos=null;placeInd(null,cs.scrollLeft)}})}catch{}
-function placeInd(old,sl){const cs=document.querySelector('.cats'),ind=cs&&cs.querySelector('.ind'),b=cs&&cs.querySelector('button.on');if(!ind||!b)return;
- const fresh=!ind.dataset.x,P=catPos(cs,fresh);let i=P.b.indexOf(b);if(i<0)i=catPos(cs,true).b.indexOf(b);if(i<0)return;
- const Q=cs._pos,x=Q.x[i],w=Q.w[i],set=(x,w)=>ind.style.transform=`translateX(${x}px) scaleX(${w/100})`;ind.dataset.x=x;ind.dataset.w=w;
- if(fresh){cs.scrollLeft=sl;if(old&&(old.x!==x||old.w!==w)){ind.style.transition='none';set(old.x,old.w);requestAnimationFrame(()=>{ind.style.transition='';set(x,w)})}else set(x,w)}
- else set(x,w);  // тот же элемент: переход CSS едет от текущего положения
- const go=()=>cs.isConnected&&cs.scrollTo({left:Math.max(0,x-(Q.cw-w)/2),behavior:RM?'auto':'smooth'});if(window.PG_SCR&&PG_SCR.on)PG_SCR.after=go;else go()}  // пока палец листает ленту, вкладки не двигаем - догоняют после остановки
+function placeInd(old,sl){const cs=document.querySelector('.cats'),ind=cs&&cs.querySelector('.ind'),b=cs&&cs.querySelector('button.on');if(!ind||!b)return;const x=b.offsetLeft,w=b.offsetWidth,set=(x,w)=>ind.style.transform=`translateX(${x}px) scaleX(${w/100})`;ind.dataset.x=x;ind.dataset.w=w;ind.style.transition='none';set(old?old.x:x,old?old.w:w);cs.scrollLeft=sl;ind.getBoundingClientRect();ind.style.transition='';set(x,w);const go=()=>cs.isConnected&&cs.scrollTo({left:Math.max(0,x-(cs.clientWidth-w)/2),behavior:RM?'auto':'smooth'});if(window.PG_SCR&&PG_SCR.on)PG_SCR.after=go;else go()}  // пока палец листает ленту, вкладки не двигаем - догоняют после остановки
 function setCat(k){if(S.cat==k)return;catSwap(k)}
 function goMenu(){S.v='menu';enter();render();window.scrollTo(0,0)}
 function goOrd(){S.v='ord';enter();render();loadOrd().then(render);window.scrollTo(0,0)}function goKas(){S.v='kas';enter();render();loadOrd().then(render);window.scrollTo(0,0)}
@@ -3332,18 +3252,16 @@ const STANDALONE=navigator.standalone===true;
 // главный экран отъезжает под открытый, его анимации ставим на паузу (после того как переход закончился)
 // классы ставим прямо на #app и #bar, а не на body: так браузер пересчитывает стили двух элементов, а не всей страницы
 function sync(){const s=top(),now=!!s,w=!!s&&s.classList.contains('warm');
- AB().forEach(a=>{a.classList.toggle('ov',now);a.classList.toggle('ovw',w)});const dm=$('dim');if(dm)dm.classList.toggle('on',now);  // 18.11.2026: затемнение слоем #dim
+ AB().forEach(a=>{a.classList.toggle('ov',now);a.classList.toggle('ovw',w)});
  clearTimeout(pending);const amb=$('amb');if(now)pending=setTimeout(()=>{if(top()&&amb)amb.classList.add('pz')},480);else if(amb)amb.classList.remove('pz');
  if(now&&!open){open=true;try{history.pushState({dn:1},'')}catch{}}
  else if(!now&&open){open=false;if(fromPop)fromPop=false;else if(history.state&&history.state.dn){skipPop++;history.back()}}
  // первое открытие карточки товара: содержимое выезжает волной
  if(s&&s.dataset.n=='prod'&&!s.dataset.st&&nxMotion()){s.dataset.st=1;if(!S._stgDone){s.classList.add('stg');S._stgDone=1;setTimeout(()=>s.isConnected&&s.classList.remove('stg'),1300)}}
  if(!s)S._stgDone=0}
-// 18.11.2026: следим только за сменой экранов (childList), а не за каждым классом внутри карточки; закрытие (.out) - явный вызов из cl()
-new MutationObserver(sync).observe(M,{childList:true});
-{const _c=cl;cl=function(){const r=_c.apply(this,arguments);sync();return r}}
+new MutationObserver(sync).observe(M,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
 // при закрытии карточки с «перелётом» картинки главный экран встаёт на место сразу, чтобы картинка прилетела точно в свою карточку
-const still=on=>[...AB(),$('dim')].filter(Boolean).forEach(a=>a.style.transition=on?'none':'');
+const still=on=>AB().forEach(a=>a.style.transition=on?'none':'');
 const _closeProd=closeProd;closeProd=function(){if(false){still(1);setTimeout(()=>still(0),800)}return _closeProd.apply(this,arguments)};
 // «Заказы» и «Касса» - это страницы, а не экраны поверх: раньше меню просто исчезало и новая страница собиралась кусками.
 // Теперь переход целиком: новая страница заезжает справа, меню уходит влево и темнеет; назад - наоборот.
@@ -3375,17 +3293,17 @@ addEventListener('popstate',()=>{if(skipPop){skipPop--;if(open)try{history.pushS
  if(!open)return;fromPop=true;if(S.scr=='prod'&&typeof closeProd=='function')closeProd();else cl()});
 // в приложении, добавленном на экран «Домой», системного жеста нет - делаем свой: тянем экран от левого края
 if(!STANDALONE)return;
-let sx=0,sy=0,dx=0,on=0,lock=0,t0=0,el=null,dmax=.4;const W=()=>innerWidth||390;
+let sx=0,sy=0,dx=0,on=0,lock=0,t0=0,el=null;const W=()=>innerWidth||390;
 const app=()=>[$('app'),$('bar')];
 addEventListener('touchstart',e=>{const p=e.touches[0];el=top();if(!el||p.clientX>26||M2.querySelector('.shw'))return;sx=p.clientX;sy=p.clientY;dx=0;on=1;lock=0;t0=performance.now()},{passive:true});
 M.addEventListener('touchmove',e=>{if(!on)return;const p=e.touches[0],x=p.clientX-sx,y=p.clientY-sy;  // только на открытом экране (#m), не на всём окне
 
- if(!lock){if(Math.abs(x)<8&&Math.abs(y)<8)return;if(Math.abs(y)>Math.abs(x)||x<0){on=0;return}lock=1;el.classList.add('drag');el.classList.remove('in');const D0=$('dim');dmax=D0?parseFloat(getComputedStyle(D0).opacity)||0:0;still(1)}
+ if(!lock){if(Math.abs(x)<8&&Math.abs(y)<8)return;if(Math.abs(y)>Math.abs(x)||x<0){on=0;return}lock=1;el.classList.add('drag');el.classList.remove('in');still(1)}
  e.preventDefault();dx=Math.max(0,x);const k=dx/W();el.style.transform=`translateX(${dx}px)`;
- const D=$('dim'),Bb=$('bar');if(D)D.style.opacity=(dmax*(1-k)).toFixed(3);if(Bb)Bb.style.opacity=Math.max(0,k*1.6-.6)},{passive:false});  // 18.11.2026: лента стоит, светлеет только #dim
+ const warm=el.classList.contains('warm'),A=$('app'),Bb=$('bar');if(A){A.style.transform=warm?`scale(${.94+.06*k})`:`translateX(${-16+16*k}%)`;A.style.opacity=.5+.5*k}if(Bb)Bb.style.opacity=Math.max(0,k*1.6-.6)},{passive:false});
 function end(){if(!on)return;on=0;if(!lock)return;const v=dx/Math.max(1,performance.now()-t0),go=dx>W()*.32||(v>.55&&dx>40);
- el.classList.remove('drag');el.classList.add('snap');const A=[$('bar'),$('dim')].filter(Boolean),Bb=$('bar'),D=$('dim');
- if(go){still(0);if(Bb)Bb.style.opacity='1';if(D)D.style.opacity='0';el.style.transform=`translateX(${W()}px)`;
+ el.classList.remove('drag');el.classList.add('snap');const A=app().filter(Boolean);
+ if(go){still(0);A.forEach(a=>{a.style.transform='none';a.style.opacity='1'});el.style.transform=`translateX(${W()}px)`;
   const x=el;setTimeout(()=>{if(x.isConnected&&top()===x)cl(true);requestAnimationFrame(()=>A.forEach(a=>{a.style.transform='';a.style.opacity=''}))},320)}
  else{still(0);A.forEach(a=>{a.style.transform='';a.style.opacity=''});el.style.transform='';const x=el;setTimeout(()=>x.classList.remove('snap'),340)}}
 addEventListener('touchend',end);addEventListener('touchcancel',end);
@@ -5075,25 +4993,17 @@ function bwCard(){const it=S.items.find(i=>i.id=='bw');if(!it||it.sold_out)retur
 const catsH=()=>{const c=document.querySelector('.cats');return c?c.offsetHeight:70};
 setCat=function(k){if(S.v!='menu')return;const el=document.getElementById('cat-'+k);if(S.cat!=k)try{navigator.vibrate&&navigator.vibrate(10)}catch{};S.cat=k;nxCats();if(!el)return;
   document.documentElement.style.setProperty('--catsH',catsH()+'px');lockT=Date.now()+900;
-  const top=Math.max(0,el.getBoundingClientRect().top+window.scrollY-catsH()+2);
-  // 18.11.2026: далёкий раздел (больше 1,5 экрана) - сразу встаём за 0,6 экрана до него и доезжаем плавно; в спокойном режиме - сразу
-  if(RM){window.scrollTo({top,behavior:'instant'});return}
-  const d=top-window.scrollY,H=innerHeight;if(Math.abs(d)>1.5*H)window.scrollTo({top:Math.max(0,top-Math.sign(d)*.6*H),behavior:'instant'});
-  window.scrollTo({top,behavior:'smooth'})};
+  const top=el.getBoundingClientRect().top+window.scrollY-catsH()+2;window.scrollTo({top:Math.max(0,top),behavior:RM?'auto':'smooth'})};
 function spy(){raf=0;if(S.v!='menu'||S.scr||Date.now()<lockT)return;const cs=document.querySelector('.cats');if(!cs)return;const line=cs.getBoundingClientRect().bottom+24;
   let cur=null;for(const sec of document.querySelectorAll('#app .csec')){if(sec.getBoundingClientRect().top<=line)cur=sec.dataset.cat;else break}
   if(!cur){const f=document.querySelector('#app .csec');cur=f&&f.dataset.cat}
   if(cur&&cur!=S.cat){S.cat=cur;nxCats()}}
 // spy зовём только когда край раздела пересекает линию под вкладками (IntersectionObserver - полоса 1 px), а не в каждом кадре прокрутки
-let io=null,ioK='',seen=[],vw=innerWidth,vh=innerHeight,rzT=0;
-// 18.11.2026: высоту окна берём «запомненную» (vh): на iPhone при прокрутке прячется адресная строка и высота окна прыгает - наблюдатель из-за этого не пересоздаём
-function watch(){const secs=[...document.querySelectorAll('#app .csec')],line=Math.round(catsH()+24),k=line+'/'+vh;
+let io=null,ioK='',seen=[];
+function watch(){const secs=[...document.querySelectorAll('#app .csec')],line=Math.round(catsH()+24),k=line+'/'+innerHeight;
   if(io&&ioK==k&&secs.length==seen.length&&secs.every((x,i)=>x===seen[i]))return;if(io)io.disconnect();io=null;ioK=k;seen=secs;if(!secs.length)return;
-  io=new IntersectionObserver(()=>spy(),{rootMargin:`${-line}px 0px ${-Math.max(0,vh-line-1)}px 0px`});secs.forEach(x=>io.observe(x))}
-// пересоздаём при смене ширины, при росте высоты больше чем на 150 px и при любом уменьшении высоты (иначе полоса наблюдения станет пустой); не посреди прокрутки.
-// Небольшой рост высоты только делает полосу толще - соседние разделы всё равно переключают вкладку точно на линии
-const rzGo=()=>{clearTimeout(rzT);if(window.PG_SCR&&PG_SCR.on){rzT=setTimeout(rzGo,200);return}vw=innerWidth;vh=innerHeight;ioK='';watch()};
-if('IntersectionObserver' in window){const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};addEventListener('resize',()=>{if(innerWidth===vw&&innerHeight>=vh&&innerHeight-vh<=150)return;clearTimeout(rzT);rzT=setTimeout(rzGo,200)},{passive:true})}
+  io=new IntersectionObserver(()=>spy(),{rootMargin:`${-line}px 0px ${-(innerHeight-line-1)}px 0px`});secs.forEach(x=>io.observe(x))}
+if('IntersectionObserver' in window){const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};addEventListener('resize',()=>{ioK='';watch()},{passive:true})}
 else addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(spy)},{passive:true});
 addEventListener('scrollend',()=>{lockT=0;spy()});
 })();
@@ -5108,15 +5018,6 @@ addEventListener('scrollend',()=>{lockT=0;spy()});
   if(io2)document.querySelectorAll('#app .ph:not(.hasimg):not(.noimg)').forEach(el=>{if(!el._io2){el._io2=1;el.classList.add('far');io2.observe(el)}})};
  const _r=render;render=function(){const x=_r.apply(this,arguments);try{watch()}catch(_){}return x};
 })();
-// 18.11.2026: после показа меню в простое догружаем остальные фото ленты по 2 (new Image + decode), не во время прокрутки
-{let st=0;const idle=f=>window.requestIdleCallback?requestIdleCallback(f,{timeout:2500}):setTimeout(f,1200);
- const run=()=>{const c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;
-  const seen=new Set(),list=[...document.querySelectorAll('#app .ph:not(.hasimg):not(.noimg)>img[loading=lazy]')].map(x=>x.getAttribute('src')).filter(u=>u&&!LOADED.has(u)&&!seen.has(u)&&seen.add(u));
-  let i=0,act=0;const next=()=>{if(window.PG_SCR&&PG_SCR.on){setTimeout(next,300);return}
-   while(act<2&&i<list.length){const u=list[i++];if(LOADED.has(u))continue;act++;const im=new Image();im.decoding='async';im.src=u;
-    const fin=()=>{act--;idle(next)};(im.decode?im.decode():new Promise((ok,no)=>{im.onload=ok;im.onerror=no})).then(fin,fin)}};
-  next()};
- const _r=render;render=function(){const x=_r.apply(this,arguments);if(!st&&S.v=='menu'&&!S.loading&&!S.fail&&document.querySelector('#app .cv')){st=1;setTimeout(()=>idle(run),1500)}return x}}
 // ---------- списания в отчёте дня + подключение кассиров к боту ----------
 function finWoLoad(){const F=S.fn;if(!F)return;const d=F.d;sb.rpc('writeoff_list',{p_d:d}).then(r=>{if(!S.fn||S.fn.d!=d)return;S.fn.wo=r.error?[]:(r.data||[]);S.fn.woD=d;S.fn.woErr=r.error?String(r.error.message||r.error):null;if(S.scr=='fin')finRender()});finStaffLoad()}
 const woCan=()=>isAdm()||S.fn.d==almDay(0);
@@ -5150,8 +5051,7 @@ async function staffOff(id){if(!confirm('Отключить этого сотр�
 // 13.11: класс scrl на <html> больше не ставим - его смена в начале и в конце каждой прокрутки пересчитывала стили всей страницы (~3 мс на ПК, на телефоне больше).
 // Пар, пачка Brewsell, кнопки - анимации transform/opacity, их крутит видеокарта, прокрутке они не мешают. На паузу ставим только рисунки (.artv, SVG) - точечно.
 window.PG_SCR={on:0,after:null};
-(function(){let t=0,L=[];const done=()=>{clearTimeout(t);if(!PG_SCR.on)return;PG_SCR.on=0;L.forEach(x=>x.classList.remove('scp'));L=[];const f=PG_SCR.after;PG_SCR.after=null;if(f)f();
- const q=PG_SCR.q;if(q&&q.length){PG_SCR.q=[];q.forEach(g=>{try{g()}catch{}})}};  // 18.11.2026: очередь отложенных дел (очистка рисунков под загруженными фото)
+(function(){let t=0,L=[];const done=()=>{clearTimeout(t);if(!PG_SCR.on)return;PG_SCR.on=0;L.forEach(x=>x.classList.remove('scp'));L=[];const f=PG_SCR.after;PG_SCR.after=null;if(f)f()};
  addEventListener('scroll',()=>{if(!PG_SCR.on){PG_SCR.on=1;L=[...document.querySelectorAll('#app .artv:not(.still)')];L.forEach(x=>x.classList.add('scp'))}clearTimeout(t);t=setTimeout(done,180)},{passive:true});
  addEventListener('scrollend',done)})();
 
@@ -5173,39 +5073,13 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .cashs{text-align:center;padding:6px 4px 10px}.cashs .num{font:800 64px/1 var(--f);letter-spacing:-1px;margin:6px 0 4px;color:var(--tx)}
 .cashs .ttl{font:700 18px var(--f);margin:2px 0 6px}.cashs .lst{text-align:left;background:var(--s2);border-radius:18px;padding:14px 16px;margin:14px 0;line-height:1.55}
 .cashs .sum{font:800 30px var(--f);margin:6px 0}.cashs .ok{color:#9fd39f;font:700 16px var(--f)}
-.payov{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:30px;text-align:center;font:600 16px var(--f);background:radial-gradient(130% 80% at 50% 32%,#fcf6ec 0,#f2e5d1 58%,#e7d4b8 100%)!important;color:#2a1d15!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;animation:pyin .38s cubic-bezier(.2,.8,.2,1) both}
-.payov.out{animation:pyout .3s ease both;pointer-events:none}
-.py{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:300px}
-.pyw{position:relative;width:236px;height:176px;display:grid;place-items:center}
-.pyw::before{content:'';position:absolute;left:50%;bottom:6px;width:170px;height:16px;margin-left:-85px;border-radius:50%;background:radial-gradient(closest-side,rgba(92,50,25,.28),rgba(92,50,25,0));animation:pysh 2.8s ease-in-out infinite}
-.pyc{position:relative;width:220px;height:138px;border-radius:18px;overflow:hidden;background:linear-gradient(140deg,#cf6446 0,#b8432c 45%,#8a2c1f 100%);box-shadow:0 22px 34px -20px rgba(92,40,20,.7),inset 0 0 0 1px rgba(255,255,255,.14);animation:pyfl 2.8s ease-in-out infinite;will-change:transform}
-.pyc::before{content:'';position:absolute;right:-40px;top:-60px;width:170px;height:170px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,214,.22),rgba(255,236,214,0))}
-.pyc::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,250,242,.38) 48%,transparent 66%);transform:translateX(-120%);animation:pygl 2.6s ease-in-out .4s infinite}
-.pyc .chip{position:absolute;left:20px;top:46px;width:36px;height:27px;border-radius:6px;background:linear-gradient(135deg,#f6e2b0,#c9a35e);box-shadow:inset 0 0 0 1px rgba(120,80,30,.25)}
-.pyc .chip::before{content:'';position:absolute;inset:8px 0;border-top:1px solid rgba(120,80,30,.35);border-bottom:1px solid rgba(120,80,30,.35)}
-.pyc .ml{position:absolute;right:16px;top:12px;width:40px;height:40px;color:#fbf5ec}
-.pyc .ml .lgbd{transform-box:view-box;transform-origin:32px 23px;animation:splspin 3.2s linear infinite}
-.pyc .ml .mlh{fill:#e9c46a}
-.pyc .nm{position:absolute;left:20px;bottom:30px;display:flex;gap:10px}
-.pyc .nm i{display:block;width:30px;height:7px;border-radius:4px;background:rgba(255,250,242,.55);animation:pynm 1.6s ease-in-out infinite;animation-delay:calc(var(--k)*.18s)}
-.pyc .nm2{position:absolute;left:20px;bottom:14px;width:70px;height:5px;border-radius:3px;background:rgba(255,250,242,.3)}
-.pyd{display:flex;gap:7px;height:8px}
-.pyd i{width:8px;height:8px;border-radius:50%;background:#b8432c;animation:pydt 1.2s ease-in-out infinite;animation-delay:calc(var(--k)*.16s)}
-.pyt{font:700 18px var(--f);letter-spacing:-.2px}
-.pys{display:flex;align-items:center;gap:6px;font:600 12px var(--f);color:#8a6a50}
-.pys svg{width:13px;height:13px;flex:none}
-@keyframes pyin{from{opacity:0}to{opacity:1}}
-@keyframes pyout{to{opacity:0;transform:scale(1.02)}}
-@keyframes pyfl{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(2deg)}}
-@keyframes pysh{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.82);opacity:.6}}
-@keyframes pygl{0%{transform:translateX(-120%)}60%,100%{transform:translateX(120%)}}
-@keyframes pynm{0%,100%{opacity:.35}50%{opacity:.9}}
-@keyframes pydt{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-6px);opacity:1}}
-@media (prefers-reduced-motion:reduce){.payov,.payov *,.payov *::after,.pyw::before{animation:none!important}}
+.payov{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(17,12,9,.86);color:var(--tx);font:600 16px var(--f);text-align:center;padding:30px}
+.payov .sp{width:42px;height:42px;border-radius:50%;border:4px solid var(--s2);border-top-color:var(--ac);margin:0 auto 14px;animation:pspin 1s linear infinite}@keyframes pspin{to{transform:rotate(360deg)}}
 .appd .rf{background:transparent;border:1px solid var(--off);color:var(--mu)}.appd .rf.sure{border-color:var(--ac);color:#fff;background:var(--ac)}
 </style>`);
 S.pm=(()=>{try{return localStorage.getItem('dn_pm')}catch{return null}})()||'online';
-const pmNow=()=>S.pm=='cash'?'cash':'online';
+const cashOk=()=>false;   // наличные - только на кассе, в приложении их нет ни у кого
+const pmNow=()=>S.pm=='cash'&&cashOk()?'cash':'online';
 function pmSet(v){S.pm=v;try{localStorage.setItem('dn_pm',v)}catch{}pmPaint()}
 function pmHtml(){const o=(v,a,b)=>`<button class="pmo ${pmNow()==v?'on':''}" onclick="pmSet('${v}')"><i></i><span>${a}<small>${b}</small></span></button>`;
   return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div>${o('online',t('pm_on'),t('pm_on_s'))}${o('cash',t('pm_cash'),t('pm_cash_s'))}</div>`}
@@ -5218,12 +5092,7 @@ function pmPaint(){const w=$('pmw');if(w)w.outerHTML=pmHtml();const f=[...docume
 // переход на страницу банка
 let _payJs=null;
 function payJs(src){if(_payJs&&_payJs.src==src)return _payJs.p;const p=new Promise((ok,bad)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=bad;document.head.appendChild(s)});_payJs={src,p};return p}
-Object.assign(T.ru,{pay_sec:'Защищённая оплата · Halyk Bank'});Object.assign(T.kk,{pay_sec:'Қорғалған төлем · Halyk Bank'});Object.assign(T.en,{pay_sec:'Secure payment · Halyk Bank'});
-// экран «Открываем оплату»: карта с мельницей покачивается, по ней пробегает блик (18.11.2026)
-function payOv(msg){let o=$('payov');if(!msg){if(o){o.id='';o.classList.add('out');setTimeout(()=>o.remove(),320)}return}
- if(!o){const sail='M34.1 15.9L39.1 20.9L52.8 7.7L47.3 2.2ZM39.1 25.1L34.1 30.1L47.3 43.8L52.8 38.3ZM29.9 30.1L24.9 25.1L11.2 38.3L16.7 43.8ZM24.9 20.9L29.9 15.9L16.7 2.2L11.2 7.7Z';
-  document.body.insertAdjacentHTML('beforeend',`<div class="payov" id="payov" role="status" aria-live="polite"><div class="py"><div class="pyw" aria-hidden="true"><div class="pyc"><i class="chip"></i><svg class="ml" viewBox="0 0 64 64"><path fill="currentColor" d="M22.5 61C24.5 48 25.6 38 27 28.5Q32 21 37 28.5C38.4 38 39.5 48 41.5 61z"/><g class="lgbd"><path fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round" d="${sail}"/></g><circle class="mlh" cx="32" cy="23" r="4.1"/></svg><div class="nm">${[0,1,2,3].map(k=>`<i style="--k:${k}"></i>`).join('')}</div><i class="nm2"></i></div></div><div class="pyt" id="payovt"></div><div class="pyd" aria-hidden="true">${[0,1,2].map(k=>`<i style="--k:${k}"></i>`).join('')}</div><div class="pys"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>${t('pay_sec')}</span></div></div></div>`);o=$('payov')}
- $('payovt').textContent=msg}
+function payOv(msg){let o=$('payov');if(!msg){o&&o.remove();return}if(!o){document.body.insertAdjacentHTML('beforeend',`<div class="payov" id="payov"><div><div class="sp"></div><div id="payovt"></div></div></div>`);o=$('payov')}$('payovt').textContent=msg}
 async function payStart(id){payOv(t('pay_open'));
   try{const{data,error}=await sb.functions.invoke('epay',{body:{op:'start',order_id:id,lang:S.L}});
     if(data?.error=='already_paid'){payOv();await loadOrd();render();toast(t('pay_ok'));return}
@@ -5525,15 +5394,11 @@ function heroKey(it,s){const k=medKey(it);if(!k||k!=it.id||!s)return k;
 Object.assign(T.ru,{hv_rp:'Как готовим'});Object.assign(T.kk,{hv_rp:'Қалай дайындаймыз'});Object.assign(T.en,{hv_rp:'How it’s made'});
 const HV_RI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/><path d="M10.5 9.2v5.6l4.5-2.8z" fill="currentColor" stroke="none"/></svg>';
 const hvRpBtn=()=>`<button class="hvr" type="button" onclick="hvReplay(this)">${HV_RI}<span>${t('hv_rp')}</span></button>`;
-// 18.11.2026: без autoplay - видео запускает hvPlay после выезда карточки (до этого виден poster); ap=1 - для смены варианта (hvSwap)
-const hvLoopTag=(k,wait,ap)=>`<video class="hvv hvl" muted playsinline loop ${wait?`preload="none" data-w="1" data-poster="${medV(k)}.webp"`:`${ap?'autoplay ':''}preload="metadata" poster="${medV(k)}.webp"`} src="${medV(k)}.mp4" onerror="hvErr(this)"></video>`;
-const hvPrepTag=(k,hide)=>`<video class="hvv hvp${hide?' gone':''}" muted playsinline preload="auto" poster="/media/v/prep_${k}.webp" src="/media/v/prep_${k}.mp4" onerror="hvErr(this)" onended="hvEnd(this)" ontimeupdate="hvNear(this)" onplaying="hvGo(this)"></video>`;
-// 18.11.2026: если большое фото ещё не загружено, а в ленте уже есть среднее/маленькое - сначала ставим его (без декодирования на выезде), большое подменяет heroUp после выезда
-function heroMed(it,k){k=k||heroKey(it,S.sel)||medKey(it);const full=it.image_url||medP(k);let src=full,ld=LOADED.has(full),up='';
- if(!ld&&!it.image_url){const sm=[medP(k,2),medP(k,1)].find(x=>LOADED.has(x));if(sm){src=sm;ld=true;up=full}}
- const id=e(it.id),v=vidOk(),pr=v&&PREP.has(k);
+const hvLoopTag=(k,wait)=>`<video class="hvv hvl" muted playsinline loop ${wait?`preload="none" data-w="1" data-poster="${medV(k)}.webp"`:`autoplay preload="metadata" poster="${medV(k)}.webp"`} src="${medV(k)}.mp4" onerror="hvErr(this)"></video>`;
+const hvPrepTag=(k,hide)=>`<video class="hvv hvp${hide?' gone':''}" muted playsinline ${hide?'preload="auto"':'autoplay preload="auto"'} poster="/media/v/prep_${k}.webp" src="/media/v/prep_${k}.mp4" onerror="hvErr(this)" onended="hvEnd(this)" ontimeupdate="hvNear(this)" onplaying="hvGo(this)"></video>`;
+function heroMed(it,k){k=k||heroKey(it,S.sel)||medKey(it);const src=it.image_url||medP(k),ld=LOADED.has(src),id=e(it.id),v=vidOk(),pr=v&&PREP.has(k);
  if(pr)setTimeout(hvGuard,4500);
- return `<div class="circ hv${ld?' hasimg':''}${pr?' prp prun':''}" data-k="${e(k)}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}"${up?` data-full="${e(up)}"`:''} alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${v?hvLoopTag(k,pr):''}${pr?hvPrepTag(k)+hvRpBtn():''}</div>`}
+ return `<div class="circ hv${ld?' hasimg':''}${pr?' prp prun':''}" data-k="${e(k)}"${S.vt?' style="view-transition-name:hero"':''}><span class="phe">${PHI(it)}</span><img src="${e(src)}" alt="" decoding="async" width="1200" height="1200" class="${ld?'ld':''}" data-id="${id}" onload="imgOk(this)" onerror="imgErr(this)">${v?hvLoopTag(k,pr):''}${pr?hvPrepTag(k)+hvRpBtn():''}</div>`}
 const hvHero=el=>el&&el.closest&&el.closest('.circ.hv');
 // видео по кругу: начать загрузку (за пару секунд до конца приготовления или если приготовление не получилось)
 function hvArm(l){if(!l||!l.dataset.w||l.dataset.arm)return;l.dataset.arm='1';if(l.dataset.poster&&!l.getAttribute('poster'))l.setAttribute('poster',l.dataset.poster);l.preload='auto';try{l.load()}catch{}}
@@ -5564,17 +5429,7 @@ function hvErr(v){try{v.pause()}catch{}const h=hvHero(v);
 const hvAll=()=>document.querySelectorAll('#m video.hvv');
 function hvPlay(){if(document.hidden)return;hvAll().forEach(v=>{if(v.closest('.scr.out')||v.dataset.w||v.dataset.st=='done'||v.classList.contains('gone'))return;v.muted=true;v.defaultMuted=true;const p=v.play();if(p&&p.catch)p.catch(er=>{if(er&&er.name=='NotAllowedError'&&v.classList.contains('hvp'))hvErr(v)})})}  // автозапуск запрещён (режим энергосбережения) - без приготовления, сразу готовый напиток
 function hvStop(){hvAll().forEach(v=>{try{v.pause()}catch{}})}
-// большое фото героя: декодируем отдельно и подменяем, когда готово (без мигания - старое видно до подмены)
-function heroUp(sc){const im=sc&&sc.querySelector('.circ.hv>img[data-full]');if(!im)return;const u=im.dataset.full;delete im.dataset.full;
- const n=new Image();n.decoding='async';n.src=u;const sw=()=>{if(im.isConnected&&!im.closest('.scr.out'))im.src=u};
- if(n.decode)n.decode().then(sw,()=>{});else n.onload=sw}
-// 18.11.2026: пока новая карточка выезжает, видео не запускаем и большое фото не декодируем - всё после animationend (запасной таймер 450 мс)
-{const _x=prod;prod=function(){const r=_x.apply(this,arguments);const sc=document.querySelector('#m .scr[data-n=prod]:not(.out)');
- if(sc&&sc.classList.contains('in')&&nxMotion()&&!sc._hvW){sc._hvW=1;let d=0,tm=0;
-  const go=ev=>{if(d||(ev&&ev.target!==sc))return;d=1;sc._hvW=2;sc.removeEventListener('animationend',go);clearTimeout(tm);if(sc.isConnected&&!sc.classList.contains('out')){hvPlay();heroUp(sc)}};
-  sc.addEventListener('animationend',go);tm=setTimeout(go,450);return r}
- if(sc&&sc._hvW===1)return r;  // ещё выезжает
- hvPlay();heroUp(sc);return r}}
+{const _x=prod;prod=function(){const r=_x.apply(this,arguments);hvPlay();return r}}
 // закрытие карточки: видео на паузу, а через 0.5 с (после анимации) загрузка прерывается
 {const _x=cl;cl=function(){hvStop();const o=[...document.querySelectorAll('#m video.hvv')];const r=_x.apply(this,arguments);setTimeout(()=>o.forEach(v=>{if(v.isConnected&&!v.closest('.scr.out'))return;try{v.pause();v.removeAttribute('src');v.load()}catch{}}),500);return r}}
 document.addEventListener('visibilitychange',()=>{document.hidden?hvStop():hvPlay()});
@@ -5606,16 +5461,7 @@ function pmDeco(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
 {const _x=hvErr;hvErr=function(v){const sc=v&&v.closest&&v.closest('.scr.pm'),it=S.sel&&itemOf(S.sel.id);_x.apply(this,arguments);if(sc&&it&&!sc.querySelector('video.hvv')){const c=sandK(hvKey(sc)||medKey(it),0);if(c)sc.style.setProperty('--sand',c);thApply()}}}
 // закрытие тёмного экрана поверх светлого меню: тема меняется после анимации закрытия, а не сразу (без вспышки)
 // вкладки разделов: подложка появляется только когда вкладки прилипли к верху (иначе на фоне видна полоса)
-// 18.11.2026: без замеров в каждом кадре прокрутки - следим за пустым маркером 1 px перед вкладками (IntersectionObserver)
-{document.head.insertAdjacentHTML('beforeend','<style>.stkm{display:block;height:1px;margin-bottom:-1px;pointer-events:none;visibility:hidden}</style>');
- let io=null,mk=null;
- const f=()=>{const c=document.querySelector('#app .pg .cats');if(!c)return;
-  let m=c.previousElementSibling;if(!m||!m.classList.contains('stkm')){m=document.createElement('i');m.className='stkm';m.setAttribute('aria-hidden','true');c.before(m)}
-  if(m===mk)return;mk=m;if(io)io.disconnect();
-  if(!('IntersectionObserver' in window)){c.classList.toggle('stk',c.getBoundingClientRect().top<=1);return}
-  io=new IntersectionObserver(es=>{const e=es[es.length-1],cc=e.target.nextElementSibling;if(cc&&cc.classList.contains('cats'))cc.classList.toggle('stk',!e.isIntersecting&&e.boundingClientRect.top<2)},{rootMargin:'-2px 0px 0px 0px',threshold:0});
-  io.observe(m)};
- const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
+{let q=0;const f=()=>{q=0;const c=document.querySelector('#app .pg .cats');if(c)c.classList.toggle('stk',c.getBoundingClientRect().top<=1)};addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(f)}},{passive:true});const _x=render;render=function(){const r=_x.apply(this,arguments);f();return r}}
 let TH_T=0;
 {const _x=cl;cl=function(now){const R=document.documentElement,was=R.getAttribute('data-theme'),o=document.querySelector('#m .scr:not(.out)');clearTimeout(TH_T);const r=_x.apply(this,arguments);
  if(!now&&!RM&&o&&o.classList.contains('out')&&was&&thEff()!=was){R.setAttribute('data-theme',was);TH_T=setTimeout(()=>{TH_T=0;thApply()},390)}return r}}
@@ -5666,7 +5512,6 @@ function pmDress(){const sc=document.querySelector('#m .scr.pm:not(.out)');if(!s
  if(nh&&hero){if(!nr){nr=document.createElement('div');nr.className='pmnut';hero.appendChild(nr)}if(nr.innerHTML!=nh)nr.innerHTML=nh}else if(nr)nr.remove();
  pmLay(sc);if(!sc._pmf){sc._pmf=1;pmBind(sc)}else pmFrame(sc)}
 // где браузер умеет вести анимацию от прокрутки сам (Chrome, Android) - класс sdt и никакого JS на прокрутке; иначе (iOS Safari, анимации выключены) - pmFrame в том же кадре
-const PM_IOS=document.documentElement.classList.contains('ios');  // 18.11.2026
 const PM_SDT=!(MOTION_OFF||RM)&&!!(window.CSS&&CSS.supports&&CSS.supports('animation-timeline:scroll()')&&CSS.supports('animation-range:0px 10px'));
 function pmBind(sc){if(PM_SDT){sc.classList.add('sdt');pmFrame(sc);return}let q=0;const run=()=>{q=0;pmFrame(sc)};sc.addEventListener('scroll',()=>{if(!q){q=1;requestAnimationFrame(run)}},{passive:true});pmFrame(sc)}
 function pmLay(sc){const hero=sc.querySelector('.circ.hv');if(!hero)return;const hh=hero.offsetHeight,top=hero.offsetTop+hh-30;sc.style.setProperty('--pnt',top+'px');
@@ -5680,8 +5525,6 @@ function pmFrame(sc){if(!sc.isConnected)return;const hero=sc.querySelector('.cir
   tp=Math.min(1,Math.max(0,(y-(sc._tt-bh-64))/52)),st=hero.style,tv=calm?(tp>.5?'1':'0'):tp.toFixed(3);
  // переменные ставим прямо на те элементы, которые их используют (герой, заголовок, верхняя панель), а не на весь экран:
  // иначе браузер в каждом кадре прокрутки пересчитывал стили всех элементов карточки
- // iPhone (18.11.2026): без сдвига и масштаба героя в каждом кадре; заголовок и верхняя панель переключаются классом pmtp по порогу, плавность даёт CSS-переход
- if(PM_IOS&&!calm){if(!sc.classList.contains('pmj'))sc.classList.add('pmj');const pv=(1-.5*p).toFixed(2);if(st.getPropertyValue('--po')!==pv)st.setProperty('--po',pv);const on=tp>.5;if(sc.classList.contains('pmtp')!==on)sc.classList.toggle('pmtp',on);return}
  st.setProperty('--py',calm?'0px':(y*.42).toFixed(1)+'px');st.setProperty('--ps',calm?'1':(1+.07*p).toFixed(4));st.setProperty('--po',calm?'1':(1-.5*p).toFixed(3));
  st.setProperty('--tp',tv);[pt,sc.querySelector(':scope>.pmbar')].forEach(x=>{if(x&&x.style.getPropertyValue('--tp')!==tv)x.style.setProperty('--tp',tv)})}
 {const _x=prod;prod=function(){const r=_x.apply(this,arguments);pmDress();return r}}
@@ -5692,7 +5535,7 @@ function hvSwap(){const s=S.sel,it=s&&itemOf(s.id),sc=document.querySelector('#m
  const tok=(h._sw||0)+1;h._sw=tok;h.dataset.k=k;h.querySelectorAll('.hvn').forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});
  const v=vidOk(),im=new Image();im.className='hvn';im.alt='';im.decoding='async';im.width=1200;im.height=1200;im.dataset.id=it.id;
  const add=[im];let vd=null;
- if(v){const w=document.createElement('div');w.innerHTML=hvLoopTag(k,0,1);vd=w.firstChild;vd.classList.add('hvn');add.push(vd)}
+ if(v){const w=document.createElement('div');w.innerHTML=hvLoopTag(k,0);vd=w.firstChild;vd.classList.add('hvn');add.push(vd)}
  const ref=h.querySelector('.hvr')||h.querySelector('.pmnut');add.forEach(x=>ref?h.insertBefore(x,ref):h.appendChild(x));
  let done=0;const go=ok=>{if(done||h._sw!=tok)return;done=1;
   if(!ok){add.forEach(x=>{try{x.pause&&x.pause()}catch{}x.remove()});return}  // фото варианта не загрузилось - остаётся прежнее
@@ -5766,26 +5609,18 @@ if(/[?&]diag=1/.test(location.search))(function(){const d=document.createElement
 {const CARD='.wide,.sm,.bwcard',BTN='#app .cats button,#app .subs button,#m .scr[data-n=prod] :is(.tile,.szb,.pl,.go,.c),#m .scr[data-n=cart] :is(.main,.lite,.c,.pl),#m2 .shw :is(.c,.lite,.pl),#bar .pill button',ALL=CARD+','+BTN;
  document.head.insertAdjacentHTML('beforeend',`<style>
 html.motion :is(.wide,.sm,.bwcard,.cats button,.subs button,.tile,.szb,.pl,.go,.c,.main,.lite,.pill button):active:not(.prs){transform:none}
-html.motion .prs{transform:scale(.95)!important;transition:transform var(--t-fast) var(--ease-out)!important}
+html.motion .prs{transform:scale(.95)!important;transition:transform .09s cubic-bezier(.3,0,.6,1)!important}
 html.motion :is(.wide,.sm,.bwcard).prs{transform:scale(.97)!important}
 html.motion .tile.prs{transform:scale(.96)!important}
-html.motion .prr{transition:transform 360ms var(--ease-spring),background-color .25s,color .25s,opacity .25s!important}
-html.motion .prq{transition:transform var(--t-fast) var(--ease-out)!important}
+html.motion .prr{transition:transform .36s cubic-bezier(.3,1.6,.55,1),background-color .25s,color .25s,opacity .25s!important}
 </style>`);
- // 18.11.2026: сжатие ставим через 90 мс - если за это время палец начал листать, карточка не дёргается.
- // Короткий тап всё равно сжимает (на мгновение) и пружинит; при прокрутке нажатие снимается мягко, без пружины.
- let pe=null,px=0,py=0,ptm=0;
- const rel=x=>{x.classList.remove('prs','prq');x.classList.add('prr');clearTimeout(x._prt);x._prt=setTimeout(()=>x.classList.remove('prr'),400)};
- const up=()=>{const x=pe;if(!x)return;pe=null;
-  if(ptm){clearTimeout(ptm);ptm=0;x.classList.add('prs');clearTimeout(x._prt);x._prt=setTimeout(()=>rel(x),110);return}
-  rel(x)};
- const drop=()=>{const x=pe;if(!x)return;pe=null;if(ptm){clearTimeout(ptm);ptm=0;return}
-  if(x.classList.contains('prs')){x.classList.add('prq');x.classList.remove('prs');clearTimeout(x._prt);x._prt=setTimeout(()=>x.classList.remove('prq'),220)}};
+ let pe=null,px=0,py=0;
+ const up=()=>{const x=pe;if(!x)return;pe=null;x.classList.remove('prs');x.classList.add('prr');clearTimeout(x._prt);x._prt=setTimeout(()=>x.classList.remove('prr'),400)};
  addEventListener('pointerdown',ev=>{if(!FM||RM||ev.button>0||!ev.isPrimary)return;up();const el=ev.target&&ev.target.closest&&ev.target.closest(ALL);if(!el||el.disabled||el.classList.contains('off'))return;
-  pe=el;px=ev.clientX;py=ev.clientY;clearTimeout(el._prt);el.classList.remove('prr','prq');clearTimeout(ptm);ptm=setTimeout(()=>{ptm=0;if(pe===el)el.classList.add('prs')},90)},{passive:true,capture:true});
- addEventListener('pointermove',ev=>{if(pe&&(Math.abs(ev.clientX-px)>8||Math.abs(ev.clientY-py)>8))drop()},{passive:true,capture:true});
- addEventListener('pointerup',up,{passive:true,capture:true});addEventListener('pointercancel',drop,{passive:true,capture:true});
- addEventListener('scroll',()=>{if(pe)drop()},{passive:true,capture:true});addEventListener('blur',drop)}
+  pe=el;px=ev.clientX;py=ev.clientY;clearTimeout(el._prt);el.classList.remove('prr');el.classList.add('prs')},{passive:true,capture:true});
+ addEventListener('pointermove',ev=>{if(pe&&(Math.abs(ev.clientX-px)>8||Math.abs(ev.clientY-py)>8))up()},{passive:true,capture:true});
+ addEventListener('pointerup',up,{passive:true,capture:true});addEventListener('pointercancel',up,{passive:true,capture:true});
+ addEventListener('scroll',()=>{if(pe)up()},{passive:true,capture:true});addEventListener('blur',up)}
 // ---------- «живая» цена на кнопке: цифры прокручиваются к новому значению, как счётчик; ширина цифр одинаковая - кнопка не прыгает ----------
 {document.head.insertAdjacentHTML('beforeend',`<style>
 #pp{display:inline-block;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.2;vertical-align:top}
@@ -5805,15 +5640,13 @@ html.motion .prq{transition:transform var(--t-fast) var(--ease-out)!important}
 // ---------- карточка товара раскрывается из нажатой карточки меню и закрывается обратно в неё (один замер, только transform и opacity) ----------
 {document.head.insertAdjacentHTML('beforeend',`<style>html.motion #m .scr.flp{animation:none!important}</style>`);
  const vis=r=>r&&r.width>8&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth,
-  // 18.11.2026: большие поверхности - плавный выход без перелёта; кривая и длительности из токенов CSS (читаем один раз)
-  TK=(()=>{const c=getComputedStyle(document.documentElement),v=(n,d)=>(c.getPropertyValue(n)||'').trim()||d,ms=(n,d)=>{const x=v(n,'');return x?(/ms$/.test(x)?parseFloat(x):parseFloat(x)*1000)||d:d};return{eo:v('--ease-out','cubic-bezier(.22,1,.36,1)'),ei:v('--ease-in','cubic-bezier(.4,0,1,1)'),sl:ms('--t-slow',420)}})(),
-  SPR=TK.eo,
+  SPR='cubic-bezier(.2,1.08,.32,1)',
   fl=(cr,hr)=>{const s=Math.max(cr.width/hr.width,cr.height/hr.height),dx=cr.left+cr.width/2-hr.left-hr.width*s/2,dy=cr.top+cr.height/2-hr.top-hr.height*s/2;return `translate3d(${dx}px,${dy}px,0) scale(${s})`};
  const _o=op_;op_=function(id,ev){let cr=null;try{const src=FM&&!RM&&ev&&ev.currentTarget&&ev.currentTarget.querySelector&&ev.currentTarget.querySelector('.ph,.bwp');if(src)cr=src.getBoundingClientRect()}catch{}
   const r=_o.apply(this,arguments);
   try{if(vis(cr)){const sc=document.querySelector('#m .scr[data-n=prod].in:not(.out)'),h=sc&&sc.querySelector('.circ');if(sc)sc.classList.add('flp');const hr=h&&h.getBoundingClientRect();
    if(sc&&!vis(hr))sc.classList.remove('flp');else if(sc){
-    h.animate([{transform:fl(cr,hr),transformOrigin:'0 0'},{transform:'none',transformOrigin:'0 0'}],{duration:TK.sl,easing:SPR});
+    h.animate([{transform:fl(cr,hr),transformOrigin:'0 0'},{transform:'none',transformOrigin:'0 0'}],{duration:460,easing:SPR});
     sc.animate([{opacity:0},{opacity:1}],{duration:240,easing:'cubic-bezier(.3,0,.4,1)'})}}}catch{}
   return r};
  const _c=closeProd;closeProd=function(){let o=null,h=null,hr=null;const id=S.sel&&S.sel.id;
@@ -5821,8 +5654,8 @@ html.motion .prq{transition:transform var(--t-fast) var(--ease-out)!important}
   const r=_c.apply(this,arguments);
   try{if(o&&o.classList.contains('out')&&vis(hr)){const c=document.querySelector(`#app [data-id="${id}"] :is(.ph,.bwp)`),cr=c&&c.getBoundingClientRect();
    if(vis(cr)){o.getAnimations().forEach(a=>a.cancel());o.classList.add('flp');
-    h.animate([{transform:'none',transformOrigin:'0 0'},{transform:fl(cr,hr),transformOrigin:'0 0'}],{duration:300,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
-    o.animate([{opacity:1},{opacity:1,offset:.45},{opacity:0}],{duration:300,easing:'linear',fill:'forwards'})}}}catch{}
+    h.animate([{transform:'none',transformOrigin:'0 0'},{transform:fl(cr,hr),transformOrigin:'0 0'}],{duration:340,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'});
+    o.animate([{opacity:1},{opacity:1,offset:.45},{opacity:0}],{duration:340,easing:'linear',fill:'forwards'})}}}catch{}
   return r}}
 // ---------- добавки: окно выбора «вырастает» из нажатой плитки; выбранное на плитке - маленькая плашка, она мягко появляется ----------
 {document.head.insertAdjacentHTML('beforeend',`<style>
@@ -5841,6 +5674,50 @@ html.motion #m2 .shw.shg .shin{animation:none}
    sm.animate([{transform:'scale(.6)',opacity:0},{transform:'none',opacity:1}],{duration:320,easing:'cubic-bezier(.3,1.5,.6,1)'});
    if(old[i].split('|')[1]!=String(x.classList.contains('on')))x.querySelector('.ic').animate([{transform:'scale(.5)'},{transform:'none'}],{duration:360,easing:'cubic-bezier(.3,1.6,.55,1)'})})}}catch{}
   return r}}
+// ---------- без наличных в приложении и киоске + номер для бонусов в киоске (13.11.2026) ----------
+// Наличные - только на кассе (цель приложения - разгрузить кассира). Выбор наличных остаётся лишь сотрудникам.
+// Киоск: перед оплатой гость вводит номер (или пропускает). Номер пишется в заказ (orders.guest_phone),
+// бонусы начислятся, когда этот номер подтвердят в приложении через WhatsApp.
+Object.assign(T.ru,{pm_only:'Halyk: картой, Apple Pay, Google Pay',pm_only_s:'Сразу после оплаты заказ уходит в работу. Наличными - только на кассе',kp_t:'Учтём заказ в бонусах',kp_s:'Номер, на который вы заходите в приложение Degirmen',kp_next:'Далее',kp_skip:'Пропустить',kp_bad:'Нужно 10 цифр после +7',kp_back:'Назад'});
+Object.assign(T.kk,{pm_only:'Halyk: картамен, Apple Pay, Google Pay',pm_only_s:'Төлегеннен кейін тапсырыс бірден дайындалады. Қолма-қол - тек кассада',kp_t:'Тапсырысты бонусқа есептейік',kp_s:'Degirmen қосымшасына кіретін нөміріңіз',kp_next:'Әрі қарай',kp_skip:'Өткізу',kp_bad:'+7-ден кейін 10 сан керек',kp_back:'Артқа'});
+Object.assign(T.en,{pm_only:'Halyk: card, Apple Pay, Google Pay',pm_only_s:'Your order starts right after payment. Cash only at the counter',kp_t:'Earn bonuses for this order',kp_s:'The number you use in the Degirmen app',kp_next:'Next',kp_skip:'Skip',kp_bad:'Enter 10 digits after +7',kp_back:'Back'});
+document.head.insertAdjacentHTML('beforeend',`<style>
+.pmonly{display:flex;gap:12px;align-items:center;border:2px solid var(--ac);background:var(--s2);border-radius:18px;padding:14px 16px;margin:6px 0 10px}.pmonly b{display:block;font:700 15px var(--f)}.pmonly small{display:block;color:var(--mu);font-size:13px;margin-top:2px}
+.kpov{position:fixed;inset:0;z-index:9997;padding-top:80px!important;background:var(--c);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:var(--f)}
+.kpov h2{font:800 32px/1.15 var(--f);margin:0 0 8px}.kpov .sub{color:var(--mu);font-size:16px;margin:0 0 22px}
+.kpov .num{min-width:min(80vw,380px);padding:16px 22px;border-radius:30px;background:var(--s2);font:700 30px var(--f);letter-spacing:1px;min-height:38px}
+.kpov .num i{color:var(--mu);font-style:normal}.kpov .er{color:#f0a08a;min-height:22px;margin:8px 0 4px;font-size:15px}
+.kpov .pad{display:grid;grid-template-columns:repeat(3,84px);gap:14px;margin:8px 0 18px}
+.kpov .pad button{width:84px;height:84px;border-radius:50%;border:0;background:var(--s2);color:var(--tx);font:600 32px var(--f);transition:transform .12s}
+.kpov .pad button:active{transform:scale(.9)}.kpov .pad .em{visibility:hidden}
+.kpov .kpgo{flex:0 0 60px;width:min(80vw,380px);height:60px;max-height:60px;border:0;border-radius:30px;background:var(--ac);color:#fff;font:700 19px var(--f)}.kpov .kpgo:disabled{opacity:.4}
+.kpov .tp{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between}
+.kpov .tp button{height:46px;padding:0 20px;border:0;border-radius:23px;background:var(--s2);color:var(--tx);font:600 16px var(--f)}
+</style>`);
+// приложение: гостю - одна плашка «Оплата онлайн» вместо выбора
+{const _ph=pmHtml;pmHtml=function(){if(cashOk())return _ph();
+  return `<div class="pmw" id="pmw"><div class="lab">${t('pm_t')}</div><div class="pmonly">${IC.chk||''}<span><b>${t('pm_only')}</b><small>${(typeof isKiosk=='function'&&isKiosk())?t('pm_qr_s'):t('pm_only_s')}</small></span></div></div>`}}
+// киоск: номер для бонусов перед оплатой
+const KP={v:''};
+function kpFmt(v){const d=(v+'__________').slice(0,10);const g=[d.slice(0,3),d.slice(3,6),d.slice(6,8),d.slice(8,10)].join(' ');return '+7 '+g.replace(/_/g,'<i>·</i>')}
+function kpView(err){let o=$('kpov');if(!o){document.body.insertAdjacentHTML('beforeend','<div class="kpov" id="kpov"></div>');o=$('kpov')}
+  const k=n=>`<button onclick="kpKey('${n}')">${n}</button>`;
+  o.innerHTML=`<div class="tp"><button onclick="kpClose()">‹ ${t('kp_back')}</button><button onclick="kpGo(1)">${t('kp_skip')}</button></div>
+  <h2>${t('kp_t')}</h2><p class="sub">${t('kp_s')}</p><div class="num">${kpFmt(KP.v)}</div><div class="er">${err?t('kp_bad'):''}</div>
+  <div class="pad">${[1,2,3,4,5,6,7,8,9].map(k).join('')}<button class="em"></button>${k(0)}<button onclick="kpKey('del')">⌫</button></div>
+  <button class="kpgo" onclick="kpGo(0)" ${KP.v.length?'':'disabled'}>${t('kp_next')}</button>`}
+function kpKey(n){if(n=='del')KP.v=KP.v.slice(0,-1);else if(KP.v.length<10)KP.v+=n;try{navigator.vibrate&&navigator.vibrate(8)}catch{}kpView()}
+function kpClose(){$('kpov')?.remove()}
+function kpGo(skip){if(!skip&&KP.v.length!=10){kpView(1);return}S.kphone=skip?'':'7'+KP.v;kpClose();place()}
+function kpOpen(){KP.v='';S.kphone=null;kpView()}
+{const _r=kioskReset;kioskReset=function(){kpClose();KP.v='';S.kphone=null;return _r.apply(this,arguments)}}
+// киоск: кнопка в корзине сначала открывает номер, потом заказ; в заказ уходит guest_phone и оплата только QR
+{const _c=cart;cart=function(){_c();if(!isKiosk()||!S.cart.length)return;const b=$('kgo');if(b){b.setAttribute('onclick','kpOpen()');b.textContent=`${t('pay_go')} ${mn(tot())}`}}}
+{const _p=place;place=async function(){if(!isKiosk())return _p();if(S.kphone==null){kpOpen();return}S.pm='online';
+  const ph=S.kphone;
+  // подмешиваем номер в вставку заказа киоска
+  const _from=sb.from.bind(sb);sb.from=function(tb){const q=_from(tb);if(tb=='orders'){const _i=q.insert.bind(q);q.insert=(row,...a)=>_i(Array.isArray(row)?row:{...row,guest_phone:ph||null},...a)}return q};
+  try{return await _p()}finally{sb.from=_from;S.kphone=null}}}
 boot().then(()=>sb.auth.onAuthStateChange((_,s)=>{setTimeout(async()=>{S.me=s?.user||null;S.pf=null;if(S.me){await loadPf();await loadOrd();await loadUsed();nxBoot()}else{S.used=0;S.ord=[];S.v='menu';if(S.ch){sb.removeChannel(S.ch);S.ch=null}if(S.chNt){sb.removeChannel(S.chNt);S.chNt=null}S.ntOn=null;S.nt=[]}render()},0)}));
 addEventListener('load',()=>swInit());
 </script>
