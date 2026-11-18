@@ -232,9 +232,16 @@ function fiberMap() {
 // свечение по краю (френель) - для высоких уровней и выбора
 function glowMat() {
   return new THREE.ShaderMaterial({
-    uniforms: { col: { value: new THREE.Color(1, 0.6, 0.2) }, k: { value: 0 } },
-    vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position + normal*0.004, 1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
-    fragmentShader: `uniform vec3 col; uniform float k; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2); gl_FragColor = vec4(col * (f*1.6 + 0.12) * k, 1.0); }`,
+    uniforms: { col: { value: new THREE.Color(1, 0.6, 0.2) }, k: { value: 0 }, t: { value: 0 }, wave: { value: 0 }, scan: { value: -1 } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; varying float vY; void main(){ vec4 w = modelMatrix * vec4(position + normal*0.004, 1.0); vY = w.y; vec4 mv = viewMatrix * w; vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
+    fragmentShader: `uniform vec3 col; uniform float k; uniform float t; uniform float wave; uniform float scan; varying vec3 vN; varying vec3 vV; varying float vY;
+      void main(){
+        float f = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2);
+        float band = wave * pow(max(0.0, sin(vY*9.0 - t*3.2)), 6.0);
+        float sc = scan > -0.5 ? smoothstep(0.09, 0.0, abs(vY - scan)) * 1.6 : 0.0;
+        float a = (f*1.6 + 0.12 + band*1.4) * k + sc;
+        gl_FragColor = vec4(col * a, 1.0);
+      }`,
     blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
   });
 }
@@ -309,22 +316,32 @@ export function createBody(el, opt = {}) {
   };
   cv.addEventListener('pointerdown', onDown); cv.addEventListener('pointerup', onUp);
 
-  const S = { sel: null, flash: {}, glow: {}, raf: 0, vis: true, idle: 0 };
+  const S = { sel: null, flash: {}, glow: {}, raf: 0, vis: true, idle: 0, tc: {}, te: {}, pulse: {}, wave: {}, t0: performance.now() };
   const clock = new THREE.Clock();
   function frame() {
     S.raf = requestAnimationFrame(frame);
     if (!S.vis) return;
-    const t = clock.getElapsedTime();
+    const t = clock.getElapsedTime(), since = (performance.now() - S.t0) / 1000;
+    // появление: камера подъезжает, по телу снизу вверх проходит луч сканера
+    if (since < 1.6) { const e = 1 - Math.pow(1 - Math.min(1, since / 1.4), 3); const d = 6.2 - 2.1 * e; const dir = cam.position.clone().sub(ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, d); }
+    const scan = since < 2.2 ? -0.1 + since * 1.0 : -1;
     ctl.update();
-    for (const m in glows) {
+    for (const m in mats) {
+      // плавный переход цвета при смене режима
+      if (S.tc[m]) { mats[m].color.lerp(S.tc[m], 0.09); mats[m].emissive.lerp(S.te[m], 0.09); }
+      const p = S.pulse[m];
+      if (p) { const ph = (Math.sin(t * p.f * Math.PI * 2 + m.length * 0.7) + 1) / 2, sh = p.beat ? Math.pow(ph, 6) : ph; mats[m].emissiveIntensity = 1 + p.a * sh; }
+      else mats[m].emissiveIntensity = 1 + 0.25 * (Math.sin(t * 1.1 + m.length) + 1) / 2;
       let k = S.glow[m] || 0;
+      if (p && p.g) k = Math.max(k, p.g * (p.beat ? Math.pow((Math.sin(t * p.f * Math.PI * 2 + m.length * 0.7) + 1) / 2, 6) : (Math.sin(t * p.f * Math.PI * 2 + m.length * 0.7) + 1) / 2));
       if (S.sel === m) k = Math.max(k, 0.55 + 0.35 * Math.sin(t * 5));
       const f = S.flash[m]; if (f) { const a = (performance.now() - f) / 1400; if (a > 1) delete S.flash[m]; else k = Math.max(k, 1.6 * (1 - a)); }
       if (k > 0 && S.glow[m] >= 0.7) k *= 0.85 + 0.15 * Math.sin(t * 2.4 + m.length);
-      glows[m].uniforms.k.value = k;
+      const g = glows[m].uniforms; g.k.value = k; g.t.value = t; g.wave.value = S.wave[m] || 0; g.scan.value = scan;
     }
-    for (const ms of meshes) ms.userData.glow.visible = glows[ms.userData.m].uniforms.k.value > 0.01;
+    for (const ms of meshes) { const g = glows[ms.userData.m].uniforms; ms.userData.glow.visible = g.k.value > 0.01 || g.scan.value > -0.5; }
     disc.material.opacity = 0.85 + 0.15 * Math.sin(t * 1.5);
+    hero.position.y = 0.006 * Math.sin(t * 1.3); // лёгкое «дыхание»
     renderer.render(scene, cam);
   }
   frame();
@@ -338,12 +355,14 @@ export function createBody(el, opt = {}) {
 
   const api = {
     // map: {code: {color:'#hex', glow:0..1, glowColor:'#hex'}}
+    // map: {code: {color, emit, glow, glowColor, pulse:{f:Гц, a:сила, g:свечение, beat:удар сердца}, wave:0..1}}
     paint(map) {
+      const first = !Object.keys(S.tc).length;
       for (const m in mats) {
         const o = map[m] || {}, c = new THREE.Color(o.color || '#5d6478');
-        mats[m].color.copy(c);
-        mats[m].emissive.copy(c).multiplyScalar(o.emit ?? 0.12);
-        S.glow[m] = o.glow || 0;
+        S.tc[m] = c; S.te[m] = c.clone().multiplyScalar(o.emit ?? 0.12);
+        if (first) { mats[m].color.copy(c); mats[m].emissive.copy(S.te[m]); }
+        S.glow[m] = o.glow || 0; S.pulse[m] = o.pulse || null; S.wave[m] = o.wave || 0;
         glows[m].uniforms.col.value.set(o.glowColor || o.color || '#ffffff');
       }
     },

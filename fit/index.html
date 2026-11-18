@@ -145,11 +145,59 @@ label.l{display:block;font-size:12.5px;color:var(--mu);margin:12px 0 6px;font-we
 @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .5s cubic-bezier(.2,.8,.2,1) both}
 .off{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + var(--sb));z-index:35;background:#2a1d08;border:1px solid #ffb02055;color:#ffd58a;padding:7px 12px;border-radius:12px;font-size:12.5px;font-weight:700}
+
+/* ---------- плавность в стиле iOS ---------- */
+:root{--spring:cubic-bezier(.32,.72,0,1);--ease:cubic-bezier(.2,.8,.2,1)}
+.b,.chip,.ib,.opt,.ok,.li,.stat,.nav button{transition:transform .22s var(--ease),background-color .25s,color .25s,border-color .25s,box-shadow .25s,opacity .2s}
+.b:active,.chip:active,.ib:active,.opt:active,.stat:active,.ok:active{transform:scale(.95)}
+.li:active{transform:scale(.985);opacity:.8}
+.sheet{transition:transform .5s var(--spring)}
+.sheet.drag{transition:none}
+.sheet-bg{transition:opacity .35s ease}
+@keyframes inR{from{opacity:0;transform:translate3d(22px,0,0)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translate3d(-22px,0,0)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translate3d(0,14px,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes ringIn{from{stroke-dasharray:0 1000}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes check{0%{transform:scale(.6)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes flashG{0%{box-shadow:0 0 0 0 #3ddc8488}100%{box-shadow:0 0 0 14px #3ddc8400}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-30px) scale(.9)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes glowPulse{0%,100%{box-shadow:0 6px 24px #ff8a2a44}50%{box-shadow:0 6px 34px #ff8a2a88}}
+.enter-r>*{animation:inR .42s var(--ease) both}
+.enter-l>*{animation:inL .42s var(--ease) both}
+.enter-r>*:nth-child(2),.enter-l>*:nth-child(2){animation-delay:.03s}
+.enter-r>*:nth-child(3),.enter-l>*:nth-child(3){animation-delay:.06s}
+.enter-r>*:nth-child(4),.enter-l>*:nth-child(4){animation-delay:.09s}
+.enter-r>*:nth-child(5),.enter-l>*:nth-child(5){animation-delay:.12s}
+.enter-r>*:nth-child(6),.enter-l>*:nth-child(6){animation-delay:.15s}
+.enter-r>*:nth-child(n+7),.enter-l>*:nth-child(n+7){animation-delay:.18s}
+.enter-r .bar>i,.enter-l .bar>i,.sheet .bar>i{transform-origin:left;animation:grow .9s var(--ease) .15s both}
+.enter-r .ring circle+circle,.enter-l .ring circle+circle{animation:ringIn 1.1s var(--ease) .1s both}
+.sheet>*{animation:up .45s var(--ease) both}
+.sheet>*:nth-child(3){animation-delay:.03s}.sheet>*:nth-child(4){animation-delay:.06s}.sheet>*:nth-child(5){animation-delay:.09s}.sheet>*:nth-child(n+6){animation-delay:.12s}
+.toast{animation:toastIn .45s var(--spring) both}
+.setr.just .ok{animation:check .45s var(--spring)}
+.setr.just .num{animation:flashG .7s ease-out}
+.b.p{animation:glowPulse 3s ease-in-out infinite}
+.nav>div{position:relative}
+.nav .pill{position:absolute;top:6px;bottom:6px;left:6px;border-radius:16px;background:var(--c3);transition:transform .5s var(--spring),width .5s var(--spring),background .3s;z-index:0}
+.nav .pill.w{background:linear-gradient(135deg,#ffb020,#ff7a2a)}
+.nav button{position:relative;z-index:1;background:none!important}
+.nav button.w{color:#1a0f00}
+.nav button.on svg{transform:translateY(-1px) scale(1.08);transition:transform .35s var(--spring)}
+.ov .lvb,.ov .side,.ov .modes,.ov .leg{animation:fadeIn .8s ease .4s both}
+.skel{background:linear-gradient(90deg,#161a28 25%,#20263a 50%,#161a28 75%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;border-radius:12px}
+.chip{transition:background-color .3s,color .3s,border-color .3s,transform .2s var(--ease)}
+.sug{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:7px;margin-left:6px;vertical-align:1px}
+.sug.mu2{background:#3ddc8420;color:#7fe8ad}.sug.bl{background:#ff4d4d20;color:#ff9a9a}.sug.md{background:#ffb02020;color:#ffd06a}.sug.sl{background:#3d8bff20;color:#9cc2ff}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div id="app"><div class="loader"><div class="spin"></div></div></div>
 <nav class="nav hide" id="nav"></nav>
-<script type="module" src="app.js?v=2"></script>
+<script type="module" src="app.js?v=3"></script>
 </body>
 </html>

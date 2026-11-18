@@ -1,6 +1,6 @@
 // Superhero - фитнес-РПГ. Главный модуль: данные, экраны, логика тренировок, питания и ИИ-тренера.
 import { createClient } from '@supabase/supabase-js';
-import { createBody, MUSCLES } from './body3d.js?v=2';
+import { createBody, MUSCLES } from './body3d.js?v=3';
 
 const SB_URL = 'https://nctmbakzbzzkygndaklr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig';
@@ -110,7 +110,7 @@ const DB = {
   async delWorkout(id) { if (DEMO) { S.works = S.works.filter(x => x.id != id); return; } const { error } = await sb.rpc('fit_delete_workout', { p_id: id }); if (error) throw error; await DB.load(); },
   async addFood(rows) {
     rows = rows.map(r => ({ ...r, id: r.id || uuid(), d: r.d || S.fdate, at: new Date().toISOString() }));
-    if (!DEMO) { const { error } = await sb.from('fit_food_log').insert(rows.map(r => ({ id: r.id, d: r.d, meal: r.meal, name: r.name, g: r.g, kcal: r.kcal, p: r.p, f: r.f, c: r.c, src: r.src, food_id: r.food_id }))); if (error) throw error; }
+    if (!DEMO) { const { error } = await sb.from('fit_food_log').insert(rows.map(r => ({ id: r.id, d: r.d, meal: r.meal, name: r.name, g: r.g, kcal: r.kcal, p: r.p, f: r.f, c: r.c, s: r.s || 0, gi: r.gi || 0, src: r.src, food_id: r.food_id }))); if (error) throw error; }
     S.food.push(...rows);
   },
   async delFood(id) { if (!DEMO) { const { error } = await sb.from('fit_food_log').delete().eq('id', id); if (error) throw error; } S.food = S.food.filter(x => x.id != id); },
@@ -269,6 +269,52 @@ function forecast() {
 }
 function dayFood(k = S.fdate) { const L = S.food.filter(f => f.d == k); const t = L.reduce((a, f) => ({ kcal: a.kcal + +f.kcal, p: a.p + +f.p, f: a.f + +f.f, c: a.c + +f.c }), { kcal: 0, p: 0, f: 0, c: 0 }); return { L, t }; }
 
+// ---------- сахар и гликемический индекс ----------
+// окна тренировок дня: за час до начала и 2 часа после конца - быстрые углеводы уходят в гликоген мышц
+function trainWin(k) {
+  const out = S.works.filter(w => dkey(w.started_at) == k).map(w => { const a = new Date(w.started_at).getTime(), b = w.finished_at ? new Date(w.finished_at).getTime() : a + 90 * 6e4; return [a - 60 * 6e4, b + 120 * 6e4]; });
+  if (S.w && dkey(S.w.started_at) == k) { const a = new Date(S.w.started_at).getTime(); out.push([a - 60 * 6e4, Date.now() + 120 * 6e4]); }
+  return out;
+}
+function sugarDest(f, win) {
+  const c = +f.c || 0, gi = +f.gi || 0; if (c < 5 || !gi) return null;
+  const t = new Date(f.at || Date.now()).getTime();
+  if (win.some(([a, b]) => t >= a && t <= b)) return ['mu2', '💪 в мышцы'];
+  if (gi >= 70) return ['bl', '⚡ в кровь'];
+  if (gi >= 55) return ['md', 'средне'];
+  return ['sl', 'плавно'];
+}
+function sugarDay(k = S.fdate) {
+  const { L } = dayFood(k), win = trainWin(k), tg = targets();
+  let su = 0, gl = 0, mus = 0, blood = 0;
+  for (const f of L) { const fs = +f.s || 0; su += fs; gl += (+f.gi || 0) * (+f.c || 0) / 100; const d = sugarDest(f, win); if (d?.[0] == 'mu2') mus += fs; else if (d?.[0] == 'bl') blood += fs; }
+  const extra = win.length ? 0.3 * bw() : 0;
+  return { su, gl, mus, blood, train: win.length > 0, norm: Math.round(tg.kcal * 0.1 / 4 + extra), ideal: Math.round(tg.kcal * 0.05 / 4 + extra), extra: Math.round(extra) };
+}
+function findFood(name) {
+  const q = String(name || '').toLowerCase().trim(); if (q.length < 3) return null;
+  const w = q.split(/[\s,(]+/)[0];
+  return FOODS.find(f => f.ru.toLowerCase() == q) || FOODS.find(f => f.ru.toLowerCase().startsWith(q)) || FOODS.find(f => w.length > 3 && f.ru.toLowerCase().startsWith(w)) || null;
+}
+// сахар и ГИ для блюда, которое распознал ИИ: берём из базы похожего продукта, иначе осторожная оценка
+function guessSG(name, c, g) { const m = findFood(name); if (m && m.c > 0) return { s: r1(Math.min(c, m.s * c / m.c)), gi: m.gi || 0 }; return { s: r1(c * 0.25), gi: c >= 5 ? 55 : 0 }; }
+function sugarCard() {
+  const d = sugarDay(), pct = d.su / Math.max(1, d.norm) * 100;
+  const glL = d.gl < 80 ? ['низкая', 'var(--grn)'] : d.gl <= 120 ? ['средняя', 'var(--gold)'] : ['высокая', 'var(--red)'];
+  let tip;
+  if (!d.su) tip = 'Сахара сегодня пока нет. Фрукты и молочка тоже содержат сахар - это нормально.';
+  else if (d.blood > d.norm * 0.5) tip = `${nf(d.blood)} г сахара ушло «в кровь»: быстрые углеводы вне тренировки дают скачок сахара и инсулина, лишнее легче уходит в жир. Переноси сладкое ближе к тренировке.`;
+  else if (d.train && d.mus > 0) tip = `${nf(d.mus)} г сахара пришлось на окно тренировки - они пошли на восполнение гликогена в мышцах. Так и надо.`;
+  else if (pct > 100) tip = 'Сахар выше нормы. Замени сладкое на фрукты или съешь его после тренировки.';
+  else tip = d.train ? `Сегодня тренировка: норма выше на ${d.extra} г. Лучшее время для быстрых углеводов - за час до и 2 часа после.` : 'День без тренировки: держи сахар ближе к идеальной планке, быстрые углеводы сейчас мышцам не нужны.';
+  return `<div class="card"><div class="row"><h3 class="sp">Сахар</h3><button class="b s g" style="height:26px;padding:0 8px" data-a="howSugar">как считаем</button></div>
+    <div class="row" style="align-items:flex-end"><div class="big" style="font-size:30px" data-cnt="${Math.round(d.su)}">${nf(d.su)}</div><div class="mu sm" style="margin-bottom:6px">из ${d.norm} г${d.train ? ' · день тренировки' : ''}</div></div>
+    <div class="bar" style="margin:8px 0"><i style="width:${Math.min(100, pct)}%;background:${pct > 100 ? 'var(--red)' : pct > 70 ? 'var(--gold)' : 'var(--grn)'}"></i></div>
+    <div class="grid2"><div class="stat"><b style="color:#7fe8ad">${nf(d.mus)} г</b><span>💪 в мышцы</span></div><div class="stat"><b style="color:#ff9a9a">${nf(d.blood)} г</b><span>⚡ в кровь</span></div></div>
+    <div class="xs mu" style="margin-top:8px">Гликемическая нагрузка дня: <b style="color:${glL[1]}">${nf(d.gl)} - ${glL[0]}</b></div>
+    <div class="hint ${d.blood > d.norm * 0.5 || pct > 100 ? 'dn' : 'up'}" style="margin-top:8px">${esc(tip)}</div></div>`;
+}
+
 // ---------- квесты недели ----------
 function weekStart() { const d = new Date(); const dd = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dd); return dkey(d); }
 function quests() {
@@ -302,6 +348,14 @@ const TPL = [
 ];
 const tplToProg = t => ({ name: t.name, days: t.days.map(d => ({ name: d.name, items: d.items.filter(([e]) => EX[e]).map(([ex, sets, rmin, rmax]) => ({ ex, sets, rmin, rmax })) })) });
 
+// плавный счёт чисел (data-cnt)
+function countUp(root) {
+  root.querySelectorAll('[data-cnt]').forEach(el => {
+    const to = +el.dataset.cnt, pre = el.dataset.pre || '', post = el.dataset.post || '', t0 = performance.now(), D = 900;
+    const st = () => { const k = Math.min(1, (performance.now() - t0) / D), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + nf(to * e) + post; if (k < 1) requestAnimationFrame(st); };
+    st();
+  });
+}
 // ---------- шторка ----------
 let sheetOnClose = null;
 function sheet(html, onClose) {
@@ -313,6 +367,11 @@ function sheet(html, onClose) {
   document.body.append(bg, sh);
   requestAnimationFrame(() => { bg.classList.add('on'); sh.classList.add('on'); });
   sheetOnClose = onClose || null;
+  let y0 = null, dy = 0, t0 = 0;
+  sh.addEventListener('touchstart', e => { if (sh.scrollTop > 0 || e.target.closest('input,textarea,select')) return; y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); }, { passive: true });
+  sh.addEventListener('touchmove', e => { if (y0 == null) return; dy = Math.max(0, e.touches[0].clientY - y0); if (dy > 4) { sh.classList.add('drag'); sh.style.transform = `translateY(${dy}px)`; bg.style.opacity = Math.max(0.2, 1 - dy / 400); } }, { passive: true });
+  sh.addEventListener('touchend', () => { if (y0 == null) return; const v = dy / Math.max(1, Date.now() - t0); y0 = null; sh.classList.remove('drag'); sh.style.transform = ''; bg.style.opacity = ''; if (dy > 120 || v > 0.6 && dy > 30) closeSheet(); });
+  setTimeout(() => countUp(sh), 120);
   return sh;
 }
 function closeSheet(instant) {
@@ -326,8 +385,13 @@ function closeSheet(instant) {
 const TABS = [['hero', 'Герой', IC.hero], ['train', 'Тренировка', IC.dumb], ['food', 'Питание', IC.food], ['prog', 'Прогресс', IC.chart], ['coach', 'Тренер', IC.ai]];
 function nav() {
   const n = $('#nav'); n.classList.remove('hide');
-  n.innerHTML = `<div>${TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}" class="${S.tab == k ? 'on' : ''}${k == 'train' && S.w ? ' w' : ''}">${i}<span>${k == 'train' && S.w ? 'Идёт' : l}</span></button>`).join('')}</div>`;
+  if (!n.querySelector('.pill')) n.innerHTML = `<div><i class="pill"></i>${TABS.map(([k, l, i]) => `<button data-a="tab" data-k="${k}">${i}<span>${l}</span></button>`).join('')}</div>`;
+  const idx = TABS.findIndex(t => t[0] == S.tab), pill = n.querySelector('.pill'), bt = n.querySelectorAll('button');
+  bt.forEach((b, i) => { const k = TABS[i][0]; b.classList.toggle('on', k == S.tab); b.classList.toggle('w', k == 'train' && !!S.w && S.tab == 'train'); b.querySelector('span').textContent = k == 'train' && S.w ? 'Идёт' : TABS[i][1]; });
+  const b = bt[idx]; if (b) { pill.style.width = b.offsetWidth + 'px'; pill.style.transform = `translateX(${b.offsetLeft - 6}px)`; }
+  pill.classList.toggle('w', S.tab == 'train' && !!S.w);
 }
+addEventListener('resize', () => { if (!$('#nav').classList.contains('hide')) nav(); });
 function render() {
   if (S.body3d && S.tab != 'hero') { S.body3d.dispose(); S.body3d = null; }
   const app = $('#app');
@@ -336,6 +400,9 @@ function render() {
   nav();
   const f = { hero: heroHtml, train: trainHtml, food: foodHtml, prog: progHtml, coach: coachHtml }[S.tab];
   app.innerHTML = f() + (S.q.length ? `<div class="off">Ждут отправки: ${S.q.length}. Отправлю, когда появится интернет</div>` : '');
+  app.classList.remove('enter-r', 'enter-l');
+  if (S.anim) { void app.offsetWidth; app.classList.add(S.anim); countUp(app); S.anim = null; }
+  S.justDone = null;
   if (S.tab == 'hero') mountBody();
   if (S.tab == 'coach') { const c = $('#chatEnd'); c && c.scrollIntoView(); }
 }
@@ -366,9 +433,18 @@ function heroHtml() {
 }
 function paintMap() {
   const map = {}, lv = levels();
-  if (S.mode == 'lvl') for (const m of MUSCLES) { const c = lvColor(lv[m]); map[m] = { color: c[1], glowColor: c[2], glow: lv[m] >= 50 ? 1 : lv[m] >= 40 ? 0.55 : lv[m] >= 30 ? 0.25 : 0, emit: 0.14 }; }
-  else if (S.mode == 'rec') { const { R } = recovery(); for (const m of MUSCLES) { const r = R[m] / 100; const c = r < 0.5 ? mix('#ff4d4d', '#ffc107', r * 2) : mix('#ffc107', '#3ddc84', (r - 0.5) * 2); map[m] = { color: c, emit: 0.18, glow: r < 0.35 ? 0.4 : 0, glowColor: '#ff4d4d' }; } }
-  else { const wk = weekly(); for (const m of MUSCLES) { const v = wk[m]; map[m] = { color: v <= 0.01 ? '#2a2f42' : v < 6 ? '#5a7bd6' : v < 10 ? '#3d8bff' : v <= 20 ? '#3ddc84' : '#ff7a2a', emit: 0.16, glow: v > 20 ? 0.6 : 0, glowColor: '#ff7a2a' }; } }
+  if (S.mode == 'lvl') for (const m of MUSCLES) { const c = lvColor(lv[m]); map[m] = { color: c[1], glowColor: c[2], glow: lv[m] >= 50 ? 1 : lv[m] >= 40 ? 0.55 : lv[m] >= 30 ? 0.25 : 0, emit: 0.14, wave: lv[m] >= 30 ? (lv[m] >= 50 ? 1 : 0.5) : 0 }; }
+  else if (S.mode == 'rec') {
+    const { R } = recovery();
+    for (const m of MUSCLES) {
+      const r = R[m] / 100, c = r < 0.5 ? mix('#ff4d4d', '#ffc107', r * 2) : mix('#ffc107', '#3ddc84', (r - 0.5) * 2);
+      // красные бьются как сердце, жёлтые переливаются волной, зелёные спокойно дышат
+      map[m] = r < 0.4 ? { color: c, emit: 0.22, glowColor: '#ff3b3b', pulse: { f: 1.15, a: 2.2, g: 0.9, beat: true } }
+        : r < 0.8 ? { color: c, emit: 0.2, glowColor: '#ffc107', pulse: { f: 0.45, a: 1.1, g: 0.35 }, wave: 1 }
+          : { color: c, emit: 0.18, glowColor: '#3ddc84', pulse: { f: 0.22, a: 0.8, g: 0.22 } };
+    }
+  }
+  else { const wk = weekly(); for (const m of MUSCLES) { const v = wk[m]; map[m] = { color: v <= 0.01 ? '#2a2f42' : v < 6 ? '#5a7bd6' : v < 10 ? '#3d8bff' : v <= 20 ? '#3ddc84' : '#ff7a2a', emit: 0.16, glowColor: v > 20 ? '#ff7a2a' : '#3ddc84', pulse: v > 20 ? { f: 0.9, a: 1.4, g: 0.6 } : v >= 10 ? { f: 0.3, a: 0.6, g: 0.15 } : null }; } }
   return map;
 }
 function mix(a, b, k) { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); const c = i => Math.round(((pa >> i) & 255) * (1 - k) + ((pb >> i) & 255) * k); return '#' + ((c(16) << 16) | (c(8) << 8) | c(0)).toString(16).padStart(6, '0'); }
@@ -430,7 +506,7 @@ function exCard(it, i) {
     <button class="ib" style="width:34px;height:34px" data-a="rmEx" data-i="${i}">${IC.x}</button></div>
     ${sg ? `<div class="hint ${sg.t}">${esc(sg.msg)}</div>` : ''}
     <div class="setr xs mu" style="margin:2px 0"><span></span><span style="text-align:center">${isBw ? 'доп. вес, кг' : 'вес, кг'}</span><span style="text-align:center">повторы</span><span></span></div>
-    ${it.sets.map((s, j) => `<div class="setr ${s.done ? 'done' : ''}"><span class="n ${s.kind == 'warm' ? 'wu' : ''}">${s.kind == 'warm' ? 'РАЗМ' : it.sets.filter((x, k) => k <= j && x.kind != 'warm').length}</span>
+    ${it.sets.map((s, j) => `<div class="setr ${s.done ? 'done' : ''}${S.justDone == i + '-' + j ? ' just' : ''}"><span class="n ${s.kind == 'warm' ? 'wu' : ''}">${s.kind == 'warm' ? 'РАЗМ' : it.sets.filter((x, k) => k <= j && x.kind != 'warm').length}</span>
       <div class="num"><button data-a="inc" data-i="${i}" data-j="${j}" data-f="w" data-d="-${step || 1}">−</button><input inputmode="decimal" value="${s.w ?? ''}" placeholder="${s.pw ?? '0'}" data-in="set" data-i="${i}" data-j="${j}" data-f="w"><button data-a="inc" data-i="${i}" data-j="${j}" data-f="w" data-d="${step || 1}">+</button></div>
       <div class="num"><button data-a="inc" data-i="${i}" data-j="${j}" data-f="reps" data-d="-1">−</button><input inputmode="numeric" value="${s.reps ?? ''}" placeholder="${s.pr ?? '0'}" data-in="set" data-i="${i}" data-j="${j}" data-f="reps"><button data-a="inc" data-i="${i}" data-j="${j}" data-f="reps" data-d="1">+</button></div>
       <button class="ok ${s.done ? 'on' : ''}" data-a="done" data-i="${i}" data-j="${j}">${IC.check}</button></div>`).join('')}
@@ -475,7 +551,7 @@ function ring(v, max, col, size = 118, sw = 11) {
   return `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#22273a" stroke-width="${sw}"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${v > max * 1.1 ? '#ff4d4d' : col}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c * k} ${c}"/></svg>`;
 }
 function foodHtml() {
-  const tg = targets(), { L, t } = dayFood(), today = S.fdate == dkey();
+  const tg = targets(), { L, t } = dayFood(), today = S.fdate == dkey(), win = trainWin(S.fdate);
   const left = { kcal: tg.kcal - t.kcal, p: tg.p - t.p };
   const hr = new Date().getHours();
   const dname = today ? 'Сегодня' : S.fdate == addDays(dkey(), -1) ? 'Вчера' : fdate(S.fdate);
@@ -484,13 +560,14 @@ function foodHtml() {
   else if (today && t.kcal > tg.kcal * 1.1) eat = `<div class="hint dn">Перебор на ${nf(t.kcal - tg.kcal)} ккал. Ничего страшного: завтра держи норму, не голодай.</div>`;
   const rm = P().ramadan;
   return `<div class="top"><button class="ib" data-a="fday" data-d="-1">${IC.back}</button><h1 style="text-align:center">${dname}</h1><button class="ib" data-a="fday" data-d="1" ${today ? 'disabled style="opacity:.3"' : ''}>${IC.fwd}</button></div>
-  <div class="card"><div class="rings"><div class="ring">${ring(t.kcal, tg.kcal, '#ffb020')}<div class="c"><div><b>${nf(Math.max(0, left.kcal))}</b><span class="xs mu">${left.kcal >= 0 ? 'осталось ккал' : 'перебор'}</span></div></div></div>
+  <div class="card"><div class="rings"><div class="ring">${ring(t.kcal, tg.kcal, '#ffb020')}<div class="c"><div><b data-cnt="${Math.max(0, Math.round(left.kcal))}">${nf(Math.max(0, left.kcal))}</b><span class="xs mu">${left.kcal >= 0 ? 'осталось ккал' : 'перебор'}</span></div></div></div>
     <div class="macro">${[['Белок', t.p, tg.p, '#3ddc84'], ['Жиры', t.f, tg.f, '#ffb020'], ['Углеводы', t.c, tg.c, '#3d8bff']].map(([n, v, m, c]) => `<div><div class="row"><span class="sp">${n}</span><span class="xs mu">${nf(v)} / ${m} г</span></div><div class="bar" style="margin-top:4px"><i style="width:${Math.min(100, v / m * 100)}%;background:${c}"></i></div></div>`).join('')}</div></div>
     <div class="xs mu" style="margin-top:10px">Норма ${nf(tg.kcal)} ккал · ${tg.src == 'real' ? 'по твоим реальным данным веса и еды' : 'по формуле, через 2-3 недели подстрою под тебя'} <button class="b s g" style="height:24px;padding:0 6px" data-a="howCalc">как считаем</button></div>
     ${rm ? `<div class="hint" style="margin-top:8px">Режим Рамадана: сухур ≈ ${nf(tg.kcal * 0.4)} ккал (белок ${Math.round(tg.p * 0.4)} г), ифтар и вечер ≈ ${nf(tg.kcal * 0.6)} ккал. Тренировку лучше за час до ифтара или через 1-2 часа после.</div>` : ''}
     ${eat}</div>
+  ${sugarCard()}
   ${MEALS.map(([k, n]) => { const it = L.filter(f => f.meal == k), s = it.reduce((a, f) => a + +f.kcal, 0); return `<div class="meal"><h3>${n}</h3><span class="xs mu" style="margin-right:10px">${s ? nf(s) + ' ккал' : ''}</span><button class="b s" data-a="addFood" data-k="${k}">${IC.plus}</button></div>
-    <div>${it.map(f => `<div class="fi"><div class="sp"><div>${esc(f.name)}</div><div class="xs mu">${nf(f.g)} г · Б ${nf(f.p)} · Ж ${nf(f.f)} · У ${nf(f.c)}</div></div><span class="k">${nf(f.kcal)}</span><button class="ib" style="width:30px;height:30px;background:none;border:0" data-a="delFood" data-k="${f.id}">${IC.x}</button></div>`).join('')}</div>`; }).join('')}
+    <div>${it.map(f => { const sg = sugarDest(f, win); return `<div class="fi"><div class="sp"><div>${esc(f.name)}${sg ? `<span class="sug ${sg[0]}">${sg[1]}</span>` : ''}</div><div class="xs mu">${nf(f.g)} г · Б ${nf(f.p)} · Ж ${nf(f.f)} · У ${nf(f.c)}${+f.s ? ` · сахар ${nf(f.s, 1)}` : ''}${+f.gi ? ` · ГИ ${nf(f.gi)}` : ''}</div></div><span class="k">${nf(f.kcal)}</span><button class="ib" style="width:30px;height:30px;background:none;border:0" data-a="delFood" data-k="${f.id}">${IC.x}</button></div>`; }).join('')}</div>`; }).join('')}
   <div class="grid2" style="margin-top:14px"><button class="b v" data-a="addFood" data-k="${hr < 11 ? 'br' : hr < 16 ? 'lu' : hr < 21 ? 'di' : 'sn'}" data-t="photo">${IC.cam} Фото еды</button><button class="b" data-a="addFood" data-k="${hr < 11 ? 'br' : hr < 16 ? 'lu' : hr < 21 ? 'di' : 'sn'}" data-t="text">Описать словами</button></div>`;
 }
 function eatHint(left) {
@@ -542,6 +619,7 @@ function insights() {
   const ups = Object.keys(S.recs).map(e => [e, suggest(e)]).filter(([, s]) => s?.t == 'up').slice(0, 3);
   for (const [e, s] of ups) out.push({ i: '📈', c: 'up', t: `${exName(e)}: ${s.msg}` });
   if (yday.kcal > 0 && yday.p < tg.p * 0.8) out.push({ i: '🥩', c: 'dn', t: `Вчера белка ${nf(yday.p)} г из ${tg.p}. Без белка мышцы не растут, даже при идеальных тренировках.` });
+  const ys = sugarDay(addDays(dkey(), -1)); if (ys.blood > ys.norm * 0.6) out.push({ i: '🍬', c: 'dn', t: `Вчера ${nf(ys.blood)} г сахара ушло «в кровь» - сладкое вне тренировки. Переноси его в окно: за час до и 2 часа после зала.` });
   const lastW = S.works[0]; if (lastW && (Date.now() - new Date(lastW.started_at)) / 864e5 > 5) out.push({ i: '⏰', c: 'dn', t: `Последняя тренировка ${ago(lastW.started_at)}. Мышцы любят регулярность - хотя бы короткая сессия сегодня.` });
   if (!out.length) out.push({ i: '✅', c: 'up', t: S.works.length ? 'Всё по плану: объём в норме, перекосов нет. Продолжай добивать повторы и поднимать веса.' : 'Проведи первую тренировку - и я начну подсказывать, где добавить вес и что отстаёт.' });
   return out;
@@ -617,7 +695,7 @@ function obHtml() {
 
 // ---------- ДЕЙСТВИЯ ----------
 const A = {
-  tab(el) { S.tab = el.dataset.k; closeSheet(true); render(); scrollTo(0, 0); },
+  tab(el) { const a = TABS.findIndex(t => t[0] == S.tab), b = TABS.findIndex(t => t[0] == el.dataset.k); S.anim = b < a ? 'enter-l' : 'enter-r'; S.tab = el.dataset.k; closeSheet(true); scrollTo(0, 0); render(); vib(6); },
   mode(el) { S.mode = el.dataset.k; document.querySelectorAll('.modes .chip').forEach(c => c.classList.toggle('on', c.dataset.k == S.mode)); S.body3d?.paint(paintMap()); const lg = $('.leg'); if (lg) { const tmp = document.createElement('div'); tmp.innerHTML = heroHtml(); lg.innerHTML = tmp.querySelector('.leg').innerHTML; } },
   view() { S.side = S.side == 'back' ? 'front' : 'back'; S.body3d?.view(S.side); },
   muscle(el) { openMuscle(el.dataset.k); },
@@ -685,7 +763,7 @@ const A = {
       if (s.w == null && s.pw !== '') s.w = +s.pw || 0;
       if (s.reps == null && s.pr !== '') s.reps = +s.pr || 0;
       if (!(s.reps > 0)) return toast('Впиши повторы', 1);
-      s.done = true; s.at = new Date().toISOString(); vib([15, 40, 15]);
+      s.done = true; s.at = new Date().toISOString(); vib([15, 40, 15]); S.justDone = i + '-' + j;
       if (s.kind != 'warm') startRest(isCompound(it.ex) ? 150 : 90);
       const e1 = e1rm((+s.w || 0) + (EX[it.ex]?.bw || 0) * bw(), s.reps), pr = S.recs[it.ex];
       if (pr && e1 > pr.e1rm + 0.05 && s.kind != 'warm') toast(`🏆 Новый рекорд: ${exName(it.ex)} ≈${nf(e1)} кг`);
@@ -769,6 +847,15 @@ const A = {
   howCalc() {
     const t = targets();
     sheet(`<h2>Как считаем норму</h2><div class="sm" style="line-height:1.6;margin-top:8px">Базовый обмен (формула Миффлина-Сан Жеора): <b>${nf(t.bmr)} ккал</b>.<br>С учётом тренировок расход: <b>${nf(t.tdee)} ккал</b>${t.src == 'real' ? ' - посчитан по твоим реальным данным: сколько ел и как менялся вес' : ''}.<br>Цель «${{ cut: 'сушка', keep: 'поддержание', bulk: 'масса' }[P().goal || 'keep']}» → <b>${nf(t.kcal)} ккал</b>.<br>Белок ${t.p} г (${nf(t.p / bw(), 1)} г/кг), жиры ${t.f} г, углеводы ${t.c} г.<br><br>Через 2-3 недели взвешиваний и записи еды приложение само узнает твой настоящий расход - это точнее любой формулы.</div>`);
+  },
+  howSugar() {
+    const d = sugarDay();
+    sheet(`<h2>Как считаем сахар</h2><div class="sm" style="line-height:1.6;margin-top:8px"><b>Норма</b> - не больше 10% калорий из сахара (это ${Math.round(targets().kcal * 0.1 / 4)} г при твоей норме), идеально - до 5% (${Math.round(targets().kcal * 0.05 / 4)} г). В день тренировки добавляем 0.3 г на кг веса (+${Math.round(0.3 * bw())} г): мышцам нужно восполнить гликоген.<br><br>
+      <b>💪 В мышцы</b> - быстрые углеводы, съеденные за час до тренировки и в течение 2 часов после. Мышцы после нагрузки сами забирают глюкозу.<br>
+      <b>⚡ В кровь</b> - продукты с высоким гликемическим индексом (70+) вне тренировки: резкий скачок сахара и инсулина, потом голод, лишнее легче уходит в жир.<br>
+      <b>Средне / плавно</b> - ГИ 55-69 и ниже 55: сахар поступает медленно.<br><br>
+      <b>Гликемическая нагрузка</b> = ГИ × углеводы / 100 за день: до 80 - низкая, 80-120 - средняя, выше - высокая.<br><br>
+      <span class="mu">Модель упрощённая: на скорость влияют порция, жир и белок в приёме пищи. Время приёма - когда ты его записал. Для блюд с фото сахар и ГИ оцениваются по похожим продуктам из базы.</span></div>`);
   },
   // прогресс
   addWeight() {
@@ -886,7 +973,7 @@ function fMode(k) {
   if (k == 's') { b.innerHTML = `<input class="in" id="fq" placeholder="Курица, плов, творог..." data-in="fq"><div id="fl" style="margin-top:6px"></div>`; fList(); setTimeout(() => $('#fq')?.focus(), 250); }
   if (k == 'photo') b.innerHTML = `<label class="b v w" style="height:120px;flex-direction:column">${IC.cam}<span>Сфотографировать тарелку или этикетку</span><input type="file" accept="image/*" capture="environment" class="hide" data-in="fphoto"></label><input class="in" id="fhint" placeholder="Подсказка: например «плов, большая порция»" style="margin-top:10px"><div id="fres"></div>`;
   if (k == 'text') b.innerHTML = `<textarea class="in" id="ftx" rows="3" placeholder="200 г курицы, тарелка риса и салат"></textarea><button class="b v w" style="margin-top:10px" data-a="fText">Посчитать</button><div id="fres"></div>`;
-  if (k == 'man') b.innerHTML = `<input class="in" id="mn" placeholder="Название"><div class="grid2"><div><label class="l">Ккал</label><input class="in" id="mk" inputmode="decimal"></div><div><label class="l">Белок, г</label><input class="in" id="mp" inputmode="decimal"></div><div><label class="l">Жиры, г</label><input class="in" id="mf" inputmode="decimal"></div><div><label class="l">Углеводы, г</label><input class="in" id="mc" inputmode="decimal"></div></div><button class="b p w" style="margin-top:12px" data-a="fMan">Добавить</button>`;
+  if (k == 'man') b.innerHTML = `<input class="in" id="mn" placeholder="Название"><div class="grid2"><div><label class="l">Ккал</label><input class="in" id="mk" inputmode="decimal"></div><div><label class="l">Белок, г</label><input class="in" id="mp" inputmode="decimal"></div><div><label class="l">Жиры, г</label><input class="in" id="mf" inputmode="decimal"></div><div><label class="l">Углеводы, г</label><input class="in" id="mc" inputmode="decimal"></div><div><label class="l">из них сахар, г</label><input class="in" id="ms" inputmode="decimal"></div></div><button class="b p w" style="margin-top:12px" data-a="fMan">Добавить</button>`;
 }
 A.fMode = el => fMode(el.dataset.k);
 function fList() {
@@ -894,7 +981,7 @@ function fList() {
   let L;
   if (!q) L = S.fRecent.map(f => ({ rec: f }));
   else L = FOODS.map(f => { const n = f.ru.toLowerCase(); return [f, n.startsWith(q) ? 3 : n.includes(q) ? 2 : (f.en || '').toLowerCase().includes(q) ? 1 : 0]; }).filter(x => x[1]).sort((a, b) => b[1] - a[1]).slice(0, 40).map(x => ({ f: x[0] }));
-  $('#fl').innerHTML = (!q && L.length ? '<div class="xs mu" style="margin:6px 0">Недавние</div>' : '') + (L.map(x => x.f ? `<div class="li" data-a="fPick" data-k="${x.f.id}"><div class="sp"><b>${esc(x.f.ru)}</b><div class="xs mu">на 100 г: ${x.f.k} ккал · Б ${x.f.p} · Ж ${x.f.f} · У ${x.f.c}</div></div>${IC.plus}</div>`
+  $('#fl').innerHTML = (!q && L.length ? '<div class="xs mu" style="margin:6px 0">Недавние</div>' : '') + (L.map(x => x.f ? `<div class="li" data-a="fPick" data-k="${x.f.id}"><div class="sp"><b>${esc(x.f.ru)}</b><div class="xs mu">на 100 г: ${x.f.k} ккал · Б ${x.f.p} · Ж ${x.f.f} · У ${x.f.c}${x.f.gi ? ` · ГИ ${x.f.gi}` : ''}</div></div>${IC.plus}</div>`
     : `<div class="li" data-a="fRe" data-k="${esc(x.rec.id)}"><div class="sp"><b>${esc(x.rec.name)}</b><div class="xs mu">${nf(x.rec.g)} г · ${nf(x.rec.kcal)} ккал</div></div>${IC.plus}</div>`).join('') || (q ? '<div class="empty sm">Нет в базе. Попробуй «Словами» или «Вручную»</div>' : '<div class="mu sm">Начни вводить название</div>'));
 }
 A.fPick = el => {
@@ -905,10 +992,10 @@ A.fPick = el => {
   fCalc(f.id);
 };
 A.fPortion = el => { $('#fg').value = el.dataset.v; fCalc($('#fg').dataset.k); };
-function fCalc(id) { const f = FOODS.find(x => x.id == id), g = +$('#fg').value.replace(',', '.') || 0; $('#fcalc').textContent = `${nf(f.k * g / 100)} ккал · Б ${nf(f.p * g / 100, 1)} · Ж ${nf(f.f * g / 100, 1)} · У ${nf(f.c * g / 100, 1)}`; }
-A.fAdd = async el => { const f = FOODS.find(x => x.id == el.dataset.k), g = +$('#fg').value.replace(',', '.') || 0; if (!g) return; await addRows([{ name: f.ru, g, kcal: r1(f.k * g / 100), p: r1(f.p * g / 100), f: r1(f.f * g / 100), c: r1(f.c * g / 100), src: 'base', food_id: f.id }]); };
-A.fRe = async el => { const f = S.food.find(x => x.id == el.dataset.k); await addRows([{ name: f.name, g: f.g, kcal: f.kcal, p: f.p, f: f.f, c: f.c, src: 'repeat', food_id: f.food_id }]); };
-A.fMan = async () => { const n = $('#mn').value.trim(), k = +$('#mk').value.replace(',', '.'); if (!n || !k) return toast('Название и калории', 1); await addRows([{ name: n, g: 0, kcal: k, p: +$('#mp').value.replace(',', '.') || 0, f: +$('#mf').value.replace(',', '.') || 0, c: +$('#mc').value.replace(',', '.') || 0, src: 'manual' }]); };
+function fCalc(id) { const f = FOODS.find(x => x.id == id), g = +$('#fg').value.replace(',', '.') || 0; $('#fcalc').textContent = `${nf(f.k * g / 100)} ккал · Б ${nf(f.p * g / 100, 1)} · Ж ${nf(f.f * g / 100, 1)} · У ${nf(f.c * g / 100, 1)} · сахар ${nf((f.s || 0) * g / 100, 1)} г${f.gi ? ` · ГИ ${f.gi} (${f.gi >= 70 ? 'высокий' : f.gi >= 55 ? 'средний' : 'низкий'})` : ''}`; }
+A.fAdd = async el => { const f = FOODS.find(x => x.id == el.dataset.k), g = +$('#fg').value.replace(',', '.') || 0; if (!g) return; await addRows([{ name: f.ru, g, kcal: r1(f.k * g / 100), p: r1(f.p * g / 100), f: r1(f.f * g / 100), c: r1(f.c * g / 100), s: r1((f.s || 0) * g / 100), gi: f.gi || 0, src: 'base', food_id: f.id }]); };
+A.fRe = async el => { const f = S.food.find(x => x.id == el.dataset.k); await addRows([{ name: f.name, g: f.g, kcal: f.kcal, p: f.p, f: f.f, c: f.c, s: f.s || 0, gi: f.gi || 0, src: 'repeat', food_id: f.food_id }]); };
+A.fMan = async () => { const n = $('#mn').value.trim(), k = +$('#mk').value.replace(',', '.'); if (!n || !k) return toast('Название и калории', 1); await addRows([{ name: n, g: 0, kcal: k, p: +$('#mp').value.replace(',', '.') || 0, f: +$('#mf').value.replace(',', '.') || 0, c: +$('#mc').value.replace(',', '.') || 0, s: +$('#ms').value.replace(',', '.') || 0, gi: 0, src: 'manual' }]); };
 A.fText = async el => { const t = $('#ftx').value.trim(); if (t.length < 3) return; el.disabled = true; el.textContent = 'Считаю...'; try { aiFoodResult(await DB.kbju({ text: t })); } catch (e) { toast(e.message, 1); } el.disabled = false; el.textContent = 'Посчитать'; };
 const HARAM = /свинин|бекон|ветчин|сало\b|вин[оа]\b|пиво|коньяк|водк|ликёр|ликер|ром\b|желатин|кармин|e120|e441|e542/i;
 function aiFoodResult(r) {
@@ -920,7 +1007,7 @@ function aiFoodResult(r) {
     ${r.items.map((i, k) => `<div class="fi"><input type="checkbox" checked id="fa${k}"><div class="sp">${esc(i.name)}<div class="xs mu">${nf(i.kcal)} ккал · Б ${nf(i.p, 1)}</div></div><input class="in" style="width:80px;height:38px;text-align:center" inputmode="numeric" id="fag${k}" value="${i.g}"><span class="xs mu">г</span></div>`).join('')}
     ${r.note ? `<div class="xs mu" style="margin-top:6px">${esc(r.note)}</div>` : ''}<button class="b p w" style="margin-top:12px" data-a="fAiAdd">Добавить отмеченное</button>`;
 }
-A.fAiAdd = async () => { const rows = []; S.fAi.forEach((i, k) => { if (!$('#fa' + k).checked) return; const g = +$('#fag' + k).value || i.g, m = i.g ? g / i.g : 1; rows.push({ name: i.name, g, kcal: r1(i.kcal * m), p: r1(i.p * m), f: r1(i.f * m), c: r1(i.c * m), src: 'ai' }); }); if (rows.length) await addRows(rows); };
+A.fAiAdd = async () => { const rows = []; S.fAi.forEach((i, k) => { if (!$('#fa' + k).checked) return; const g = +$('#fag' + k).value || i.g, m = i.g ? g / i.g : 1; const sg = guessSG(i.name, i.c * m, g); rows.push({ name: i.name, g, kcal: r1(i.kcal * m), p: r1(i.p * m), f: r1(i.f * m), c: r1(i.c * m), s: sg.s, gi: sg.gi, src: 'ai' }); }); if (rows.length) await addRows(rows); };
 async function addRows(rows) { try { await DB.addFood(rows.map(r => ({ ...r, meal: S.fMeal }))); closeSheet(true); render(); toast('Добавлено'); vib(15); } catch (e) { toast(e.message, 1); } }
 async function photoToData(file) {
   const img = await createImageBitmap(file); const k = Math.min(1, 1024 / Math.max(img.width, img.height));
@@ -977,7 +1064,7 @@ function showResult(res, nsets) {
   const ups = (res.muscles || []).filter(m => m.lv > m.lv0), heroUp = res.hero > res.hero0;
   S.flashAfter = (res.muscles || []).slice(0, 8).map(m => m.m);
   S.tab = 'hero'; render();
-  sheet(`<div style="text-align:center"><div class="xs mu">Тренировка завершена · ${nsets} подходов</div><div class="big pop" style="font-size:52px;margin:6px 0">+${nf(res.xp)} XP</div>
+  sheet(`<div style="text-align:center"><div class="xs mu">Тренировка завершена · ${nsets} подходов</div><div class="big pop" style="font-size:52px;margin:6px 0" data-cnt="${res.xp}" data-pre="+" data-post=" XP">+0 XP</div>
     ${heroUp ? `<div class="lvup pop" style="font-size:16px">⚡ ГЕРОЙ ДОСТИГ ${res.hero} УРОВНЯ</div>` : ''}</div>
     ${ups.length ? `<div class="card" style="border-color:#ffb02066"><h3>Новый уровень</h3>${ups.map(m => `<div class="res-m"><span class="dot" style="background:${lvColor(m.lv)[1]}"></span><span class="sp">${MN[m.m]}</span><span class="lvup">${m.lv0} → ${m.lv}</span></div>`).join('')}</div>` : ''}
     ${(res.prs || []).length ? `<div class="card"><h3>🏆 Личные рекорды</h3>${res.prs.map(p => `<div class="res-m"><span class="sp">${esc(exName(p.ex))}</span><b>${nf(p.w, 1)}×${p.reps}</b><span class="xs mu">≈${nf(p.e1rm)} кг</span></div>`).join('')}</div>` : ''}
@@ -1039,13 +1126,13 @@ function demoLoad() {
   const now = Date.now(), day = 864e5, plan = [['bench', 80, 8], ['incline_bench', 60, 10], ['lateral_raise', 12, 14], ['pushdown_rope', 30, 12], ['row', 70, 10], ['lat_pulldown', 65, 10], ['barbell_curl', 35, 10], ['squat', 100, 6], ['rdl', 90, 8], ['calf_standing', 80, 12]];
   const days = [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9]];
   let k = 0;
-  for (let d = 20; d >= 1; d -= 2.3) {
+  for (let d = 18.6; d >= 0.2; d -= 2.3) {
     const id = uuid(), at = now - d * day, items = days[k % 3]; k++;
     S.works.unshift({ id, started_at: new Date(at).toISOString(), name: ['Верх: жим', 'Спина', 'Ноги'][(k - 1) % 3], xp: 0 });
     items.forEach((i, ii) => { const [ex, w, r] = plan[i], prog = Math.floor((20 - d) / 5) * (EX[ex]?.step || 2.5); for (let s = 0; s < 3; s++) S.sets.push({ workout_id: id, ex, w: w + prog, reps: r - (s == 2 ? 1 : 0), kind: 'work', at: new Date(at + (ii * 3 + s) * 1.6e5).toISOString() }); });
   }
   for (let d = 18; d >= 0; d--) { S.body.push({ d: addDays(dkey(), -d), weight: r1(78.4 - (18 - d) * 0.07 + Math.sin(d) * 0.3) }); }
-  ['br', 'lu', 'di'].forEach((m, i) => { const f = FOODS[[60, 120, 200][i] % FOODS.length]; S.food.push({ id: uuid(), d: dkey(), meal: m, name: f.ru, g: f.pg, kcal: r1(f.k * f.pg / 100), p: r1(f.p * f.pg / 100), f: r1(f.f * f.pg / 100), c: r1(f.c * f.pg / 100) }); });
+  ['br', 'lu', 'di'].forEach((m, i) => { const f = FOODS[[60, 120, 200][i] % FOODS.length]; S.food.push({ id: uuid(), d: dkey(), meal: m, name: f.ru, g: f.pg, kcal: r1(f.k * f.pg / 100), p: r1(f.p * f.pg / 100), f: r1(f.f * f.pg / 100), c: r1(f.c * f.pg / 100), s: r1((f.s || 0) * f.pg / 100), gi: f.gi || 0, at: new Date(Date.now() - (3 - i) * 3 * 36e5).toISOString() }); });
   demoCalc();
 }
 function demoCalc() {
@@ -1086,13 +1173,13 @@ async function boot() {
     const [ex, fd] = await Promise.all([fetch('data/exercises.json').then(r => r.json()), fetch('data/foods.json').then(r => r.json())]);
     EXL = ex; EX = Object.fromEntries(ex.map(e => [e.id, e])); FOODS = fd;
   } catch (e) { $('#app').innerHTML = '<div class="empty">Нет интернета для первого запуска. Подключись и обнови страницу.</div>'; return; }
-  if (DEMO) { await DB.load(); render(); return; }
+  if (DEMO) { await DB.load(); S.anim = 'enter-r'; render(); return; }
   const c = LS.get('cache', null);
   const { data: { session } } = await sb.auth.getSession();
   S.user = session?.user || null;
   if (S.user && c) { Object.assign(S, { prof: c.prof, stats: c.stats, recs: c.recs, works: c.works, sets: c.sets, progs: c.progs, food: c.food, body: c.body }); render(); }
   if (S.user) { try { await DB.load(); } catch (e) { if (!c) toast('Нет связи с сервером', 1); } }
-  render(); flushQ();
+  S.anim = 'enter-r'; render(); flushQ();
   sb.auth.onAuthStateChange(async (ev, ses) => {
     const was = S.user?.id; S.user = ses?.user || null;
     if (S.user && S.user.id != was) { try { await DB.load(); } catch { } render(); flushQ(); }
