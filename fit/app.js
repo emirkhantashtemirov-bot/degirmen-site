@@ -1,6 +1,6 @@
 // Superhero - фитнес-РПГ. Главный модуль: данные, экраны, логика тренировок, питания и ИИ-тренера.
 import { createClient } from '@supabase/supabase-js';
-import { createBody, MUSCLES } from './body3d.js?v=1';
+import { createBody, MUSCLES } from './body3d.js?v=2';
 
 const SB_URL = 'https://nctmbakzbzzkygndaklr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig';
