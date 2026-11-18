@@ -408,6 +408,12 @@ html.motion #app.ov.ovw{transform:scale(.94);opacity:.45}
 html.motion #bar.ov{opacity:0;pointer-events:none}
 /* пока поверх открыт экран, фон не тратит кадры на анимации */
 #amb.pz,#amb.pz *{animation-play-state:paused!important}
+/* баннер с видео справа: видео во всю высоту, слева плавно растворяется в фоне баннера (18.11.2026) */
+.hero.hero3{position:relative;overflow:hidden;min-height:150px}
+.hero3 .htx{position:relative;z-index:2;max-width:60%}
+.hero3 .hvid{position:absolute;top:0;right:0;bottom:0;width:48%;z-index:1;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 42%);mask-image:linear-gradient(90deg,transparent 0,#000 42%)}
+.hero3 .hvid video{display:block;width:100%;height:100%;object-fit:cover;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
 /* Brewsell: видео пачки вместо 3D (18.11.2026) */
 .bwv{flex:none;width:118px;height:160px;margin:-6px 4px -6px 6px;border-radius:20px;overflow:hidden;background:#efe3d0;box-shadow:inset 0 0 0 1px rgba(92,60,30,.08)}
 .bwv video{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
@@ -3769,7 +3775,13 @@ Object.assign(T.kk,{hd_t:'түскі асқа донер',hd_s:'шампур е�
 Object.assign(T.en,{hd_t:'doner for lunch',hd_s:'meat off the spit - order for the time you need',hd_b:'choose a doner',ht_t:'tea for the evening',ht_s:'Turkish tea in a pot - one for two',ht_b:'choose tea',kas_empty:'No active orders. New ones will appear here with a sound.'});
 // утро (до 11) - кофе, день (11–16) - донер, вечер - чай. Время по Алматы.
 function heroSlot(){const h=new Date(Date.now()+5*3600e3).getUTCHours();return h<11?'cf':h<16?'dn':'tea'}
-const heroHtml=()=>{const sl=heroSlot();if(sl=='cf')return heroCf();
+// баннер с видео (18.11.2026): кофе - молоко льётся в кофе, донер - лаваш с гриля, чай - чайник. Играет один раз, когда баннер на экране, повтор - нажатием на видео. Нет видео (слабый интернет, экономия трафика) - прежние рисунки
+const HVT={cf:'hero',dn:'hd',tea:'ht'};
+function heroVid(sl){const k=HVT[sl];return `<div class="hero hero3${S.ent?' ent':''}" onclick="setCat('${sl}')"><div class="htx"><b>${t(k+'_t')}</b><span>${t(k+'_s')}</span><i>${t(k+'_b')} ${IC.chv}</i></div><span class="hvid"><video src="/media/v/hero_${sl}.mp4" poster="/media/p/hero_${sl}.webp" muted playsinline preload="metadata" disablepictureinpicture aria-hidden="true" onclick="event.stopPropagation();heroVRe(this)"></video></span></div>`}
+function heroVRe(v){try{v._done=0;v.currentTime=0;const p=v.play();p&&p.catch(()=>{});navigator.vibrate&&navigator.vibrate(8)}catch(_){}}
+const heroHtml=()=>{const sl=heroSlot();
+  if(typeof vidOk=='function'&&vidOk()&&(sl=='cf'||S.items.some(x=>x.category==sl&&!x.sold_out)))return heroVid(sl);
+  if(sl=='cf')return heroCf();
   const id=sl=='dn'?'lav':(S.tiers?.tea_item||'tk1'),it=itemOf(id),k=sl=='dn'?'hd':'ht';
   if(!it||!hasArt(it)||!S.items.some(x=>x.category==sl&&!x.sold_out))return heroCf();
   return `<div class="hero hero2${S.ent?' ent':''}" onclick="setCat('${sl}')"><div class="htx"><b>${t(k+'_t')}</b><span>${t(k+'_s')}</span><i>${t(k+'_b')} ${IC.chv}</i></div><span class="hart">${artSVG(it,null)}</span></div>`};
@@ -5065,7 +5077,7 @@ function bwCard(){const it=S.items.find(i=>i.id=='bw');if(!it||it.sold_out)retur
 
 // видео пачки Brewsell в ленте (18.11.2026): играет один раз, когда карточка видна; ушла с экрана - пауза, вернулась - доигрывает и останавливается на последнем кадре
 {const bwIO=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(en=>{const v=en.target;if(en.isIntersecting&&en.intersectionRatio>=.5){if(!v.ended&&!v._done){const p=v.play();p&&p.catch(()=>{})}}else if(!v.paused)v.pause()}),{threshold:[0,.5]}):null;
- const bwScan=()=>{if(!bwIO)return;document.querySelectorAll('#app .bwv video').forEach(v=>{if(v._io)return;v._io=1;v.addEventListener('ended',()=>{v._done=1});bwIO.observe(v)})};
+ const bwScan=()=>{if(!bwIO)return;document.querySelectorAll('#app .bwv video,#app .hvid video').forEach(v=>{if(v._io)return;v._io=1;v.addEventListener('ended',()=>{v._done=1});bwIO.observe(v)})};
  const _r=render;render=function(){const r=_r.apply(this,arguments);try{bwScan()}catch(_){}return r}}
 // ---------- меню одной лентой: вкладка = раздел, подсветка по прокрутке (как scrollspy) ----------
 (function(){let lockT=0,raf=0;
