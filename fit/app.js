@@ -1,6 +1,7 @@
+let S_PUSH;
 // Superhero - фитнес-РПГ. Главный модуль: данные, экраны, логика тренировок, питания и ИИ-тренера.
 import { createClient } from '@supabase/supabase-js';
-import { createBody, MUSCLES } from './body3d.js?v=3';
+import { createBody, MUSCLES } from './body3d.js?v=4';
 
 const SB_URL = 'https://nctmbakzbzzkygndaklr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdG1iYWt6Ynp6a3lnbmRha2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExMTAxNDQsImV4cCI6MjEwNjY4NjE0NH0.Bg8pBWWaVWsMhdiPBqIwoU2Rx_DkaWpYllj6SpHGnig';
@@ -63,9 +64,10 @@ const IC = {
 };
 
 // ---------- состояние ----------
+S_PUSH = LS.get('push', null);
 const S = {
   user: null, prof: null, stats: {}, recs: {}, works: [], sets: [], progs: [], food: [], body: [],
-  tab: 'hero', mode: 'lvl', fdate: dkey(), w: LS.get('w', null), rest: null, chat: LS.get('chat', []), q: LS.get('q', []), body3d: null
+  tab: 'hero', mode: 'lvl', fdate: dkey(), pushOn: !!S_PUSH, pushPrefs: S_PUSH, w: LS.get('w', null), rest: null, chat: LS.get('chat', []), q: LS.get('q', []), body3d: null
 };
 const P = () => S.prof?.data || {};
 const bw = () => +P().weight || 75;
@@ -368,7 +370,7 @@ function sheet(html, onClose) {
   requestAnimationFrame(() => { bg.classList.add('on'); sh.classList.add('on'); });
   sheetOnClose = onClose || null;
   let y0 = null, dy = 0, t0 = 0;
-  sh.addEventListener('touchstart', e => { if (sh.scrollTop > 0 || e.target.closest('input,textarea,select')) return; y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); }, { passive: true });
+  sh.addEventListener('touchstart', e => { if (sh.scrollTop > 0 || e.target.closest('input,textarea,select,canvas')) return; y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); }, { passive: true });
   sh.addEventListener('touchmove', e => { if (y0 == null) return; dy = Math.max(0, e.touches[0].clientY - y0); if (dy > 4) { sh.classList.add('drag'); sh.style.transform = `translateY(${dy}px)`; bg.style.opacity = Math.max(0.2, 1 - dy / 400); } }, { passive: true });
   sh.addEventListener('touchend', () => { if (y0 == null) return; const v = dy / Math.max(1, Date.now() - t0); y0 = null; sh.classList.remove('drag'); sh.style.transform = ''; bg.style.opacity = ''; if (dy > 120 || v > 0.6 && dy > 30) closeSheet(); });
   setTimeout(() => countUp(sh), 120);
@@ -474,7 +476,7 @@ function openMuscle(m) {
     <div class="hint" style="margin-top:10px">${esc(tip)}</div>
     <div class="xs mu" style="margin-top:6px">${last[m] ? 'Последний раз качал ' + ago(last[m]) : 'Ещё не качал в последние дни'}</div>
     ${myRecs.length ? `<h3 style="margin-top:14px">Твои рекорды</h3>${myRecs.map(r => `<div class="li"><div class="sp">${esc(exName(r.ex))}</div><b>${nf(r.w, 1)}×${r.reps}</b><span class="xs mu">≈${nf(r.e1rm)} кг</span></div>`).join('')}` : ''}
-    <h3 style="margin-top:14px">Лучшие упражнения</h3>${best.map(e => `<div class="li"><div class="sp">${esc(e.ru)}</div>${S.w ? `<button class="b s" data-a="addEx" data-k="${e.id}">${IC.plus}</button>` : ''}</div>`).join('')}`,
+    <h3 style="margin-top:14px">Лучшие упражнения</h3>${best.map(e => `<div class="li"><button class="ib" style="width:34px;height:34px;flex:none" data-a="exInfo" data-k="${e.id}">ⓘ</button><div class="sp">${esc(e.ru)}</div>${S.w ? `<button class="b s" data-a="addEx" data-k="${e.id}">${IC.plus}</button>` : ''}</div>`).join('')}`,
     () => S.body3d?.select(null));
 }
 
@@ -500,7 +502,7 @@ function activeHtml() {
 }
 function exCard(it, i) {
   const sg = it.sg, step = EX[it.ex]?.step || 2.5, isBw = (EX[it.ex]?.bw || 0) > 0;
-  return `<div class="exc" id="ex${i}"><div class="hd2"><b>${esc(exName(it.ex))}</b>
+  return `<div class="exc" id="ex${i}"><div class="hd2"><b data-a="exInfo" data-k="${it.ex}">${esc(exName(it.ex))} <span class="mu" style="font-size:13px">ⓘ</span></b>
     <button class="ib" style="width:34px;height:34px" data-a="swapEx" data-i="${i}">${IC.swap}</button>
     ${EX[it.ex]?.eq == 'barbell' ? `<button class="ib" style="width:34px;height:34px" data-a="plates" data-i="${i}">${IC.plate}</button>` : ''}
     <button class="ib" style="width:34px;height:34px" data-a="rmEx" data-i="${i}">${IC.x}</button></div>
@@ -567,7 +569,7 @@ function foodHtml() {
     ${eat}</div>
   ${sugarCard()}
   ${MEALS.map(([k, n]) => { const it = L.filter(f => f.meal == k), s = it.reduce((a, f) => a + +f.kcal, 0); return `<div class="meal"><h3>${n}</h3><span class="xs mu" style="margin-right:10px">${s ? nf(s) + ' ккал' : ''}</span><button class="b s" data-a="addFood" data-k="${k}">${IC.plus}</button></div>
-    <div>${it.map(f => { const sg = sugarDest(f, win); return `<div class="fi"><div class="sp"><div>${esc(f.name)}${sg ? `<span class="sug ${sg[0]}">${sg[1]}</span>` : ''}</div><div class="xs mu">${nf(f.g)} г · Б ${nf(f.p)} · Ж ${nf(f.f)} · У ${nf(f.c)}${+f.s ? ` · сахар ${nf(f.s, 1)}` : ''}${+f.gi ? ` · ГИ ${nf(f.gi)}` : ''}</div></div><span class="k">${nf(f.kcal)}</span><button class="ib" style="width:30px;height:30px;background:none;border:0" data-a="delFood" data-k="${f.id}">${IC.x}</button></div>`; }).join('')}</div>`; }).join('')}
+    <div>${it.map(f => { const sg = sugarDest(f, win); return `<div class="fi"><div class="sp"><div>${esc(f.name)}${sg ? `<span class="sug ${sg[0]}">${sg[1]}</span>` : ''}</div><div class="xs mu"><span data-a="fTime" data-k="${f.id}" style="color:var(--blu);font-weight:700">${new Date(f.at || Date.now()).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span> · ${nf(f.g)} г · Б ${nf(f.p)} · Ж ${nf(f.f)} · У ${nf(f.c)}${+f.s ? ` · сахар ${nf(f.s, 1)}` : ''}${+f.gi ? ` · ГИ ${nf(f.gi)}` : ''}</div></div><span class="k">${nf(f.kcal)}</span><button class="ib" style="width:30px;height:30px;background:none;border:0" data-a="delFood" data-k="${f.id}">${IC.x}</button></div>`; }).join('')}</div>`; }).join('')}
   <div class="grid2" style="margin-top:14px"><button class="b v" data-a="addFood" data-k="${hr < 11 ? 'br' : hr < 16 ? 'lu' : hr < 21 ? 'di' : 'sn'}" data-t="photo">${IC.cam} Фото еды</button><button class="b" data-a="addFood" data-k="${hr < 11 ? 'br' : hr < 16 ? 'lu' : hr < 21 ? 'di' : 'sn'}" data-t="text">Описать словами</button></div>`;
 }
 function eatHint(left) {
@@ -894,9 +896,14 @@ const A = {
       <label class="row" style="margin-top:12px"><input type="checkbox" id="str" ${d.ramadan ? 'checked' : ''}> Режим Рамадана</label>
       <label class="row" style="margin-top:8px"><input type="checkbox" id="sthl" ${d.halal ? 'checked' : ''}> Халяль-режим</label>
       <button class="b p w" style="margin-top:14px" data-a="saveSettings">Сохранить</button>
+      <div class="card" style="margin-top:14px"><div class="row"><h3 class="sp">Уведомления</h3><span class="tag">${S.pushOn ? 'включены' : 'выключены'}</span></div>
+        <div class="xs mu" style="margin-bottom:8px">Напомню добрать белок и сходить в зал. На iPhone работают, только если приложение добавлено на главный экран.</div>
+        <div class="grid2"><div><label class="l">Белок, проверка в</label><select class="in" id="pnp">${[18, 19, 20, 21, 22].map(h => `<option value="${h}" ${(S.pushPrefs?.protein ?? 20) == h ? 'selected' : ''}>${h}:00</option>`).join('')}<option value="" ${S.pushPrefs && S.pushPrefs.protein == null ? 'selected' : ''}>не надо</option></select></div>
+        <div><label class="l">Пора в зал, в</label><select class="in" id="pnt">${[8, 10, 12, 16, 17, 18, 19].map(h => `<option value="${h}" ${(S.pushPrefs?.train ?? 18) == h ? 'selected' : ''}>${h}:00</option>`).join('')}<option value="" ${S.pushPrefs && S.pushPrefs.train == null ? 'selected' : ''}>не надо</option></select></div></div>
+        <button class="b v w" style="margin-top:10px" data-a="pushOn">${S.pushOn ? 'Сохранить время' : 'Включить уведомления'}</button></div>
       <div class="grid2" style="margin-top:10px"><button class="b" data-a="recalib">Калибровка</button><button class="b" data-a="exportData">Мои данные</button></div>
       ${DEMO ? '<a class="b w g" href="./" style="margin-top:10px;text-decoration:none">Выйти из демо</a>' : '<button class="b w g" style="margin-top:10px;color:var(--red)" data-a="logout">Выйти из аккаунта</button>'}
-      <div class="xs mu" style="text-align:center;margin-top:10px">Superhero · v1 · данные хранятся на сервере, видишь их только ты</div>`);
+      <div class="xs mu" style="text-align:center;margin-top:10px">Superhero · v1 · данные видишь только ты<br><a href="privacy.html" target="_blank">Политика данных</a> · <a href="/delete-account.html" target="_blank">Удаление аккаунта</a></div>`);
   },
   async saveSettings(el) {
     const d = { ...P(), weight: +$('#stw').value.replace(',', '.') || P().weight, tw: +$('#sttw').value.replace(',', '.') || null, height: +$('#sth').value || P().height, days: +$('#std').value || 3, goal: $('#stg').value, ramadan: $('#str').checked, halal: $('#sthl').checked };
@@ -910,6 +917,20 @@ const A = {
   },
   async logout() { await sb.auth.signOut(); location.reload(); },
   shareCard() { shareCard(); },
+  async pushOn(el) {
+    if (DEMO) return toast('В демо уведомления не работают', 1);
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return toast(/iPhone|iPad/.test(navigator.userAgent) ? 'Добавь приложение на главный экран: Поделиться → На экран «Домой»' : 'Этот браузер не умеет уведомления', 1);
+    el.disabled = true;
+    try {
+      const perm = await Notification.requestPermission(); if (perm != 'granted') { el.disabled = false; return toast('Разреши уведомления в настройках браузера', 1); }
+      const reg = await navigator.serviceWorker.ready, { data: key } = await sb.rpc('push_key'); if (!key) throw new Error('нет ключа');
+      const b64u = s => { const p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(b, c => c.charCodeAt(0)); };
+      const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(key) });
+      const v = id => $(id).value === '' ? null : +$(id).value, prefs = { protein: v('#pnp'), train: v('#pnt'), gap: 3 };
+      const { error } = await sb.rpc('fit_push_save', { p_sub: sub.toJSON(), p_prefs: prefs }); if (error) throw error;
+      S.pushOn = true; S.pushPrefs = prefs; LS.set('push', prefs); toast('Уведомления включены'); closeSheet(true);
+    } catch (e) { toast('Не получилось: ' + e.message, 1); el.disabled = false; }
+  },
   saveProg() { }, // заполняется в editProg
 };
 
@@ -928,13 +949,33 @@ function pickEx(cb) {
   S.pickCb = cb; S.pickM = null;
   const groups = ['chest', 'lats', 'midback', 'delt_m', 'delt_r', 'biceps', 'triceps', 'quads', 'hams', 'glutes', 'calves', 'abs'];
   sheet(`<h2>Упражнение</h2><input class="in" id="exq" placeholder="Поиск: жим, присед, бабочка..." data-in="exq" style="margin:10px 0">
-    <div class="chips" id="exm">${groups.map(m => `<button class="chip" data-a="exM" data-k="${m}">${MN[m]}</button>`).join('')}</div><div id="exl" style="margin-top:6px"></div>`);
+    <div class="chips" id="exm">${groups.map(m => `<button class="chip" data-a="exM" data-k="${m}">${MN[m]}</button>`).join('')}</div><div id="exl" style="margin-top:6px"></div>`, () => { setTimeout(() => { if (!$('#exl')) S.pickCb = null; }, 400); });
   exList();
 }
 function exList() {
   const L = searchEx($('#exq')?.value || '', S.pickM);
-  $('#exl').innerHTML = L.map(e => `<div class="li" data-a="exPick" data-k="${e.id}"><div class="sp"><b>${esc(e.ru)}</b><div class="xs mu">${Object.keys(e.m).filter(k => e.m[k] >= 1).map(k => MN[k]).join(', ')}${S.recs[e.id] ? ` · рекорд ${nf(S.recs[e.id].w, 1)}×${S.recs[e.id].reps}` : ''}</div></div>${IC.plus}</div>`).join('') || '<div class="empty">Не нашёл. Попробуй другое слово</div>';
+  $('#exl').innerHTML = L.map(e => `<div class="li" data-a="exPick" data-k="${e.id}"><button class="ib" style="width:34px;height:34px;flex:none" data-a="exInfo" data-k="${e.id}">ⓘ</button><div class="sp"><b>${esc(e.ru)}</b><div class="xs mu">${Object.keys(e.m).filter(k => e.m[k] >= 1).map(k => MN[k]).join(', ')}${S.recs[e.id] ? ` · рекорд ${nf(S.recs[e.id].w, 1)}×${S.recs[e.id].reps}` : ''}</div></div>${IC.plus}</div>`).join('') || '<div class="empty">Не нашёл. Попробуй другое слово</div>';
 }
+A.exInfo = el => {
+  const e = EX[el.dataset.k]; if (!e) return;
+  const roles = [[1, 'основная', '#ff7a2a'], [0.5, 'помогает', '#ffc107'], [0.25, 'стабилизирует', '#3d8bff']];
+  const keep = S.pickCb ? { cb: S.pickCb, m: S.pickM } : null;
+  sheet(`<h2>${esc(e.ru)}</h2><div class="xs mu" style="margin:4px 0">${esc(e.en || '')}</div>
+    <div id="mini" style="height:330px;margin:4px -16px;position:relative"></div>
+    ${roles.map(([k, n, c]) => { const ms = Object.keys(e.m).filter(m => e.m[m] == k); return ms.length ? `<div class="row" style="margin:6px 0"><span class="dot" style="background:${c}"></span><span class="sm" style="width:110px;font-weight:700">${n}</span><span class="sm mu sp">${ms.map(m => MN[m]).join(', ')}</span></div>` : ''; }).join('')}
+    ${S.recs[e.id] ? `<div class="hint up">Твой рекорд: ${nf(S.recs[e.id].w, 1)}×${S.recs[e.id].reps} (≈${nf(S.recs[e.id].e1rm)} кг)</div>` : ''}
+    ${S.w && !keep ? `<button class="b p w" style="margin-top:10px" data-a="addEx" data-k="${e.id}">${IC.plus} В тренировку</button>` : ''}`, () => { S.mini?.dispose(); S.mini = null; if (keep) setTimeout(() => pickEx(keep.cb), 300); });
+  setTimeout(() => {
+    const box = $('#mini'); if (!box) return;
+    try {
+      S.mini = createBody(box, { autoRotate: true, dist: 3.1 });
+      const map = {}; for (const m of MUSCLES) { const k = e.m[m] || 0; map[m] = k >= 1 ? { color: '#ff7a2a', emit: 0.35, glowColor: '#ff9a3a', pulse: { f: 0.9, a: 1.8, g: 0.8 }, wave: 1 } : k >= 0.5 ? { color: '#ffc107', emit: 0.25, glowColor: '#ffd36a', pulse: { f: 0.6, a: 1, g: 0.35 } } : k > 0 ? { color: '#3d8bff', emit: 0.2, pulse: { f: 0.4, a: 0.6, g: 0.15 } } : { color: '#262b3c', emit: 0.04 }; }
+      S.mini.paint(map);
+      const back = ['lats', 'midback', 'traps', 'delt_r', 'triceps', 'lowback', 'glutes', 'hams', 'calves', 'glute_med'].reduce((a, m) => a + (e.m[m] || 0), 0), front = Object.keys(e.m).reduce((a, m) => a + e.m[m], 0) - back;
+      if (back > front) S.mini.view('back');
+    } catch (er) { box.innerHTML = '<div class="empty">3D недоступно</div>'; }
+  }, 260);
+};
 A.exM = el => { S.pickM = S.pickM == el.dataset.k ? null : el.dataset.k; document.querySelectorAll('#exm .chip').forEach(c => c.classList.toggle('on', c.dataset.k == S.pickM)); exList(); };
 A.exPick = el => { const cb = S.pickCb; closeSheet(true); cb && cb(el.dataset.k); };
 
@@ -976,6 +1017,19 @@ function fMode(k) {
   if (k == 'man') b.innerHTML = `<input class="in" id="mn" placeholder="Название"><div class="grid2"><div><label class="l">Ккал</label><input class="in" id="mk" inputmode="decimal"></div><div><label class="l">Белок, г</label><input class="in" id="mp" inputmode="decimal"></div><div><label class="l">Жиры, г</label><input class="in" id="mf" inputmode="decimal"></div><div><label class="l">Углеводы, г</label><input class="in" id="mc" inputmode="decimal"></div><div><label class="l">из них сахар, г</label><input class="in" id="ms" inputmode="decimal"></div></div><button class="b p w" style="margin-top:12px" data-a="fMan">Добавить</button>`;
 }
 A.fMode = el => fMode(el.dataset.k);
+A.fTime = el => {
+  const f = S.food.find(x => x.id == el.dataset.k); if (!f) return;
+  const t = new Date(f.at || Date.now()), hm = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+  sheet(`<h2>Когда съел?</h2><div class="mu sm" style="margin:6px 0 10px">${esc(f.name)}. От времени зависит, пойдёт сахар в мышцы или в кровь.</div><input class="in" type="time" id="ftm" value="${hm}" style="font-size:22px;text-align:center">
+    <div class="chips" style="margin-top:10px">${[['-30 мин', -30], ['-1 ч', -60], ['-2 ч', -120], ['-3 ч', -180]].map(([n, m]) => `<button class="chip" data-a="fTimeQ" data-m="${m}">${n}</button>`).join('')}</div>
+    <button class="b p w" style="margin-top:12px" data-a="fTimeSave" data-k="${f.id}">Сохранить</button>`);
+};
+A.fTimeQ = el => { const d = new Date(Date.now() + +el.dataset.m * 6e4); $('#ftm').value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+A.fTimeSave = async el => {
+  const f = S.food.find(x => x.id == el.dataset.k), [h, m] = $('#ftm').value.split(':').map(Number); if (isNaN(h)) return;
+  const d = new Date(f.d + 'T00:00:00'); d.setHours(h, m, 0, 0); const at = d.toISOString();
+  try { if (!DEMO) { const { error } = await sb.from('fit_food_log').update({ at }).eq('id', f.id); if (error) throw error; } f.at = at; closeSheet(true); render(); toast('Время обновлено'); } catch (e) { toast(e.message, 1); }
+};
 function fList() {
   const q = ($('#fq')?.value || '').trim().toLowerCase();
   let L;
@@ -1041,6 +1095,7 @@ A.epDel = async () => { if (S.ep.id) { S.ep.archived = true; await DB.saveProg(S
 // ---------- отдых между подходами ----------
 let restTick = 0, actx = null;
 function startRest(sec) {
+  if (window.Notification && Notification.permission == 'default' && !LS.get('askedN', 0)) { LS.set('askedN', 1); Notification.requestPermission().catch(() => { }); }
   S.rest = { end: Date.now() + sec * 1000, total: sec };
   let el = $('#rest'); if (!el) { el = document.createElement('div'); el.id = 'rest'; el.className = 'rest'; document.body.appendChild(el); }
   el.innerHTML = `<b id="rt"></b><div class="sp"><div class="xs mu">Отдых</div><div class="bar gold" style="margin-top:4px"><i id="rb"></i></div></div><button class="b s" data-a="restAdd">+30</button><button class="b s" data-a="restStop">Хватит</button>`;
@@ -1051,7 +1106,7 @@ function restUpd() {
   if (!S.rest) return;
   const left = Math.max(0, S.rest.end - Date.now());
   const rt = $('#rt'), rb = $('#rb'); if (rt) rt.textContent = `${Math.floor(left / 6e4)}:${String(Math.floor(left / 1000) % 60).padStart(2, '0')}`; if (rb) rb.style.width = (100 - left / (S.rest.total * 1000) * 100) + '%';
-  if (left <= 0) { beep(); vib([200, 100, 200]); stopRest(); toast('Отдых закончен - следующий подход!'); }
+  if (left <= 0) { beep(); vib([200, 100, 200]); stopRest(); toast('Отдых закончен - следующий подход!'); if (document.hidden && window.Notification?.permission == 'granted') navigator.serviceWorker?.ready.then(r => r.showNotification('Отдых закончен', { body: 'Следующий подход!', tag: 'fit-rest', icon: 'icon-192.png', vibrate: [200, 100, 200] })).catch(() => { }); }
 }
 function beep() { try { if (!actx) return; const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 880; g.gain.setValueAtTime(0.25, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.6); o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.6); } catch { } }
 function stopRest() { S.rest = null; clearInterval(restTick); $('#rest')?.remove(); }
@@ -1126,7 +1181,7 @@ function demoLoad() {
   const now = Date.now(), day = 864e5, plan = [['bench', 80, 8], ['incline_bench', 60, 10], ['lateral_raise', 12, 14], ['pushdown_rope', 30, 12], ['row', 70, 10], ['lat_pulldown', 65, 10], ['barbell_curl', 35, 10], ['squat', 100, 6], ['rdl', 90, 8], ['calf_standing', 80, 12]];
   const days = [[0, 1, 2, 3], [4, 5, 6], [7, 8, 9]];
   let k = 0;
-  for (let d = 18.6; d >= 0.2; d -= 2.3) {
+  for (let d = 18.6; d >= 0.1; d -= 2.3) {
     const id = uuid(), at = now - d * day, items = days[k % 3]; k++;
     S.works.unshift({ id, started_at: new Date(at).toISOString(), name: ['Верх: жим', 'Спина', 'Ноги'][(k - 1) % 3], xp: 0 });
     items.forEach((i, ii) => { const [ex, w, r] = plan[i], prog = Math.floor((20 - d) / 5) * (EX[ex]?.step || 2.5); for (let s = 0; s < 3; s++) S.sets.push({ workout_id: id, ex, w: w + prog, reps: r - (s == 2 ? 1 : 0), kind: 'work', at: new Date(at + (ii * 3 + s) * 1.6e5).toISOString() }); });

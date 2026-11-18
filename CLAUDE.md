@@ -26,6 +26,9 @@
 - Демо без входа: `/fit/?demo` (данные выдуманы, считаются в браузере `demoCalc`).
 - База: таблицы `fit_*` с RLS (каждый видит только своё). Опыт, уровни, ранг и рекорды считает только сервер: `fit_save_workout(p)` (сохраняет и возвращает итог: опыт по мышцам, новые уровни, рекорды), `fit_delete_workout`, `fit_recalc_me`; всё пересчитывает `private.fit_recalc` → `private.fit_recalc_core`. Поля xp/level/rank в `fit_profiles` защищены триггером `fit_prof_guard`. Уровень: всего опыта для n = 40·n^1.6 (`private.fit_lvl`), уровень героя = fit_lvl(xp/14), ранг по силе - `private.fit_std`.
 - ИИ: функция `fit-ai` (код `supabase/functions/fit-ai`, Groq, 20 запросов в день, журнал `fit_ai_log`): режимы chat и parse. Фото и описание еды - через существующую `kbju`.
+- Уведомления: подписки `fit_push_subs` (RPC `fit_push_save`, ключ - `push_key`), функция `fit-remind` по cron `fit-remind` раз в час (белок в выбранный час, «пора в зал» через 3+ дня). Конец отдыха - локальное уведомление из `fit/sw.js`.
+- Сахар: у продуктов `s` (сахар на 100 г) и `gi`; в `fit_food_log` поля s, gi, время приёма `at` (меняется в приложении). «В мышцы» - за час до и 2 ч после тренировки.
+- Для магазина: `privacy.html`, `fit/privacy.html`, `delete-account.html`, графика и скриншоты в `media/store/`.
 - Без сети: активная тренировка в localStorage `sh_w`, неотправленные - `sh_q` (отправляются при появлении сети).
 
 ## База (Supabase, проект nctmbakzbzzkygndaklr)

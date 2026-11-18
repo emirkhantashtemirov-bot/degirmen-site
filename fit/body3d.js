@@ -257,7 +257,8 @@ export function createBody(el, opt = {}) {
   el.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const cam = new THREE.PerspectiveCamera(30, W() / H(), 0.1, 20);
-  cam.position.set(0, 1.0, 4.1);
+  const DIST = opt.dist || 4.1;
+  cam.position.set(0, 1.0, DIST);
   const ctl = new OrbitControls(cam, renderer.domElement);
   ctl.target.set(0, 0.9, 0); ctl.enablePan = false; ctl.enableDamping = true; ctl.dampingFactor = 0.08;
   ctl.minDistance = 1.4; ctl.maxDistance = 4.6; ctl.minPolarAngle = 1.05; ctl.maxPolarAngle = 1.95;
@@ -323,7 +324,7 @@ export function createBody(el, opt = {}) {
     if (!S.vis) return;
     const t = clock.getElapsedTime(), since = (performance.now() - S.t0) / 1000;
     // появление: камера подъезжает, по телу снизу вверх проходит луч сканера
-    if (since < 1.6) { const e = 1 - Math.pow(1 - Math.min(1, since / 1.4), 3); const d = 6.2 - 2.1 * e; const dir = cam.position.clone().sub(ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, d); }
+    if (since < 1.6) { const e = 1 - Math.pow(1 - Math.min(1, since / 1.4), 3); const d = DIST + 2.1 - 2.1 * e; const dir = cam.position.clone().sub(ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, d); }
     const scan = since < 2.2 ? -0.1 + since * 1.0 : -1;
     ctl.update();
     for (const m in mats) {
