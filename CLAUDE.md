@@ -20,6 +20,14 @@
 - `tv.html` - экран в зале (16:9): видео `tvv_<id>` по кругу, название/цена из menu_items (раз в 5 мин), `?ids=lav,cp`. Ссылка: Касса → «Экран в зале». Картинки состояний `media/p/st_*.webp` - `stImg()`.
 - Новый вид проверять на `/v2.html` (копия index.html из ветки `visual`), потом переносить в `main`.
 
+## Superhero (`fit/`) - фитнес-РПГ, адрес degirmen-navoi.kz/fit
+- Отдельное PWA (свой `app.webmanifest`, `sw.js` со scope /fit/). `index.html` - оболочка и стили, `app.js` - вся логика (модуль ES, действия через `data-a` и объект `A`, ввод через `data-in`), `body3d.js` - 3D-тело на three.js r160 (своя модель кодом: торс по сечениям `TP`, кости `B`, мышцы - пластины `patch()` на поверхности; 23 мышцы `MUSCLES`, API `createBody(el,{onPick})` → paint/select/flash/view/shot/dispose).
+- `data/exercises.json` (204 упражнения: коэффициенты мышц 1/0.5/0.25, `bw` - доля веса тела) и `data/foods.json` (390 продуктов на 100 г). Коэффициенты упражнений продублированы в таблице `fit_exercises` (сервер считает опыт по ней) - при правке JSON обновить и таблицу.
+- Демо без входа: `/fit/?demo` (данные выдуманы, считаются в браузере `demoCalc`).
+- База: таблицы `fit_*` с RLS (каждый видит только своё). Опыт, уровни, ранг и рекорды считает только сервер: `fit_save_workout(p)` (сохраняет и возвращает итог: опыт по мышцам, новые уровни, рекорды), `fit_delete_workout`, `fit_recalc_me`; всё пересчитывает `private.fit_recalc` → `private.fit_recalc_core`. Поля xp/level/rank в `fit_profiles` защищены триггером `fit_prof_guard`. Уровень: всего опыта для n = 40·n^1.6 (`private.fit_lvl`), уровень героя = fit_lvl(xp/14), ранг по силе - `private.fit_std`.
+- ИИ: функция `fit-ai` (код `supabase/functions/fit-ai`, Groq, 20 запросов в день, журнал `fit_ai_log`): режимы chat и parse. Фото и описание еды - через существующую `kbju`.
+- Без сети: активная тренировка в localStorage `sh_w`, неотправленные - `sh_q` (отправляются при появлении сети).
+
 ## База (Supabase, проект nctmbakzbzzkygndaklr)
 - Оплата: Edge Function `epay` (код в `supabase/functions/epay`), доступы ePay только в закрытой `paloma_config` (epay_*). Заказ: `pay_method` cash|online, `pay_status` none|pending|paid|failed|refunded. Онлайн-оплату отмечает только сервер после проверки статуса в банке. Неоплаченные заказы не идут на кухню. Возврат - `can_refund()` (разработчик + список `refunders`).
 - Цены: Paloma главная. Триггер на `paloma_items` обновляет `menu_items.data.p` и `menu_options.price` (исключения - `price_sync_off`), смена цены в админке уходит в Paloma через `paloma-write` op price. Тестовая позиция `air` (data.test) видна только админам.
