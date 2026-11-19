@@ -989,17 +989,22 @@ const A = {
 // ---------- выбор упражнения ----------
 const POP = ['bench', 'squat', 'deadlift', 'ohp', 'row', 'pullup', 'lat_pulldown', 'incline_bench', 'db_bench', 'db_incline', 'leg_press', 'barbell_curl', 'db_curl', 'pushdown_rope', 'french_press', 'lateral_raise', 'dips', 'rdl', 'hip_thrust', 'seated_row', 'db_row', 'leg_extension', 'leg_curl_lying', 'calf_standing', 'hanging_leg_raise', 'crunch', 'plank', 'pushup', 'hammer_curl', 'face_pull', 'pec_deck', 'bulgarian', 'lunge_db'];
 const norm = x => String(x || '').toLowerCase().replace(/ё/g, 'е');
+// основа слова без окончания: «наклоне» и «наклонной» → «накло», «гантелей» → «гантел»
+const stem = w => w.length <= 4 ? w : w.slice(0, Math.max(4, Math.ceil(w.length * 0.7)));
+const STOP = new Set(['на', 'в', 'во', 'с', 'со', 'по', 'для', 'и', 'к', 'от', 'до', 'из', 'за', 'под']);
 function exScore(e, q, qw) {
   const n = norm(e.ru), syn = e.syn.map(norm);
   if (n == q || syn.includes(q)) return 8;
   if (n.startsWith(q)) return 6;
   if (syn.some(x => x.startsWith(q))) return 5;
   if (n.includes(q)) return 4;
-  const words = (n + ' ' + syn.join(' ') + ' ' + norm(e.en)).split(/[\s\-,()/]+/);
-  if (qw.length > 1 && qw.every(w => words.some(x => x.startsWith(w)))) return 3.5;
-  if (syn.some(x => x.includes(q))) return 2.5;
-  if (qw.length == 1 && words.some(x => x.startsWith(q))) return 2;
-  if (norm(e.en).includes(q)) return 1;
+  const words = (n + ' ' + syn.join(' ') + ' ' + norm(e.en)).split(/[\s\-,()/«»"]+/).filter(Boolean);
+  const qs = qw.filter(w => !STOP.has(w));
+  if (!qs.length) return 0;
+  const hit = qs.filter(w => { const st = stem(w); return words.some(x => x.startsWith(st)); }).length;
+  if (hit == qs.length) return qs.length > 1 ? 3.5 + Math.min(0.4, hit * 0.1) : 2.5;
+  if (syn.some(x => x.includes(q))) return 2.4;
+  if (qs.length > 1 && hit / qs.length >= 0.5) return 1 + hit / qs.length;  // частичное совпадение - для подсказок
   return 0;
 }
 function searchEx(q, m) {
@@ -1013,7 +1018,7 @@ function searchEx(q, m) {
   else L = [...L].sort((a, b) => fav(b) - fav(a) || pop(a) - pop(b));
   return L.slice(0, 60);
 }
-function findEx(name) { const r = searchEx(String(name || '')); return r[0]?.id || null; }
+function findEx(name) { const q = norm(name).trim(), qw = q.split(/\s+/).filter(w => w.length > 1), r = searchEx(q); return r[0] && exScore(r[0], q, qw) >= 2.4 ? r[0].id : null; }
 function pickEx(cb) {
   S.pickCb = cb; S.pickM = null;
   const groups = ['chest', 'lats', 'midback', 'delt_m', 'delt_r', 'biceps', 'triceps', 'quads', 'hams', 'glutes', 'calves', 'abs'];
