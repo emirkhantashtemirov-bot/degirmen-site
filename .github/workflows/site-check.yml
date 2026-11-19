@@ -1,0 +1,13 @@
+# Проверка сайта снаружи: отдаётся ли файл связи приложения с сайтом (assetlinks) и видит ли его Google
+name: Site check
+on: { workflow_dispatch: {}, push: { branches: [main], paths: ['.github/workflows/site-check.yml'] } }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sS -i https://degirmen-navoi.kz/.well-known/assetlinks.json | head -40
+          echo ---------
+          curl -sS "https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://degirmen-navoi.kz&relation=delegate_permission/common.handle_all_urls" | head -60
+          echo ---------
+          curl -sS -I https://degirmen-navoi.kz/fit/superhero.apk | head -15
