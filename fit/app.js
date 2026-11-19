@@ -35,7 +35,7 @@ const addDays = (k, n) => { const d = new Date(k + 'T12:00:00'); d.setDate(d.get
 const ago = t => { const h = (Date.now() - new Date(t)) / 36e5; if (h < 1) return 'только что'; if (h < 24) return `${Math.round(h)} ч назад`; const d = Math.round(h / 24); return d == 1 ? 'вчера' : `${d} дн назад`; };
 const fdate = t => new Date(t).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
 const LS = { get(k, d) { try { const v = localStorage.getItem('sh_' + k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem('sh_' + k, JSON.stringify(v)); } catch { } } };
-const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch { } };
+const vib = p => { try { if (window.SHApp) SHApp.vibrate(Array.isArray(p) ? p.reduce((a, b) => a + b, 0) : p); else navigator.vibrate && navigator.vibrate(p); } catch { } };
 const exName = id => EX[id]?.ru || id;
 const e1rm = (w, r) => r > 0 && w > 0 ? w * (1 + Math.min(r, 15) / 30) : 0;
 
@@ -971,6 +971,7 @@ const A = {
   shareCard() { shareCard(); },
   async pushOn(el) {
     if (DEMO) return toast('В демо уведомления не работают', 1);
+    if (window.SHApp) return toast('В приложении для Android напоминания с сервера пока не приходят. Конец отдыха - приходит. Для напоминаний о белке открой Superhero в Chrome', 1);
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return toast(/iPhone|iPad/.test(navigator.userAgent) ? 'Добавь приложение на главный экран: Поделиться → На экран «Домой»' : 'Этот браузер не умеет уведомления', 1);
     el.disabled = true;
     try {
@@ -1225,7 +1226,7 @@ function restUpd() {
   if (!S.rest) return;
   const left = Math.max(0, S.rest.end - Date.now());
   const rt = $('#rt'), rb = $('#rb'); if (rt) rt.textContent = `${Math.floor(left / 6e4)}:${String(Math.floor(left / 1000) % 60).padStart(2, '0')}`; if (rb) rb.style.width = (100 - left / (S.rest.total * 1000) * 100) + '%';
-  if (left <= 0) { beep(); vib([200, 100, 200]); stopRest(); toast('Отдых закончен - следующий подход!'); if (document.hidden && window.Notification?.permission == 'granted') navigator.serviceWorker?.ready.then(r => r.showNotification('Отдых закончен', { body: 'Следующий подход!', tag: 'fit-rest', icon: 'icon-192.png', vibrate: [200, 100, 200] })).catch(() => { }); }
+  if (left <= 0) { beep(); vib([200, 100, 200]); stopRest(); toast('Отдых закончен - следующий подход!'); if (document.hidden && window.SHApp) { try { SHApp.notify('Отдых закончен', 'Следующий подход!'); } catch { } } else if (document.hidden && window.Notification?.permission == 'granted') navigator.serviceWorker?.ready.then(r => r.showNotification('Отдых закончен', { body: 'Следующий подход!', tag: 'fit-rest', icon: 'icon-192.png', vibrate: [200, 100, 200] })).catch(() => { }); }
 }
 function beep() { try { if (!actx) return; const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 880; g.gain.setValueAtTime(0.25, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.6); o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.6); } catch { } }
 function stopRest() { S.rest = null; clearInterval(restTick); $('#rest')?.remove(); }

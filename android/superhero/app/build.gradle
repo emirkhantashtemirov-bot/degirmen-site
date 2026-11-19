@@ -1,4 +1,4 @@
-// Superhero для Android: Trusted Web Activity - открывает degirmen-navoi.kz/fit/ на весь экран через Chrome
+// Superhero для Android: своё окно (WebView) на весь экран, без браузера и адресной строки.
 plugins { id 'com.android.application' }
 def run = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
 android {
@@ -6,10 +6,10 @@ android {
     compileSdk 35
     defaultConfig {
         applicationId 'kz.degirmen.superhero.app'
-        minSdk 23
+        minSdk 24
         targetSdk 35
         versionCode run
-        versionName "1.0.${run}"
+        versionName "1.1.${run}"
     }
     signingConfigs {
         release {
@@ -22,4 +22,4 @@ android {
     buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
-dependencies { implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0' }
+dependencies { implementation 'androidx.core:core:1.13.1' }

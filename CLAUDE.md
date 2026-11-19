@@ -30,7 +30,7 @@
 - Сахар: у продуктов `s` (сахар на 100 г) и `gi`; в `fit_food_log` поля s, gi, время приёма `at` (меняется в приложении). «В мышцы» - за час до и 2 ч после тренировки.
 - Для магазина: `privacy.html`, `fit/privacy.html`, `delete-account.html`, графика и скриншоты в `media/store/`.
 - Запись как в чате (вкладка «Тренировка», полоса `.wbar`): `parseLog` разбирает «жим 80 на 8 три подхода», «присед 100 5х5», «подтягивания 10 8 7», «85 на 6» (продолжение прошлого упражнения); не понял - ИИ `fit-ai` parse, потом подсказки и выбор из списка; `logToWorkout`, отмена последней записи `wUndo`, журнал в `S.w.log`.
-- Android: `android/superhero` (Trusted Web Activity, пакет kz.degirmen.superhero.app). GitHub Action `superhero-apk` собирает APK при правке этой папки или вручную, кладёт в `fit/superhero.apk` и пишет отпечаток ключа в `/.well-known/assetlinks.json`. Ключ новый при каждой сборке - для Play Market нужен постоянный ключ (Play App Signing).
+- Android: `android/superhero` (своё окно WebView, пакет kz.degirmen.superhero.app, мост `window.SHApp`: notify, vibrate). TWA не подошёл: сервер (nginx) не отдаёт `/.well-known/assetlinks.json` (возвращает index.html). GitHub Action `superhero-apk` собирает APK при правке этой папки или вручную и кладёт в `fit/superhero.apk`. Ключ новый при каждой сборке - для Play Market нужен постоянный ключ. Push с сервера в APK не работает.
 - Без сети: активная тренировка в localStorage `sh_w`, неотправленные - `sh_q` (отправляются при появлении сети).
 
 ## База (Supabase, проект nctmbakzbzzkygndaklr)
