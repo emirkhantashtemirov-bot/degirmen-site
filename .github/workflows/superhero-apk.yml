@@ -1,0 +1,52 @@
+# Сборка Android-приложения Superhero (Trusted Web Activity) и выкладка на сайт: degirmen-navoi.kz/fit/superhero.apk
+# Ключ подписи создаётся при каждой сборке (без секретов в репозитории); его отпечаток сразу пишется в /.well-known/assetlinks.json,
+# чтобы приложение открывалось на весь экран без адресной строки. Новая сборка = новый ключ: при обновлении старое приложение удалить.
+name: Superhero APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['android/superhero/**', '.github/workflows/superhero-apk.yml']
+permissions:
+  contents: write
+concurrency: superhero-apk
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Ключ подписи
+        run: |
+          P=$(openssl rand -base64 24 | tr -d '/+=')
+          echo "::add-mask::$P"
+          echo "KS_PASS=$P" >> $GITHUB_ENV
+          echo "KS_PATH=$RUNNER_TEMP/sh.jks" >> $GITHUB_ENV
+          keytool -genkeypair -alias superhero -keyalg RSA -keysize 2048 -validity 10000 -keystore $RUNNER_TEMP/sh.jks -storetype PKCS12 -storepass "$P" -keypass "$P" -dname "CN=Superhero, O=Degirmen Navoi, C=KZ"
+          FP=$(keytool -list -v -keystore $RUNNER_TEMP/sh.jks -storepass "$P" -alias superhero | grep 'SHA256:' | awk '{print $2}')
+          echo "FP=$FP" >> $GITHUB_ENV
+      - name: Сборка APK
+        working-directory: android/superhero
+        run: gradle assembleRelease --no-daemon
+      - name: Выложить на сайт
+        run: |
+          git pull --rebase origin main
+          cp android/superhero/app/build/outputs/apk/release/app-release.apk fit/superhero.apk
+          python3 - <<'PY'
+          import json, os
+          f = '.well-known/assetlinks.json'
+          a = json.load(open(f))
+          a = [x for x in a if x.get('target', {}).get('package_name') != 'kz.degirmen.superhero.app']
+          a.append({"relation": ["delegate_permission/common.handle_all_urls"], "target": {"namespace": "android_app", "package_name": "kz.degirmen.superhero.app", "sha256_cert_fingerprints": [os.environ['FP']]}})
+          json.dump(a, open(f, 'w'), indent=2, ensure_ascii=False)
+          PY
+          git config user.name "NEXUS build"
+          git config user.email "noreply@anthropic.com"
+          git add fit/superhero.apk .well-known/assetlinks.json
+          git commit -m "Superhero APK: сборка ${{ github.run_number }}" || exit 0
+          git push origin main
+      - uses: actions/upload-artifact@v4
+        with: { name: superhero-apk, path: fit/superhero.apk }
