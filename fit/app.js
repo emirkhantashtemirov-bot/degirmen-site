@@ -838,7 +838,7 @@ const A = {
     }
     const ok = items.filter(x => x.ex && x.sets.length), miss = items.filter(x => !x.ex || !x.sets.length);
     if (!ok.length) {
-      const q = miss[0]?.name || txt, sug = searchEx(q.replace(/\d.*$/, '')).slice(0, 4);
+      const q = miss[0]?.name || txt, sug = sugFor(q).map(id => EX[id]);
       S.wPending = { txt, sets: miss[0]?.sets?.length ? miss[0].sets : parseNums(txt.replace(/^\D+/, ''), false) };
       (S.w = S.w || { id: uuid(), started_at: new Date().toISOString(), name: 'Свободная тренировка', items: [], log: [] }).log = S.w.log || [];
       S.w.log.push({ q: txt, a: miss[0]?.ex && !miss[0].sets.length ? `Понял упражнение «${exName(miss[0].ex)}», но не вижу вес и повторы. Напиши, например: 80 на 8 три подхода` : `Не узнал упражнение «${q}». ${sug.length ? 'Это одно из этих?' : 'Попробуй написать иначе.'}`, sug: S.wPending.sets.length ? sug.map(e => e.id) : [], err: 1 });
@@ -991,7 +991,7 @@ const A = {
 const POP = ['bench', 'squat', 'deadlift', 'ohp', 'row', 'pullup', 'lat_pulldown', 'incline_bench', 'db_bench', 'db_incline', 'leg_press', 'barbell_curl', 'db_curl', 'pushdown_rope', 'french_press', 'lateral_raise', 'dips', 'rdl', 'hip_thrust', 'seated_row', 'db_row', 'leg_extension', 'leg_curl_lying', 'calf_standing', 'hanging_leg_raise', 'crunch', 'plank', 'pushup', 'hammer_curl', 'face_pull', 'pec_deck', 'bulgarian', 'lunge_db'];
 const norm = x => String(x || '').toLowerCase().replace(/ё/g, 'е');
 // основа слова без окончания: «наклоне» и «наклонной» → «накло», «гантелей» → «гантел»
-const stem = w => w.length <= 4 ? w : w.slice(0, Math.max(4, Math.ceil(w.length * 0.7)));
+const stem = w => w.length <= 4 ? w : w.slice(0, Math.max(4, Math.ceil(w.length * 0.6)));
 const STOP = new Set(['на', 'в', 'во', 'с', 'со', 'по', 'для', 'и', 'к', 'от', 'до', 'из', 'за', 'под']);
 function exScore(e, q, qw) {
   const n = norm(e.ru), syn = e.syn.map(norm);
@@ -999,6 +999,7 @@ function exScore(e, q, qw) {
   if (n.startsWith(q)) return 6;
   if (syn.some(x => x.startsWith(q))) return 5;
   if (n.includes(q)) return 4;
+  if (syn.some(x => x.length > 6 && q.includes(x))) return 4.5;
   const words = (n + ' ' + syn.join(' ') + ' ' + norm(e.en)).split(/[\s\-,()/«»"]+/).filter(Boolean);
   const qs = qw.filter(w => !STOP.has(w));
   if (!qs.length) return 0;
@@ -1080,19 +1081,36 @@ function parseNums(src, isBw) {
 function parseLog(txt, lastEx) {
   let t = norm(txt).replace(/(\d),(\d)/g, '$1.$2');
   for (const [w, n] of Object.entries(NUMW)) t = t.replace(new RegExp('(^|[\\s,])' + w + '(?=[\\s,]|$)', 'g'), '$1' + n);
-  const out = [];
+  const raw = []; let carry = null;
   for (let part of t.split(/[\n;,]+|\s+(?:и|потом|затем|дальше)\s+(?=\D)/)) {
     part = part.replace(/(\d)\s*(кг|kg|килограмм[а-я]*)/g, '$1').replace(/(^|\s)(сделал[а-я]*|делал[а-я]*|еще|потом|затем|дальше|теперь|весом|вес|с|раз[а]?|повтор[а-я]*)(?=\s|$)/g, ' ').replace(/\s+/g, ' ').trim();
     if (!part) continue;
     const i = part.search(/\d/);
-    if (i < 0) { out.push({ name: part, ex: findEx(part), sets: [] }); continue; }
-    let name = part.slice(0, i).replace(/\s(на|по|x|х)\s*$/, '').trim();
-    const ex = name.length >= 2 ? findEx(name) : lastEx;
-    const sets = parseNums(part.slice(i), (EX[ex]?.bw || 0) > 0);
-    out.push({ name: name || (lastEx ? exName(lastEx) : ''), ex, sets });
+    if (i < 0) { carry = { name: part, ex: findEx(part) }; raw.push({ ...carry, sets: [], only: 1 }); continue; }
+    const name = part.slice(0, i).replace(/\s(на|по|x|х)\s*$/, '').trim();
+    if (name.length >= 2) carry = { name, ex: findEx(name) };
+    const ex = carry ? carry.ex : lastEx;
+    raw.push({ name: carry ? carry.name : (lastEx ? exName(lastEx) : ''), ex, sets: parseNums(part.slice(i), (EX[ex]?.bw || 0) > 0) });
     if (ex) lastEx = ex;
   }
-  return out;
+  const out = [];
+  for (const x of raw) {
+    const p = out[out.length - 1];
+    if (p && p.name == x.name && p.ex == x.ex) { p.sets.push(...x.sets); continue; }
+    if (x.only && x.ex) { out.push({ name: x.name, ex: x.ex, sets: [] }); continue; }
+    out.push({ name: x.name, ex: x.ex, sets: x.sets });
+  }
+  return out.filter((x, k) => x.sets.length || !(x.ex && out[k + 1]?.ex == x.ex));
+}
+// подсказки, если название не узнали: по мышце из текста («задний бицепс» → бицепс бедра)
+const MW = [[/бицепс бедра|задн[а-я]* бицепс|задн[а-я]* поверхн|бицепс ног/, 'hams'], [/трицепс/, 'triceps'], [/бицепс/, 'biceps'], [/груд/, 'chest'], [/широч|спин/, 'lats'], [/дельт|плеч/, 'delt_m'], [/квадр|передн[а-я]* поверхн/, 'quads'], [/ягод/, 'glutes'], [/икр|голен/, 'calves'], [/пресс/, 'abs'], [/предплеч/, 'forearm'], [/трапец/, 'traps'], [/ног/, 'quads']];
+function sugFor(q) {
+  q = norm(q);
+  const L = searchEx(q.replace(/\d.*$/, '')).slice(0, 4).map(e => e.id);
+  if (L.length) return L;
+  const hit = MW.find(([re]) => re.test(q)); if (!hit) return [];
+  const iso = /разгиб|сгиб|свед|развод|подъ[её]м|махи/.test(q);
+  return searchEx('', hit[1]).sort((a, b) => (iso ? (a.kind == 'isolation' ? -1 : 0) - (b.kind == 'isolation' ? -1 : 0) : 0)).slice(0, 4).map(e => e.id);
 }
 // для старого окна «Тренировка текстом»
 function localParse(txt) { const r = parseLog(txt, null); return r.every(x => x.sets.length) ? r : []; }
