@@ -485,6 +485,7 @@ function trainHtml() {
   if (S.w) return activeHtml();
   const hist = S.works.slice(0, 25);
   return `<div class="top"><h1>Тренировка</h1></div>
+  ${logHtml()}${chatBar()}
   <button class="b p w" data-a="dayWorkout">${IC.fire} Тренировка дня</button>
   <div class="grid2" style="margin-top:10px"><button class="b" data-a="startEmpty">${IC.plus} Пустая</button><button class="b" data-a="textWorkout">Текстом</button></div>
   <div class="card"><div class="row"><h3 class="sp">Мои программы</h3><button class="b s" data-a="newProg">${IC.plus}</button></div>
@@ -493,12 +494,20 @@ function trainHtml() {
   </div>
   <div class="card"><h3>История</h3>${hist.length ? hist.map(w => `<div class="li" data-a="openWork" data-k="${w.id}"><div class="sp"><b>${esc(w.name || 'Тренировка')}</b><div class="xs mu">${fdate(w.started_at)} · ${S.sets.filter(s => s.workout_id == w.id && s.kind != 'warm').length || ''} подх.</div></div><span class="tag" style="color:var(--gold)">+${nf(w.xp)} XP</span></div>`).join('') : '<div class="empty">Пока пусто. Первая тренировка - первый уровень.</div>'}</div>`;
 }
+function chatBar() {
+  return `<div class="wbar"><div class="row"><input class="in" id="wq" autocomplete="off" enterkeyhint="send" placeholder="${S.w ? 'Что сделал? «жим 80 на 8 три подхода»' : 'Напиши упражнение - тренировка начнётся'}" data-k13="wSend"><button class="b v" style="width:52px;padding:0;flex:none" data-a="wSend">➤</button></div></div>`;
+}
+function logHtml() {
+  const L = (S.w?.log || []).slice(-3); if (!L.length) return `<div class="hint">💬 Пиши как в чате: «жим 80 на 8 три подхода», «присед 100 5х5», «подтягивания 10 8 7». Следующий подход того же упражнения - просто «85 на 6».</div>`;
+  return `<div class="card" style="padding:10px 12px"><div class="chat">${L.map((m, i) => `<div class="msg u" style="font-size:14px">${esc(m.q)}</div><div class="msg a" style="font-size:13.5px">${esc(m.a)}${m.err && i == L.length - 1 && S.wPending?.sets?.length ? `<div class="chips" style="margin-top:8px;flex-wrap:wrap">${(m.sug || []).map(id => `<button class="chip" data-a="wSug" data-k="${id}">${esc(exName(id))}</button>`).join('')}<button class="chip" data-a="wPick">📋 Выбрать из списка</button></div>` : ''}${i == L.length - 1 && m.undo ? `<div style="margin-top:6px"><button class="b s g" style="height:28px;padding:0 8px" data-a="wUndo">↩ отменить</button></div>` : ''}</div>`).join('')}</div></div>`;
+}
 function activeHtml() {
   const w = S.w, min = Math.floor((Date.now() - new Date(w.started_at)) / 6e4);
   return `<div class="top"><div class="sp"><h1>${esc(w.name || 'Тренировка')}</h1><div class="xs mu" id="wtime">${min} мин · ${w.items.reduce((a, it) => a + it.sets.filter(s => s.done).length, 0)} подходов</div></div><button class="ib" data-a="cancelW">${IC.x}</button></div>
-  ${w.items.map((it, i) => exCard(it, i)).join('') || '<div class="empty">Добавь первое упражнение</div>'}
+  ${logHtml()}
+  ${w.items.map((it, i) => exCard(it, i)).join('')}
   <div class="grid2"><button class="b" data-a="pickEx">${IC.plus} Упражнение</button><button class="b" data-a="textWorkout">Текстом / голосом</button></div>
-  <button class="b p w" style="margin-top:12px" data-a="finishW">${IC.check} Завершить тренировку</button>`;
+  <button class="b p w" style="margin-top:12px" data-a="finishW">${IC.check} Завершить тренировку</button>${chatBar()}`;
 }
 function exCard(it, i) {
   const sg = it.sg, step = EX[it.ex]?.step || 2.5, isBw = (EX[it.ex]?.bw || 0) > 0;
@@ -813,6 +822,49 @@ const A = {
     S.w = null; LS.set('w', null);
     showResult(res, sets.length);
   },
+  async wSend(el) {
+    const inp = $('#wq'), txt = (inp?.value || '').trim(); if (txt.length < 2) return;
+    const lastEx = S.w?.items.slice().reverse().find(it => it.sets.some(st => st.done))?.ex || S.w?.items[S.w.items.length - 1]?.ex || null;
+    let items = parseLog(txt, lastEx), btn = $('[data-a=wSend]');
+    const bad = items.filter(x => !x.ex || !x.sets.length);
+    if (!items.length || bad.length) {
+      if (btn) btn.textContent = '…';
+      try {
+        const r = await DB.ai({ mode: 'parse', text: txt });
+        const ai = (r.items || []).map(x => ({ name: x.name, ex: findEx(x.name), sets: (x.sets || []).filter(st => +st.reps > 0).map(st => ({ w: +st.w || 0, reps: +st.reps })) }));
+        if (ai.length && ai.every(x => x.ex && x.sets.length)) items = ai;
+      } catch (e) { }
+      if (btn) btn.textContent = '➤';
+    }
+    const ok = items.filter(x => x.ex && x.sets.length), miss = items.filter(x => !x.ex || !x.sets.length);
+    if (!ok.length) {
+      const q = miss[0]?.name || txt, sug = searchEx(q.replace(/\d.*$/, '')).slice(0, 4);
+      S.wPending = { txt, sets: miss[0]?.sets?.length ? miss[0].sets : parseNums(txt.replace(/^\D+/, ''), false) };
+      (S.w = S.w || { id: uuid(), started_at: new Date().toISOString(), name: 'Свободная тренировка', items: [], log: [] }).log = S.w.log || [];
+      S.w.log.push({ q: txt, a: miss[0]?.ex && !miss[0].sets.length ? `Понял упражнение «${exName(miss[0].ex)}», но не вижу вес и повторы. Напиши, например: 80 на 8 три подхода` : `Не узнал упражнение «${q}». ${sug.length ? 'Это одно из этих?' : 'Попробуй написать иначе.'}`, sug: S.wPending.sets.length ? sug.map(e => e.id) : [], err: 1 });
+      saveW(); S.tab = 'train'; render(); setTimeout(() => $('#wq')?.focus(), 50); return;
+    }
+    const r = logToWorkout(ok);
+    S.w.log.push({ q: txt, a: r.text + (miss.length ? `\nНе понял: ${miss.map(m => m.name).join(', ')}` : ''), undo: r.undo });
+    S.w.log = S.w.log.slice(-30); saveW(); vib([15, 40, 15]); startRest(isCompound(ok[ok.length - 1].ex) ? 150 : 90);
+    S.tab = 'train'; render();
+    setTimeout(() => { const c = $('#ex' + S.w.items.findIndex(it => it.ex == ok[ok.length - 1].ex)); c && c.scrollIntoView({ behavior: 'smooth', block: 'center' }); $('#wq')?.focus(); }, 60);
+  },
+  wSug(el) {
+    const p = S.wPending; if (!p) return;
+    const r = logToWorkout([{ ex: el.dataset.k, sets: p.sets }]); S.wPending = null;
+    const L = S.w.log[S.w.log.length - 1]; L.a = r.text; L.undo = r.undo; L.sug = []; L.err = 0;
+    saveW(); vib(15); render();
+  },
+  wPick() { pickEx(ex => A.wSug({ dataset: { k: ex } })); },
+  wUndo() {
+    const L = S.w?.log?.[S.w.log.length - 1]; if (!L?.undo) return;
+    for (const u of L.undo.slice().reverse()) {
+      const i = S.w.items.findIndex(it => it.ex == u.ex); if (i < 0) continue;
+      if (u.created) S.w.items.splice(i, 1); else S.w.items[i].sets = u.snap.slice(0, u.before).concat(u.snap.slice(u.before).filter(st => !st.done));
+    }
+    S.w.log.pop(); saveW(); stopRest(); render(); toast('Отменил последнюю запись');
+  },
   async textWorkout() {
     sheet(`<h2>Тренировка текстом</h2><div class="mu sm" style="margin:6px 0 10px">Напиши или надиктуй микрофоном клавиатуры: «жим 80 на 8 три подхода, разводка 14 по 12, подтягивания 10 8 7»</div><textarea class="in" id="wt" rows="4"></textarea><button class="b v w" style="margin-top:10px" data-a="parseW">Разобрать</button>`);
     setTimeout(() => $('#wt')?.focus(), 300);
@@ -935,13 +987,30 @@ const A = {
 };
 
 // ---------- выбор упражнения ----------
+const POP = ['bench', 'squat', 'deadlift', 'ohp', 'row', 'pullup', 'lat_pulldown', 'incline_bench', 'db_bench', 'db_incline', 'leg_press', 'barbell_curl', 'db_curl', 'pushdown_rope', 'french_press', 'lateral_raise', 'dips', 'rdl', 'hip_thrust', 'seated_row', 'db_row', 'leg_extension', 'leg_curl_lying', 'calf_standing', 'hanging_leg_raise', 'crunch', 'plank', 'pushup', 'hammer_curl', 'face_pull', 'pec_deck', 'bulgarian', 'lunge_db'];
+const norm = x => String(x || '').toLowerCase().replace(/ё/g, 'е');
+function exScore(e, q, qw) {
+  const n = norm(e.ru), syn = e.syn.map(norm);
+  if (n == q || syn.includes(q)) return 8;
+  if (n.startsWith(q)) return 6;
+  if (syn.some(x => x.startsWith(q))) return 5;
+  if (n.includes(q)) return 4;
+  const words = (n + ' ' + syn.join(' ') + ' ' + norm(e.en)).split(/[\s\-,()/]+/);
+  if (qw.length > 1 && qw.every(w => words.some(x => x.startsWith(w)))) return 3.5;
+  if (syn.some(x => x.includes(q))) return 2.5;
+  if (qw.length == 1 && words.some(x => x.startsWith(q))) return 2;
+  if (norm(e.en).includes(q)) return 1;
+  return 0;
+}
 function searchEx(q, m) {
-  q = q.trim().toLowerCase();
+  q = norm(q).trim().replace(/\s+/g, ' ');
+  const qw = q.split(' ').filter(w => w.length > 1);
   let L = EXL;
   if (m) L = L.filter(e => (e.m[m] || 0) >= 1);
-  if (q) L = L.map(e => { const n = e.ru.toLowerCase(); let s = n.startsWith(q) ? 5 : n.includes(q) ? 3 : e.syn.some(x => x.startsWith(q)) ? 4 : e.syn.some(x => x.includes(q)) ? 2 : (e.en || '').toLowerCase().includes(q) ? 1 : 0; return [e, s]; }).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-  const fav = e => S.sets.filter(s => s.ex == e.id).length;
-  if (!q) L = [...L].sort((a, b) => fav(b) - fav(a));
+  const fav = e => S.sets.filter(s => s.ex == e.id).length + (S.w?.items.some(it => it.ex == e.id) ? 50 : 0);
+  const pop = e => { const i = POP.indexOf(e.id); return i < 0 ? 99 : i; };
+  if (q) L = L.map(e => [e, exScore(e, q, qw)]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1] || fav(b[0]) - fav(a[0]) || pop(a[0]) - pop(b[0])).map(x => x[0]);
+  else L = [...L].sort((a, b) => fav(b) - fav(a) || pop(a) - pop(b));
   return L.slice(0, 60);
 }
 function findEx(name) { const r = searchEx(String(name || '')); return r[0]?.id || null; }
@@ -979,26 +1048,71 @@ A.exInfo = el => {
 A.exM = el => { S.pickM = S.pickM == el.dataset.k ? null : el.dataset.k; document.querySelectorAll('#exm .chip').forEach(c => c.classList.toggle('on', c.dataset.k == S.pickM)); exList(); };
 A.exPick = el => { const cb = S.pickCb; closeSheet(true); cb && cb(el.dataset.k); };
 
-// ---------- разбор текста тренировки без ИИ ----------
-const NUMW = { 'один': 1, 'одну': 1, 'два': 2, 'две': 2, 'три': 3, 'четыре': 4, 'пять': 5, 'шесть': 6 };
-function localParse(txt) {
+// ---------- разбор записи «как в чате» ----------
+// «жим 80 на 8 три подхода», «присед 100 5х5», «подтягивания 10 8 7», «85 на 6» (продолжение прошлого упражнения)
+const NUMW = { 'один': 1, 'одна': 1, 'одну': 1, 'два': 2, 'две': 2, 'три': 3, 'четыре': 4, 'пять': 5, 'шесть': 6, 'семь': 7, 'восемь': 8, 'девять': 9, 'десять': 10, 'двенадцать': 12, 'пятнадцать': 15, 'двадцать': 20 };
+const rep = (n, w, r) => Array(Math.max(1, Math.min(n, 20))).fill(0).map(() => ({ w, reps: r }));
+function parseNums(src, isBw) {
+  let s = ' ' + src.replace(/[×*]/g, 'x').replace(/(\d)\s*[xх]\s*(\d)/g, '$1x$2') + ' ', m;
+  if ((m = s.match(/(\d+(?:\.\d+)?)x(\d+)x(\d+)/))) return rep(+m[3], +m[1], +m[2]);
+  let nS = 0;
+  if ((m = s.match(/(\d+)\s*(подход|сет)/))) { nS = +m[1]; s = s.replace(m[0], ' '); }
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s+(\d+)x(\d+)/)) && +m[1] > +m[2]) return rep(+m[2], +m[1], +m[3]);
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s*(x|на|по)\s*(\d+)/))) {
+    const a = +m[1], b = +m[3];
+    if (isBw && a <= 6 && !nS) return rep(a, 0, b);                       // «подтягивания 3 по 10»
+    const rest = (s.slice(s.indexOf(m[0]) + m[0].length).match(/\d+/g) || []).map(Number).filter(r => r <= 50);
+    if (!nS && rest.length) return [{ w: a, reps: b }, ...rest.map(r => ({ w: a, reps: r }))]; // «80 на 8 8 7»
+    return rep(nS || 1, a, b);
+  }
+  const ns = (s.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+  if (!ns.length) return [];
+  if (ns.length == 1) return rep(nS || 1, 0, ns[0]);
+  if (ns[0] > 20 && ns.slice(1).every(r => r <= 50)) return nS && ns.length == 2 ? rep(nS, ns[0], ns[1]) : ns.slice(1).map(r => ({ w: ns[0], reps: r }));
+  return ns.map(r => ({ w: 0, reps: r }));
+}
+function parseLog(txt, lastEx) {
+  let t = norm(txt).replace(/(\d),(\d)/g, '$1.$2');
+  for (const [w, n] of Object.entries(NUMW)) t = t.replace(new RegExp('(^|[\\s,])' + w + '(?=[\\s,]|$)', 'g'), '$1' + n);
   const out = [];
-  for (let part of txt.toLowerCase().replace(/ё/g, 'е').split(/[,;\n]+/)) {
-    part = part.trim(); if (!part) continue;
-    for (const [w, n] of Object.entries(NUMW)) part = part.replace(new RegExp('\\b' + w + '\\b', 'g'), n);
-    const name = part.replace(/[\d.,]+.*$/, '').replace(/\b(кг|на|по|раз|x|х)\b/g, '').trim();
-    const nums = part.slice(name.length);
-    let sets = [];
-    let m = nums.match(/([\d.]+)\s*(?:кг)?\s*(?:x|х|\*|на|по)\s*(\d+)\s*(?:x|х|\*|на|по)\s*(\d+)/);
-    if (m) sets = Array(+m[3]).fill(0).map(() => ({ w: +m[1], reps: +m[2] }));
-    else if ((m = nums.match(/([\d.]+)\s*(?:кг)?\s*(?:x|х|\*|на|по)\s*(\d+)(?:\s*(\d+)\s*подход)?/))) sets = Array(+(m[3] || 1)).fill(0).map(() => ({ w: +m[1], reps: +m[2] }));
-    else if ((m = nums.match(/^\s*(\d+(?:\s+\d+)+)\s*$/))) sets = m[1].split(/\s+/).map(r => ({ w: 0, reps: +r }));
-    if (!name || !sets.length) return [];
-    out.push({ ex: findEx(name), name, sets });
+  for (let part of t.split(/[\n;,]+|\s+(?:и|потом|затем|дальше)\s+(?=\D)/)) {
+    part = part.replace(/(\d)\s*(кг|kg|килограмм[а-я]*)/g, '$1').replace(/(^|\s)(сделал[а-я]*|делал[а-я]*|еще|потом|затем|дальше|теперь|весом|вес|с|раз[а]?|повтор[а-я]*)(?=\s|$)/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!part) continue;
+    const i = part.search(/\d/);
+    if (i < 0) { out.push({ name: part, ex: findEx(part), sets: [] }); continue; }
+    let name = part.slice(0, i).replace(/\s(на|по|x|х)\s*$/, '').trim();
+    const ex = name.length >= 2 ? findEx(name) : lastEx;
+    const sets = parseNums(part.slice(i), (EX[ex]?.bw || 0) > 0);
+    out.push({ name: name || (lastEx ? exName(lastEx) : ''), ex, sets });
+    if (ex) lastEx = ex;
   }
   return out;
 }
+// для старого окна «Тренировка текстом»
+function localParse(txt) { const r = parseLog(txt, null); return r.every(x => x.sets.length) ? r : []; }
 
+// записать разобранное в текущую тренировку
+function logToWorkout(items) {
+  if (!S.w) S.w = { id: uuid(), started_at: new Date().toISOString(), name: 'Свободная тренировка', items: [], log: [] };
+  S.w.log = S.w.log || [];
+  const undo = [], done = [], now = Date.now();
+  items.forEach((x, k) => {
+    let i = S.w.items.findIndex(it => it.ex == x.ex), created = false;
+    if (i < 0) { S.w.items.push({ ex: x.ex, sets: [], sg: suggest(x.ex) }); i = S.w.items.length - 1; created = true; }
+    const it = S.w.items[i], from = it.sets.length;
+    // пустые незаполненные подходы из программы заполняем первыми
+    let fill = it.sets.findIndex(st => !st.done);
+    x.sets.forEach((st, j) => {
+      const row = { w: st.w, reps: st.reps, done: true, kind: 'work', at: new Date(now - (x.sets.length - 1 - j) * 1000).toISOString() };
+      if (fill >= 0 && fill < it.sets.length && !it.sets[fill].done) { it.sets[fill] = row; fill = it.sets.findIndex(s2 => !s2.done); }
+      else it.sets.push(row);
+    });
+    undo.push({ ex: x.ex, created, before: from, snap: JSON.parse(JSON.stringify(it.sets)) });
+    const pr = S.recs[x.ex], best = Math.max(...x.sets.map(st => e1rm((+st.w || 0) + (EX[x.ex]?.bw || 0) * bw(), st.reps)));
+    done.push(`✓ ${exName(x.ex)}: ${x.sets.map(st => (st.w ? nf(st.w, 1) + '×' : '') + st.reps).join(', ')}${pr && best > pr.e1rm + 0.05 ? ' 🏆 рекорд!' : ''}`);
+  });
+  return { undo, text: done.join('\n') };
+}
 // ---------- добавление еды ----------
 function addFoodSheet(meal, mode) {
   S.fMeal = meal;
